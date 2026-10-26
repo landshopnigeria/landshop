@@ -18,7 +18,7 @@ create table if not exists public.automation_runs(
  id uuid primary key default gen_random_uuid(),
  workflow_id uuid not null references public.automation_workflows(id),
  version integer not null,
- event_id bigint references public.notification_outbox(id),
+ event_id uuid references public.notification_outbox(id),
  status text not null default 'queued' check(status in ('queued','running','waiting','completed','failed','cancelled')),
  started_at timestamptz not null default now(),
  completed_at timestamptz,
