@@ -1,24 +1,48 @@
 'use client';
 import {useEffect,useState} from 'react';
-const products=[
- {name:'Develop',title:'Own Your Tomorrow',copy:'Property acquisition — Prime and Luxury opportunities.',url:'/develop'},
- {name:'Incubate',title:'Build Wealth With Property',copy:'Explore vetted property investment opportunities.',url:'/incubate'},
- {name:'Grow',title:'Move Into Ownership',copy:'Beta Mortgage and Mortgage Xtra financing pathways.',url:'/grow'}
+type Listing={title:string,location:string,type:string,img:string,category:string,details:string};
+const slides=[
+ {name:'DEVELOP',first:'Own Your',em:'Tomorrow',copy:'Discover verified land and home opportunities, with clear acquisition and payment information.',image:'/media/deck-building.webp'},
+ {name:'INCUBATE',first:'Grow Your',em:'Wealth',copy:'Explore Landshop property investment opportunities with clearly disclosed terms and risk.',image:'/media/deck-investment.webp'},
+ {name:'GROW',first:'Make Home',em:'Possible',copy:'Explore Beta Mortgage and Mortgage Xtra financing pathways.',image:'/media/deck-mortgage.webp'}
 ];
-const portal='https://portal.landshopnigeria.com';
-export default function Home(){
- const [slide,setSlide]=useState(0);
- useEffect(()=>{let timer=setInterval(()=>setSlide(v=>(v+1)%3),6500);return()=>clearInterval(timer)},[]);
- return <main style={{fontFamily:'Arial,sans-serif',margin:0,color:'#123d32'}}>
-  <div style={{background:'#eef8f2',padding:'9px 6%',textAlign:'right'}}><a href={portal}>Account</a> &nbsp; <a href={portal+'/signup?role=realtor'}>Become a Realtor</a></div>
-  <header style={{position:'sticky',top:0,background:'#ffffffda',backdropFilter:'blur(16px)',borderBottom:'1px solid #d6e6de',padding:'20px 6%',display:'flex',alignItems:'center',justifyContent:'space-between',gap:20}}>
-   <strong style={{fontSize:28,color:'#078f71'}}>Landshop</strong><nav style={{display:'flex',flexWrap:'wrap',gap:13,fontSize:13}}>{['Home','Product','Company','Services','Properties','Insights / Blog','Contact Us'].map(x=><a key={x} href={'/'+x.toLowerCase().replaceAll(' ','-')}>{x}</a>)}</nav><a href={portal} style={{background:'#078f71',color:'white',padding:13,borderRadius:13}}>Get Started</a></header>
-  <section style={{minHeight:520,background:'linear-gradient(120deg,#043d34,#096b62)',color:'white',padding:'10% 6%'}}>
-  <small>{String(slide+1).padStart(2,'0')} / 03 — {products[slide].name.toUpperCase()}</small>
-  <h1 style={{fontSize:'clamp(42px,6vw,80px)',maxWidth:800}}>{products[slide].title}</h1><p>{products[slide].copy}</p>
-  <div style={{display:'flex',gap:12,marginTop:25}}><a href={portal} style={{padding:14,borderRadius:10,background:'#078f71',color:'white'}}>Get Started</a><a href={products[slide].url} style={{padding:14,border:'1px solid white',borderRadius:10,color:'white'}}>Explore {products[slide].name}</a></div>
-  <div style={{marginTop:25}}>{products.map((p,i)=><button key={i} aria-label={'Show '+p.name} onClick={()=>setSlide(i)} style={{marginRight:9,background:i===slide?'#f59b35':'#ceddd6',padding:9,border:0,borderRadius:9}}/>)}</div>
-  </section><section style={{padding:'60px 6%'}}><h2>Develop · Incubate · Grow</h2><p>Everyone Deserves Affordable Property.</p><div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(220px,1fr))',gap:22}}>{products.map(p=><article key={p.name} style={{padding:25,border:'1px solid #d7e7de',borderRadius:20}}><h3>{p.name}</h3><p>{p.copy}</p><a href={p.url}>Learn More ↗</a></article>)}</div></section>
-  <footer style={{padding:'55px 6%',background:'#063d35',color:'white'}}><h2>Landshop</h2><p>Develop · Incubate · Grow</p><a style={{color:'white'}} href="mailto:care@landshopnigeria.com">care@landshopnigeria.com</a></footer>
- </main>
+const products=[
+ {title:'Develop',sub:'Own your future',description:'Discover land and housing opportunities, Prime and Luxury selections.',img:'/media/deck-develop.webp',href:'/develop'},
+ {title:'Incubate',sub:'Explore property investment',description:'Review available property-led investment opportunities and their verified terms.',img:'/media/deck-investment.webp',href:'/incubate'},
+ {title:'Grow',sub:'Make home ownership possible',description:'Understand Beta Mortgage and Mortgage Xtra financing pathways.',img:'/media/deck-mortgage.webp',href:'/grow'}
+];
+const listings:Listing[]=[
+ {title:'Famous Gardens',location:'Lagos, Nigeria',type:'Land',img:'/media/famous0.webp',category:'Develop',details:'Owner-supplied estate photography'},
+ {title:'Maiyegun Beach Estate',location:'Lekki, Lagos',type:'Land',img:'/media/maiyegun0.webp',category:'Luxury',details:'Site imagery and drone coverage'},
+ {title:'Merit Park',location:'Nigeria',type:'Land',img:'/media/drone0.webp',category:'Prime',details:'Original drone estate imagery'},
+ {title:'Landshop Project Gallery',location:'Nigeria',type:'Estate',img:'/media/deck-construction.webp',category:'Develop',details:'Project imagery from Landshop deck'}
+];
+const nav=[{text:'Product',children:[['Develop','/develop'],['Incubate','/incubate'],['Grow','/grow'],['Beta Mortgage','/grow/beta-mortgage'],['Mortgage Xtra','/grow/mortgage-xtra'],['Thrift & Cooperatives','/thrift']]},
+ {text:'Company',children:[['About Landshop','/about'],['Vision & Mission','/about#vision'],['Leadership & Team','/company/team'],['Testimonials','/company/testimonials']]},
+ {text:'Services',children:[['Property Acquisition','/services/property-acquisition'],['Property Advisory','/services/advisory'],['Mortgage Guidance','/services/mortgage'],['Property Inspection','/applications'],['Construction Credit','/services/construction-credit'],['Cooperatives & Thrift','/thrift']]}];
+export default function Homepage(){
+ const [slide,setSlide]=useState(0),[purpose,setPurpose]=useState('Buy'),[type,setType]=useState(''),[location,setLocation]=useState(''),[price,setPrice]=useState(''),[mobile,setMobile]=useState(false),[pause,setPause]=useState(false);
+ useEffect(()=>{if(pause)return;const id=setInterval(()=>setSlide(v=>(v+1)%3),6500);return()=>clearInterval(id)},[pause]);
+ const current=slides[slide];
+ function search(e:React.FormEvent<HTMLFormElement>){e.preventDefault();const args=new URLSearchParams({purpose});if(type)args.set('type',type);if(location)args.set('location',location);if(price)args.set('price',price);locationAssign('/properties?'+args.toString())}
+ function locationAssign(path:string){window.location.href=path}
+ return <main>
+  <div className="top-strip"><span>Everyone Deserves Affordable Property.</span><div><a href="https://portal.landshopnigeria.com">Account</a><a href="https://portal.landshopnigeria.com">Become a Realtor</a><a href="/contact">Support</a></div></div>
+  <header className="site-header"><div className="header-inner">
+   <a className="logo" href="/" aria-label="Landshop home"><img src="/media/logo.webp" alt="Landshop"/>Landshop</a>
+   <button type="button" className="mobile-nav" aria-expanded={mobile} onClick={()=>setMobile(v=>!v)} aria-label="Toggle navigation">☰</button>
+   <nav className={'nav-links '+(mobile?'open':'')} aria-label="Main navigation"><a href="/">Home</a>
+    {nav.map(group=><div className="navdrop" key={group.text}><button type="button" aria-haspopup="true">{group.text} ▾</button><div className="mega"><div className="intro"><strong>{group.text==='Product'?'Develop. Incubate. Grow.':group.text==='Company'?'Our Company':'Support for your goals'}</strong><p>Explore Landshop's official products, estate services and resources.</p><a className="primary" href="/applications">Get Started</a></div><div className="menuitems">{group.children.map(([title,url])=><a key={url+title} href={url}>{title} →</a>)}</div></div></div>)}
+    <a href="/properties">Properties</a><a href="/insights">Insights / Blog</a><a href="/contact">Contact Us</a></nav>
+   <a className="primary" href="https://portal.landshopnigeria.com">Customer Portal →</a></div></header>
+  <section className="hero" onMouseEnter={()=>setPause(true)} onMouseLeave={()=>setPause(false)} style={{backgroundImage:`linear-gradient(90deg,#042c29e8,#073d3480 46%,#0a4e3b15),url("${current.image}")`}}>
+   <div className="hero-inner"><span className="eyebrow">{String(slide+1).padStart(2,'0')} / 03 · {current.name}</span><h1>{current.first}<br/><em>{current.em}.</em></h1><p>{current.copy}</p><div className="hero-buttons"><a className="primary" href="https://portal.landshopnigeria.com">Get Started →</a><a className="outline" href={'/'+current.name.toLowerCase()}>Explore {current.name.toLowerCase()} →</a></div><div className="hero-counter">{slides.map((s,i)=><button key={s.name} type="button" className={slide===i?'on':''} onClick={()=>setSlide(i)} aria-label={'View '+s.name} aria-current={slide===i}>{String(i+1).padStart(2,'0')}</button>)}</div></div>
+  </section>
+  <form className="glass-search" onSubmit={search} aria-label="Find properties"><div className="search-tabs">{['Buy','Rent','Shortlet','Develop','Incubate','Grow'].map(p=><button type="button" key={p} className={p===purpose?'active':''} onClick={()=>setPurpose(p)}>{p}</button>)}</div><div className="search-grid"><select aria-label="Property type" value={type} onChange={e=>setType(e.target.value)}><option value="">All property types</option><option value="land">Land</option><option value="house">House</option><option value="apartment">Apartment</option><option value="commercial">Commercial</option></select><select aria-label="Location" value={location} onChange={e=>setLocation(e.target.value)}><option value="">All locations</option>{['Lagos','Abuja','Ogun','Oyo','Delta','Edo','Akwa Ibom','Anambra'].map(l=><option key={l}>{l}</option>)}</select><select aria-label="Budget" value={price} onChange={e=>setPrice(e.target.value)}><option value="">Any budget</option><option value="20000000">Up to ₦20 million</option><option value="50000000">Up to ₦50 million</option><option value="100000000">Up to ₦100 million</option></select><button className="primary" type="submit">Search Properties →</button></div></form>
+  <section className="container"><div className="section-intro"><div><span className="eyebrow green">OUR PRODUCTS</span><h2>Three ways to own, grow and build</h2></div><p>Explore Landshop solutions tailored to acquisition, investment and property financing.</p></div><div className="grid3">{products.map(p=><article className="prod-card" key={p.title}><a href={p.href}><img src={p.img} alt={p.title+' property imagery'}/></a><div className="card-content"><span className="eyebrow green">{p.sub}</span><h3>{p.title}</h3><p>{p.description}</p><a href={p.href}>Explore {p.title} →</a></div></article>)}</div></section>
+  <section className="section-soft"><div className="container why"><div><span className="eyebrow green">ABOUT LANDSHOP</span><h2>Building a more accessible Nigeria, one property at a time.</h2><p>Landshop's mission is to simplify property acquisition, ownership and financing. Our product history includes Develop, property investment and Grow mortgage options.</p><p><a className="primary" href="/about">Learn more about Landshop →</a></p></div><img src="/media/deck-architecture.webp" alt="Landshop property architecture from product deck"/></div></section>
+  <section className="container"><div className="section-intro"><div><span className="eyebrow green">FEATURED ESTATE MEDIA</span><h2>Explore Landshop properties</h2><p>Photographs are from the supplied estate media and product deck. Listing status and commercial terms are subject to verification.</p></div><a className="outline" href="/properties">View All Properties →</a></div><div className="featured-grid">{listings.map(p=><article className="property-card" key={p.title}><img src={p.img} alt={'Estate media for '+p.title}/><div className="card-content"><span className="tag">{p.category}</span><h3>{p.title}</h3><p>{p.location} · {p.type}</p><p className="value-note">{p.details}</p><a href="/properties">Explore estate →</a></div></article>)}</div></section>
+  <section className="section-soft"><div className="container"><div className="section-intro"><div><span className="eyebrow green">FROM LANDSHOP</span><h2>Insights & updates</h2></div><a href="/insights" className="outline">View Articles →</a></div><div className="grid3">{['Property acquisition basics','Understanding mortgage pre-qualification','Preparing for an estate inspection'].map((title,i)=><article className="content-card" key={title}><img src={['/media/deck-building.webp','/media/deck-mortgage.webp','/media/deck-construction.webp'][i]} alt="Relevant property editorial image"/><div className="card-content"><h3>{title}</h3><p>Landshop guides, documentation and considerations.</p><a href="/insights">Read more →</a></div></article>)}</div></div></section>
+  <footer className="site-footer"><div className="footer-inner"><div><h2>Landshop</h2><p>Develop · Incubate · Grow</p><p>Everyone Deserves Affordable Property.</p></div><div><strong>Company</strong><a href="/about">About Landshop</a><a href="/company/team">Leadership</a><a href="/contact">Contact</a></div><div><strong>Products</strong>{products.map(p=><a key={p.title} href={p.href}>{p.title}</a>)}</div><div><strong>Customer</strong><a href="https://portal.landshopnigeria.com">Customer Portal</a><a href="/applications">Application Centre</a><a href="/properties">Property Marketplace</a></div></div><div className="legal">© Landshop · Property and financial terms require current verification.</div></footer>
+ </main>;
 }
