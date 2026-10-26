@@ -2,6 +2,7 @@ import {createServerClient} from '@supabase/ssr';
 import {cookies} from 'next/headers';
 import {redirect,notFound} from 'next/navigation';
 import DecisionForm from './DecisionForm';
+import DocumentReview from './DocumentReview';
 
 export const dynamic='force-dynamic';
 export default async function KycDetail({params}:{params:Promise<{id:string}>}){
@@ -39,8 +40,8 @@ export default async function KycDetail({params}:{params:Promise<{id:string}>}){
    {['fullName','phone','address','state','city','companyName','rcNumber'].map(key=>
      <p key={key}><strong>{key}:</strong> {String(metadata[key]||'Not provided')}</p>)}
    <h3>Document checklist</h3>
-   <ul>{(documents||[]).map(d=><li key={d.id}>{d.document_type}: stored privately — review access not yet activated</li>)}</ul>
-   <p role="note">Do not approve until authorized reviewers can inspect original private documents through a verified, audited document-access service.</p>
+   <DocumentReview documents={documents||[]}/>
+   <p role="note">Access is restricted to authorized reviewers; approval requires an actual document check and recorded justification.</p>
   </section>
   <DecisionForm submissionId={submission.id} status={submission.status}/>
  </main>;
