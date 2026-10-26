@@ -1,0 +1,101 @@
+name: Release Landshop Enterprise Applications to Namecheap
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: landshop-enterprise-release
+  cancel-in-progress: false
+jobs:
+  build_and_release:
+    runs-on: ubuntu-latest
+    environment: landshop-production
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Confirm V4 original assets committed
+        run: |
+          set -euo pipefail
+          for app in website portal dashboard; do
+            test -s "apps/$app/public/media/logo.webp" || { echo "::error::$app is missing approved image assets"; exit 1; }
+          done
+          for img in deck-building.webp deck-investment.webp deck-mortgage.webp famous0.webp maiyegun0.webp; do
+            test -s "apps/website/public/media/$img" || { echo "::error::Missing V4 estate image $img"; exit 1; }
+          done
+      - name: Install and validate
+        run: |
+          set -euo pipefail
+          npm install --no-audit --no-fund
+          npm run build -w @landshop/website
+          npm run build -w @landshop/portal
+          npm run build -w @landshop/dashboard
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ vars.LANDSHOP_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ vars.LANDSHOP_SUPABASE_PUBLISHABLE_KEY }}
+      - name: Package standalone releases
+        run: |
+          set -euo pipefail
+          for app in website portal dashboard; do
+            test -s "apps/$app/.next/standalone/apps/$app/server.js" || { echo "::error::Missing standalone $app server";exit 1; }
+            mkdir -p "release/$app"
+            cp -a "apps/$app/.next/standalone/." "release/$app/"
+            mkdir -p "release/$app/apps/$app/.next"
+            cp -a "apps/$app/.next/static" "release/$app/apps/$app/.next/static"
+            cp -a "apps/$app/public" "release/$app/apps/$app/public"
+            printf "require('./apps/$app/server.js');\n" > "release/$app/server.js"
+          done
+      - name: Prepare trusted SSH
+        env:
+          SSH_KEY: ${{ secrets.LANDSHOP_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.LANDSHOP_SSH_KNOWN_HOSTS }}
+          SSH_HOST: ${{ secrets.LANDSHOP_SSH_HOST }}
+          SSH_USER: ${{ secrets.LANDSHOP_SSH_USER }}
+          WEBSITE_ROOT: ${{ secrets.LANDSHOP_WEBSITE_APPROOT }}
+          PORTAL_ROOT: ${{ secrets.LANDSHOP_PORTAL_APPROOT }}
+          DASHBOARD_ROOT: ${{ secrets.LANDSHOP_DASHBOARD_APPROOT }}
+        run: |
+          set -euo pipefail
+          for name in SSH_KEY KNOWN_HOSTS SSH_HOST SSH_USER WEBSITE_ROOT PORTAL_ROOT DASHBOARD_ROOT; do
+            if [ -z "${!name:-}" ];then echo "::error::Missing deployment secret $name";exit 1;fi
+          done
+          for root in "$WEBSITE_ROOT" "$PORTAL_ROOT" "$DASHBOARD_ROOT";do
+            [[ "$root" == /home/* && "$root" != *".."* && "$root" != */public_html* ]] || { echo "::error::Unsafe Node app root";exit 1; }
+          done
+          install -d -m 700 "$HOME/.ssh"
+          printf '%s\n' "$SSH_KEY" > "$HOME/.ssh/id_ed25519"
+          chmod 600 "$HOME/.ssh/id_ed25519"
+          printf '%s\n' "$KNOWN_HOSTS" > "$HOME/.ssh/known_hosts"
+          chmod 600 "$HOME/.ssh/known_hosts"
+      - name: Upload verified release to existing Passenger applications
+        env:
+          SSH_HOST: ${{ secrets.LANDSHOP_SSH_HOST }}
+          SSH_USER: ${{ secrets.LANDSHOP_SSH_USER }}
+          WEBSITE_ROOT: ${{ secrets.LANDSHOP_WEBSITE_APPROOT }}
+          PORTAL_ROOT: ${{ secrets.LANDSHOP_PORTAL_APPROOT }}
+          DASHBOARD_ROOT: ${{ secrets.LANDSHOP_DASHBOARD_APPROOT }}
+        run: |
+          set -euo pipefail
+          target="$SSH_USER@$SSH_HOST"
+          ssh_args=(-o BatchMode=yes -o StrictHostKeyChecking=yes -o ConnectTimeout=20)
+          roots=("$WEBSITE_ROOT" "$PORTAL_ROOT" "$DASHBOARD_ROOT")
+          apps=(website portal dashboard)
+          for i in 0 1 2;do
+            root="${roots[$i]}";app="${apps[$i]}"
+            remote_path=$(printf '%q' "$root")
+            ssh "${ssh_args[@]}" "$target" "set -eu; test -d $remote_path; mkdir -p $remote_path/tmp"
+            # Do not wipe app root or delete business data. Deploy only intended files.
+            rsync -az --exclude='tmp/' --exclude='.env*' -e 'ssh -o BatchMode=yes -o StrictHostKeyChecking=yes'               "release/$app/" "$target:$root/"
+            ssh "${ssh_args[@]}" "$target" "touch $remote_path/tmp/restart.txt"
+          done
+      - name: Verify three public domains
+        run: |
+          set -euo pipefail
+          for url in https://landshopnigeria.com/ https://portal.landshopnigeria.com/ https://app.landshopnigeria.com/;do
+            code=$(curl -L -sS --max-time 35 -o /dev/null -w '%{http_code}' "$url")
+            if [ "$code" != 200 ] && [ "$code" != 302 ] && [ "$code" != 307 ];then
+              echo "::error::$url returned HTTP $code";exit 1
+            fi
+          done
