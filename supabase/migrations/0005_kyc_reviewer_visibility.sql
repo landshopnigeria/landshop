@@ -1,3 +1,10 @@
+-- Restrict organization visibility to current members; membership itself is service-managed.
+drop policy if exists landshop_org_member_read on public.organizations;
+create policy landshop_org_member_read on public.organizations
+ for select to authenticated using(
+   exists(select 1 from public.organization_members m
+     where m.organization_id=id and m.user_id=(select auth.uid()) and m.status='active')
+ );
 -- Read-only review queue access for authorized Landshop staff.
 -- No customer or staff access to private KYC files beyond their own prefix.
 -- No approval function is exposed by this migration.
