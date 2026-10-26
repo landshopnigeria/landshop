@@ -18,7 +18,7 @@ export async function POST(request:NextRequest){
   return NextResponse.json({error:'Invalid decision details'},{status:400});
  const url=process.env.NEXT_PUBLIC_SUPABASE_URL,key=process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
  if(!url||!key)return NextResponse.json({error:'Identity backend not configured'},{status:503});
- let response=NextResponse.json({error:'Authorization failed'},{status:401});
+ let response:NextResponse=NextResponse.json({error:'Authorization failed'},{status:401});
  const supabase=createServerClient(url,key,{
    cookieOptions:{domain:'.landshopnigeria.com',path:'/',sameSite:'lax',secure:true},
    cookies:{
