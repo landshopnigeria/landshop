@@ -7,7 +7,8 @@ export default function DocumentReview({documents}:{documents:Doc[]}){
  async function openDocument(documentId:string){
   setError('');setOpening(documentId);
   // Open on direct user action, avoiding browser popup blocking after async fetch.
-  const windowRef=window.open('about:blank','_blank','noopener,noreferrer');
+  const windowRef=window.open('about:blank','_blank');
+  if(windowRef)windowRef.opener=null;
   try{
    const response=await fetch('/api/admin/kyc/document',{
      method:'POST',credentials:'same-origin',
