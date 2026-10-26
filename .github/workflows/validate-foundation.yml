@@ -1,0 +1,32 @@
+name: Validate Landshop Foundation
+on:
+  push:
+    paths:
+      - 'apps/**'
+      - 'services/**'
+      - 'packages/**'
+      - 'package.json'
+      - '.github/workflows/validate-foundation.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install and build web workspaces
+        run: |
+          npm install --no-audit --no-fund
+          npm run build -w @landshop/website
+          npm run build -w @landshop/portal
+          npm run build -w @landshop/dashboard
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Compile document processor
+        run: python -m py_compile services/document-worker/main.py
