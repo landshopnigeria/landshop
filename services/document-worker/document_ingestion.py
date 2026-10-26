@@ -60,7 +60,28 @@ def _csv(payload: bytes, name: str) -> Extraction:
         raise ValueError('Duplicate CSV headings')
     return _rows_from_dicts(reader,name)
 
+def _validate_office_archive(payload: bytes) -> None:
+    """Prevent large or path-traversing internal Office ZIP members."""
+    try:
+        with zipfile.ZipFile(io.BytesIO(payload)) as office:
+            entries=office.infolist()
+            if len(entries)>500: raise ValueError('Office document contains too many parts')
+            total=0
+            for entry in entries:
+                path=PurePosixPath(entry.filename.replace('\\\\','/'))
+                if path.is_absolute() or '..' in path.parts:
+                    raise ValueError('Unsafe Office document member')
+                if entry.flag_bits&1: raise ValueError('Encrypted Office document not allowed')
+                total+=entry.file_size
+                if total>MAX_UNCOMPRESSED_BYTES:
+                    raise ValueError('Expanded Office document is too large')
+                if entry.file_size and entry.compress_size and entry.file_size/entry.compress_size>100:
+                    raise ValueError('Office archive expansion ratio exceeded')
+    except zipfile.BadZipFile as exc:
+        raise ValueError('Malformed Office document') from exc
+
 def _xlsx(payload: bytes, name: str) -> Extraction:
+    _validate_office_archive(payload)
     workbook=load_workbook(io.BytesIO(payload),read_only=True,data_only=True)
     try:
         sheet=workbook.active
@@ -89,6 +110,7 @@ def _xml(payload: bytes, name: str) -> Extraction:
     return _rows_from_dicts(entries(),name)
 
 def _docx(payload: bytes,name: str) -> Extraction:
+    _validate_office_archive(payload)
     document=Document(io.BytesIO(payload))
     text='\n'.join(p.text for p in document.paragraphs if p.text.strip())
     for table in document.tables:
