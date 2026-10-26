@@ -13,20 +13,32 @@ permissions:
 jobs:
   validate:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Install and build web workspaces
+          cache: 'npm'
+          cache-dependency-path: '**/package-lock.json'
+        # Lockfile must be checked into source before npm ci can be used.
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Build applications
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: https://iwkfagzkogzidrbbezds.supabase.co
+          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: build-only-placeholder
+          NEXT_PUBLIC_PORTAL_URL: https://portal.landshopnigeria.com
+          NEXT_PUBLIC_APP_URL: https://app.landshopnigeria.com
         run: |
-          npm install --no-audit --no-fund
           npm run build -w @landshop/website
           npm run build -w @landshop/portal
           npm run build -w @landshop/dashboard
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Compile document processor
-        run: python -m py_compile services/document-worker/main.py
+      - name: Test document parser and mortgage math
+        working-directory: services/document-worker
+        run: |
+          python -m compileall -q .
+          python -m unittest discover -p 'test_*.py' -v
