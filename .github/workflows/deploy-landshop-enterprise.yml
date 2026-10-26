@@ -1,6 +1,9 @@
 name: Release Landshop Enterprise Applications to Namecheap
 on:
   workflow_dispatch:
+  workflow_run:
+    workflows: ['Validate Landshop Foundation']
+    types: [completed]
 permissions:
   contents: read
 concurrency:
@@ -8,11 +11,41 @@ concurrency:
   cancel-in-progress: false
 jobs:
   build_and_release:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     environment: landshop-production
     timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      - name: Verify authorized Namecheap production connection
+        env:
+          PUBLIC_URL: ${{ vars.LANDSHOP_SUPABASE_URL }}
+          PUBLIC_KEY: ${{ vars.LANDSHOP_SUPABASE_PUBLISHABLE_KEY }}
+          SSH_HOST: ${{ secrets.LANDSHOP_SSH_HOST }}
+          SSH_USER: ${{ secrets.LANDSHOP_SSH_USER }}
+          SSH_KEY: ${{ secrets.LANDSHOP_SSH_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.LANDSHOP_SSH_KNOWN_HOSTS }}
+          WEBSITE_APPROOT: ${{ secrets.LANDSHOP_WEBSITE_APPROOT }}
+          PORTAL_APPROOT: ${{ secrets.LANDSHOP_PORTAL_APPROOT }}
+          DASHBOARD_APPROOT: ${{ secrets.LANDSHOP_DASHBOARD_APPROOT }}
+          CPANEL_ROUTED: ${{ vars.LANDSHOP_CPANEL_APPS_ROUTED }}
+        run: |
+          set -euo pipefail
+          missing=()
+          for name in PUBLIC_URL PUBLIC_KEY SSH_HOST SSH_USER SSH_KEY SSH_KNOWN_HOSTS WEBSITE_APPROOT PORTAL_APPROOT DASHBOARD_APPROOT; do
+            if [ -z "${!name:-}" ]; then missing+=("$name"); fi
+          done
+          if [ "${#missing[@]}" -gt 0 ]; then
+            printf '::error::Missing hosting configuration: %s\n' "${missing[*]}"
+            exit 1
+          fi
+          if [ "$CPANEL_ROUTED" != "true" ]; then
+            echo "::error::cPanel Setup Node.js App URLs/startup files must be verified and LANDSHOP_CPANEL_APPS_ROUTED=true."
+            exit 1
+          fi
+          [[ "$PUBLIC_URL" == https://iwkfagzkogzidrbbezds.supabase.co ]] || { echo '::error::Incorrect Landshop Supabase project'; exit 1; }
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
