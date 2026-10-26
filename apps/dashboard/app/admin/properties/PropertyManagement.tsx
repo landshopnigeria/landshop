@@ -1,5 +1,6 @@
 'use client';
 import {useState} from 'react';
+import Link from 'next/link';
 import {createBrowserClient} from '@supabase/ssr';
 
 type Property={id:string;title:string;property_type:string;status:string;amount_kobo:number|null;created_by:string|null};
@@ -64,7 +65,7 @@ export default function PropertyManagement({initial,currentUserId,canApprove}:{i
    {!items.length?<p>No verified inventory available.</p>:<div style={{overflowX:'auto'}}><table style={{width:'100%',borderCollapse:'collapse'}}>
     <thead><tr>{['Property','Type','Status','Price','Created by'].map(x=><th key={x} style={{textAlign:'left',padding:12,borderBottom:'1px solid #ddd'}}>{x}</th>)}</tr></thead>
     <tbody>{items.map(p=><tr key={p.id}>
-     <td style={{padding:12,borderBottom:'1px solid #eee'}}>{p.title}</td><td style={{padding:12}}>{p.property_type}</td>
+     <td style={{padding:12,borderBottom:'1px solid #eee'}}><Link href={'/admin/properties/'+p.id}>{p.title}</Link></td><td style={{padding:12}}>{p.property_type}</td>
      <td style={{padding:12}}>{p.status}</td>
      <td style={{padding:12}}>{p.amount_kobo===null?'Price on request':(p.amount_kobo/100).toLocaleString('en-NG',{style:'currency',currency:'NGN'})}</td>
      <td style={{padding:12}}>{p.created_by===currentUserId?'You':'Landshop staff'}</td>
