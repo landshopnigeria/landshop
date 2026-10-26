@@ -76,6 +76,7 @@ jobs:
         run: bash scripts/package-landshop-standalone.sh
       - name: Prepare trusted SSH
         env:
+          SSH_PORT: ${{ vars.LANDSHOP_SSH_PORT || '21098' }}
           SSH_KEY: ${{ secrets.LANDSHOP_SSH_KEY }}
           KNOWN_HOSTS: ${{ secrets.LANDSHOP_SSH_KNOWN_HOSTS }}
           SSH_HOST: ${{ secrets.LANDSHOP_SSH_HOST }}
@@ -99,6 +100,7 @@ jobs:
           chmod 600 "$HOME/.ssh/known_hosts"
       - name: Upload verified release to existing Passenger applications
         env:
+          SSH_PORT: ${{ vars.LANDSHOP_SSH_PORT || '21098' }}
           SSH_HOST: ${{ secrets.LANDSHOP_SSH_HOST }}
           SSH_USER: ${{ secrets.LANDSHOP_SSH_USER }}
           WEBSITE_ROOT: ${{ secrets.LANDSHOP_WEBSITE_APPROOT }}
