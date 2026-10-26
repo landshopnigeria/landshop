@@ -4,6 +4,7 @@ on:
     paths:
       - 'apps/**'
       - 'services/**'
+      - 'scripts/**'
       - 'packages/**'
       - 'package.json'
       - '.github/workflows/validate-foundation.yml'
@@ -29,10 +30,45 @@ jobs:
           NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: build-only-placeholder
           NEXT_PUBLIC_PORTAL_URL: https://portal.landshopnigeria.com
           NEXT_PUBLIC_APP_URL: https://app.landshopnigeria.com
+          NEXT_PUBLIC_LANDSHOP_RELEASE_SHA: ${{ github.sha }}
         run: |
           npm run build -w @landshop/website
           npm run build -w @landshop/portal
           npm run build -w @landshop/dashboard
+      - name: Verify standalone cPanel release bundles and Node startup
+        env:
+          LANDSHOP_RELEASE_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          bash scripts/package-landshop-standalone.sh
+          for app in website portal dashboard; do
+            PORT=39519 HOSTNAME=127.0.0.1 node "release/$app/server.js" >"/tmp/landshop-$app.log" 2>&1 &
+            pid=$!
+            ready=false
+            for attempt in $(seq 1 35); do
+              if curl -fsS --max-time 2 "http://127.0.0.1:39519/api/release-health" > "/tmp/landshop-$app.json"; then
+                ready=true
+                break
+              fi
+              if ! kill -0 "$pid" 2>/dev/null; then break; fi
+              sleep 1
+            done
+            if [ "$ready" != true ]; then
+              cat "/tmp/landshop-$app.log"
+              exit 1
+            fi
+            SERVICE="landshop-$app" python3 - <<'PY'
+          import json,os
+          with open('/tmp/landshop-'+os.environ['SERVICE'].split('-')[1]+'.json') as file:
+              result=json.load(file)
+          assert result['service']==os.environ['SERVICE']
+          assert result['status']=='serving-nextjs'
+          assert result['commit']==os.environ['LANDSHOP_RELEASE_SHA']
+          PY
+            kill "$pid" || true
+            wait "$pid" || true
+            echo "Standalone runtime startup verified for $app"
+          done
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
