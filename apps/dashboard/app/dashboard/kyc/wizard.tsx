@@ -42,7 +42,7 @@ export default function KycWizard({userId,existing}:{userId:string;existing:Exis
  async function save(){
   setBusy(true);setMessage('');
   const db=supabase();
-  const metadata={fullName:name.trim(),phone:phone.trim(),address:address.trim(),state:state.trim(),city:city.trim(),companyName:company.trim(),rcNumber:rc.trim()};
+  const metadata={fullName:name.trim(),phone:phone.trim(),address:address.trim(),state:state.trim(),city:city.trim(),companyName:company.trim(),rcNumber:rc.trim(),verificationConsent:consent};
   try{
    const {data:{user},error:authError}=await db.auth.getUser();
    if(authError||user?.id!==userId)throw Error('Your session has expired. Sign in again.');
@@ -131,7 +131,7 @@ export default function KycWizard({userId,existing}:{userId:string;existing:Exis
     <p><strong>Account type:</strong> {kind}</p><p><strong>Legal name:</strong> {name||'Not provided'}</p>
     <p><strong>Location:</strong> {city}, {state}</p>
     <p><strong>Documents selected:</strong> {Object.values(docs).filter(Boolean).length}. Existing documents may also be present in an earlier draft.</p>
-    <label><input type="checkbox" checked={consent} onChange={e=>setConsent(e.target.checked)}/> I consent to Landshop processing my submitted identity documents for the stated verification purpose and acknowledge the privacy notice.</label>
+    <label><input type="checkbox" checked={consent} onChange={e=>setConsent(e.target.checked)}/> I consent to Landshop processing my submitted identity documents for the stated verification purpose and acknowledge the <a href="https://www.landshopnigeria.com/privacy-policy" target="_blank" rel="noopener noreferrer">privacy policy</a>.</label>
     <p>Submitting KYC does not automatically activate investment or financial transactions. Review is required.</p>
    </div>}
    <p aria-live="polite" role="status" style={{color:'#a3491a'}}>{message}</p>
