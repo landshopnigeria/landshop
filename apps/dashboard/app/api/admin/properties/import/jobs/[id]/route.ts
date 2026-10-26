@@ -8,6 +8,9 @@ export async function GET(request:NextRequest,{params}:{params:Promise<{id:strin
  const {id}=await params;
  if(!/^[0-9a-f-]{36}$/i.test(id))
   return NextResponse.json({error:'Invalid job reference'},{status:400,headers});
+ const {data:record,error:recordError}=await auth.db.from('property_import_jobs')
+   .select('worker_job_id').eq('worker_job_id',id).eq('created_by',auth.user.id).maybeSingle();
+ if(recordError||!record)return NextResponse.json({error:'Job not found or access denied'},{status:404,headers});
  const worker=process.env.LANDSHOP_INTERNAL_WORKER_URL,token=process.env.LANDSHOP_INTERNAL_WORKER_TOKEN;
  if(!worker||!token)return NextResponse.json({error:'Worker unavailable'},{status:503,headers});
  try{
