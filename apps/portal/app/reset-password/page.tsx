@@ -10,7 +10,7 @@ export default function ResetPassword(){
     event.preventDefault();setBusy(true);setMessage('');
     try{
       const {error}=await browserSupabase().auth.resetPasswordForEmail(email,{
-        redirectTo:'https://portal.landshopnigeria.com/update-password'
+        redirectTo:'https://portal.landshopnigeria.com/auth/callback?type=recovery'
       });
       if(error) throw error;
       setMessage('If this address is registered, a recovery email will arrive shortly.');
