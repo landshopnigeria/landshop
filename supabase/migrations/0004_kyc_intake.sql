@@ -61,11 +61,25 @@ begin
      if old.status <> 'draft' or new.status not in ('draft','submitted') then
        raise exception 'Only draft KYC can be submitted';
      end if;
-     if new.status='submitted' and
-       not exists(select 1 from public.kyc_documents d
-         where d.submission_id=old.id and d.applicant_id=old.applicant_id
-           and d.document_type='government_id') then
-       raise exception 'Identity document is required';
+     if new.status='submitted' then
+       if coalesce(new.metadata->>'verificationConsent','false') <> 'true' then
+         raise exception 'Explicit identity verification consent is required';
+       end if;
+       if exists(
+         select 1 from (
+           select unnest(case when new.kind='company' then
+             array['government_id','portrait','utility_bill','cac_certificate']::text[]
+           else array['government_id','portrait','utility_bill']::text[] end) as required
+         ) req
+         where not exists(
+           select 1 from public.kyc_documents d
+           join storage.objects o on o.bucket_id='landshop-kyc' and o.name=d.object_path
+           where d.submission_id=old.id and d.applicant_id=old.applicant_id
+             and d.document_type=req.required
+         )
+       ) then
+         raise exception 'Missing required verified document uploads';
+       end if;
      end if;
    end if;
  end if;
