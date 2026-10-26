@@ -1,0 +1,72 @@
+name: Publish Landshop Recovery Pages to Namecheap
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: landshop-namecheap-recovery
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: landshop-production
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure authenticated SSH connection
+        env:
+          SSH_KEY: ${{ secrets.LANDSHOP_SSH_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.LANDSHOP_SSH_KNOWN_HOSTS }}
+          SSH_HOST: ${{ secrets.LANDSHOP_SSH_HOST }}
+          SSH_USER: ${{ secrets.LANDSHOP_SSH_USER }}
+          WWW_ROOT: ${{ secrets.LANDSHOP_WWW_DOCROOT }}
+          PORTAL_ROOT: ${{ secrets.LANDSHOP_PORTAL_DOCROOT }}
+        run: |
+          set -euo pipefail
+          for name in SSH_KEY SSH_KNOWN_HOSTS SSH_HOST SSH_USER WWW_ROOT PORTAL_ROOT; do
+            if [ -z "${!name}" ]; then echo "::error::Missing required secret $name"; exit 1; fi
+          done
+          for root in "$WWW_ROOT" "$PORTAL_ROOT"; do
+            [[ "$root" = /* && "$root" != / && "$root" != *".."* ]] || { echo "::error::Unsafe document root"; exit 1; }
+          done
+          if [[ "$WWW_ROOT" = "$PORTAL_ROOT" ]]; then echo "::error::Website and portal document roots must differ"; exit 1; fi
+          install -m 700 -d "$HOME/.ssh"
+          printf '%s\n' "$SSH_KEY" > "$HOME/.ssh/id_ed25519"
+          chmod 600 "$HOME/.ssh/id_ed25519"
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > "$HOME/.ssh/known_hosts"
+          chmod 600 "$HOME/.ssh/known_hosts"
+      - name: Back up and deploy two entry pages only
+        env:
+          SSH_HOST: ${{ secrets.LANDSHOP_SSH_HOST }}
+          SSH_USER: ${{ secrets.LANDSHOP_SSH_USER }}
+          WWW_ROOT: ${{ secrets.LANDSHOP_WWW_DOCROOT }}
+          PORTAL_ROOT: ${{ secrets.LANDSHOP_PORTAL_DOCROOT }}
+        run: |
+          set -euo pipefail
+          SSH=(-o BatchMode=yes -o StrictHostKeyChecking=yes -o ConnectTimeout=20)
+          remote="$SSH_USER@$SSH_HOST"
+          for site in website portal; do
+            if [ "$site" = website ]; then root="$WWW_ROOT"; else root="$PORTAL_ROOT"; fi
+            # Paths come only from owner-supplied environment secrets.
+            quoted_root=$(printf '%q' "$root")
+            backup=".landshop-backup-${GITHUB_RUN_ID}"
+            ssh "${SSH[@]}" "$remote" "set -eu; test -d $quoted_root; cd $quoted_root; mkdir -p $backup; for f in index.html style.css; do if test -f \"\$f\"; then cp -p \"\$f\" $backup/; fi; done"
+            scp "${SSH[@]}" "deploy/recovery/$site/index.html" "deploy/recovery/$site/style.css" "$remote:$root/"
+          done
+          echo "Uploaded temporary Landshop landing pages. Did not remove other website folders."
+      - name: Check homepage responses
+        run: |
+          set -euo pipefail
+          for url in https://landshopnigeria.com/ https://portal.landshopnigeria.com/; do
+            body=$(curl --max-time 25 --silent --show-error --location --fail "$url")
+            if ! grep -q 'Landshop' <<< "$body"; then
+              echo "::error::$url did not return Landshop HTML"
+              exit 1
+            fi
+            if grep -qi 'Index of /' <<< "$body"; then
+              echo "::error::$url still exposes a directory index"
+              exit 1
+            fi
+            echo "Verified $url"
+          done
