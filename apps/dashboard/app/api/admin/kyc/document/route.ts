@@ -17,7 +17,7 @@ export async function POST(request:NextRequest){
  const url=process.env.NEXT_PUBLIC_SUPABASE_URL;
  const key=process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
  if(!url||!key)return NextResponse.json({error:'Not configured'},{status:503,headers});
- let response=NextResponse.json({error:'Not authenticated'},{status:401,headers});
+ let response:NextResponse=NextResponse.json({error:'Not authenticated'},{status:401,headers});
  const db=createServerClient(url,key,{
    cookieOptions:{domain:'.landshopnigeria.com',path:'/',sameSite:'lax',secure:true},
    cookies:{
