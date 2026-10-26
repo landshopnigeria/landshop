@@ -1,0 +1,50 @@
+name: Prepare Landshop cPanel Release Archives
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  prepare:
+    environment: landshop-production
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify non-secret Supabase browser configuration
+        env:
+          PUBLIC_URL: ${{ vars.LANDSHOP_SUPABASE_URL }}
+          PUBLIC_KEY: ${{ vars.LANDSHOP_SUPABASE_PUBLISHABLE_KEY }}
+        run: |
+          set -euo pipefail
+          if [ "$PUBLIC_URL" != "https://iwkfagzkogzidrbbezds.supabase.co" ]; then
+            echo "::error::Configure the Landshop Supabase URL in the GitHub production environment"
+            exit 1
+          fi
+          if [[ "$PUBLIC_KEY" != sb_publishable_* ]]; then
+            echo "::error::Configure the active Landshop Supabase publishable key as a GitHub environment variable"
+            exit 1
+          fi
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install and build all applications
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ vars.LANDSHOP_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ vars.LANDSHOP_SUPABASE_PUBLISHABLE_KEY }}
+          NEXT_PUBLIC_LANDSHOP_RELEASE_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          npm install --no-audit --no-fund
+          npm run build -w @landshop/website
+          npm run build -w @landshop/portal
+          npm run build -w @landshop/dashboard
+      - name: Prepare cPanel Passenger deployment archives
+        env:
+          LANDSHOP_RELEASE_SHA: ${{ github.sha }}
+        run: bash scripts/package-landshop-standalone.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: landshop-namecheap-release-${{ github.sha }}
+          path: release-archives/
+          if-no-files-found: error
+          retention-days: 7
