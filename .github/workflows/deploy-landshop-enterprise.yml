@@ -31,7 +31,7 @@ jobs:
           WEBSITE_APPROOT: ${{ secrets.LANDSHOP_WEBSITE_APPROOT || vars.LANDSHOP_WEBSITE_APPROOT || '/home/maleghif/landshop-website' }}
           PORTAL_APPROOT: ${{ secrets.LANDSHOP_PORTAL_APPROOT || vars.LANDSHOP_PORTAL_APPROOT || '/home/maleghif/landshop-portal' }}
           DASHBOARD_APPROOT: ${{ secrets.LANDSHOP_DASHBOARD_APPROOT || vars.LANDSHOP_DASHBOARD_APPROOT || '/home/maleghif/landshop-app' }}
-          CPANEL_ROUTED: ${{ vars.LANDSHOP_CPANEL_APPS_ROUTED || secrets.LANDSHOP_CPANEL_APPS_ROUTED }}
+          CPANEL_ROUTED: ${{ vars.LANDSHOP_CPANEL_APPS_ROUTED || secrets.LANDSHOP_CPANEL_APPS_ROUTED || 'true' }}
         run: |
           set -euo pipefail
           missing=()
