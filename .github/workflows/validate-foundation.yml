@@ -1,6 +1,7 @@
 name: Validate Landshop Foundation
 on:
   push:
+    branches: [main]
     paths:
       - 'apps/**'
       - 'services/**'
