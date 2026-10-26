@@ -21,8 +21,8 @@ jobs:
           ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       - name: Verify authorized Namecheap production connection
         env:
-          PUBLIC_URL: ${{ vars.LANDSHOP_SUPABASE_URL }}
-          PUBLIC_KEY: ${{ vars.LANDSHOP_SUPABASE_PUBLISHABLE_KEY }}
+          PUBLIC_URL: ${{ vars.LANDSHOP_SUPABASE_URL || 'https://iwkfagzkogzidrbbezds.supabase.co' }}
+          PUBLIC_KEY: ${{ vars.LANDSHOP_SUPABASE_PUBLISHABLE_KEY || 'sb_publishable_Sr9kTfUUoqRY_D0f65V2Iw_nCsES8NC' }}
           SSH_HOST: ${{ secrets.LANDSHOP_SSH_HOST }}
           SSH_PORT: ${{ vars.LANDSHOP_SSH_PORT || '21098' }}
           SSH_USER: ${{ secrets.LANDSHOP_SSH_USER }}
@@ -67,8 +67,8 @@ jobs:
           npm run build -w @landshop/portal
           npm run build -w @landshop/dashboard
         env:
-          NEXT_PUBLIC_SUPABASE_URL: ${{ vars.LANDSHOP_SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ vars.LANDSHOP_SUPABASE_PUBLISHABLE_KEY }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ vars.LANDSHOP_SUPABASE_URL || 'https://iwkfagzkogzidrbbezds.supabase.co' }}
+          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ vars.LANDSHOP_SUPABASE_PUBLISHABLE_KEY || 'sb_publishable_Sr9kTfUUoqRY_D0f65V2Iw_nCsES8NC' }}
           NEXT_PUBLIC_LANDSHOP_RELEASE_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
       - name: Package standalone releases
         env:
