@@ -33,7 +33,7 @@ using (public.landshop_property_editor((select auth.uid()),false));
 drop policy if exists property_private_staff_read on storage.objects;
 create policy property_private_staff_read on storage.objects for select to authenticated using (
  bucket_id='landshop-property-private'
- and public.landshop_property_editor((select auth.uid()),false)
+ and public.landshop_property_editor((select auth.uid()),true)
 );
 
 drop policy if exists property_private_staff_upload on storage.objects;
