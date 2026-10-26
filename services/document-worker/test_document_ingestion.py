@@ -37,6 +37,13 @@ class BulkImportTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             parse_document('imports.zip',buf.getvalue())
 
+    def test_office_zip_bomb_ratio(self):
+        data=io.BytesIO()
+        with zipfile.ZipFile(data,'w',compression=zipfile.ZIP_DEFLATED) as z:
+            z.writestr('xl/worksheets/sheet1.xml','x'*200000)
+        with self.assertRaises(ValueError):
+            parse_document('unsafe.xlsx',data.getvalue())
+
     def test_docx_does_not_auto_publish(self):
         from docx import Document
         doc=Document();doc.add_paragraph('A verified estate listing is required.')
