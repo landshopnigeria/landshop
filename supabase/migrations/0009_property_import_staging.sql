@@ -29,7 +29,7 @@ begin
       v_errors:=v_errors || '"Invalid title"'::jsonb;end if;
    if v_type not in ('land','house','apartment','commercial','shortlet') then
       v_errors:=v_errors || '"Invalid property type"'::jsonb;end if;
-   if v_price<>'' and (v_price !~ '^[0-9]{1,12}(\\.[0-9]{1,2})?$' or v_price::numeric>900000000000) then
+   if v_price<>'' and (v_price !~ '^[0-9]{1,12}([.][0-9]{1,2})?$' or v_price::numeric>900000000000) then
       v_errors:=v_errors || '"Invalid NGN price"'::jsonb;end if;
    if exists(select 1 from public.properties p where lower(p.title)=lower(v_title)) then
       v_errors:=v_errors || '"Potential duplicate title"'::jsonb;end if;
