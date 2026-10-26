@@ -71,7 +71,7 @@ export default function ApplicationForm({slug}:{slug:string}){
  }
  return <main className="application-scene"><div className="application-wrap"><div className="application-sheet">
    <div className="application-head">
-    <div className="application-logos"><strong className="landshop-wordmark">Landshop</strong><span className="separator"/> <strong className="product-mark">{definition.brand}</strong></div>
+    <div className="application-logos"><img src={'/media/brand-'+slug+'.webp'} alt={'Official Landshop and '+definition.brand+' product logo'} style={{maxWidth:'100%',maxHeight:88,objectFit:'contain'}}/></div>
     <h1>{definition.title}</h1><p>All required (*) information must be completed. Product-specific terms are subject to verified offers.</p>
    </div>
    <div className="application-body">
