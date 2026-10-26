@@ -84,6 +84,17 @@ begin
     ) then
       raise exception 'Missing required KYC documents';
     end if;
+    if exists(
+      select 1 from public.kyc_documents d
+      where d.submission_id=p_submission_id
+      and not exists(
+        select 1 from public.audit_events a
+        where a.actor_id=v_reviewer and a.event_type='kyc.document_access'
+          and a.metadata->>'document_id'=d.id::text
+      )
+    ) then
+      raise exception 'Reviewer must request access to all submitted KYC documents';
+    end if;
   end if;
 
   update public.kyc_submissions
