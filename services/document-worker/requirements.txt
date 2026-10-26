@@ -5,3 +5,5 @@ openpyxl==3.1.5
 python-docx==1.2.0
 pypdf==6.1.2
 defusedxml==0.7.1
+celery[redis]==5.5.3
+supabase==2.22.0
