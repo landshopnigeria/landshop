@@ -1,0 +1,58 @@
+{
+  "id": "landshop.property-import.v1",
+  "name": "Property import with mandatory approval",
+  "status": "definition_only",
+  "trigger": {
+    "event": "property.uploaded",
+    "requires": [
+      "staff_role:property_admin",
+      "private_object_storage"
+    ]
+  },
+  "steps": [
+    {
+      "id": "scan",
+      "type": "file.malware_scan"
+    },
+    {
+      "id": "extract",
+      "type": "document.parse",
+      "formats": [
+        "csv",
+        "xlsx",
+        "xml",
+        "json",
+        "pdf",
+        "docx",
+        "zip",
+        "image"
+      ]
+    },
+    {
+      "id": "validate",
+      "type": "property.schema_validate"
+    },
+    {
+      "id": "dedup",
+      "type": "property.match_duplicates"
+    },
+    {
+      "id": "review",
+      "type": "approval.human",
+      "role": "property_admin"
+    },
+    {
+      "id": "publish",
+      "type": "property.publish",
+      "requires": [
+        "review.approved",
+        "title_evidence_verified",
+        "listing_media_approved"
+      ]
+    }
+  ],
+  "onFailure": {
+    "deadLetter": true,
+    "alert": "support@landshopnigeria.com"
+  }
+}
