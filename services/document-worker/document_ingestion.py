@@ -68,7 +68,7 @@ def _validate_office_archive(payload: bytes) -> None:
             if len(entries)>500: raise ValueError('Office document contains too many parts')
             total=0
             for entry in entries:
-                path=PurePosixPath(entry.filename.replace('\\\\','/'))
+                path=PurePosixPath(entry.filename.replace(chr(92),'/'))
                 if path.is_absolute() or '..' in path.parts:
                     raise ValueError('Unsafe Office document member')
                 if entry.flag_bits&1: raise ValueError('Encrypted Office document not allowed')
