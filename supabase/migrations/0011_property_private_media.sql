@@ -96,7 +96,7 @@ begin
  update public.property_assets
  set status=v_status,verified_by=v_user,verified_at=now(),reviewer_note=btrim(p_reason)
  where id=p_asset;
- if p_approve then
+ if p_approve and v_asset.kind <> 'video' then
    insert into public.property_verification_evidence(property_id,evidence_type,object_path,verified_by,reviewer_note)
    values(v_asset.property_id,case when v_asset.kind='property_image' then 'approved_property_image'
    else v_asset.kind end,v_asset.object_path,v_user,btrim(p_reason))
