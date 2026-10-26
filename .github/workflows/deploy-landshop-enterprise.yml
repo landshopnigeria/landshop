@@ -68,18 +68,11 @@ jobs:
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ vars.LANDSHOP_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ vars.LANDSHOP_SUPABASE_PUBLISHABLE_KEY }}
+          NEXT_PUBLIC_LANDSHOP_RELEASE_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
       - name: Package standalone releases
-        run: |
-          set -euo pipefail
-          for app in website portal dashboard; do
-            test -s "apps/$app/.next/standalone/apps/$app/server.js" || { echo "::error::Missing standalone $app server";exit 1; }
-            mkdir -p "release/$app"
-            cp -a "apps/$app/.next/standalone/." "release/$app/"
-            mkdir -p "release/$app/apps/$app/.next"
-            cp -a "apps/$app/.next/static" "release/$app/apps/$app/.next/static"
-            cp -a "apps/$app/public" "release/$app/apps/$app/public"
-            printf "require('./apps/$app/server.js');\n" > "release/$app/server.js"
-          done
+        env:
+          LANDSHOP_RELEASE_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+        run: bash scripts/package-landshop-standalone.sh
       - name: Prepare trusted SSH
         env:
           SSH_KEY: ${{ secrets.LANDSHOP_SSH_KEY }}
@@ -123,12 +116,22 @@ jobs:
             rsync -az --exclude='tmp/' --exclude='.env*' -e 'ssh -o BatchMode=yes -o StrictHostKeyChecking=yes'               "release/$app/" "$target:$root/"
             ssh "${ssh_args[@]}" "$target" "touch $remote_path/tmp/restart.txt"
           done
-      - name: Verify three public domains
+      - name: Verify all three domains serve the newly published Next.js applications
+        env:
+          RELEASE_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
         run: |
           set -euo pipefail
-          for url in https://landshopnigeria.com/ https://portal.landshopnigeria.com/ https://app.landshopnigeria.com/;do
-            code=$(curl -L -sS --max-time 35 -o /dev/null -w '%{http_code}' "$url")
-            if [ "$code" != 200 ] && [ "$code" != 302 ] && [ "$code" != 307 ];then
-              echo "::error::$url returned HTTP $code";exit 1
-            fi
+          urls=(https://landshopnigeria.com https://portal.landshopnigeria.com https://app.landshopnigeria.com)
+          apps=(website portal dashboard)
+          for i in 0 1 2; do
+            url="${urls[$i]}/api/release-health"
+            result=$(curl --fail-with-body -sS -L --max-time 40 -H 'Cache-Control: no-cache' "$url")
+            ACTUAL="$result" SERVICE="landshop-${apps[$i]}" SHA="$RELEASE_SHA" python3 - <<'PY'
+          import json,os
+          body=json.loads(os.environ['ACTUAL'])
+          assert body.get('service')==os.environ['SERVICE'], 'Wrong app or static fallback is serving the domain'
+          assert body.get('commit')==os.environ['SHA'], 'Domain is serving an older release'
+          assert body.get('status')=='serving-nextjs', 'Next.js startup health was not confirmed'
+          PY
+            echo "Confirmed exact Next.js release for ${urls[$i]}"
           done
