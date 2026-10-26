@@ -30,23 +30,7 @@ begin
    if v_type not in ('land','house','apartment','commercial','shortlet') then
       v_errors:=v_errors || '"Invalid property type"'::jsonb;end if;
    if v_price<>'' then
-     if v_price !~ '^[0-9]{1,12}([.][0-9]{1,2})?
-   if exists(select 1 from public.properties p where lower(p.title)=lower(v_title)) then
-      v_errors:=v_errors || '"Potential duplicate title"'::jsonb;end if;
-   insert into public.property_import_rows(batch_id,row_number,raw_data,normalized,errors)
-    values(v_batch,v_index,v_record,jsonb_build_object(
-      'title',v_title,'property_type',v_type,'price',v_price,
-      'state',left(coalesce(v_record->>'state',''),100),
-      'city',left(coalesce(v_record->>'city',''),100)),v_errors);
- end loop;
- update public.property_import_batches set status='validated' where id=v_batch;
- insert into public.audit_events(actor_id,event_type,metadata)
- values(v_user,'property.import.staged',jsonb_build_object('batch_id',v_batch,'row_count',v_index));
- return v_batch;
-end $$;
-revoke all on function public.landshop_property_import_stage(text,jsonb) from public,anon;
-grant execute on function public.landshop_property_import_stage(text,jsonb) to authenticated;
- then
+     if v_price !~ '^[0-9]{1,12}([.][0-9]{1,2})?$' then
        v_errors:=v_errors || '"Invalid NGN price"'::jsonb;
      elsif v_price::numeric>900000000000 then
        v_errors:=v_errors || '"Invalid NGN price"'::jsonb;
