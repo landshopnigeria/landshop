@@ -1,0 +1,72 @@
+{
+  "id": "landshop.lead-nurture.v1",
+  "name": "Landshop consented lead follow-up",
+  "status": "definition_only",
+  "trigger": {
+    "event": "lead.created",
+    "requires": [
+      "contact_consent",
+      "verified_contact_method"
+    ]
+  },
+  "steps": [
+    {
+      "id": "welcome",
+      "type": "notification.send",
+      "template": "lead.welcome",
+      "idempotencyKey": "lead:{leadId}:welcome"
+    },
+    {
+      "id": "wait_2_days",
+      "type": "delay",
+      "duration": "P2D"
+    },
+    {
+      "id": "check_conversion_2",
+      "type": "condition",
+      "if": "lead.status in ['closed','won','do_not_contact'] OR consent.revoked",
+      "then": "stop",
+      "else": "follow_up_2"
+    },
+    {
+      "id": "follow_up_2",
+      "type": "notification.send",
+      "template": "lead.followup.day2"
+    },
+    {
+      "id": "wait_3_days",
+      "type": "delay",
+      "duration": "P3D"
+    },
+    {
+      "id": "check_conversion_5",
+      "type": "condition",
+      "if": "lead.status in ['closed','won','do_not_contact'] OR consent.revoked",
+      "then": "stop",
+      "else": "follow_up_5"
+    },
+    {
+      "id": "follow_up_5",
+      "type": "notification.send",
+      "template": "lead.followup.day5"
+    },
+    {
+      "id": "handoff",
+      "type": "task.create",
+      "assigneeRole": "sales",
+      "slaHours": 24
+    }
+  ],
+  "onFailure": {
+    "retry": "exponential",
+    "maxAttempts": 5,
+    "deadLetter": true,
+    "alert": "support@landshopnigeria.com"
+  },
+  "limits": {
+    "quietHours": "20:00-08:00",
+    "timezone": "Africa/Lagos",
+    "allowOptOut": true,
+    "frequencyCapPerWeek": 3
+  }
+}
