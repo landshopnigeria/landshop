@@ -23,7 +23,7 @@ export default async function Dashboard(){
    <p>Current status: {profile?.kyc_status||'not started'}</p>
    <p>Secure KYC submission and review are being implemented.</p>
   </section>:<section style={{padding:28,border:'1px solid #cce5d8',borderRadius:20,background:'white'}}>
-   <h2>Account approved</h2><p>Property, mortgage, investment and referral features are being activated.</p>
-  </section>}
+   <h2>Account approved</h2><p>Your account is approved. You can start a new application draft while the remaining services are being activated.</p>
+  <p><a href="/dashboard/applications/new" style={{color:'#087f69'}}>Start New Application →</a></p></section>}
  </main>;
 }
