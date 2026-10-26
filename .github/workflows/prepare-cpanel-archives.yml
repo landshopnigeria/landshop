@@ -1,6 +1,9 @@
 name: Prepare Landshop cPanel Release Archives
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/prepare-cpanel-archives.yml'
 permissions:
   contents: read
 jobs:
@@ -12,8 +15,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: Verify non-secret Supabase browser configuration
         env:
-          PUBLIC_URL: ${{ vars.LANDSHOP_SUPABASE_URL }}
-          PUBLIC_KEY: ${{ vars.LANDSHOP_SUPABASE_PUBLISHABLE_KEY }}
+          PUBLIC_URL: ${{ vars.LANDSHOP_SUPABASE_URL || 'https://iwkfagzkogzidrbbezds.supabase.co' }}
+          PUBLIC_KEY: ${{ vars.LANDSHOP_SUPABASE_PUBLISHABLE_KEY || 'sb_publishable_Sr9kTfUUoqRY_D0f65V2Iw_nCsES8NC' }}
         run: |
           set -euo pipefail
           if [ "$PUBLIC_URL" != "https://iwkfagzkogzidrbbezds.supabase.co" ]; then
@@ -29,8 +32,8 @@ jobs:
           node-version: '22'
       - name: Install and build all applications
         env:
-          NEXT_PUBLIC_SUPABASE_URL: ${{ vars.LANDSHOP_SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ vars.LANDSHOP_SUPABASE_PUBLISHABLE_KEY }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ vars.LANDSHOP_SUPABASE_URL || 'https://iwkfagzkogzidrbbezds.supabase.co' }}
+          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ vars.LANDSHOP_SUPABASE_PUBLISHABLE_KEY || 'sb_publishable_Sr9kTfUUoqRY_D0f65V2Iw_nCsES8NC' }}
           NEXT_PUBLIC_LANDSHOP_RELEASE_SHA: ${{ github.sha }}
         run: |
           set -euo pipefail
