@@ -30,6 +30,12 @@ export async function POST(request:NextRequest){
   });
   if(!response.ok)return NextResponse.json({error:'Import worker rejected job'},{status:503,headers});
   const result=await response.json();
+  if(typeof result.job_id!=='string'||!/^[0-9a-f-]{36}$/i.test(result.job_id))
+    return NextResponse.json({error:'Worker returned an invalid job ID'},{status:503,headers});
+  const {error:ledgerError}=await auth.db.rpc('landshop_import_register_job',{
+    p_job:result.job_id,p_path:path
+  });
+  if(ledgerError)return NextResponse.json({error:'Job queued but audit registration failed. Contact support.'},{status:503,headers});
   return NextResponse.json({job_id:result.job_id,status:'queued'},{headers});
  }catch{return NextResponse.json({error:'Import worker unavailable'},{status:503,headers})}
 }
