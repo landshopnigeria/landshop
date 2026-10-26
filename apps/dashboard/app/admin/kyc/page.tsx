@@ -1,4 +1,5 @@
 import {redirect} from 'next/navigation';
+import Link from 'next/link';
 import {createServerClient} from '@supabase/ssr';
 import {cookies} from 'next/headers';
 
@@ -37,7 +38,7 @@ export default async function KycQueue(){
    <div style={{overflowX:'auto'}}><table style={{borderCollapse:'collapse',width:'100%',background:'white'}}>
     <thead><tr>{['Reference','Account type','Submitted','Status'].map(label=><th key={label} style={{padding:14,textAlign:'left',borderBottom:'1px solid #ddd'}}>{label}</th>)}</tr></thead>
     <tbody>{submissions.map(s=><tr key={s.id}>
-      <td style={{padding:14,borderBottom:'1px solid #eee'}}>{s.id.substring(0,8)}…</td>
+      <td style={{padding:14,borderBottom:'1px solid #eee'}}><Link href={'/admin/kyc/'+s.id}>{s.id.substring(0,8)}… Review</Link></td>
       <td style={{padding:14,borderBottom:'1px solid #eee'}}>{s.kind}</td>
       <td style={{padding:14,borderBottom:'1px solid #eee'}}>{new Date(s.created_at).toLocaleDateString('en-NG')}</td>
       <td style={{padding:14,borderBottom:'1px solid #eee'}}>{s.status}</td>
