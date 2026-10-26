@@ -1,0 +1,1 @@
+import ApplicationForm from './ApplicationForm';export default async function Page({params}:{params:Promise<{kind:string}>}){const {kind}=await params;return <ApplicationForm slug={kind}/>;}
