@@ -2,6 +2,7 @@ name: Prepare Landshop cPanel Release Archives
 on:
   workflow_dispatch:
   push:
+    branches: [main]
     paths:
       - '.github/workflows/prepare-cpanel-archives.yml'
 permissions:
