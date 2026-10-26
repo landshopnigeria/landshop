@@ -3,8 +3,7 @@ import os
 from celery import Celery
 redis_url=os.getenv('LANDSHOP_REDIS_URL')
 if not redis_url:
-    # Fail fast at worker start, never run with an unknown broker.
-    redis_url='redis://127.0.0.1:6379/3'
+    raise RuntimeError('LANDSHOP_REDIS_URL is required for the isolated worker')
 celery_app=Celery('landshop_imports',broker=redis_url,backend=redis_url)
 celery_app.conf.update(
     task_serializer='json',accept_content=['json'],result_serializer='json',
