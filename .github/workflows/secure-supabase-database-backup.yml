@@ -1,9 +1,6 @@
 name: Backup Landshop Supabase Database to Private Namecheap Storage
 on:
   workflow_dispatch:
-  push:
-    branches: [engineering/forms-and-production-diagnostics-20261027]
-    paths: ['.github/workflows/secure-supabase-database-backup.yml']
 permissions:
   contents: read
 concurrency:
@@ -26,9 +23,14 @@ jobs:
           KNOWN_HOSTS: ${{ secrets.LANDSHOP_SSH_KNOWN_HOSTS || secrets.NAMECHEAP_SSH_KNOWN_HOSTS || vars.LANDSHOP_SSH_KNOWN_HOSTS }}
         run: |
           set -euo pipefail
+          missing=()
           for key in DATABASE_URL ENCRYPTION_KEY SSH_HOST SSH_USER SSH_KEY KNOWN_HOSTS; do
-            [ -n "${!key:-}" ] || { echo "::error::Missing required secure configuration: $key";exit 1; }
+            [ -n "${!key:-}" ] || missing+=("$key")
           done
+          if [ "${#missing[@]}" -gt 0 ];then
+            printf "::error::Missing encrypted-backup prerequisites: %s\n" "${missing[*]}"
+            exit 1
+          fi
           [ "${#ENCRYPTION_KEY}" -ge 20 ] || { echo "::error::Backup encryption passphrase must be at least 20 characters";exit 1; }
           [[ "$SSH_PORT" =~ ^[0-9]{1,5}$ ]] || exit 1
           case "$DATABASE_URL" in postgresql://*|postgres://*) ;; *) echo "::error::Database URL scheme must use PostgreSQL";exit 1;;esac
