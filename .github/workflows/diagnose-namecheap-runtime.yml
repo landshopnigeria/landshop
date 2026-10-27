@@ -286,7 +286,8 @@ jobs:
             status=$(curl -sSL --max-time 20 -o /dev/null -w '%{http_code}' "$origin/api/release-health" || true)
             echo "health HTTP status: $status"
             if [ "$status" = "200" ];then
-              body=$(curl -fsSL --max-time 15 -H 'Cache-Control: no-cache' "$origin/api/release-health")
+              body=$(curl -fsSL --max-time 15 -H 'Cache-Control: no-cache' "$origin/api/release-health" 2>/dev/null || true)
+              if [ -z "$body" ];then echo 'TLS or routing unavailable during second request'; continue; fi
               BODY="$body" python3 - <<'PY'
           import os,json
           try: d=json.loads(os.environ["BODY"])
