@@ -1,3 +1,4 @@
+import FAQAssistant from './FAQAssistant';
 import Link from 'next/link';
 type Product='develop'|'incubate'|'grow';
 const content={
@@ -39,7 +40,7 @@ export default function ProductPage({product}:{product:Product}){
     <small style={{letterSpacing:3,color:'#ffb15c'}}>{p.eyebrow}</small>
     <h1 style={{fontSize:'clamp(38px,6vw,78px)',lineHeight:1.04,margin:'20px 0'}}>{p.title}</h1>
     <p style={{fontSize:19,lineHeight:1.6}}>{p.summary}</p>
-    <Link href="https://portal.landshopnigeria.com" style={{display:'inline-block',background:'#fff',color:'#056247',padding:'17px 26px',borderRadius:14,textDecoration:'none',marginTop:20}}>{p.primary}</Link>
+    <Link href={'/applications?product='+product} style={{display:'inline-block',background:'#fff',color:'#056247',padding:'17px 26px',borderRadius:14,textDecoration:'none',marginTop:20}}>{p.primary}</Link>
    </div>
   </section>
   <section style={{padding:'64px 6%',display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(260px,1fr))',gap:35,alignItems:'start'}}>
@@ -49,7 +50,7 @@ export default function ProductPage({product}:{product:Product}){
     <ul style={{display:'grid',gap:17,paddingLeft:20}}>{p.features.map(f=><li key={f}>{f}</li>)}</ul>
    </div>
   </section>
-  <section style={{padding:'40px 6%',background:'#ebf5ef'}}><h2>Questions & Answers</h2><details><summary>How do I get started?</summary><p>Register through the Landshop portal, verify your email, complete KYC and speak to the relevant product specialist.</p></details><details style={{marginTop:20}}><summary>Are terms and returns guaranteed?</summary><p>No. Any price, rate, repayment term or return must be confirmed in approved product documents before you proceed.</p></details></section>
+  <section style={{background:'#ebf5ef'}}><FAQAssistant product={product}/></section>
   <footer style={{background:'#063e35',color:'#fff',padding:'50px 6%'}}>Landshop · Develop | Incubate | Grow · <a style={{color:'#fff'}} href="mailto:care@landshopnigeria.com">care@landshopnigeria.com</a></footer>
  </main>
 }
