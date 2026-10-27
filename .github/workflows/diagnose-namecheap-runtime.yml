@@ -1,6 +1,9 @@
 name: Diagnose Landshop Namecheap Production Routing
 on:
   workflow_dispatch:
+  push:
+    branches: [engineering/forms-and-production-diagnostics-20261027]
+    paths: ['.github/workflows/diagnose-namecheap-runtime.yml']
 permissions:
   contents: read
 jobs:
