@@ -71,6 +71,71 @@ jobs:
           done
           echo "=== Checks intentionally do not print environment files, keys or personal data ==="
           REMOTE
+      - name: Inspect public DNS, certificate and runtime signature without secrets
+        shell: bash
+        run: |
+          set -euo pipefail
+          for host in landshopnigeria.com www.landshopnigeria.com portal.landshopnigeria.com app.landshopnigeria.com; do
+            echo "-- Public $host --"
+            getent ahostsv4 "$host" | awk 'NR==1{print "DNS resolves: yes"; exit}' || true
+            cert=$(echo | timeout 10 openssl s_client -connect "$host:443" -servername "$host" 2>/dev/null | openssl x509 -noout -ext subjectAltName 2>/dev/null | head -c 350 || true)
+            [ -n "$cert" ] && echo "Public certificate SAN: $cert" || echo "Public certificate not retrievable"
+          done
+          for pair in "website|https://landshopnigeria.com" "portal|https://portal.landshopnigeria.com" "dashboard|https://app.landshopnigeria.com"; do
+            IFS='|' read -r app origin <<< "$pair"
+            output=$(curl -fSsL --max-time 12 -H 'Cache-Control: no-cache' "$origin/api/release-health" || true)
+            if [ -n "$output" ]; then
+              SERVICE="$app" BODY="$output" python3 - <<'PY'
+          import json,os
+          try:
+              body=json.loads(os.environ["BODY"])
+          except Exception:
+              print(os.environ["SERVICE"],"health: non-JSON upstream"); raise SystemExit(0)
+          print(os.environ["SERVICE"],"health:",{
+            k:body.get(k) for k in ("service","status","commit")})
+          PY
+            else echo "$app health response: unavailable"; fi
+          done
+      - name: Inspect CloudLinux application routing (read-only)
+        shell: bash
+        env:
+          SSH_HOST: ${{ secrets.LANDSHOP_SSH_HOST || secrets.NAMECHEAP_SSH_HOST || vars.LANDSHOP_SSH_HOST }}
+          SSH_USER: ${{ secrets.LANDSHOP_SSH_USER || secrets.NAMECHEAP_SSH_USER || vars.LANDSHOP_SSH_USER }}
+          SSH_PORT: ${{ vars.LANDSHOP_SSH_PORT || secrets.LANDSHOP_SSH_PORT || secrets.NAMECHEAP_SSH_PORT || '21098' }}
+          SSH_KEY: ${{ secrets.LANDSHOP_SSH_KEY || secrets.NAMECHEAP_SSH_PRIVATE_KEY }}
+          KNOWN_HOSTS: ${{ secrets.LANDSHOP_SSH_KNOWN_HOSTS || secrets.NAMECHEAP_SSH_KNOWN_HOSTS || vars.LANDSHOP_SSH_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          install -d -m 700 "$HOME/.ssh"
+          printf '%s\n' "$SSH_KEY" > "$HOME/.ssh/id_ed25519"
+          printf '%s\n' "$KNOWN_HOSTS" > "$HOME/.ssh/known_hosts"
+          chmod 600 "$HOME/.ssh/id_ed25519" "$HOME/.ssh/known_hosts"
+          ssh -p "$SSH_PORT" -o BatchMode=yes -o StrictHostKeyChecking=yes "$SSH_USER@$SSH_HOST" bash -s <<'REMOTE'
+          set -eu
+          for binary in /usr/bin/cloudlinux-selector /usr/local/bin/cloudlinux-selector /usr/local/cpanel/bin/uapi /usr/bin/uapi /usr/bin/node; do
+            [ -x "$binary" ] && echo "Executable available: ${binary##*/} (${binary%/*})"
+          done
+          if command -v cloudlinux-selector >/dev/null 2>&1; then
+            cloudlinux-selector get --json --interpreter nodejs --user "$USER" 2>/dev/null | python3 -c '
+          import sys,json
+          try:
+              raw=json.load(sys.stdin)
+              print("Selector result:", raw.get("result"))
+              items=raw.get("data", {}).get("apps", {}) if isinstance(raw.get("data"), dict) else raw.get("apps", {})
+              for name,item in items.items() if isinstance(items,dict) else enumerate(items):
+                  if not isinstance(item,dict): continue
+                  print("App routing:",{k:item.get(k) for k in ("app_root","app_uri","domain","startup_file","app_status","status","version","mode") if k in item})
+          except Exception as e: print("Selector output not readable")
+          ' || echo "Selector inspection not authorized"
+          else echo "CloudLinux selector command unavailable to login shell"; fi
+          for homepath in "$HOME/public_html" "$HOME/www"; do
+            if [ -d "$homepath" ]; then
+              [ -f "$homepath/.htaccess" ] && echo "Main docroot has .htaccess" || echo "Main docroot has no .htaccess"
+              [ -f "$homepath/wp-config.php" ] && echo "WordPress marker in main docroot" || true
+              [ -f "$homepath/index.php" ] && echo "PHP index in main docroot" || true
+            fi
+          done
+          REMOTE
       - name: Diagnosis limits
         run: |
           echo "If release files exist but public routes return 404, inspect the cPanel Setup Node.js App URL binding,"
