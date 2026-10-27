@@ -136,6 +136,69 @@ jobs:
             fi
           done
           REMOTE
+      - name: Inspect configured app URLs and cPanel DNS/SSL mapping (read-only)
+        shell: bash
+        env:
+          SSH_HOST: ${{ secrets.LANDSHOP_SSH_HOST || secrets.NAMECHEAP_SSH_HOST || vars.LANDSHOP_SSH_HOST }}
+          SSH_USER: ${{ secrets.LANDSHOP_SSH_USER || secrets.NAMECHEAP_SSH_USER || vars.LANDSHOP_SSH_USER }}
+          SSH_PORT: ${{ vars.LANDSHOP_SSH_PORT || secrets.LANDSHOP_SSH_PORT || secrets.NAMECHEAP_SSH_PORT || '21098' }}
+          SSH_KEY: ${{ secrets.LANDSHOP_SSH_KEY || secrets.NAMECHEAP_SSH_PRIVATE_KEY }}
+          KNOWN_HOSTS: ${{ secrets.LANDSHOP_SSH_KNOWN_HOSTS || secrets.NAMECHEAP_SSH_KNOWN_HOSTS || vars.LANDSHOP_SSH_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          install -d -m 700 "$HOME/.ssh"
+          printf '%s\n' "$SSH_KEY" > "$HOME/.ssh/id_ed25519"
+          printf '%s\n' "$KNOWN_HOSTS" > "$HOME/.ssh/known_hosts"
+          chmod 600 "$HOME/.ssh/id_ed25519" "$HOME/.ssh/known_hosts"
+          ssh -p "$SSH_PORT" -o BatchMode=yes -o StrictHostKeyChecking=yes "$SSH_USER@$SSH_HOST" bash -s <<'REMOTE'
+          set -eu
+          if command -v cloudlinux-selector >/dev/null 2>&1; then
+            cloudlinux-selector get --json --interpreter nodejs --user "$USER" 2>/dev/null | python3 -c '
+          import json,sys
+          try: data=json.load(sys.stdin)
+          except Exception: print("Selector output invalid"); raise SystemExit(0)
+          print("Selector high-level keys", list(data.keys()))
+          safe={"app_root","app_uri","domain","startup_file","app_status","status","version","mode","app_mode","app_url","root"}
+          found=0
+          def visit(o,path="",depth=0):
+           global found
+           if depth>8 or found>35: return
+           if isinstance(o,dict):
+            reduced={k:str(v)[:150] for k,v in o.items() if k in safe and not isinstance(v,(dict,list))}
+            if reduced:
+             print("Configured app:",path,reduced);found+=1
+            for k,v in o.items():
+             if isinstance(v,(dict,list)) and k not in ("env_vars","env","environment","secrets"): visit(v,path+"/"+str(k)[:30],depth+1)
+           elif isinstance(o,list):
+            for n,v in enumerate(o[:25]): visit(v,path+"/"+str(n),depth+1)
+          visit(data)
+          ' || echo "Selector result unavailable"
+          fi
+          if command -v uapi >/dev/null 2>&1; then
+            uapi --output=json DomainInfo list_domains 2>/dev/null | python3 -c '
+          import json,sys
+          try: d=json.load(sys.stdin)
+          except Exception: print("DomainInfo unavailable");raise SystemExit(0)
+          o=d.get("result",{}).get("data",{})
+          print("DomainInfo available:",bool(o))
+          if isinstance(o,dict):
+           for key in ("main_domain","sub_domains","addon_domains","parked_domains"):
+            value=o.get(key)
+            if value is not None: print("DomainInfo:",key,str(value)[:700])
+          ' || echo "DomainInfo not authorized"
+          else echo "cPanel UAPI unavailable";fi
+          REMOTE
+      - name: Identify active upstream technology without retrieving private data
+        shell: bash
+        run: |
+          for origin in https://landshopnigeria.com https://www.landshopnigeria.com https://portal.landshopnigeria.com; do
+            echo "-- Upstream markers for $origin --"
+            content=$(curl -sSL --max-time 15 "$origin/" || true)
+            [ -n "$content" ] || { echo "HTML unavailable";continue; }
+            printf '%s' "$content" | grep -qiE 'wp-content|wp-includes' && echo "WordPress asset references present" || true
+            printf '%s' "$content" | grep -q '/_next/' && echo "Next.js asset references present" || true
+            printf '%s' "$content" | grep -q 'Landshop' && echo "Landshop visible in HTML" || true
+          done
       - name: Diagnosis limits
         run: |
           echo "If release files exist but public routes return 404, inspect the cPanel Setup Node.js App URL binding,"
