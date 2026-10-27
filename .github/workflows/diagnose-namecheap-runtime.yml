@@ -199,6 +199,50 @@ jobs:
             printf '%s' "$content" | grep -q '/_next/' && echo "Next.js asset references present" || true
             printf '%s' "$content" | grep -q 'Landshop' && echo "Landshop visible in HTML" || true
           done
+      - name: Check cPanel document-root mappings and installed SSL (read-only)
+        shell: bash
+        env:
+          SSH_HOST: ${{ secrets.LANDSHOP_SSH_HOST || secrets.NAMECHEAP_SSH_HOST || vars.LANDSHOP_SSH_HOST }}
+          SSH_USER: ${{ secrets.LANDSHOP_SSH_USER || secrets.NAMECHEAP_SSH_USER || vars.LANDSHOP_SSH_USER }}
+          SSH_PORT: ${{ vars.LANDSHOP_SSH_PORT || secrets.LANDSHOP_SSH_PORT || secrets.NAMECHEAP_SSH_PORT || '21098' }}
+          SSH_KEY: ${{ secrets.LANDSHOP_SSH_KEY || secrets.NAMECHEAP_SSH_PRIVATE_KEY }}
+          KNOWN_HOSTS: ${{ secrets.LANDSHOP_SSH_KNOWN_HOSTS || secrets.NAMECHEAP_SSH_KNOWN_HOSTS || vars.LANDSHOP_SSH_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          install -d -m 700 "$HOME/.ssh"
+          printf '%s\n' "$SSH_KEY" > "$HOME/.ssh/id_ed25519"
+          printf '%s\n' "$KNOWN_HOSTS" > "$HOME/.ssh/known_hosts"
+          chmod 600 "$HOME/.ssh/id_ed25519" "$HOME/.ssh/known_hosts"
+          ssh -p "$SSH_PORT" -o BatchMode=yes -o StrictHostKeyChecking=yes "$SSH_USER@$SSH_HOST" bash -s <<'REMOTE'
+          set -eu
+          for method in "DomainInfo domains_data" "SSL installed_hosts" "SSL get_autossl_excluded_domains";do
+           echo "--- UAPI $method ---"
+           uapi --output=json $method 2>/dev/null | python3 -c '
+          import sys,json,os
+          try:
+              d=json.load(sys.stdin);r=d.get("result",{});data=r.get("data")
+          except Exception: print("UAPI data not readable");raise SystemExit(0)
+          print("status:",r.get("status"))
+          if r.get("errors"): print("API error present")
+          want=["landshopnigeria.com","www.landshopnigeria.com","portal.landshopnigeria.com","app.landshopnigeria.com"]
+          matched=0
+          def walk(obj,path="",depth=0):
+           global matched
+           if depth>9 or matched>25:return
+           if isinstance(obj,dict):
+            fields=("domain","documentroot","document_root","docroot","server_name","servername","certificate_validity","cert_status","status","is_self_signed","certificate_expiration")
+            small={k:str(v)[:130] for k,v in obj.items() if k in fields and not isinstance(v,(dict,list))}
+            if small and ("domain" in small and any(x==small["domain"] for x in want) or any(x in str(v) for v in small.values() for x in want)):
+             print("Matched domain:",path,small);matched+=1
+            for k,v in obj.items():
+             if isinstance(v,(dict,list)):walk(v,path+"/"+str(k)[:35],depth+1)
+           elif isinstance(obj,list):
+            for i,v in enumerate(obj[:80]):walk(v,path+"/"+str(i),depth+1)
+          walk(data)
+          if not matched:print("no matching domain configuration exposed")
+          ' || true
+          done
+          REMOTE
       - name: Diagnosis limits
         run: |
           echo "If release files exist but public routes return 404, inspect the cPanel Setup Node.js App URL binding,"
