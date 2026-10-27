@@ -77,11 +77,15 @@ jobs:
                 /applications/mortgage-xtra /applications/develop-inspection \
                 /applications/mortgage-xtra-inspection /calculator)
             else
-              routes=(/)
+              routes=(/ /dashboard)
             fi
             for route in "${routes[@]}";do
-              code=$(curl -sS -L --max-time 10 -o /dev/null -w '%{http_code}' \
+              code=$(curl -sS --max-time 10 -o /dev/null -w '%{http_code}' \
                 "http://127.0.0.1:39519$route")
+              if [ "$app" = "dashboard" ];then
+                # Public guests must not receive private dashboard contents.
+                case "$code" in 307|308) echo "Protected dashboard redirects unauthenticated visitor: $route";continue;; esac
+              fi
               if [ "$code" != 200 ];then
                 echo "::error::Landshop $app $route returned HTTP $code in standalone runtime"
                 cat "/tmp/landshop-$app.log"
