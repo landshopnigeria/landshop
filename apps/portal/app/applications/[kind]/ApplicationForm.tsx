@@ -150,7 +150,7 @@ export default function ApplicationForm({slug}:{slug:string}){
      <button type="button" className="secondary" disabled={busy||loading||submitted} onClick={save}>{busy?'Saving…':'Save Draft'}</button>
      {step<definition.steps.length-1?<button type="button" className="action" disabled={busy||loading||submitted} onClick={()=>{if(validateFields())setStep(x=>x+1)}}>Next Step →</button>
        :<button type="button" className="action" disabled={busy||loading||submitted} onClick={submit}>Submit Secure Application →</button>}
-    </div><p role="status" aria-live="polite" className="app-message">{message}</p><p role="status" className="app-message">{autosaveStatus}</p>{submitted&&<p><a href="https://app.landshopnigeria.com/dashboard/applications">View My Applications →</a></p>
+    </div><p role="status" aria-live="polite" className="app-message">{message}</p><p role="status" className="app-message">{autosaveStatus}</p>{submitted&&<p><a href="https://app.landshopnigeria.com/dashboard/applications">View My Applications →</a></p>}
    </div>
   </div><aside className="application-sidebar"><h2>Application guidance</h2><p><strong>{definition.brand}</strong> · {definition.title}</p><p>Use Save Draft once to start a secure application; subsequent answer edits are autosaved. Return later to resume. Verification and approval are completed by authorized Landshop staff.</p><Link href="/">Return to customer portal</Link><a href="mailto:care@landshopnigeria.com">Need help? Contact support</a><p className="disclaimer">Mortgage estimates are not offers or approvals. Never pay into unverified accounts.</p></aside>
   </div></main>;
