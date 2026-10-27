@@ -1,6 +1,7 @@
 'use client';
 import {useEffect,useState} from 'react';
 import Link from 'next/link';
+import type {CSSProperties} from 'react';
 import {browserSupabase} from '../../lib/supabase-browser';
 type Ticket={id:string;subject:string;category:string;status:string;created_at:string};
 const types=['property','application','mortgage','investment','document','payment','other'];
@@ -32,7 +33,7 @@ export default function SupportPortal(){
   }catch(err){setMessage(err instanceof Error?err.message:'Support request failed.')}
   finally{setBusy(false)}
  }
- const inputStyle={display:'block',width:'100%',border:'1px solid #cde2d8',borderRadius:11,padding:13,font:'inherit',marginTop:7,background:'white'};
+ const inputStyle:CSSProperties={display:'block',width:'100%',border:'1px solid #cde2d8',borderRadius:11,padding:13,font:'inherit',marginTop:7,background:'white'};
  return <main style={{background:'#f0f8f3',minHeight:'100vh',padding:'clamp(18px,5vw,70px)',color:'#123e32',fontFamily:'Arial,sans-serif'}}>
   <section style={{maxWidth:1050,margin:'auto'}}>
    <nav style={{display:'flex',gap:20,flexWrap:'wrap'}}><Link href="/" style={{color:'#067f65'}}>← Landshop Portal</Link><Link href="/applications" style={{color:'#067f65'}}>Applications Center</Link></nav>
