@@ -387,6 +387,43 @@ jobs:
           ' || true
           fi
           REMOTE
+      - name: Check cPanel legacy DNS API permissions without modifying zones
+        shell: bash
+        env:
+          SSH_HOST: ${{ secrets.LANDSHOP_SSH_HOST || secrets.NAMECHEAP_SSH_HOST || vars.LANDSHOP_SSH_HOST }}
+          SSH_USER: ${{ secrets.LANDSHOP_SSH_USER || secrets.NAMECHEAP_SSH_USER || vars.LANDSHOP_SSH_USER }}
+          SSH_PORT: ${{ vars.LANDSHOP_SSH_PORT || secrets.LANDSHOP_SSH_PORT || secrets.NAMECHEAP_SSH_PORT || '21098' }}
+          SSH_KEY: ${{ secrets.LANDSHOP_SSH_KEY || secrets.NAMECHEAP_SSH_PRIVATE_KEY }}
+          KNOWN_HOSTS: ${{ secrets.LANDSHOP_SSH_KNOWN_HOSTS || secrets.NAMECHEAP_SSH_KNOWN_HOSTS || vars.LANDSHOP_SSH_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          install -d -m 700 "$HOME/.ssh"
+          printf '%s\n' "$SSH_KEY" > "$HOME/.ssh/id_ed25519"
+          printf '%s\n' "$KNOWN_HOSTS" > "$HOME/.ssh/known_hosts"
+          chmod 600 "$HOME/.ssh/id_ed25519" "$HOME/.ssh/known_hosts"
+          ssh -p "$SSH_PORT" -o BatchMode=yes -o StrictHostKeyChecking=yes "$SSH_USER@$SSH_HOST" bash -s <<'REMOTE'
+          set -eu
+          binary=/usr/local/cpanel/bin/cpapi2
+          if [ ! -x "$binary" ]; then echo "cPanel API2 CLI not executable";exit 0;fi
+          echo "Inspecting authoritative zone using cPanel API2 (read-only)"
+          for method in fetchzone fetchzone_records; do
+            echo "--- cPanel ZoneEdit $method ---"
+            "$binary" --user="$USER" --output=json ZoneEdit "$method" domain=landshopnigeria.com 2>/dev/null | python3 -c '
+          import sys,json
+          try: r=json.load(sys.stdin).get("cpanelresult",{})
+          except Exception: print("API2 JSON unavailable");raise SystemExit(0)
+          print("API2 operation:",r.get("func"),"allowed:",r.get("event",{}).get("result"))
+          for row in r.get("data",[]):
+           if not isinstance(row,dict): continue
+           if row.get("status")==0 and row.get("reason"):print("Access denied or error:",str(row["reason"])[:160])
+           data=row.get("record",row)
+           if isinstance(data,dict):
+            dname=str(data.get("name","") or data.get("dname","")).rstrip(".")
+            if dname in ("app.landshopnigeria.com","www.landshopnigeria.com","landshopnigeria.com","portal.landshopnigeria.com"):
+             print("Zone record:",{k:data.get(k) for k in ("name","type","address","cname","line","Line","ttl") if k in data})
+          ' || true
+          done
+          REMOTE
       - name: Diagnosis limits
         run: |
           echo "If release files exist but public routes return 404, inspect the cPanel Setup Node.js App URL binding,"
