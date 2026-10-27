@@ -243,6 +243,40 @@ jobs:
           ' || true
           done
           REMOTE
+      - name: Compare public Passenger routing files and document roots
+        shell: bash
+        env:
+          SSH_HOST: ${{ secrets.LANDSHOP_SSH_HOST || secrets.NAMECHEAP_SSH_HOST || vars.LANDSHOP_SSH_HOST }}
+          SSH_USER: ${{ secrets.LANDSHOP_SSH_USER || secrets.NAMECHEAP_SSH_USER || vars.LANDSHOP_SSH_USER }}
+          SSH_PORT: ${{ vars.LANDSHOP_SSH_PORT || secrets.LANDSHOP_SSH_PORT || secrets.NAMECHEAP_SSH_PORT || '21098' }}
+          SSH_KEY: ${{ secrets.LANDSHOP_SSH_KEY || secrets.NAMECHEAP_SSH_PRIVATE_KEY }}
+          KNOWN_HOSTS: ${{ secrets.LANDSHOP_SSH_KNOWN_HOSTS || secrets.NAMECHEAP_SSH_KNOWN_HOSTS || vars.LANDSHOP_SSH_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          install -d -m 700 "$HOME/.ssh"
+          printf '%s\n' "$SSH_KEY" > "$HOME/.ssh/id_ed25519"
+          printf '%s\n' "$KNOWN_HOSTS" > "$HOME/.ssh/known_hosts"
+          chmod 600 "$HOME/.ssh/id_ed25519" "$HOME/.ssh/known_hosts"
+          ssh -p "$SSH_PORT" -o BatchMode=yes -o StrictHostKeyChecking=yes "$SSH_USER@$SSH_HOST" bash -s <<'REMOTE'
+          set -eu
+          for pair in "main|$HOME/public_html" "portal|$HOME/portal.landshopnigeria.com" "dashboard|$HOME/app.landshopnigeria.com"; do
+           IFS='|' read -r app docroot <<EOF
+          $pair
+          EOF
+           echo "--- Document root: $app ---"
+           if [ ! -d "$docroot" ];then echo "Docroot missing";continue;fi
+           for f in .htaccess index.php index.html wp-config.php;do
+            if [ -f "$docroot/$f" ];then printf '%s ' "$f"; stat -c '%s bytes' "$docroot/$f";fi
+           done
+           if [ -f "$docroot/.htaccess" ];then
+            grep -Ei 'Passenger|AddHandler|RewriteRule|RewriteEngine|DirectoryIndex|php|nodejs' "$docroot/.htaccess" | sed -E 's,(/home/)[^/ ]+,\1***,g' | head -c 2400 || true
+            echo
+           fi
+           if [ -f "$docroot/index.php" ];then
+            grep -qi 'wp-blog-header' "$docroot/index.php" && echo "index.php invokes WordPress" || true
+           fi
+          done
+          REMOTE
       - name: Diagnosis limits
         run: |
           echo "If release files exist but public routes return 404, inspect the cPanel Setup Node.js App URL binding,"
