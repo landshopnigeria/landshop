@@ -8,7 +8,7 @@ export default function ApplicationForm({slug}:{slug:string}){
  const definition=formDefinitions[slug];
  const [step,setStep]=useState(0),[answers,setAnswers]=useState<Value>({}),[draftId,setDraftId]=useState<string|null>(null);
  const [busy,setBusy]=useState(false),[message,setMessage]=useState(''),[files,setFiles]=useState<Record<string,File>>({});
- const [loading,setLoading]=useState(true),[savedDocuments,setSavedDocuments]=useState<string[]>([]),[autosaveStatus,setAutosaveStatus]=useState('');
+ const [loading,setLoading]=useState(true),[submitted,setSubmitted]=useState(false),[savedDocuments,setSavedDocuments]=useState<string[]>([]),[autosaveStatus,setAutosaveStatus]=useState('');
  const lastSaved=useRef(''),autoSaving=useRef(false);
  // Restore only the authenticated user's own matching unsubmitted subscription, never another form.
  useEffect(()=>{
@@ -38,7 +38,7 @@ export default function ApplicationForm({slug}:{slug:string}){
  },[slug]);
  // Autosave answer edits after the first explicit save. Files remain private and upload on Save Draft.
  useEffect(()=>{
-  if(loading||!draftId||busy||autoSaving.current||!Object.keys(answers).length)return;
+  if(loading||!draftId||busy||submitted||autoSaving.current||!Object.keys(answers).length)return;
   const snapshot=JSON.stringify(answers);
   if(snapshot===lastSaved.current)return;
   setAutosaveStatus('Unsaved changes');
@@ -49,16 +49,16 @@ export default function ApplicationForm({slug}:{slug:string}){
     const db=browserSupabase();
     const {data:{user}}=await db.auth.getUser();
     if(!user)throw Error('Authentication required');
-    const {error}=await db.from('applications').update({answers:{...answers,form_slug:slug}})
-      .eq('id',draftId).eq('applicant_id',user.id).eq('status','draft');
-    if(error)throw error;
+    const {data:saved,error}=await db.from('applications').update({answers:{...answers,form_slug:slug}})
+      .eq('id',draftId).eq('applicant_id',user.id).eq('status','draft').select('id').maybeSingle();
+    if(error||!saved)throw error||Error('Application is no longer editable');
     lastSaved.current=JSON.stringify({...answers,form_slug:slug});
     setAutosaveStatus('Changes saved securely');
    }catch{setAutosaveStatus('Autosave failed. Select Save Draft to retry.')}
    finally{autoSaving.current=false}
   },1200);
   return()=>clearTimeout(timer);
- },[answers,draftId,loading,busy,slug]);
+ },[answers,draftId,loading,busy,slug,submitted]);
  if(!definition)return <main style={{padding:40}}>Unknown Landshop application. <Link href="/">Back to portal</Link></main>;
  const fields=definition.steps[step].fields;const set=(key:string,val:string)=>setAnswers(previous=>({...previous,[key]:val}));
  async function ensureDraft(){
@@ -72,11 +72,12 @@ export default function ApplicationForm({slug}:{slug:string}){
   return {db,user,id:data.id as string};
  }
  async function save(){
+  if(submitted){setMessage('This application has already been submitted.');return null;}
   setBusy(true);setMessage('');
   try{
    const {db,user,id}=await ensureDraft();
-   const {error}=await db.from('applications').update({answers:{...answers,form_slug:slug}}).eq('id',id).eq('applicant_id',user.id).eq('status','draft');
-   if(error)throw Error('Could not save application draft.');
+   const {data:saved,error}=await db.from('applications').update({answers:{...answers,form_slug:slug}}).eq('id',id).eq('applicant_id',user.id).eq('status','draft').select('id').maybeSingle();
+   if(error||!saved)throw Error('Could not save application draft. This application may already be submitted.');
    lastSaved.current=JSON.stringify({...answers,form_slug:slug});
    for(const [kind,file] of Object.entries(files)){
     if(file.size>10485760||file.size<=0)throw Error(kind+' must be under 10 MiB');
@@ -113,7 +114,8 @@ export default function ApplicationForm({slug}:{slug:string}){
    const id=await save();if(!id)return;
    const {data,error}=await browserSupabase().rpc('landshop_submit_application',{p_id:id});
    if(error||!data)throw Error('Submission requires complete personal, product and declaration details.');
-   setMessage('Application submitted. Reference: '+id+'. You will receive a notification when configured.');
+   setSubmitted(true);setAutosaveStatus('Submission recorded securely');
+   setMessage('Application submitted successfully. Reference: '+id+'. Follow progress through My Applications.');
   }catch(e){setMessage(e instanceof Error?e.message:'Submission failed')}
   finally{setBusy(false)}
  }
@@ -122,7 +124,7 @@ export default function ApplicationForm({slug}:{slug:string}){
   const label=<label htmlFor={field.key}>{field.label}{field.required?' *':''}</label>;
   const common={id:field.key,'aria-label':field.label};
   return <div key={field.key} className="app-field">{label}
-   {field.type==='file'?<input {...common} type="file" accept=".pdf,.jpg,.jpeg,.png,.webp" onChange={e=>{const f=e.target.files?.[0];if(f)setFiles(prev=>({...prev,[field.key]:f}))}}/>:
+   {field.type==='file'?<><input {...common} type="file" accept=".pdf,.jpg,.jpeg,.png,.webp" onChange={e=>{const f=e.target.files?.[0];if(f)setFiles(prev=>({...prev,[field.key]:f}))}}/>{savedDocuments.includes(field.key)&&<small style={{color:'#07805e'}}>Previously uploaded securely ✓</small>}</>:
     field.type==='select'?<select {...common} value={val} required={field.required} onChange={e=>set(field.key,e.target.value)}><option value="">Select {field.label.toLowerCase()}</option>{field.choices?.map(option=><option key={option}>{option}</option>)}</select>:
     field.type==='textarea'?<textarea {...common} value={val} rows={3} required={field.required} onChange={e=>set(field.key,e.target.value)} placeholder={field.placeholder||'Enter '+field.label.toLowerCase()}/>:
     field.type==='checkbox'?<label className="check"><input type="checkbox" checked={val==='true'} required={field.required} onChange={e=>set(field.key,String(e.target.checked))}/> {field.label}</label>:
@@ -144,11 +146,11 @@ export default function ApplicationForm({slug}:{slug:string}){
        <dl>{Object.entries(answers).filter(([k])=>!k.endsWith('_accepted')&&k!=='form_slug').map(([k,v])=><div key={k}><dt>{k.replaceAll('_',' ')}</dt><dd>{v}</dd></div>)}</dl>
        <p>Only submit once the declaration and required documents are complete.</p>
      </section>}
-    <div className="application-actions"><button type="button" className="secondary" disabled={step===0||busy||loading} onClick={()=>{setStep(x=>x-1);setMessage('')}}>← Previous</button>
-     <button type="button" className="secondary" disabled={busy||loading} onClick={save}>{busy?'Saving…':'Save Draft'}</button>
-     {step<definition.steps.length-1?<button type="button" className="action" disabled={busy||loading} onClick={()=>{if(validateFields())setStep(x=>x+1)}}>Next Step →</button>
-       :<button type="button" className="action" disabled={busy||loading} onClick={submit}>Submit Secure Application →</button>}
-    </div><p role="status" aria-live="polite" className="app-message">{message}</p><p role="status" className="app-message">{autosaveStatus}</p>
+    <div className="application-actions"><button type="button" className="secondary" disabled={step===0||busy||loading||submitted} onClick={()=>{setStep(x=>x-1);setMessage('')}}>← Previous</button>
+     <button type="button" className="secondary" disabled={busy||loading||submitted} onClick={save}>{busy?'Saving…':'Save Draft'}</button>
+     {step<definition.steps.length-1?<button type="button" className="action" disabled={busy||loading||submitted} onClick={()=>{if(validateFields())setStep(x=>x+1)}}>Next Step →</button>
+       :<button type="button" className="action" disabled={busy||loading||submitted} onClick={submit}>Submit Secure Application →</button>}
+    </div><p role="status" aria-live="polite" className="app-message">{message}</p><p role="status" className="app-message">{autosaveStatus}</p>{submitted&&<p><a href="https://app.landshopnigeria.com/dashboard/applications">View My Applications →</a></p>
    </div>
   </div><aside className="application-sidebar"><h2>Application guidance</h2><p><strong>{definition.brand}</strong> · {definition.title}</p><p>Use Save Draft once to start a secure application; subsequent answer edits are autosaved. Return later to resume. Verification and approval are completed by authorized Landshop staff.</p><Link href="/">Return to customer portal</Link><a href="mailto:care@landshopnigeria.com">Need help? Contact support</a><p className="disclaimer">Mortgage estimates are not offers or approvals. Never pay into unverified accounts.</p></aside>
   </div></main>;
