@@ -1,9 +1,6 @@
 name: Backup Landshop Supabase Database to Private Namecheap Storage
 on:
   workflow_dispatch:
-  push:
-    branches: [engineering/forms-and-production-diagnostics-20261027]
-    paths: ['.github/workflows/secure-supabase-database-backup.yml']
 permissions:
   contents: read
 concurrency:
