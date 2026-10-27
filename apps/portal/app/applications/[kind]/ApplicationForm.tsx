@@ -9,7 +9,7 @@ export default function ApplicationForm({slug}:{slug:string}){
  const [step,setStep]=useState(0),[answers,setAnswers]=useState<Value>({}),[draftId,setDraftId]=useState<string|null>(null);
  const [busy,setBusy]=useState(false),[message,setMessage]=useState(''),[files,setFiles]=useState<Record<string,File>>({});
  const [loading,setLoading]=useState(true),[submitted,setSubmitted]=useState(false),[savedDocuments,setSavedDocuments]=useState<string[]>([]),[autosaveStatus,setAutosaveStatus]=useState('');
- const lastSaved=useRef(''),autoSaving=useRef(false);
+ const lastSaved=useRef(''),autoSaving=useRef(false),submissionInFlight=useRef(false);
  // Restore only the authenticated user's own matching unsubmitted subscription, never another form.
  useEffect(()=>{
   let active=true;
@@ -93,7 +93,7 @@ export default function ApplicationForm({slug}:{slug:string}){
    setFiles({});setAutosaveStatus('Changes saved securely');setMessage('Draft saved privately. Application reference: '+id);
    return id;
   }catch(e){setMessage(e instanceof Error?e.message:'Unable to save draft');return null}
-  finally{setBusy(false)}
+  finally{if(!submissionInFlight.current)setBusy(false)}
  }
  function validateFields(stageFields:Field[]=fields){
   for(const f of stageFields){
@@ -105,6 +105,8 @@ export default function ApplicationForm({slug}:{slug:string}){
   setMessage('');return true;
  }
  async function submit(){
+  if(submitted||submissionInFlight.current)return;
+  submissionInFlight.current=true;
   setBusy(true);setMessage('');
   try{
    if(!answers.declaration_accepted||!answers.applicant_signature)throw Error('Complete and accept the declaration first.');
@@ -117,7 +119,7 @@ export default function ApplicationForm({slug}:{slug:string}){
    setSubmitted(true);setAutosaveStatus('Submission recorded securely');
    setMessage('Application submitted successfully. Reference: '+id+'. Follow progress through My Applications.');
   }catch(e){setMessage(e instanceof Error?e.message:'Submission failed')}
-  finally{setBusy(false)}
+  finally{submissionInFlight.current=false;setBusy(false)}
  }
  function input(field:Field){
   const val=answers[field.key]||'';
