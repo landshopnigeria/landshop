@@ -1,0 +1,313 @@
+{
+  "id": "landshop.mortgage-xtra.v2",
+  "name": "Mortgage Xtra Client Communication",
+  "status": "definition_only",
+  "product": "grow.mortgage_xtra",
+  "source": "Owner-provided Mortgage Xtra communication flow image, October 2026",
+  "ownerApprovalRequired": true,
+  "liveExecutionEnabled": false,
+  "trigger": {
+    "event": "mortgage_xtra.application_received",
+    "idempotencyKey": "mortgage_xtra:{applicationId}:received",
+    "requires": [
+      "authenticated_applicant",
+      "valid_application_reference"
+    ]
+  },
+  "nodes": [
+    {
+      "id": "online",
+      "type": "trigger",
+      "label": "Online Application",
+      "x": 40,
+      "y": 220
+    },
+    {
+      "id": "calculation",
+      "type": "task",
+      "label": "Loan Calculation",
+      "x": 250,
+      "y": 220,
+      "requires": "verified_product_pricing"
+    },
+    {
+      "id": "eligibility",
+      "type": "condition",
+      "label": "Eligibility Decision",
+      "x": 460,
+      "y": 220,
+      "requires": "authorized_underwriter_decision"
+    },
+    {
+      "id": "success",
+      "type": "notification",
+      "label": "Application Success",
+      "x": 670,
+      "y": 120,
+      "template": "mortgage_xtra.application_success"
+    },
+    {
+      "id": "failed",
+      "type": "notification",
+      "label": "Application Unsuccessful",
+      "x": 670,
+      "y": 390,
+      "template": "mortgage_xtra.application_unapproved"
+    },
+    {
+      "id": "reapply",
+      "type": "task",
+      "label": "Reapplication Guidance",
+      "x": 900,
+      "y": 470,
+      "requires": "human_review"
+    },
+    {
+      "id": "cx",
+      "type": "task",
+      "label": "Customer Service Assignment",
+      "x": 900,
+      "y": 120
+    },
+    {
+      "id": "inspectionInvite",
+      "type": "notification",
+      "label": "Inspection Confirmation",
+      "x": 1100,
+      "y": 80,
+      "template": "inspection.confirmation"
+    },
+    {
+      "id": "inspectionReminder",
+      "type": "wait",
+      "label": "Inspection Reminder",
+      "x": 1100,
+      "y": 205,
+      "waitFor": "approved_inspection_schedule"
+    },
+    {
+      "id": "inspection",
+      "type": "task",
+      "label": "Property Inspection",
+      "x": 1330,
+      "y": 135,
+      "requires": "customer_confirmation"
+    },
+    {
+      "id": "offer",
+      "type": "approval",
+      "label": "Offer Letter",
+      "x": 1520,
+      "y": 80,
+      "requires": "authorized_offer_approval"
+    },
+    {
+      "id": "prospect",
+      "type": "condition",
+      "label": "Prospect Follow-up",
+      "x": 1520,
+      "y": 240
+    },
+    {
+      "id": "alternatives",
+      "type": "task",
+      "label": "Alternatives / Incentives",
+      "x": 1730,
+      "y": 340,
+      "requires": "sales_manager_approval"
+    },
+    {
+      "id": "bizdev",
+      "type": "task",
+      "label": "Business Development",
+      "x": 1740,
+      "y": 150
+    },
+    {
+      "id": "fundInstructions",
+      "type": "notification",
+      "label": "Verified Account Instructions",
+      "x": 1950,
+      "y": 100,
+      "template": "mortgage_xtra.payment_instructions",
+      "requires": "verified_company_account"
+    },
+    {
+      "id": "equity",
+      "type": "approval",
+      "label": "Equity Payment Reconciled",
+      "x": 2160,
+      "y": 160,
+      "requires": "verified_provider_webhook_and_finance_review"
+    },
+    {
+      "id": "payment",
+      "type": "notification",
+      "label": "Payment Receipt",
+      "x": 2370,
+      "y": 100,
+      "template": "mortgage_xtra.payment_receipt"
+    },
+    {
+      "id": "handover",
+      "type": "approval",
+      "label": "Key and Document Handover",
+      "x": 2580,
+      "y": 160,
+      "requires": "legal_finance_survey_clearance"
+    },
+    {
+      "id": "servicing",
+      "type": "wait",
+      "label": "Contractual Annual Notice",
+      "x": 2800,
+      "y": 160,
+      "requires": "active_signed_contract_schedule"
+    },
+    {
+      "id": "complete",
+      "type": "end",
+      "label": "Handover Complete",
+      "x": 3000,
+      "y": 160
+    }
+  ],
+  "edges": [
+    {
+      "from": "online",
+      "to": "calculation"
+    },
+    {
+      "from": "calculation",
+      "to": "eligibility"
+    },
+    {
+      "from": "eligibility",
+      "to": "success",
+      "when": "approved"
+    },
+    {
+      "from": "eligibility",
+      "to": "failed",
+      "when": "not_approved"
+    },
+    {
+      "from": "failed",
+      "to": "reapply"
+    },
+    {
+      "from": "reapply",
+      "to": "online",
+      "when": "new_consented_application"
+    },
+    {
+      "from": "success",
+      "to": "cx"
+    },
+    {
+      "from": "cx",
+      "to": "inspectionInvite"
+    },
+    {
+      "from": "inspectionInvite",
+      "to": "inspectionReminder"
+    },
+    {
+      "from": "inspectionReminder",
+      "to": "inspection"
+    },
+    {
+      "from": "inspection",
+      "to": "offer",
+      "when": "approved_offer"
+    },
+    {
+      "from": "inspection",
+      "to": "prospect"
+    },
+    {
+      "from": "prospect",
+      "to": "alternatives",
+      "when": "needs_more_information"
+    },
+    {
+      "from": "alternatives",
+      "to": "bizdev"
+    },
+    {
+      "from": "prospect",
+      "to": "bizdev",
+      "when": "interested"
+    },
+    {
+      "from": "offer",
+      "to": "bizdev"
+    },
+    {
+      "from": "bizdev",
+      "to": "fundInstructions"
+    },
+    {
+      "from": "fundInstructions",
+      "to": "equity"
+    },
+    {
+      "from": "equity",
+      "to": "payment",
+      "when": "verified"
+    },
+    {
+      "from": "payment",
+      "to": "handover"
+    },
+    {
+      "from": "handover",
+      "to": "servicing",
+      "when": "contract_requires_notices"
+    },
+    {
+      "from": "handover",
+      "to": "complete",
+      "when": "no_servicing_obligation"
+    },
+    {
+      "from": "servicing",
+      "to": "complete"
+    }
+  ],
+  "safeguards": {
+    "channels": [
+      "in_app",
+      "email",
+      "consented_sms",
+      "approved_whatsapp_api",
+      "human_call_task"
+    ],
+    "checkMarketingConsent": true,
+    "checkTransactionalEligibility": true,
+    "requireApprovedTemplate": true,
+    "deduplicatePerEvent": true,
+    "retry": {
+      "strategy": "bounded_exponential_backoff",
+      "maxAttempts": 5,
+      "deadLetterQueue": true
+    },
+    "paymentConfirmation": "finance_ledger_and_server_verified_provider_event_only",
+    "accountInstructions": "never_accept_client_supplied_bank_account_as_company_account",
+    "auditEveryTransition": true,
+    "ownerApprovalToActivate": true,
+    "longTermReminders": "use_signed_contract_schedule_only_not_historic_7_percent_or_15_year_assumptions"
+  },
+  "acceptanceTests": [
+    "success_branch",
+    "failure_and_reapply",
+    "inspection_confirmation_and_reminders",
+    "consent_opt_out",
+    "finance_webhook_replay",
+    "handover_clearance",
+    "contractual_reminder_boundaries",
+    "provider_delivery_failures",
+    "authorized_state_transitions",
+    "duplicate_event_idempotency"
+  ]
+}
