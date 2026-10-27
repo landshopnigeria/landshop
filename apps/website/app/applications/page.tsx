@@ -19,7 +19,7 @@ export default async function ApplicationsCenter({searchParams}:{searchParams:Pr
    <p className="lc-intro">These product subscription and inspection forms are separate from account Sign In and Sign Up. All financing and investment terms require official confirmation.</p>
    <div className="lc-steps"><span className="lc-step"><strong>01</strong> Select product</span><span className="lc-step"><strong>02</strong> Enter information</span><span className="lc-step"><strong>03</strong> Save and review</span><span className="lc-step"><strong>04</strong> Submit securely</span></div>
    <aside className="lc-guidance"><strong>Before you apply:</strong> Use your own verified information and attach the documents requested for your product. Submitted applications are reviewed by authorized Landshop staff; submission is not automatic approval or a confirmed allocation.</aside>
-   <div className="lc-grid">{ordered.map(item=><article className={'lc-card '+(focus===item.product.toLowerCase()?'featured':'')} key={item.slug}>"}
+   <div className="lc-grid">{ordered.map(item=><article className={'lc-card '+(focus===item.product.toLowerCase()?'featured':'')} key={item.slug}>
      <img className="lc-photo" src={'/media/'+item.img} alt={item.title+' official Landshop supporting imagery'}/>
      <div className="lc-cardbody"><span className="lc-tag">{item.product}</span><h3>{item.title}</h3><p className="lc-sub">{item.sub}</p><p>{item.summary}</p><p className="lc-small">{item.steps} guided stages · private draft saving</p>
       <a href={portal+'/applications/'+item.slug}>Start {item.title} →</a></div>
