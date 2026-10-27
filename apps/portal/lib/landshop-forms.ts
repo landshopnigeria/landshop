@@ -10,7 +10,7 @@ export const sharedPersonal:Field[]=[
  {key:'state_of_residence',label:'State of Residence'},
  {key:'local_government',label:'Local Government'},{key:'occupation',label:'Occupation'},{key:'designation',label:'Designation'}
 ];
-const choice=(key:string,label:string,choices:string[]):Field=>({key,label,type:'select',choices});
+const choice=(key:string,label:string,choices:string[],required=false):Field=>({key,label,type:'select',choices,required});
 // The source paper forms are customer subscription/application documents, not registration.
 const requiredPersonalKeys=new Set(['gender','date_of_birth','marital_status','residential_address','state_of_residence','occupation','designation']);
 const personalStep:Step={name:'Client Details',fields:[
@@ -52,21 +52,21 @@ const productChoice:Step={name:'Property Choice',fields:[
  {key:'property_size',label:'Property Size'},{key:'quantity',label:'Quantity',type:'number'}
 ]};
 const developHouseChoice:Step={name:'Property Choice',fields:[
- choice('estate_name','Estate / House of Choice',['Merit Mews','Famous Gardens','Blue Diamonds Mews','Green Island Mews','Mayflower Mews','The Groove','Heritage Court','Zenith Gardens','Angels Court','Prestige Court','Yellow Diamond','Luxiar Apartments','Peace Haven','Other']),
+ choice('estate_name','Estate / House of Choice',['Merit Mews','Famous Gardens','Blue Diamonds Mews','Green Island Mews','Mayflower Mews','The Groove','Heritage Court','Zenith Gardens','Angels Court','Prestige Court','Yellow Diamond','Luxiar Apartments','Peace Haven','Other'],true),
  {key:'property_location',label:'Property Location',required:true,placeholder:'e.g., Lekki Phase 1, Lagos'},
  choice('property_type','Property Type',['Block of Flats','Terrace','Duplex','Apartment','Other']),
  choice('property_format','Property Format',['Prime','Luxury','Other']),
  choice('property_use','Property Use',['Residential','Commercial','Dual Purpose']),
- choice('property_size','Property Size / Configuration',['2 Bedroom Block of Flats + BQ','3 Bedroom Terrace + BQ & Study','4 Bedroom Block of Flats','Other']),
+ choice('property_size','Property Size / Configuration',['2 Bedroom Block of Flats + BQ','3 Bedroom Terrace + BQ & Study','4 Bedroom Block of Flats','Other'],true),
  {key:'quantity',label:'Number of Units',type:'number',required:true,placeholder:'e.g., 1'}
 ]};
 const developLandChoice:Step={name:'Property Choice',fields:[
- choice('estate_name','Estate / Land of Choice',['Green Island','Mayflower Gardens','Country Home','Dominion Park','Merit Park','Zenith Gardens','Famous Gardens','Blue Diamonds','The Water Brooks','Goshen Park','Angels Court',"Shepherd's Garden I","Shepherd's Garden II",'The Pearl','Maiyegun Beach','Prestige Court','Merit Mews','Oasis','Eko Atlantic City','Alacrity City','Heritage Court','Peace Haven','Yellow Diamond','Tranquility Court','Other']),
+ choice('estate_name','Estate / Land of Choice',['Green Island','Mayflower Gardens','Country Home','Dominion Park','Merit Park','Zenith Gardens','Famous Gardens','Blue Diamonds','The Water Brooks','Goshen Park','Angels Court',"Shepherd's Garden I","Shepherd's Garden II",'The Pearl','Maiyegun Beach','Prestige Court','Merit Mews','Oasis','Eko Atlantic City','Alacrity City','Heritage Court','Peace Haven','Yellow Diamond','Tranquility Court','Other'],true),
  {key:'property_location',label:'Property Location',required:true,placeholder:'State, town and estate location'},
  choice('property_type','Property Type',['Land','Residential Plot','Commercial Plot','Other']),
  choice('property_format','Property Format',['Prime','Luxury','Other']),
  choice('property_use','Property Use',['Residential','Commercial','Dual Purpose']),
- choice('property_size','Land Size',['300 sqm','400 sqm','450 sqm','500 sqm','600 sqm','800 sqm','1000 sqm','1200 sqm','1600 sqm','1800 sqm','Other']),
+ choice('property_size','Land Size',['300 sqm','400 sqm','450 sqm','500 sqm','600 sqm','800 sqm','1000 sqm','1200 sqm','1600 sqm','1800 sqm','Other'],true),
  {key:'quantity',label:'Number of Plots',type:'number',required:true,placeholder:'e.g., 1'}
 ]};
 const payment:Step={name:'Payment Preference',fields:[
@@ -89,8 +89,8 @@ const mortgage:Step={name:'Mortgage Qualification',fields:[
  {key:'dependents',label:'Number of Dependents',type:'number'},
  {key:'nhf_number',label:'NHF Number (optional)'},
  {key:'mortgage_bank_account',label:'Mortgage Bank Account Number (optional)'},
- {key:'mortgage_amount',label:'Mortgage Amount (NGN)',type:'number'},
- {key:'equity_contribution',label:'Equity Contribution (NGN)',type:'number'},
+ {key:'mortgage_amount',label:'Mortgage Amount (NGN)',type:'number',required:true,placeholder:'e.g., 35000000'},
+ {key:'equity_contribution',label:'Equity Contribution (NGN)',type:'number',required:true,placeholder:'e.g., 15000000'},
  choice('equity_plan','Equity Payment Preference',['Outright','Instalment — 2 months','Instalment — 3 months','Instalment — 4 months','Instalment — 5 months','Instalment — 6 months','Pension Funds','Other'])
 ]};
 const inspection:Step={name:'Estate & Inspection',fields:[
@@ -98,7 +98,7 @@ const inspection:Step={name:'Estate & Inspection',fields:[
  {key:'property_size',label:'Property Size Needed'},
  {key:'property_type',label:'Property Type'},
  {key:'inspection_date',label:'Preferred Inspection Date',type:'date'},
- choice('client_interest','Client Interest',['Acquire Land','Acquire House','Just Browsing','Profiled and Approved','Requires More Information','Not Interested']),
+ choice('client_interest','Client Interest',['Acquire Land','Acquire House','Just Browsing','Profiled and Approved','Requires More Information','Not Interested'],true),
  choice('prospect_source','Prospect Source',['Website','Social Media','Walk-In','Customer Experience','Campaign','Realtor Referral','Employee Referral','Board Member Referral','Offline']),
  {key:'inspection_notes',label:'Additional Comments',type:'textarea'}
 ]};
