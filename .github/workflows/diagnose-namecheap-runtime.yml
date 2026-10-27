@@ -277,6 +277,24 @@ jobs:
            fi
           done
           REMOTE
+      - name: Verify public Next.js routes after main Passenger routing repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          for origin in https://landshopnigeria.com https://portal.landshopnigeria.com https://app.landshopnigeria.com https://www.landshopnigeria.com;do
+            echo "=== $origin ==="
+            status=$(curl -sSL --max-time 20 -o /dev/null -w '%{http_code}' "$origin/api/release-health" || true)
+            echo "health HTTP status: $status"
+            if [ "$status" = "200" ];then
+              body=$(curl -fsSL --max-time 15 -H 'Cache-Control: no-cache' "$origin/api/release-health")
+              BODY="$body" python3 - <<'PY'
+          import os,json
+          try: d=json.loads(os.environ["BODY"])
+          except ValueError: print("Not JSON");raise SystemExit(1)
+          print("service:",d.get("service"),"status:",d.get("status"),"release:",d.get("commit"))
+          PY
+            fi
+          done
       - name: Diagnosis limits
         run: |
           echo "If release files exist but public routes return 404, inspect the cPanel Setup Node.js App URL binding,"
