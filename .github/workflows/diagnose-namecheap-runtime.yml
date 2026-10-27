@@ -1,0 +1,75 @@
+name: Diagnose Landshop Namecheap Production Routing
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    environment: landshop-production
+    timeout-minutes: 12
+    steps:
+      - name: Inspect externally observable domain routing
+        shell: bash
+        run: |
+          set -euo pipefail
+          for pair in \
+            "website|https://landshopnigeria.com" \
+            "website-www|https://www.landshopnigeria.com" \
+            "portal|https://portal.landshopnigeria.com" \
+            "dashboard|https://app.landshopnigeria.com"; do
+            IFS='|' read -r app origin <<< "$pair"
+            for path in / /api/release-health; do
+              status=$(curl -sS -L --max-time 18 -o /dev/null -w '%{http_code}' -H 'Cache-Control: no-cache' "$origin$path" || true)
+              echo "$app $path : HTTP $status"
+            done
+          done
+      - name: Read-only packaged runtime checks on Namecheap
+        shell: bash
+        env:
+          SSH_HOST: ${{ secrets.LANDSHOP_SSH_HOST || secrets.NAMECHEAP_SSH_HOST || vars.LANDSHOP_SSH_HOST }}
+          SSH_USER: ${{ secrets.LANDSHOP_SSH_USER || secrets.NAMECHEAP_SSH_USER || vars.LANDSHOP_SSH_USER }}
+          SSH_PORT: ${{ vars.LANDSHOP_SSH_PORT || secrets.LANDSHOP_SSH_PORT || secrets.NAMECHEAP_SSH_PORT || '21098' }}
+          SSH_KEY: ${{ secrets.LANDSHOP_SSH_KEY || secrets.NAMECHEAP_SSH_PRIVATE_KEY }}
+          KNOWN_HOSTS: ${{ secrets.LANDSHOP_SSH_KNOWN_HOSTS || secrets.NAMECHEAP_SSH_KNOWN_HOSTS || vars.LANDSHOP_SSH_KNOWN_HOSTS }}
+          WEBSITE_ROOT: ${{ secrets.LANDSHOP_WEBSITE_APPROOT || vars.LANDSHOP_WEBSITE_APPROOT || '/home/maleghif/landshop-website' }}
+          PORTAL_ROOT: ${{ secrets.LANDSHOP_PORTAL_APPROOT || vars.LANDSHOP_PORTAL_APPROOT || '/home/maleghif/landshop-portal' }}
+          DASHBOARD_ROOT: ${{ secrets.LANDSHOP_DASHBOARD_APPROOT || vars.LANDSHOP_DASHBOARD_APPROOT || '/home/maleghif/landshop-app' }}
+        run: |
+          set -euo pipefail
+          for v in SSH_HOST SSH_USER SSH_KEY KNOWN_HOSTS; do
+            [ -n "${!v:-}" ] || { echo "::error::Missing $v"; exit 1; }
+          done
+          [[ "$SSH_PORT" =~ ^[0-9]{1,5}$ ]] || exit 1
+          install -d -m 700 "$HOME/.ssh"
+          printf '%s\n' "$SSH_KEY" > "$HOME/.ssh/id_ed25519"
+          printf '%s\n' "$KNOWN_HOSTS" > "$HOME/.ssh/known_hosts"
+          chmod 600 "$HOME/.ssh/id_ed25519" "$HOME/.ssh/known_hosts"
+          ssh -p "$SSH_PORT" -o BatchMode=yes -o StrictHostKeyChecking=yes \
+            "$SSH_USER@$SSH_HOST" bash -s -- "$WEBSITE_ROOT" "$PORTAL_ROOT" "$DASHBOARD_ROOT" <<'REMOTE'
+          set -eu
+          echo "=== Read-only Namecheap application packaging inspection ==="
+          command -v node >/dev/null && node --version || echo "Node unavailable to SSH shell"
+          for app in website portal dashboard; do
+            case "$app" in
+              website) root="$1";;
+              portal) root="$2";;
+              dashboard) root="$3";;
+            esac
+            case "$root" in /home/*) ;; *) echo "Invalid app root"; exit 1;; esac
+            echo "-- $app --"
+            [ -d "$root" ] && echo "Application root exists" || { echo "Application root MISSING"; continue; }
+            [ -s "$root/server.js" ] && echo "Passenger entry exists" || echo "Passenger entry MISSING"
+            [ -s "$root/apps/$app/server.js" ] && echo "Standalone Next.js server exists" || echo "Standalone Next.js server MISSING"
+            [ -d "$root/apps/$app/.next/static" ] && echo "Next static files present" || echo "Next static files MISSING"
+            [ -s "$root/LANDSHOP_RELEASE_SHA" ] && { printf "Packaged release: "; head -c 40 "$root/LANDSHOP_RELEASE_SHA"; echo; } || echo "Packaged SHA MISSING"
+            [ -d "$root/tmp" ] && echo "Passenger restart directory present" || echo "Passenger restart directory MISSING"
+            [ -f "$root/.htaccess" ] && echo "App-root .htaccess exists (contents omitted)" || echo "App-root .htaccess absent"
+          done
+          echo "=== Checks intentionally do not print environment files, keys or personal data ==="
+          REMOTE
+      - name: Diagnosis limits
+        run: |
+          echo "If release files exist but public routes return 404, inspect the cPanel Setup Node.js App URL binding,"
+          echo "startup file server.js, domain document root, Apache/Passenger activation and restart logs."
+          echo "Do not mark deployment successful unless the exact release SHA is served publicly."
