@@ -1,3 +1,4 @@
+# Retest authoritative DNS and TLS following owner-reported Namecheap setup.
 name: Landshop Production DNS and TLS Preflight
 on:
   workflow_dispatch:
