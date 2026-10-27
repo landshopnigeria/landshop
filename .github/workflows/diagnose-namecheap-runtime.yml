@@ -295,6 +295,22 @@ jobs:
           PY
             fi
           done
+      - name: Verify HTTPS certificate hostname matching and expiry
+        shell: bash
+        run: |
+          set -euo pipefail
+          for host in landshopnigeria.com www.landshopnigeria.com portal.landshopnigeria.com app.landshopnigeria.com; do
+            echo "=== Certificate verification for $host ==="
+            tmp=$(mktemp)
+            openssl s_client -connect "$host:443" -servername "$host" -showcerts </dev/null 2>/dev/null | openssl x509 -outform PEM > "$tmp" || true
+            if [ -s "$tmp" ]; then
+              openssl x509 -in "$tmp" -noout -subject -issuer -dates -checkhost "$host" || true
+              openssl x509 -in "$tmp" -noout -ext subjectAltName || true
+            else
+              echo "No public TLS certificate returned"
+            fi
+            rm -f "$tmp"
+          done
       - name: Diagnosis limits
         run: |
           echo "If release files exist but public routes return 404, inspect the cPanel Setup Node.js App URL binding,"
