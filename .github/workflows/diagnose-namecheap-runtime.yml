@@ -312,6 +312,27 @@ jobs:
             fi
             rm -f "$tmp"
           done
+      - name: Isolate individual DNS endpoints and their TLS certificates
+        shell: bash
+        run: |
+          set -euo pipefail
+          for host in landshopnigeria.com www.landshopnigeria.com portal.landshopnigeria.com app.landshopnigeria.com; do
+            echo "=== Endpoint isolation: $host ==="
+            ipv4=$(getent ahostsv4 "$host" | awk '{print $1}' | sort -u || true)
+            if [ -z "$ipv4" ]; then echo "No IPv4 endpoints resolved";continue;fi
+            for ip in $ipv4;do
+              echo "Endpoint IP: $ip"
+              cert=$(mktemp)
+              echo | timeout 8 openssl s_client -connect "$ip:443" -servername "$host" 2>/dev/null | openssl x509 -outform PEM > "$cert" || true
+              if [ -s "$cert" ];then
+                openssl x509 -in "$cert" -noout -checkhost "$host" -subject -dates || true
+              else echo "No TLS certificate available at endpoint";fi
+              rm -f "$cert"
+              curl -sS --max-time 12 --resolve "$host:443:$ip" -H 'Cache-Control: no-cache' -o /dev/null -w 'HTTPS response code: %{http_code} ; SSL verify: %{ssl_verify_result}\n' "https://$host/api/release-health" || true
+            done
+            echo "--- IPv6 resolution (if any) ---"
+            getent ahostsv6 "$host" | awk '{print $1}' | sort -u | head -5 || true
+          done
       - name: Diagnosis limits
         run: |
           echo "If release files exist but public routes return 404, inspect the cPanel Setup Node.js App URL binding,"
