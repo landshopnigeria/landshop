@@ -1,0 +1,147 @@
+name: Repair Main Landshop Passenger Routing and Request AutoSSL
+on:
+  push:
+    branches: [engineering/forms-and-production-diagnostics-20261027]
+    paths: ['.github/workflows/repair-namecheap-main-routing.yml']
+permissions:
+  contents: read
+concurrency:
+  group: landshop-production-routing-repair
+  cancel-in-progress: false
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    environment: landshop-production
+    timeout-minutes: 15
+    steps:
+      - name: Configure trusted Namecheap SSH
+        shell: bash
+        env:
+          SSH_HOST: ${{ secrets.LANDSHOP_SSH_HOST || secrets.NAMECHEAP_SSH_HOST || vars.LANDSHOP_SSH_HOST }}
+          SSH_USER: ${{ secrets.LANDSHOP_SSH_USER || secrets.NAMECHEAP_SSH_USER || vars.LANDSHOP_SSH_USER }}
+          SSH_PORT: ${{ vars.LANDSHOP_SSH_PORT || secrets.LANDSHOP_SSH_PORT || secrets.NAMECHEAP_SSH_PORT || '21098' }}
+          SSH_KEY: ${{ secrets.LANDSHOP_SSH_KEY || secrets.NAMECHEAP_SSH_PRIVATE_KEY }}
+          KNOWN_HOSTS: ${{ secrets.LANDSHOP_SSH_KNOWN_HOSTS || secrets.NAMECHEAP_SSH_KNOWN_HOSTS || vars.LANDSHOP_SSH_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          for key in SSH_HOST SSH_USER SSH_KEY KNOWN_HOSTS; do [ -n "${!key:-}" ] || { echo "::error::Missing $key";exit 1; }; done
+          [[ "$SSH_PORT" =~ ^[0-9]{1,5}$ ]] || exit 1
+          install -d -m 700 "$HOME/.ssh"
+          printf '%s\n' "$SSH_KEY" > "$HOME/.ssh/id_ed25519"
+          printf '%s\n' "$KNOWN_HOSTS" > "$HOME/.ssh/known_hosts"
+          chmod 600 "$HOME/.ssh/id_ed25519" "$HOME/.ssh/known_hosts"
+          echo "SSH configuration ready; sensitive values not printed"
+      - name: Back up and repair ONLY missing main-domain Passenger route
+        shell: bash
+        env:
+          SSH_HOST: ${{ secrets.LANDSHOP_SSH_HOST || secrets.NAMECHEAP_SSH_HOST || vars.LANDSHOP_SSH_HOST }}
+          SSH_USER: ${{ secrets.LANDSHOP_SSH_USER || secrets.NAMECHEAP_SSH_USER || vars.LANDSHOP_SSH_USER }}
+          SSH_PORT: ${{ vars.LANDSHOP_SSH_PORT || secrets.LANDSHOP_SSH_PORT || secrets.NAMECHEAP_SSH_PORT || '21098' }}
+        run: |
+          set -euo pipefail
+          ssh -p "$SSH_PORT" -o BatchMode=yes -o StrictHostKeyChecking=yes "$SSH_USER@$SSH_HOST" bash -s -- "${GITHUB_RUN_ID}" <<'REMOTE'
+          set -eu
+          id="$1"
+          case "$id" in *[!0-9]*|'') exit 1;; esac
+          root="$HOME/public_html"
+          node_root="$HOME/landshop-website"
+          node_binary="$HOME/nodevenv/landshop-website/24/bin/node"
+          backup="$HOME/landshop-deployment-backups/routing-$id"
+          test -d "$root" && test -s "$node_root/server.js" && test -s "$node_root/apps/website/server.js"
+          test -x "$node_binary" || { echo "Node runtime unavailable at registered CloudLinux node environment";exit 1; }
+          test -s "$HOME/portal.landshopnigeria.com/.htaccess" || { echo "Reference portal routing not installed";exit 1; }
+          test -s "$node_root/LANDSHOP_RELEASE_SHA"
+          mkdir -p "$backup"
+          chmod 700 "$backup"
+          if [ -e "$root/.htaccess" ];then
+            if grep -q 'PassengerAppRoot.*landshop-website' "$root/.htaccess";then
+              echo "Main-domain Passenger routing already configured; no override"
+              exit 0
+            fi
+            cp -p "$root/.htaccess" "$backup/htaccess-before"
+            echo "Existing main routing differs; refusing to overwrite it automatically"
+            exit 1
+          fi
+          # Preserve the existing landing page and other website content untouched.
+          test -f "$root/index.html" && cp -p "$root/index.html" "$backup/index-before.html" || true
+          cat > "$backup/htaccess-new" <<EOF
+          # DO NOT REMOVE. CLOUDLINUX PASSENGER CONFIGURATION BEGIN
+          PassengerAppRoot "$node_root"
+          PassengerBaseURI "/"
+          PassengerNodejs "$node_binary"
+          PassengerAppType node
+          PassengerStartupFile server.js
+          # DO NOT REMOVE. CLOUDLINUX PASSENGER CONFIGURATION END
+          EOF
+          chmod 644 "$backup/htaccess-new"
+          cp "$backup/htaccess-new" "$root/.htaccess"
+          touch "$node_root/tmp/restart.txt"
+          echo "Installed main website Passenger routing; existing content retained, rollback backup written"
+          REMOTE
+      - name: Verify Next.js publicly and rollback route on failure
+        shell: bash
+        env:
+          SSH_HOST: ${{ secrets.LANDSHOP_SSH_HOST || secrets.NAMECHEAP_SSH_HOST || vars.LANDSHOP_SSH_HOST }}
+          SSH_USER: ${{ secrets.LANDSHOP_SSH_USER || secrets.NAMECHEAP_SSH_USER || vars.LANDSHOP_SSH_USER }}
+          SSH_PORT: ${{ vars.LANDSHOP_SSH_PORT || secrets.LANDSHOP_SSH_PORT || secrets.NAMECHEAP_SSH_PORT || '21098' }}
+        run: |
+          set -euo pipefail
+          ok=false
+          for attempt in $(seq 1 12);do
+            body=$(curl -fsSL --max-time 10 -H 'Cache-Control: no-cache' https://landshopnigeria.com/api/release-health 2>/dev/null || true)
+            if BODY="$body" python3 - <<'PY'
+          import os,json
+          try: d=json.loads(os.environ["BODY"])
+          except (ValueError,TypeError): raise SystemExit(1)
+          assert d.get("service")=="landshop-website"
+          assert d.get("status")=="serving-nextjs"
+          assert isinstance(d.get("commit"),str) and len(d["commit"])==40
+          PY
+            then
+              echo "Main website now routes to deployed Next.js release"
+              ok=true
+              break
+            fi
+            sleep 5
+          done
+          if [ "$ok" != true ];then
+            echo "::error::Main website health did not pass; restoring previous Apache route"
+            ssh -p "$SSH_PORT" -o BatchMode=yes -o StrictHostKeyChecking=yes "$SSH_USER@$SSH_HOST" bash -s -- "$GITHUB_RUN_ID" <<'REMOTE'
+          set -eu
+          id="$1"
+          root="$HOME/public_html"
+          backup="$HOME/landshop-deployment-backups/routing-$id"
+          if [ -f "$backup/htaccess-before" ];then
+            cp -p "$backup/htaccess-before" "$root/.htaccess"
+          elif [ -f "$backup/htaccess-new" ] && cmp -s "$root/.htaccess" "$backup/htaccess-new";then
+            rm "$root/.htaccess"
+          fi
+          touch "$HOME/landshop-website/tmp/restart.txt" || true
+          echo "Previous routing state restored"
+          REMOTE
+            exit 1
+          fi
+      - name: Request AutoSSL certificate coverage (account-scoped)
+        shell: bash
+        env:
+          SSH_HOST: ${{ secrets.LANDSHOP_SSH_HOST || secrets.NAMECHEAP_SSH_HOST || vars.LANDSHOP_SSH_HOST }}
+          SSH_USER: ${{ secrets.LANDSHOP_SSH_USER || secrets.NAMECHEAP_SSH_USER || vars.LANDSHOP_SSH_USER }}
+          SSH_PORT: ${{ vars.LANDSHOP_SSH_PORT || secrets.LANDSHOP_SSH_PORT || secrets.NAMECHEAP_SSH_PORT || '21098' }}
+        run: |
+          set -euo pipefail
+          ssh -p "$SSH_PORT" -o BatchMode=yes -o StrictHostKeyChecking=yes "$SSH_USER@$SSH_HOST" 'uapi --output=json SSL start_autossl_check' | python3 -c '
+          import sys,json
+          try: r=json.load(sys.stdin).get("result",{})
+          except ValueError: print("AutoSSL response unreadable");raise SystemExit(1)
+          print("AutoSSL request status:",r.get("status"))
+          if r.get("errors"): print("AutoSSL provider returned an error:",str(r["errors"])[:400])
+          if r.get("status")!=1: raise SystemExit(1)
+          '
+          echo "AutoSSL request submitted; provider issuance remains subject to DCV and must be verified separately."
+      - name: Show updated public health statuses
+        shell: bash
+        run: |
+          for host in landshopnigeria.com www.landshopnigeria.com portal.landshopnigeria.com app.landshopnigeria.com; do
+            status=$(curl -sSL --max-time 12 -o /dev/null -w '%{http_code}' "https://$host/api/release-health" || true)
+            echo "$host HTTPS release-health: $status"
+          done
