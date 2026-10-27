@@ -1,0 +1,54 @@
+name: Landshop Production DNS and TLS Preflight
+on:
+  workflow_dispatch:
+  push:
+    branches: [engineering/forms-and-production-diagnostics-20261027]
+    paths: ['.github/workflows/landshop-preflight-public-dns-tls.yml']
+permissions:
+  contents: read
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Public DNS and HTTPS verification for the four hostnames
+        shell: bash
+        run: |
+          set -euo pipefail
+          failed=0
+          for host in landshopnigeria.com www.landshopnigeria.com portal.landshopnigeria.com app.landshopnigeria.com; do
+            echo "::group::Checking $host"
+            if command -v dig >/dev/null 2>&1; then
+              for ns in dns1.namecheaphosting.com dns2.namecheaphosting.com;do
+                echo "Authoritative nameserver: $ns"
+                dig +time=3 +tries=1 +short "@$ns" "$host" A | sort -u
+              done
+            fi
+            if [ "$host" = app.landshopnigeria.com ];then
+              if getent ahostsv4 "$host" | grep -q '^198\.54\.116\.10[[:space:]]';then
+                echo "::error::$host still has the incorrect 198.54.116.10 A record"
+                failed=1
+              fi
+            fi
+            if ! curl --fail --silent --show-error --location --max-time 20 --output /dev/null \
+               "https://$host/api/release-health";then
+              echo "::error::$host failed publicly trusted HTTPS health endpoint"
+              failed=1
+            else
+              echo "Secure HTTPS health endpoint reachable for $host"
+              body=$(curl --fail --silent --show-error --location --max-time 20 -H 'Cache-Control: no-cache' \
+               "https://$host/api/release-health")
+              BODY="$body" HOST="$host" python3 - <<'PY'
+          import json,os
+          data=json.loads(os.environ["BODY"])
+          print("Service:",data.get("service"),"State:",data.get("status"),"Commit:",data.get("commit"))
+          assert data.get("status")=="serving-nextjs"
+          assert len(str(data.get("commit","")))==40
+          PY
+            fi
+            echo "::endgroup::"
+          done
+          if [ "$failed" != 0 ];then
+            echo "::error::Do not publish until all four hostnames pass trusted HTTPS"
+            exit 1
+          fi
