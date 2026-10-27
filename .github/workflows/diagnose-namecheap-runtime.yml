@@ -333,6 +333,60 @@ jobs:
             echo "--- IPv6 resolution (if any) ---"
             getent ahostsv6 "$host" | awk '{print $1}' | sort -u | head -5 || true
           done
+      - name: Determine authoritative DNS and zone management capability
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "=== Public authoritative nameservers ==="
+          if command -v dig >/dev/null 2>&1;then
+            dig +short NS landshopnigeria.com | sort
+            for host in landshopnigeria.com www.landshopnigeria.com portal.landshopnigeria.com app.landshopnigeria.com;do
+              echo "--- DNS records for $host ---"
+              dig +short CNAME "$host" || true
+              dig +short A "$host" | sort -u || true
+              dig +short AAAA "$host" | sort -u || true
+            done
+          else echo "dig unavailable";fi
+          echo "DNS change is NOT attempted by this diagnostic."
+      - name: Inspect cPanel ZoneEdit capability for Landshop DNS (read-only)
+        shell: bash
+        env:
+          SSH_HOST: ${{ secrets.LANDSHOP_SSH_HOST || secrets.NAMECHEAP_SSH_HOST || vars.LANDSHOP_SSH_HOST }}
+          SSH_USER: ${{ secrets.LANDSHOP_SSH_USER || secrets.NAMECHEAP_SSH_USER || vars.LANDSHOP_SSH_USER }}
+          SSH_PORT: ${{ vars.LANDSHOP_SSH_PORT || secrets.LANDSHOP_SSH_PORT || secrets.NAMECHEAP_SSH_PORT || '21098' }}
+          SSH_KEY: ${{ secrets.LANDSHOP_SSH_KEY || secrets.NAMECHEAP_SSH_PRIVATE_KEY }}
+          KNOWN_HOSTS: ${{ secrets.LANDSHOP_SSH_KNOWN_HOSTS || secrets.NAMECHEAP_SSH_KNOWN_HOSTS || vars.LANDSHOP_SSH_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          install -d -m 700 "$HOME/.ssh"
+          printf '%s\n' "$SSH_KEY" > "$HOME/.ssh/id_ed25519"
+          printf '%s\n' "$KNOWN_HOSTS" > "$HOME/.ssh/known_hosts"
+          chmod 600 "$HOME/.ssh/id_ed25519" "$HOME/.ssh/known_hosts"
+          ssh -p "$SSH_PORT" -o BatchMode=yes -o StrictHostKeyChecking=yes "$SSH_USER@$SSH_HOST" bash -s <<'REMOTE'
+          set -eu
+          echo "=== cPanel zone availability ==="
+          if command -v uapi >/dev/null 2>&1;then
+            uapi --output=json ZoneEdit fetchzone domain=landshopnigeria.com 2>/dev/null | python3 -c '
+          import json,sys
+          try:r=json.load(sys.stdin).get("result",{})
+          except Exception:print("cPanel zone API not available");raise SystemExit(0)
+          print("ZoneEdit status:",r.get("status"))
+          if r.get("errors"):print("ZoneEdit error present")
+          data=r.get("data",{})
+          def visit(x):
+            if isinstance(x,list):
+              for a in x:visit(a)
+            elif isinstance(x,dict):
+              name=str(x.get("name","") or x.get("dname","")).rstrip(".")
+              typ=str(x.get("type","") or x.get("record_type",""))
+              if name in ("landshopnigeria.com","www.landshopnigeria.com","app.landshopnigeria.com","portal.landshopnigeria.com"):
+                print("Relevant zone record:",{"name":name,"type":typ,"line":x.get("line"),"ttl":x.get("ttl"),"address":x.get("address"),"cname":x.get("cname")})
+              for k,v in x.items():
+                if isinstance(v,(list,dict)):visit(v)
+          visit(data)
+          ' || true
+          fi
+          REMOTE
       - name: Diagnosis limits
         run: |
           echo "If release files exist but public routes return 404, inspect the cPanel Setup Node.js App URL binding,"
