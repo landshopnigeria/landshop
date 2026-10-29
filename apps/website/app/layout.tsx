@@ -11,5 +11,5 @@ import SiteHeader from '../components/SiteHeader';
 // Next.js static-prerendered HTML previously sent s-maxage=31536000 (one year).
 // Keep hashed /_next/static assets cacheable; only route HTML is dynamic.
 export const dynamic='force-dynamic';
-export const metadata:Metadata={title:'Landshop Nigeria — Building Wealth Through Real Estate',description:'Everyone Deserves Affordable Property. Explore Landshop products, properties and mortgage pathways.'};
+export const metadata:Metadata={metadataBase:new URL('https://www.landshopnigeria.com'),alternates:{canonical:'/'},title:'Landshop Nigeria — Building Wealth Through Real Estate',description:'Everyone Deserves Affordable Property. Explore Landshop products, properties and mortgage pathways.'};
 export default function Layout({children}:{children:React.ReactNode}){return <html lang="en"><head><meta name="landshop-release" content={process.env.NEXT_PUBLIC_LANDSHOP_RELEASE_SHA||'unversioned'}/></head><body><SiteHeader/>{children}</body></html>}

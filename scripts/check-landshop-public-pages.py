@@ -143,7 +143,15 @@ def check(kind: str, route: str, expected: str | None):
     if kind == "website" and route == "/contact":
         if 'class="lc-hero-photo"' not in html or 'class="contact-enquiry-form"' not in html:
             raise AssertionError("premium customer care image or secure enquiry form is missing")
+        if 'class="lc-map-landscape"' not in html or 'www.google.com/maps' not in html:
+            raise AssertionError("Landshop Google Maps landscape embed must be present before the footer")
+        if 'maps.app.goo.gl/GLiNo6LfYWhWvJV1A' not in html:
+            raise AssertionError("Supplied official Google Maps listing link is missing")
     if kind == "website" and route == "/properties":
+        if 'class="mk-property-grid"' not in html and 'mk-property-grid ' not in html:
+            raise AssertionError("database-backed marketplace grid is not rendered")
+        if 'name="state"' not in html or 'name="sort"' not in html:
+            raise AssertionError("marketplace filters and sorting controls are missing")
         if "title=\"Sign in to list property for sale\"" not in html:
             raise AssertionError("the marketplace Sell route is missing")
     for legacy in RECOVERY:
