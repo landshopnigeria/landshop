@@ -77,7 +77,7 @@ jobs:
           verify_page() {
             local role="$1" origin="$2" file="$RUNNER_TEMP/${1}.html"
             local attempt
-            for attempt in $(seq 1 18);do
+            for attempt in $(seq 1 7);do
               if curl -fsSL --max-time 18 -H 'Cache-Control: no-cache, no-store' -o "$file" "$origin/?landshop_homepage_repair=$GITHUB_RUN_ID";then
                 if python3 - "$role" "$file" <<'PY'
           import sys
@@ -87,7 +87,7 @@ jobs:
           forbidden=("Property ownership starts with possibility.","registration and account verification are being prepared","We are preparing secure account registration","temporarily unavailable while we")
           expected="Own Your" if role=="website" else "Sign in to your secure Landshop portal"
           valid="/_next/" in s and expected in s and not any(x in s for x in forbidden)
-          print(role,"Next.js homepage valid:",valid)
+          print(role,"Next.js homepage valid:",valid,"has_next_assets:",'/_next/' in s,"expected_copy:",expected in s,"legacy_marker:",any(x in s for x in forbidden),"html_bytes:",len(s))
           sys.exit(0 if valid else 1)
           PY
                 then return 0;fi
@@ -96,18 +96,20 @@ jobs:
             done
             echo "::error::Expected new $role homepage not publicly visible";return 1
           }
-          failed=0
-          verify_page website https://landshopnigeria.com || failed=1
-          verify_page website https://www.landshopnigeria.com || failed=1
-          verify_page portal https://portal.landshopnigeria.com || failed=1
-          if [ "$failed" != 0 ];then
-            echo "::warning::New UI not visible; restoring legacy indexes to previous state"
-            "${SSH[@]}" bash -s -- "$GITHUB_RUN_ID" "$WEBSITE_ROOT" "$PORTAL_ROOT" <<'ROLLBACK'
+          website_failed=0
+          portal_failed=0
+          verify_page website https://landshopnigeria.com || website_failed=1
+          verify_page website https://www.landshopnigeria.com || website_failed=1
+          verify_page portal https://portal.landshopnigeria.com || portal_failed=1
+          if [ "$website_failed" != 0 ] || [ "$portal_failed" != 0 ];then
+            echo "::warning::Restoring only the homepage entrypoint(s) whose new UI failed verification"
+            "${SSH[@]}" bash -s -- "$GITHUB_RUN_ID" "$WEBSITE_ROOT" "$PORTAL_ROOT" "$website_failed" "$portal_failed" <<'ROLLBACK'
           set -eu
-          runid="$1";web_app="$2";portal_app="$3"
+          runid="$1";web_app="$2";portal_app="$3";website_failed="$4";portal_failed="$5"
           backup="$HOME/landshop-deployment-backups/legacy-entry-$runid"
           for role in website portal;do
-            if [ "$role" = website ];then docroot="$HOME/public_html";app="$web_app";else docroot="$HOME/portal.landshopnigeria.com";app="$portal_app";fi
+            if [ "$role" = website ];then docroot="$HOME/public_html";app="$web_app";needs_restore="$website_failed";else docroot="$HOME/portal.landshopnigeria.com";app="$portal_app";needs_restore="$portal_failed";fi
+            [ "$needs_restore" = 1 ] || continue
             if [ -s "$backup/$role-index.html" ];then
               cp -p "$backup/$role-index.html" "$docroot/index.html"
               touch "$app/tmp/restart.txt"
