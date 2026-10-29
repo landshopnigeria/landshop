@@ -100,3 +100,5 @@
 .ld-form-feedback{padding:15px;border:1px solid #bee5cc;border-radius:11px;background:#edf9f1;color:#14583b;font-size:13px}
 .ld-form-feedback.error{border-color:#f4b9a6;background:#fff2ec;color:#a13314}
 @media(max-width:620px){.ld-inspection-fields{grid-template-columns:1fr}}
+
+.ld-map-actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:flex-end}.ld-map-actions a{color:#08765d;display:inline-flex;align-items:center;gap:7px;font-weight:800;font-size:13px}.ld-map-actions a .ls-icon{color:#f26b10}.ld-page .ld-section-nav a:hover,.ld-page .ld-inline-link .ls-icon,.ld-page .ld-related a .ls-icon{color:#f26b10}@media(max-width:640px){.ld-map-actions{width:100%;justify-content:flex-start}}
