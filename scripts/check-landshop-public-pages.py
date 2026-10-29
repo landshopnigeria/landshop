@@ -7,6 +7,7 @@ mutates records, or displays personal customer data.
 from __future__ import annotations
 
 from html import unescape
+from pathlib import Path
 from html.parser import HTMLParser
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
@@ -119,7 +120,7 @@ def check(kind: str, route: str, expected: str | None):
             raise AssertionError("obsolete combined three-product hero remains visible")
         for label in ("Show DEVELOP slide","Show INCUBATE slide","Show GROW slide",
                       "Previous slide","Next slide","Buy</button>","Sell</button>",
-                      "Rent</button>","Shortlet</button>","portal.landshopnigeria.com/applications/incubate-investment"):
+                      "Rent</button>","Shortlet</button>"):
             if label not in html:
                 raise AssertionError(f"required V16 slider control/action missing: {label}")
     if kind in ("website","www") and route in ("/develop","/incubate","/grow"):
@@ -136,7 +137,30 @@ def check(kind: str, route: str, expected: str | None):
     return len(html)
 
 
+def verify_source() -> None:
+    """Check routes for client-only carousel slides in source, not SSR initial-slide HTML."""
+    homepage = Path("apps/website/components/LandshopHome.tsx").read_text(encoding="utf-8")
+    product = Path("apps/website/components/ProductPage.tsx").read_text(encoding="utf-8")
+    required = (
+        "href:'https://portal.landshopnigeria.com/applications/incubate-investment'",
+        "['Buy','Sell','Rent','Shortlet']",
+    )
+    for marker in required:
+        if marker not in homepage:
+            raise AssertionError("Approved homepage source marker missing: " + marker)
+    for slug in ("develop-land","develop-house","develop-inspection",
+                 "incubate-investment","beta-mortgage","mortgage-xtra",
+                 "mortgage-xtra-inspection"):
+        if "portal+'/applications/"+slug+"'" not in product:
+            raise AssertionError("Product pathway has no approved secure form: " + slug)
+
+
 def main() -> int:
+    try:
+        verify_source()
+    except (AssertionError, OSError) as error:
+        print(f"FAILED: Local homepage/product release source validation: {error}", file=sys.stderr)
+        return 1
     errors = 0
     for kind, path, heading in PUBLIC_PAGES:
         try:
