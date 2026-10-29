@@ -17,13 +17,13 @@ export default async function Dashboard(){
  const approved=profile?.kyc_status==='approved';
  return <main style={{fontFamily:'Arial,sans-serif',padding:'clamp(18px,4vw,50px)',color:'#073f35',background:'#f5faf7',minHeight:'100vh'}}>
   <a href="https://www.landshopnigeria.com">Landshop</a>
-  <h1>Welcome to Landshop</h1><p>{user.email}</p>
+  <h1>Welcome to Landshop</h1><p>{user.email}</p><nav style={{display:'flex',gap:15,flexWrap:'wrap',marginBottom:24}}><a href="/dashboard/applications" style={{color:'#087f69',fontWeight:700}}>My Applications →</a><a href="https://portal.landshopnigeria.com/applications" style={{color:'#087f69',fontWeight:700}}>Applications Center →</a></nav>
   {!approved?<section style={{padding:28,border:'1px solid #cce5d8',borderRadius:20,background:'white'}}>
    <h2>Complete your KYC</h2><p>Protected services remain unavailable until your KYC review is approved.</p>
    <p>Current status: {profile?.kyc_status||'not started'}</p>
    <p>Begin your identity verification and upload the required documents securely.</p><p><a href="/dashboard/kyc" style={{color:'#087f69'}}>Complete KYC →</a></p>
   </section>:<section style={{padding:28,border:'1px solid #cce5d8',borderRadius:20,background:'white'}}>
    <h2>Account approved</h2><p>Your account is approved. You can start a new application draft while the remaining services are being activated.</p>
-  <p><a href="/dashboard/applications/new" style={{color:'#087f69'}}>Start New Application →</a></p></section>}
+  <p><a href="https://portal.landshopnigeria.com/applications" style={{color:'#087f69'}}>Start Product Application →</a></p></section>}
  </main>;
 }

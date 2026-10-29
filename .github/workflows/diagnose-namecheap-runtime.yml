@@ -1,0 +1,431 @@
+name: Diagnose Landshop Namecheap Production Routing
+on:
+  workflow_dispatch:
+  push:
+    branches: [engineering/forms-and-production-diagnostics-20261027]
+    paths: ['.github/workflows/diagnose-namecheap-runtime.yml']
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    environment: landshop-production
+    timeout-minutes: 12
+    steps:
+      - name: Inspect externally observable domain routing
+        shell: bash
+        run: |
+          set -euo pipefail
+          for pair in \
+            "website|https://landshopnigeria.com" \
+            "website-www|https://www.landshopnigeria.com" \
+            "portal|https://portal.landshopnigeria.com" \
+            "dashboard|https://app.landshopnigeria.com"; do
+            IFS='|' read -r app origin <<< "$pair"
+            for path in / /api/release-health; do
+              status=$(curl -sS -L --max-time 18 -o /dev/null -w '%{http_code}' -H 'Cache-Control: no-cache' "$origin$path" || true)
+              echo "$app $path : HTTP $status"
+            done
+          done
+      - name: Read-only packaged runtime checks on Namecheap
+        shell: bash
+        env:
+          SSH_HOST: ${{ secrets.LANDSHOP_SSH_HOST || secrets.NAMECHEAP_SSH_HOST || vars.LANDSHOP_SSH_HOST }}
+          SSH_USER: ${{ secrets.LANDSHOP_SSH_USER || secrets.NAMECHEAP_SSH_USER || vars.LANDSHOP_SSH_USER }}
+          SSH_PORT: ${{ vars.LANDSHOP_SSH_PORT || secrets.LANDSHOP_SSH_PORT || secrets.NAMECHEAP_SSH_PORT || '21098' }}
+          SSH_KEY: ${{ secrets.LANDSHOP_SSH_KEY || secrets.NAMECHEAP_SSH_PRIVATE_KEY }}
+          KNOWN_HOSTS: ${{ secrets.LANDSHOP_SSH_KNOWN_HOSTS || secrets.NAMECHEAP_SSH_KNOWN_HOSTS || vars.LANDSHOP_SSH_KNOWN_HOSTS }}
+          WEBSITE_ROOT: ${{ secrets.LANDSHOP_WEBSITE_APPROOT || vars.LANDSHOP_WEBSITE_APPROOT || '/home/maleghif/landshop-website' }}
+          PORTAL_ROOT: ${{ secrets.LANDSHOP_PORTAL_APPROOT || vars.LANDSHOP_PORTAL_APPROOT || '/home/maleghif/landshop-portal' }}
+          DASHBOARD_ROOT: ${{ secrets.LANDSHOP_DASHBOARD_APPROOT || vars.LANDSHOP_DASHBOARD_APPROOT || '/home/maleghif/landshop-app' }}
+        run: |
+          set -euo pipefail
+          for v in SSH_HOST SSH_USER SSH_KEY KNOWN_HOSTS; do
+            [ -n "${!v:-}" ] || { echo "::error::Missing $v"; exit 1; }
+          done
+          [[ "$SSH_PORT" =~ ^[0-9]{1,5}$ ]] || exit 1
+          install -d -m 700 "$HOME/.ssh"
+          printf '%s\n' "$SSH_KEY" > "$HOME/.ssh/id_ed25519"
+          printf '%s\n' "$KNOWN_HOSTS" > "$HOME/.ssh/known_hosts"
+          chmod 600 "$HOME/.ssh/id_ed25519" "$HOME/.ssh/known_hosts"
+          ssh -p "$SSH_PORT" -o BatchMode=yes -o StrictHostKeyChecking=yes \
+            "$SSH_USER@$SSH_HOST" bash -s -- "$WEBSITE_ROOT" "$PORTAL_ROOT" "$DASHBOARD_ROOT" <<'REMOTE'
+          set -eu
+          echo "=== Read-only Namecheap application packaging inspection ==="
+          command -v node >/dev/null && node --version || echo "Node unavailable to SSH shell"
+          for app in website portal dashboard; do
+            case "$app" in
+              website) root="$1";;
+              portal) root="$2";;
+              dashboard) root="$3";;
+            esac
+            case "$root" in /home/*) ;; *) echo "Invalid app root"; exit 1;; esac
+            echo "-- $app --"
+            [ -d "$root" ] && echo "Application root exists" || { echo "Application root MISSING"; continue; }
+            [ -s "$root/server.js" ] && echo "Passenger entry exists" || echo "Passenger entry MISSING"
+            [ -s "$root/apps/$app/server.js" ] && echo "Standalone Next.js server exists" || echo "Standalone Next.js server MISSING"
+            [ -d "$root/apps/$app/.next/static" ] && echo "Next static files present" || echo "Next static files MISSING"
+            [ -s "$root/LANDSHOP_RELEASE_SHA" ] && { printf "Packaged release: "; head -c 40 "$root/LANDSHOP_RELEASE_SHA"; echo; } || echo "Packaged SHA MISSING"
+            [ -d "$root/tmp" ] && echo "Passenger restart directory present" || echo "Passenger restart directory MISSING"
+            [ -f "$root/.htaccess" ] && echo "App-root .htaccess exists (contents omitted)" || echo "App-root .htaccess absent"
+          done
+          echo "=== Checks intentionally do not print environment files, keys or personal data ==="
+          REMOTE
+      - name: Inspect public DNS, certificate and runtime signature without secrets
+        shell: bash
+        run: |
+          set -euo pipefail
+          for host in landshopnigeria.com www.landshopnigeria.com portal.landshopnigeria.com app.landshopnigeria.com; do
+            echo "-- Public $host --"
+            getent ahostsv4 "$host" | awk 'NR==1{print "DNS resolves: yes"; exit}' || true
+            cert=$(echo | timeout 10 openssl s_client -connect "$host:443" -servername "$host" 2>/dev/null | openssl x509 -noout -ext subjectAltName 2>/dev/null | head -c 350 || true)
+            [ -n "$cert" ] && echo "Public certificate SAN: $cert" || echo "Public certificate not retrievable"
+          done
+          for pair in "website|https://landshopnigeria.com" "portal|https://portal.landshopnigeria.com" "dashboard|https://app.landshopnigeria.com"; do
+            IFS='|' read -r app origin <<< "$pair"
+            output=$(curl -fSsL --max-time 12 -H 'Cache-Control: no-cache' "$origin/api/release-health" || true)
+            if [ -n "$output" ]; then
+              SERVICE="$app" BODY="$output" python3 - <<'PY'
+          import json,os
+          try:
+              body=json.loads(os.environ["BODY"])
+          except Exception:
+              print(os.environ["SERVICE"],"health: non-JSON upstream"); raise SystemExit(0)
+          print(os.environ["SERVICE"],"health:",{
+            k:body.get(k) for k in ("service","status","commit")})
+          PY
+            else echo "$app health response: unavailable"; fi
+          done
+      - name: Inspect CloudLinux application routing (read-only)
+        shell: bash
+        env:
+          SSH_HOST: ${{ secrets.LANDSHOP_SSH_HOST || secrets.NAMECHEAP_SSH_HOST || vars.LANDSHOP_SSH_HOST }}
+          SSH_USER: ${{ secrets.LANDSHOP_SSH_USER || secrets.NAMECHEAP_SSH_USER || vars.LANDSHOP_SSH_USER }}
+          SSH_PORT: ${{ vars.LANDSHOP_SSH_PORT || secrets.LANDSHOP_SSH_PORT || secrets.NAMECHEAP_SSH_PORT || '21098' }}
+          SSH_KEY: ${{ secrets.LANDSHOP_SSH_KEY || secrets.NAMECHEAP_SSH_PRIVATE_KEY }}
+          KNOWN_HOSTS: ${{ secrets.LANDSHOP_SSH_KNOWN_HOSTS || secrets.NAMECHEAP_SSH_KNOWN_HOSTS || vars.LANDSHOP_SSH_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          install -d -m 700 "$HOME/.ssh"
+          printf '%s\n' "$SSH_KEY" > "$HOME/.ssh/id_ed25519"
+          printf '%s\n' "$KNOWN_HOSTS" > "$HOME/.ssh/known_hosts"
+          chmod 600 "$HOME/.ssh/id_ed25519" "$HOME/.ssh/known_hosts"
+          ssh -p "$SSH_PORT" -o BatchMode=yes -o StrictHostKeyChecking=yes "$SSH_USER@$SSH_HOST" bash -s <<'REMOTE'
+          set -eu
+          for binary in /usr/bin/cloudlinux-selector /usr/local/bin/cloudlinux-selector /usr/local/cpanel/bin/uapi /usr/bin/uapi /usr/bin/node; do
+            [ -x "$binary" ] && echo "Executable available: ${binary##*/} (${binary%/*})"
+          done
+          if command -v cloudlinux-selector >/dev/null 2>&1; then
+            cloudlinux-selector get --json --interpreter nodejs --user "$USER" 2>/dev/null | python3 -c '
+          import sys,json
+          try:
+              raw=json.load(sys.stdin)
+              print("Selector result:", raw.get("result"))
+              items=raw.get("data", {}).get("apps", {}) if isinstance(raw.get("data"), dict) else raw.get("apps", {})
+              for name,item in items.items() if isinstance(items,dict) else enumerate(items):
+                  if not isinstance(item,dict): continue
+                  print("App routing:",{k:item.get(k) for k in ("app_root","app_uri","domain","startup_file","app_status","status","version","mode") if k in item})
+          except Exception as e: print("Selector output not readable")
+          ' || echo "Selector inspection not authorized"
+          else echo "CloudLinux selector command unavailable to login shell"; fi
+          for homepath in "$HOME/public_html" "$HOME/www"; do
+            if [ -d "$homepath" ]; then
+              [ -f "$homepath/.htaccess" ] && echo "Main docroot has .htaccess" || echo "Main docroot has no .htaccess"
+              [ -f "$homepath/wp-config.php" ] && echo "WordPress marker in main docroot" || true
+              [ -f "$homepath/index.php" ] && echo "PHP index in main docroot" || true
+            fi
+          done
+          REMOTE
+      - name: Inspect configured app URLs and cPanel DNS/SSL mapping (read-only)
+        shell: bash
+        env:
+          SSH_HOST: ${{ secrets.LANDSHOP_SSH_HOST || secrets.NAMECHEAP_SSH_HOST || vars.LANDSHOP_SSH_HOST }}
+          SSH_USER: ${{ secrets.LANDSHOP_SSH_USER || secrets.NAMECHEAP_SSH_USER || vars.LANDSHOP_SSH_USER }}
+          SSH_PORT: ${{ vars.LANDSHOP_SSH_PORT || secrets.LANDSHOP_SSH_PORT || secrets.NAMECHEAP_SSH_PORT || '21098' }}
+          SSH_KEY: ${{ secrets.LANDSHOP_SSH_KEY || secrets.NAMECHEAP_SSH_PRIVATE_KEY }}
+          KNOWN_HOSTS: ${{ secrets.LANDSHOP_SSH_KNOWN_HOSTS || secrets.NAMECHEAP_SSH_KNOWN_HOSTS || vars.LANDSHOP_SSH_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          install -d -m 700 "$HOME/.ssh"
+          printf '%s\n' "$SSH_KEY" > "$HOME/.ssh/id_ed25519"
+          printf '%s\n' "$KNOWN_HOSTS" > "$HOME/.ssh/known_hosts"
+          chmod 600 "$HOME/.ssh/id_ed25519" "$HOME/.ssh/known_hosts"
+          ssh -p "$SSH_PORT" -o BatchMode=yes -o StrictHostKeyChecking=yes "$SSH_USER@$SSH_HOST" bash -s <<'REMOTE'
+          set -eu
+          if command -v cloudlinux-selector >/dev/null 2>&1; then
+            cloudlinux-selector get --json --interpreter nodejs --user "$USER" 2>/dev/null | python3 -c '
+          import json,sys
+          try: data=json.load(sys.stdin)
+          except Exception: print("Selector output invalid"); raise SystemExit(0)
+          print("Selector high-level keys", list(data.keys()))
+          safe={"app_root","app_uri","domain","startup_file","app_status","status","version","mode","app_mode","app_url","root"}
+          found=0
+          def visit(o,path="",depth=0):
+           global found
+           if depth>8 or found>35: return
+           if isinstance(o,dict):
+            reduced={k:str(v)[:150] for k,v in o.items() if k in safe and not isinstance(v,(dict,list))}
+            if reduced:
+             print("Configured app:",path,reduced);found+=1
+            for k,v in o.items():
+             if isinstance(v,(dict,list)) and k not in ("env_vars","env","environment","secrets"): visit(v,path+"/"+str(k)[:30],depth+1)
+           elif isinstance(o,list):
+            for n,v in enumerate(o[:25]): visit(v,path+"/"+str(n),depth+1)
+          visit(data)
+          ' || echo "Selector result unavailable"
+          fi
+          if command -v uapi >/dev/null 2>&1; then
+            uapi --output=json DomainInfo list_domains 2>/dev/null | python3 -c '
+          import json,sys
+          try: d=json.load(sys.stdin)
+          except Exception: print("DomainInfo unavailable");raise SystemExit(0)
+          o=d.get("result",{}).get("data",{})
+          print("DomainInfo available:",bool(o))
+          if isinstance(o,dict):
+           for key in ("main_domain","sub_domains","addon_domains","parked_domains"):
+            value=o.get(key)
+            if value is not None: print("DomainInfo:",key,str(value)[:700])
+          ' || echo "DomainInfo not authorized"
+          else echo "cPanel UAPI unavailable";fi
+          REMOTE
+      - name: Identify active upstream technology without retrieving private data
+        shell: bash
+        run: |
+          for origin in https://landshopnigeria.com https://www.landshopnigeria.com https://portal.landshopnigeria.com; do
+            echo "-- Upstream markers for $origin --"
+            content=$(curl -sSL --max-time 15 "$origin/" || true)
+            [ -n "$content" ] || { echo "HTML unavailable";continue; }
+            printf '%s' "$content" | grep -qiE 'wp-content|wp-includes' && echo "WordPress asset references present" || true
+            printf '%s' "$content" | grep -q '/_next/' && echo "Next.js asset references present" || true
+            printf '%s' "$content" | grep -q 'Landshop' && echo "Landshop visible in HTML" || true
+          done
+      - name: Check cPanel document-root mappings and installed SSL (read-only)
+        shell: bash
+        env:
+          SSH_HOST: ${{ secrets.LANDSHOP_SSH_HOST || secrets.NAMECHEAP_SSH_HOST || vars.LANDSHOP_SSH_HOST }}
+          SSH_USER: ${{ secrets.LANDSHOP_SSH_USER || secrets.NAMECHEAP_SSH_USER || vars.LANDSHOP_SSH_USER }}
+          SSH_PORT: ${{ vars.LANDSHOP_SSH_PORT || secrets.LANDSHOP_SSH_PORT || secrets.NAMECHEAP_SSH_PORT || '21098' }}
+          SSH_KEY: ${{ secrets.LANDSHOP_SSH_KEY || secrets.NAMECHEAP_SSH_PRIVATE_KEY }}
+          KNOWN_HOSTS: ${{ secrets.LANDSHOP_SSH_KNOWN_HOSTS || secrets.NAMECHEAP_SSH_KNOWN_HOSTS || vars.LANDSHOP_SSH_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          install -d -m 700 "$HOME/.ssh"
+          printf '%s\n' "$SSH_KEY" > "$HOME/.ssh/id_ed25519"
+          printf '%s\n' "$KNOWN_HOSTS" > "$HOME/.ssh/known_hosts"
+          chmod 600 "$HOME/.ssh/id_ed25519" "$HOME/.ssh/known_hosts"
+          ssh -p "$SSH_PORT" -o BatchMode=yes -o StrictHostKeyChecking=yes "$SSH_USER@$SSH_HOST" bash -s <<'REMOTE'
+          set -eu
+          for method in "DomainInfo domains_data" "SSL installed_hosts" "SSL get_autossl_excluded_domains";do
+           echo "--- UAPI $method ---"
+           uapi --output=json $method 2>/dev/null | python3 -c '
+          import sys,json,os
+          try:
+              d=json.load(sys.stdin);r=d.get("result",{});data=r.get("data")
+          except Exception: print("UAPI data not readable");raise SystemExit(0)
+          print("status:",r.get("status"))
+          if r.get("errors"): print("API error present")
+          want=["landshopnigeria.com","www.landshopnigeria.com","portal.landshopnigeria.com","app.landshopnigeria.com"]
+          matched=0
+          def walk(obj,path="",depth=0):
+           global matched
+           if depth>9 or matched>25:return
+           if isinstance(obj,dict):
+            fields=("domain","documentroot","document_root","docroot","server_name","servername","certificate_validity","cert_status","status","is_self_signed","certificate_expiration")
+            small={k:str(v)[:130] for k,v in obj.items() if k in fields and not isinstance(v,(dict,list))}
+            if small and ("domain" in small and any(x==small["domain"] for x in want) or any(x in str(v) for v in small.values() for x in want)):
+             print("Matched domain:",path,small);matched+=1
+            for k,v in obj.items():
+             if isinstance(v,(dict,list)):walk(v,path+"/"+str(k)[:35],depth+1)
+           elif isinstance(obj,list):
+            for i,v in enumerate(obj[:80]):walk(v,path+"/"+str(i),depth+1)
+          walk(data)
+          if not matched:print("no matching domain configuration exposed")
+          ' || true
+          done
+          REMOTE
+      - name: Compare public Passenger routing files and document roots
+        shell: bash
+        env:
+          SSH_HOST: ${{ secrets.LANDSHOP_SSH_HOST || secrets.NAMECHEAP_SSH_HOST || vars.LANDSHOP_SSH_HOST }}
+          SSH_USER: ${{ secrets.LANDSHOP_SSH_USER || secrets.NAMECHEAP_SSH_USER || vars.LANDSHOP_SSH_USER }}
+          SSH_PORT: ${{ vars.LANDSHOP_SSH_PORT || secrets.LANDSHOP_SSH_PORT || secrets.NAMECHEAP_SSH_PORT || '21098' }}
+          SSH_KEY: ${{ secrets.LANDSHOP_SSH_KEY || secrets.NAMECHEAP_SSH_PRIVATE_KEY }}
+          KNOWN_HOSTS: ${{ secrets.LANDSHOP_SSH_KNOWN_HOSTS || secrets.NAMECHEAP_SSH_KNOWN_HOSTS || vars.LANDSHOP_SSH_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          install -d -m 700 "$HOME/.ssh"
+          printf '%s\n' "$SSH_KEY" > "$HOME/.ssh/id_ed25519"
+          printf '%s\n' "$KNOWN_HOSTS" > "$HOME/.ssh/known_hosts"
+          chmod 600 "$HOME/.ssh/id_ed25519" "$HOME/.ssh/known_hosts"
+          ssh -p "$SSH_PORT" -o BatchMode=yes -o StrictHostKeyChecking=yes "$SSH_USER@$SSH_HOST" bash -s <<'REMOTE'
+          set -eu
+          for pair in "main|$HOME/public_html" "portal|$HOME/portal.landshopnigeria.com" "dashboard|$HOME/app.landshopnigeria.com"; do
+           IFS='|' read -r app docroot <<EOF
+          $pair
+          EOF
+           echo "--- Document root: $app ---"
+           if [ ! -d "$docroot" ];then echo "Docroot missing";continue;fi
+           for f in .htaccess index.php index.html wp-config.php;do
+            if [ -f "$docroot/$f" ];then printf '%s ' "$f"; stat -c '%s bytes' "$docroot/$f";fi
+           done
+           if [ -f "$docroot/.htaccess" ];then
+            grep -Ei 'Passenger|AddHandler|RewriteRule|RewriteEngine|DirectoryIndex|php|nodejs' "$docroot/.htaccess" | sed -E 's,(/home/)[^/ ]+,\1***,g' | head -c 2400 || true
+            echo
+           fi
+           if [ -f "$docroot/index.php" ];then
+            grep -qi 'wp-blog-header' "$docroot/index.php" && echo "index.php invokes WordPress" || true
+           fi
+          done
+          REMOTE
+      - name: Verify public Next.js routes after main Passenger routing repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          for origin in https://landshopnigeria.com https://portal.landshopnigeria.com https://app.landshopnigeria.com https://www.landshopnigeria.com;do
+            echo "=== $origin ==="
+            status=$(curl -sSL --max-time 20 -o /dev/null -w '%{http_code}' "$origin/api/release-health" || true)
+            echo "health HTTP status: $status"
+            if [ "$status" = "200" ];then
+              body=$(curl -fsSL --max-time 15 -H 'Cache-Control: no-cache' "$origin/api/release-health" 2>/dev/null || true)
+              if [ -z "$body" ];then echo 'TLS or routing unavailable during second request'; continue; fi
+              BODY="$body" python3 - <<'PY'
+          import os,json
+          try: d=json.loads(os.environ["BODY"])
+          except ValueError: print("Not JSON");raise SystemExit(1)
+          print("service:",d.get("service"),"status:",d.get("status"),"release:",d.get("commit"))
+          PY
+            fi
+          done
+      - name: Verify HTTPS certificate hostname matching and expiry
+        shell: bash
+        run: |
+          set -euo pipefail
+          for host in landshopnigeria.com www.landshopnigeria.com portal.landshopnigeria.com app.landshopnigeria.com; do
+            echo "=== Certificate verification for $host ==="
+            tmp=$(mktemp)
+            openssl s_client -connect "$host:443" -servername "$host" -showcerts </dev/null 2>/dev/null | openssl x509 -outform PEM > "$tmp" || true
+            if [ -s "$tmp" ]; then
+              openssl x509 -in "$tmp" -noout -subject -issuer -dates -checkhost "$host" || true
+              openssl x509 -in "$tmp" -noout -ext subjectAltName || true
+            else
+              echo "No public TLS certificate returned"
+            fi
+            rm -f "$tmp"
+          done
+      - name: Isolate individual DNS endpoints and their TLS certificates
+        shell: bash
+        run: |
+          set -euo pipefail
+          for host in landshopnigeria.com www.landshopnigeria.com portal.landshopnigeria.com app.landshopnigeria.com; do
+            echo "=== Endpoint isolation: $host ==="
+            ipv4=$(getent ahostsv4 "$host" | awk '{print $1}' | sort -u || true)
+            if [ -z "$ipv4" ]; then echo "No IPv4 endpoints resolved";continue;fi
+            for ip in $ipv4;do
+              echo "Endpoint IP: $ip"
+              cert=$(mktemp)
+              echo | timeout 8 openssl s_client -connect "$ip:443" -servername "$host" 2>/dev/null | openssl x509 -outform PEM > "$cert" || true
+              if [ -s "$cert" ];then
+                openssl x509 -in "$cert" -noout -checkhost "$host" -subject -dates || true
+              else echo "No TLS certificate available at endpoint";fi
+              rm -f "$cert"
+              curl -sS --max-time 12 --resolve "$host:443:$ip" -H 'Cache-Control: no-cache' -o /dev/null -w 'HTTPS response code: %{http_code} ; SSL verify: %{ssl_verify_result}\n' "https://$host/api/release-health" || true
+            done
+            echo "--- IPv6 resolution (if any) ---"
+            getent ahostsv6 "$host" | awk '{print $1}' | sort -u | head -5 || true
+          done
+      - name: Determine authoritative DNS and zone management capability
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "=== Public authoritative nameservers ==="
+          if command -v dig >/dev/null 2>&1;then
+            dig +short NS landshopnigeria.com | sort
+            for host in landshopnigeria.com www.landshopnigeria.com portal.landshopnigeria.com app.landshopnigeria.com;do
+              echo "--- DNS records for $host ---"
+              dig +short CNAME "$host" || true
+              dig +short A "$host" | sort -u || true
+              dig +short AAAA "$host" | sort -u || true
+            done
+          else echo "dig unavailable";fi
+          echo "DNS change is NOT attempted by this diagnostic."
+      - name: Inspect cPanel ZoneEdit capability for Landshop DNS (read-only)
+        shell: bash
+        env:
+          SSH_HOST: ${{ secrets.LANDSHOP_SSH_HOST || secrets.NAMECHEAP_SSH_HOST || vars.LANDSHOP_SSH_HOST }}
+          SSH_USER: ${{ secrets.LANDSHOP_SSH_USER || secrets.NAMECHEAP_SSH_USER || vars.LANDSHOP_SSH_USER }}
+          SSH_PORT: ${{ vars.LANDSHOP_SSH_PORT || secrets.LANDSHOP_SSH_PORT || secrets.NAMECHEAP_SSH_PORT || '21098' }}
+          SSH_KEY: ${{ secrets.LANDSHOP_SSH_KEY || secrets.NAMECHEAP_SSH_PRIVATE_KEY }}
+          KNOWN_HOSTS: ${{ secrets.LANDSHOP_SSH_KNOWN_HOSTS || secrets.NAMECHEAP_SSH_KNOWN_HOSTS || vars.LANDSHOP_SSH_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          install -d -m 700 "$HOME/.ssh"
+          printf '%s\n' "$SSH_KEY" > "$HOME/.ssh/id_ed25519"
+          printf '%s\n' "$KNOWN_HOSTS" > "$HOME/.ssh/known_hosts"
+          chmod 600 "$HOME/.ssh/id_ed25519" "$HOME/.ssh/known_hosts"
+          ssh -p "$SSH_PORT" -o BatchMode=yes -o StrictHostKeyChecking=yes "$SSH_USER@$SSH_HOST" bash -s <<'REMOTE'
+          set -eu
+          echo "=== cPanel zone availability ==="
+          if command -v uapi >/dev/null 2>&1;then
+            uapi --output=json ZoneEdit fetchzone domain=landshopnigeria.com 2>/dev/null | python3 -c '
+          import json,sys
+          try:r=json.load(sys.stdin).get("result",{})
+          except Exception:print("cPanel zone API not available");raise SystemExit(0)
+          print("ZoneEdit status:",r.get("status"))
+          if r.get("errors"):print("ZoneEdit error present")
+          data=r.get("data",{})
+          def visit(x):
+            if isinstance(x,list):
+              for a in x:visit(a)
+            elif isinstance(x,dict):
+              name=str(x.get("name","") or x.get("dname","")).rstrip(".")
+              typ=str(x.get("type","") or x.get("record_type",""))
+              if name in ("landshopnigeria.com","www.landshopnigeria.com","app.landshopnigeria.com","portal.landshopnigeria.com"):
+                print("Relevant zone record:",{"name":name,"type":typ,"line":x.get("line"),"ttl":x.get("ttl"),"address":x.get("address"),"cname":x.get("cname")})
+              for k,v in x.items():
+                if isinstance(v,(list,dict)):visit(v)
+          visit(data)
+          ' || true
+          fi
+          REMOTE
+      - name: Check cPanel legacy DNS API permissions without modifying zones
+        shell: bash
+        env:
+          SSH_HOST: ${{ secrets.LANDSHOP_SSH_HOST || secrets.NAMECHEAP_SSH_HOST || vars.LANDSHOP_SSH_HOST }}
+          SSH_USER: ${{ secrets.LANDSHOP_SSH_USER || secrets.NAMECHEAP_SSH_USER || vars.LANDSHOP_SSH_USER }}
+          SSH_PORT: ${{ vars.LANDSHOP_SSH_PORT || secrets.LANDSHOP_SSH_PORT || secrets.NAMECHEAP_SSH_PORT || '21098' }}
+          SSH_KEY: ${{ secrets.LANDSHOP_SSH_KEY || secrets.NAMECHEAP_SSH_PRIVATE_KEY }}
+          KNOWN_HOSTS: ${{ secrets.LANDSHOP_SSH_KNOWN_HOSTS || secrets.NAMECHEAP_SSH_KNOWN_HOSTS || vars.LANDSHOP_SSH_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          install -d -m 700 "$HOME/.ssh"
+          printf '%s\n' "$SSH_KEY" > "$HOME/.ssh/id_ed25519"
+          printf '%s\n' "$KNOWN_HOSTS" > "$HOME/.ssh/known_hosts"
+          chmod 600 "$HOME/.ssh/id_ed25519" "$HOME/.ssh/known_hosts"
+          ssh -p "$SSH_PORT" -o BatchMode=yes -o StrictHostKeyChecking=yes "$SSH_USER@$SSH_HOST" bash -s <<'REMOTE'
+          set -eu
+          binary=/usr/local/cpanel/bin/cpapi2
+          if [ ! -x "$binary" ]; then echo "cPanel API2 CLI not executable";exit 0;fi
+          echo "Inspecting authoritative zone using cPanel API2 (read-only)"
+          for method in fetchzone fetchzone_records; do
+            echo "--- cPanel ZoneEdit $method ---"
+            "$binary" --user="$USER" --output=json ZoneEdit "$method" domain=landshopnigeria.com 2>/dev/null | python3 -c '
+          import sys,json
+          try: r=json.load(sys.stdin).get("cpanelresult",{})
+          except Exception: print("API2 JSON unavailable");raise SystemExit(0)
+          print("API2 operation:",r.get("func"),"allowed:",r.get("event",{}).get("result"))
+          for row in r.get("data",[]):
+           if not isinstance(row,dict): continue
+           if row.get("status")==0 and row.get("reason"):print("Access denied or error:",str(row["reason"])[:160])
+           data=row.get("record",row)
+           if isinstance(data,dict):
+            dname=str(data.get("name","") or data.get("dname","")).rstrip(".")
+            if dname in ("app.landshopnigeria.com","www.landshopnigeria.com","landshopnigeria.com","portal.landshopnigeria.com"):
+             print("Zone record:",{k:data.get(k) for k in ("name","type","address","cname","line","Line","ttl") if k in data})
+          ' || true
+          done
+          REMOTE
+      - name: Diagnosis limits
+        run: |
+          echo "If release files exist but public routes return 404, inspect the cPanel Setup Node.js App URL binding,"
+          echo "startup file server.js, domain document root, Apache/Passenger activation and restart logs."
+          echo "Do not mark deployment successful unless the exact release SHA is served publicly."

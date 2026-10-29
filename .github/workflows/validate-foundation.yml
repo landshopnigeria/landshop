@@ -10,6 +10,8 @@ on:
       - 'package.json'
       - '.github/workflows/validate-foundation.yml'
       - '.github/workflows/deploy-landshop-enterprise.yml'
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 permissions:
   contents: read
@@ -66,9 +68,35 @@ jobs:
           assert result['status']=='serving-nextjs'
           assert result['commit']==os.environ['LANDSHOP_RELEASE_SHA']
           PY
+            # Verify source-aligned product/application pages render, not just the health route.
+            if [ "$app" = "website" ]; then
+              routes=(/ /develop /incubate /grow /applications /properties)
+            elif [ "$app" = "portal" ]; then
+              routes=(/ /applications /applications/develop-house /applications/develop-land \
+                /applications/incubate-investment /applications/beta-mortgage \
+                /applications/mortgage-xtra /applications/develop-inspection \
+                /applications/mortgage-xtra-inspection /calculator)
+            else
+              routes=(/ /dashboard)
+            fi
+            for route in "${routes[@]}";do
+              code=$(curl -sS --max-time 10 -o /dev/null -w '%{http_code}' \
+                "http://127.0.0.1:39519$route")
+              if [ "$app" = "dashboard" ];then
+                # Public guests must not receive private dashboard contents.
+                case "$code" in 307|308) echo "Protected dashboard redirects unauthenticated visitor: $route";continue;; esac
+              fi
+              if [ "$code" != 200 ];then
+                echo "::error::Landshop $app $route returned HTTP $code in standalone runtime"
+                cat "/tmp/landshop-$app.log"
+                kill "$pid" || true
+                exit 1
+              fi
+              echo "SSR/route smoke passed: $app $route"
+            done
             kill "$pid" || true
             wait "$pid" || true
-            echo "Standalone runtime startup verified for $app"
+            echo "Standalone runtime startup and route smoke verified for $app"
           done
       - uses: actions/setup-python@v5
         with:

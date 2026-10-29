@@ -98,6 +98,56 @@ jobs:
           chmod 600 "$HOME/.ssh/id_ed25519"
           printf '%s\n' "$KNOWN_HOSTS" > "$HOME/.ssh/known_hosts"
           chmod 600 "$HOME/.ssh/known_hosts"
+      - name: Block production upload on SSL, routing or migration readiness failures
+        shell: bash
+        env:
+          DATABASE_RELEASE_APPROVED: ${{ vars.LANDSHOP_DATABASE_RELEASE_APPROVED || 'false' }}
+        run: |
+          set -euo pipefail
+          if [ "$DATABASE_RELEASE_APPROVED" != "true" ]; then
+            echo "::error::Landshop database release gate not approved. Apply, verify and authorize pending migrations before publication."
+            exit 1
+          fi
+          for host in landshopnigeria.com www.landshopnigeria.com portal.landshopnigeria.com app.landshopnigeria.com; do
+            curl --fail --silent --show-error --location --max-time 18 --head "https://$host/" >/dev/null || {
+              echo "::error::Production domain $host does not have valid TLS/HTTP routing"
+              exit 1
+            }
+            echo "TLS and response verified for $host"
+          done
+      - name: Back up existing production Next.js release before overwriting
+        shell: bash
+        env:
+          SSH_PORT: ${{ vars.LANDSHOP_SSH_PORT || secrets.LANDSHOP_SSH_PORT || secrets.NAMECHEAP_SSH_PORT || '21098' }}
+          SSH_HOST: ${{ secrets.LANDSHOP_SSH_HOST || secrets.NAMECHEAP_SSH_HOST || vars.LANDSHOP_SSH_HOST }}
+          SSH_USER: ${{ secrets.LANDSHOP_SSH_USER || secrets.NAMECHEAP_SSH_USER || vars.LANDSHOP_SSH_USER }}
+          WEBSITE_ROOT: ${{ secrets.LANDSHOP_WEBSITE_APPROOT || vars.LANDSHOP_WEBSITE_APPROOT || '/home/maleghif/landshop-website' }}
+          PORTAL_ROOT: ${{ secrets.LANDSHOP_PORTAL_APPROOT || vars.LANDSHOP_PORTAL_APPROOT || '/home/maleghif/landshop-portal' }}
+          DASHBOARD_ROOT: ${{ secrets.LANDSHOP_DASHBOARD_APPROOT || vars.LANDSHOP_DASHBOARD_APPROOT || '/home/maleghif/landshop-app' }}
+        run: |
+          set -euo pipefail
+          ssh -p "$SSH_PORT" -o BatchMode=yes -o StrictHostKeyChecking=yes "$SSH_USER@$SSH_HOST" bash -s -- \
+            "$WEBSITE_ROOT" "$PORTAL_ROOT" "$DASHBOARD_ROOT" "$GITHUB_RUN_ID" <<'REMOTE'
+          set -eu
+          path_site="$1";path_portal="$2";path_app="$3";release_id="$4"
+          case "$release_id" in *[!0-9]*|'') exit 1;; esac
+          backup="$HOME/landshop-deployment-backups/release-$release_id"
+          mkdir -p "$backup"
+          chmod 700 "$backup"
+          for app in website portal dashboard;do
+            case "$app" in
+              website) root="$path_site";;
+              portal) root="$path_portal";;
+              dashboard) root="$path_app";;
+            esac
+            case "$root" in /home/*) ;; *) echo "Unsafe app backup path";exit 1;; esac
+            test -s "$root/server.js" && test -s "$root/LANDSHOP_RELEASE_SHA" || exit 1
+            # Save an immutable snapshot on the same account; must succeed before any upload.
+            tar -czf "$backup/$app-pre-release.tar.gz" -C "$root" --exclude=tmp --exclude='*.env*' .
+            test -s "$backup/$app-pre-release.tar.gz"
+            echo "Verified encrypted-transport backup artifact for $app"
+          done
+          REMOTE
       - name: Upload verified release to existing Passenger applications
         env:
           SSH_PORT: ${{ vars.LANDSHOP_SSH_PORT || secrets.LANDSHOP_SSH_PORT || secrets.NAMECHEAP_SSH_PORT || '21098' }}

@@ -1,0 +1,85 @@
+name: Backup Landshop Supabase Database to Private Namecheap Storage
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: landshop-database-backup
+  cancel-in-progress: false
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    environment: landshop-production
+    timeout-minutes: 25
+    steps:
+      - name: Verify private database backup credentials are configured
+        env:
+          DATABASE_URL: ${{ secrets.LANDSHOP_SUPABASE_DATABASE_URL }}
+          ENCRYPTION_KEY: ${{ secrets.LANDSHOP_DB_BACKUP_ENCRYPTION_PASSPHRASE }}
+          SSH_HOST: ${{ secrets.LANDSHOP_SSH_HOST || secrets.NAMECHEAP_SSH_HOST || vars.LANDSHOP_SSH_HOST }}
+          SSH_USER: ${{ secrets.LANDSHOP_SSH_USER || secrets.NAMECHEAP_SSH_USER || vars.LANDSHOP_SSH_USER }}
+          SSH_PORT: ${{ vars.LANDSHOP_SSH_PORT || secrets.LANDSHOP_SSH_PORT || secrets.NAMECHEAP_SSH_PORT || '21098' }}
+          SSH_KEY: ${{ secrets.LANDSHOP_SSH_KEY || secrets.NAMECHEAP_SSH_PRIVATE_KEY }}
+          KNOWN_HOSTS: ${{ secrets.LANDSHOP_SSH_KNOWN_HOSTS || secrets.NAMECHEAP_SSH_KNOWN_HOSTS || vars.LANDSHOP_SSH_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          missing=()
+          for key in DATABASE_URL ENCRYPTION_KEY SSH_HOST SSH_USER SSH_KEY KNOWN_HOSTS; do
+            [ -n "${!key:-}" ] || missing+=("$key")
+          done
+          if [ "${#missing[@]}" -gt 0 ];then
+            printf "::error::Missing encrypted-backup prerequisites: %s\n" "${missing[*]}"
+            exit 1
+          fi
+          [ "${#ENCRYPTION_KEY}" -ge 20 ] || { echo "::error::Backup encryption passphrase must be at least 20 characters";exit 1; }
+          [[ "$SSH_PORT" =~ ^[0-9]{1,5}$ ]] || exit 1
+          case "$DATABASE_URL" in postgresql://*|postgres://*) ;; *) echo "::error::Database URL scheme must use PostgreSQL";exit 1;;esac
+          echo "Required database, encryption and Namecheap SSH settings present (values withheld)"
+      - name: Take encrypted logical backup and verify archive integrity
+        shell: bash
+        env:
+          LANDSHOP_DB_URL: ${{ secrets.LANDSHOP_SUPABASE_DATABASE_URL }}
+          ENCRYPTION_KEY: ${{ secrets.LANDSHOP_DB_BACKUP_ENCRYPTION_PASSPHRASE }}
+          SSH_HOST: ${{ secrets.LANDSHOP_SSH_HOST || secrets.NAMECHEAP_SSH_HOST || vars.LANDSHOP_SSH_HOST }}
+          SSH_USER: ${{ secrets.LANDSHOP_SSH_USER || secrets.NAMECHEAP_SSH_USER || vars.LANDSHOP_SSH_USER }}
+          SSH_PORT: ${{ vars.LANDSHOP_SSH_PORT || secrets.LANDSHOP_SSH_PORT || secrets.NAMECHEAP_SSH_PORT || '21098' }}
+          SSH_KEY: ${{ secrets.LANDSHOP_SSH_KEY || secrets.NAMECHEAP_SSH_PRIVATE_KEY }}
+          KNOWN_HOSTS: ${{ secrets.LANDSHOP_SSH_KNOWN_HOSTS || secrets.NAMECHEAP_SSH_KNOWN_HOSTS || vars.LANDSHOP_SSH_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          umask 077
+          install -d -m 700 "$HOME/.ssh" "$RUNNER_TEMP/landshop-db-backup"
+          printf '%s\n' "$SSH_KEY" > "$HOME/.ssh/id_ed25519"
+          printf '%s\n' "$KNOWN_HOSTS" > "$HOME/.ssh/known_hosts"
+          chmod 600 "$HOME/.ssh/id_ed25519" "$HOME/.ssh/known_hosts"
+          # PostgreSQL 17 client matches the project major version. Use an exact project URL, never a publishable API key.
+          docker run --rm --network host -e LANDSHOP_DB_URL \
+            -v "$RUNNER_TEMP/landshop-db-backup:/backup" postgres:17 \
+            sh -ec 'pg_dump --format=custom --no-owner --no-acl --file=/backup/landshop.dump "$LANDSHOP_DB_URL" && pg_restore --list /backup/landshop.dump >/dev/null'
+          test -s "$RUNNER_TEMP/landshop-db-backup/landshop.dump"
+          gpg --batch --yes --pinentry-mode loopback --passphrase-fd 3 --symmetric --cipher-algo AES256 \
+            --output "$RUNNER_TEMP/landshop-db-backup/database.dump.gpg" \
+            "$RUNNER_TEMP/landshop-db-backup/landshop.dump" 3<<< "$ENCRYPTION_KEY"
+          rm -f "$RUNNER_TEMP/landshop-db-backup/landshop.dump"
+          test -s "$RUNNER_TEMP/landshop-db-backup/database.dump.gpg"
+          install -d -m 700 "$RUNNER_TEMP/landshop-db-backup/verify"
+          gpg --batch --yes --pinentry-mode loopback --passphrase-fd 3 --decrypt \
+            "$RUNNER_TEMP/landshop-db-backup/database.dump.gpg" \
+            3<<< "$ENCRYPTION_KEY" > "$RUNNER_TEMP/landshop-db-backup/verify/check.dump"
+          docker run --rm -v "$RUNNER_TEMP/landshop-db-backup/verify:/verify" postgres:17 \
+            pg_restore --list /verify/check.dump >/dev/null
+          rm -f "$RUNNER_TEMP/landshop-db-backup/verify/check.dump"
+          remote_dir="landshop-deployment-backups/supabase"
+          target="$SSH_USER@$SSH_HOST"
+          ssh -p "$SSH_PORT" -o BatchMode=yes -o StrictHostKeyChecking=yes "$target" \
+            'umask 077; mkdir -p "$HOME/landshop-deployment-backups/supabase"; chmod 700 "$HOME/landshop-deployment-backups/supabase"'
+          backup_name="landshop-supabase-${GITHUB_RUN_ID}.dump.gpg"
+          scp -P "$SSH_PORT" -o BatchMode=yes -o StrictHostKeyChecking=yes \
+            "$RUNNER_TEMP/landshop-db-backup/database.dump.gpg" "$target:$remote_dir/$backup_name"
+          local_sha=$(sha256sum "$RUNNER_TEMP/landshop-db-backup/database.dump.gpg" | cut -d' ' -f1)
+          remote_sha=$(ssh -p "$SSH_PORT" -o BatchMode=yes -o StrictHostKeyChecking=yes "$target" \
+            "sha256sum \"\$HOME/$remote_dir/$backup_name\" | cut -d' ' -f1")
+          test "$local_sha" = "$remote_sha" || { echo "::error::Encrypted backup copy integrity mismatch";exit 1; }
+          echo "Encrypted Supabase database dump and restore-format integrity verified; private offsite copy matches"
+          echo "Backup file reference: $backup_name"
+          echo "This does not replace a full restore rehearsal or include Storage API object bytes."
