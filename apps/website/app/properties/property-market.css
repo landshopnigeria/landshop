@@ -15,3 +15,14 @@
 .mk-photo:after{content:none!important}
 .mk-card .mk-photo .ls-icon-chip{width:76px;height:76px;opacity:.7;border-radius:20px;background:#effaf4}
 .mk-hero{background-image:linear-gradient(90deg,#f7fcfaef 0%,#f7fcfadb 43%,#eaf8f20b 100%),url('https://images.pexels.com/photos/36622005/pexels-photo-36622005.jpeg?auto=compress&cs=tinysrgb&w=1800')}
+
+.mk-location{display:flex;align-items:center;gap:7px}
+.mk-location .ls-icon{color:#078b72;stroke-width:1.9}
+.mk-card .mk-photo .ls-icon{height:31px;width:31px;opacity:.88}
+.mk-card .mk-photo .ls-icon-chip{width:72px;height:72px;background:rgba(240,250,245,.95)}
+.mk-gallery-pending{display:grid;justify-items:center;align-content:center;gap:14px;padding:32px;text-align:center}
+.mk-gallery-pending .ls-icon-chip{width:70px;height:70px;background:#eff9f4}
+.mk-gallery-pending .ls-icon{width:30px;height:30px}
+.mk-view-switch a{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:42px}
+.mk-view-switch .ls-icon{width:20px;height:20px}
+@media(max-width:640px){.mk-view-switch .ls-icon{width:23px;height:23px}.mk-gallery-pending .ls-icon-chip{width:68px;height:68px}}
