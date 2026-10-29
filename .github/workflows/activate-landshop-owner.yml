@@ -1,0 +1,64 @@
+name: Activate verified Landshop owner (manual, security-gated)
+on:
+  workflow_dispatch:
+    inputs:
+      owner_email:
+        description: "Email already registered and confirmed in Landshop Supabase Auth"
+        required: true
+        type: string
+      confirmation:
+        description: "Type ACTIVATE_VERIFIED_LANDSHOP_OWNER"
+        required: true
+        type: string
+permissions:
+  contents: read
+concurrency:
+  group: landshop-owner-one-time-activation
+  cancel-in-progress: false
+jobs:
+  activate:
+    if: github.ref == 'refs/heads/main' && github.actor == 'landshopnigeria' && inputs.confirmation == 'ACTIVATE_VERIFIED_LANDSHOP_OWNER'
+    runs-on: ubuntu-latest
+    environment: landshop-production
+    timeout-minutes: 10
+    env:
+      DATABASE_URL: ${{ secrets.LANDSHOP_SUPABASE_DATABASE_URL }}
+      OWNER_EMAIL: ${{ inputs.owner_email }}
+    steps:
+      - name: Validate verified owner request and existing production configuration
+        run: |
+          set -euo pipefail
+          test -n "$DATABASE_URL" || { echo "::error::Database connection secret missing"; exit 1; }
+          [[ "$OWNER_EMAIL" =~ ^[^[:space:]@]+@[^[:space:]@]+\.[^[:space:]@]+$ ]] || { echo "::error::A valid email is required"; exit 1; }
+          echo "Authenticated GitHub Landshop account requested first-owner activation."
+      - name: Activate exact verified Supabase user (never guess a user's identity)
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq >/dev/null
+          sudo apt-get install -y -qq postgresql-client >/dev/null
+          psql "$DATABASE_URL" -X -v ON_ERROR_STOP=1 -v owner_email="$OWNER_EMAIL" <<'SQL'
+          begin;
+          select set_config('landshop.bootstrap_owner_email', :'owner_email', true);
+          do $bootstrap$
+          declare v_user uuid;v_org uuid;
+          begin
+            if (select count(*) from public.organizations where kind='landshop')<>1 then
+              raise exception 'Landshop organization identity is ambiguous';end if;
+            select id into v_org from public.organizations where kind='landshop';
+            if exists(select 1 from public.organization_members where organization_id=v_org and role='owner' and status='active')
+            then raise exception 'An active Landshop owner already exists; use the standard staff invitation process';end if;
+            select id into v_user from auth.users where lower(email)=lower(current_setting('landshop.bootstrap_owner_email')) and email_confirmed_at is not null;
+            if v_user is null then
+              raise exception 'Specified account does not exist with verified email; register and verify through portal first';end if;
+            if exists(select 1 from public.organization_members where organization_id=v_org and user_id=v_user and status in ('suspended','revoked'))
+            then raise exception 'Previously suspended/revoked membership requires manual security review';end if;
+            insert into public.organization_members(organization_id,user_id,role,status,invited_by)
+            values(v_org,v_user,'owner','active',null)
+            on conflict(organization_id,user_id) do update set role='owner',status='active';
+            insert into public.audit_events(actor_id,event_type,metadata)
+            values(v_user,'organization.owner_bootstrapped',jsonb_build_object('method','manual_github_environment_approval','repo','landshopnigeria/landshop','authorization','landshopnigeria'));
+          end
+          $bootstrap$;
+          commit;
+          SQL
+          echo 'Verified Landshop owner membership activated after guarded deployment-environment approval.'
