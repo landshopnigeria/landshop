@@ -1,12 +1,12 @@
 'use client';
-import {useEffect,useState} from 'react';
+import {useEffect,useState,useRef} from 'react';
 type Listing={title:string,location:string,type:string,img:string,category:string,details:string};
 export type FeaturedProperty={id:string,title:string,location:string,propertyType:string,price:string};
 const slides=[
- {name:'DEVELOP',copy:'Explore documented land and home opportunities with clearer acquisition and payment information.',image:'/media/deck-building.webp'},
- {name:'INCUBATE',copy:'Explore property-linked investment opportunities and review current terms, risks and eligibility.',image:'/media/deck-investment.webp'},
- {name:'GROW',copy:'Discover Beta Mortgage and Mortgage Xtra pathways to structured homeownership.',image:'/media/deck-mortgage.webp'}
-];
+ {name:'DEVELOP',title:'Develop.',tagline:'Own Your Future.',copy:'Discover land and homes with confidence. Explore verified property opportunities, transparent guidance and a clearer path to ownership.',image:'/media/deck-building.webp',action:'Develop',href:'/develop',alt:'Landshop construction site photograph from the official project deck'},
+ {name:'INCUBATE',title:'Incubate.',tagline:'Invest in Possibilities.',copy:'Explore property-linked investment opportunities with documented terms, eligibility requirements and a responsible investment review.',image:'/media/deck-investment.webp',action:'Invest Now',href:'/applications/incubate-investment',alt:'Landshop investment project photograph from the official deck'},
+ {name:'GROW',title:'Grow.',tagline:'Make Homeownership Possible.',copy:'Explore Beta Mortgage and Mortgage Xtra, calculate your potential affordability, and take the next step with informed financial guidance.',image:'/media/deck-mortgage.webp',action:'Know Your Earnings',href:'https://portal.landshopnigeria.com/calculator',alt:'Landshop mortgage and housing project photograph from the official deck'}
+] as const;
 const products=[
  {title:'Develop',sub:'Own your future',description:'Discover land and housing opportunities, Prime and Luxury selections.',img:'/media/deck-develop.webp',href:'/develop'},
  {title:'Incubate',sub:'Explore property investment',description:'Review available property-led investment opportunities and their verified terms.',img:'/media/deck-investment.webp',href:'/incubate'},
@@ -24,8 +24,18 @@ const nav=[{text:'Product',children:[['Develop','/develop'],['Incubate','/incuba
  {text:'Company',children:[['About Landshop','/about'],['Vision & Mission','/about#vision'],['Leadership & Team','/company/team'],['How Landshop Works','/about#approach']]},
  {text:'Services',children:[['Property Acquisition','/services/property-acquisition'],['Property Advisory','/services/advisory'],['Mortgage Guidance','/services/mortgage'],['Property Inspection','/applications'],['Construction Credit','/services/construction-credit'],['Cooperatives & Thrift','/thrift']]}];
 export default function Homepage({featured}:{featured:FeaturedProperty[]}){
- const [slide,setSlide]=useState(0),[purpose,setPurpose]=useState('Buy'),[type,setType]=useState(''),[location,setLocation]=useState(''),[price,setPrice]=useState(''),[mobile,setMobile]=useState(false),[pause,setPause]=useState(false),[hideHeader,setHideHeader]=useState(false);
- useEffect(()=>{if(pause)return;const id=setInterval(()=>setSlide(v=>(v+1)%3),6500);return()=>clearInterval(id)},[pause]);
+ const [slide,setSlide]=useState(0),[purpose,setPurpose]=useState('Buy'),[type,setType]=useState(''),[location,setLocation]=useState(''),[price,setPrice]=useState(''),[mobile,setMobile]=useState(false),[pause,setPause]=useState(false),[hideHeader,setHideHeader]=useState(false),[openMenu,setOpenMenu]=useState<string|null>(null);
+ const touchStartX=useRef<number|null>(null);
+ const goToSlide=(next:number)=>{setSlide((next+slides.length)%slides.length);};
+ const onTouchStart=(event:React.TouchEvent<HTMLElement>)=>{touchStartX.current=event.changedTouches[0]?.screenX??null;setPause(true)};
+ const onTouchEnd=(event:React.TouchEvent<HTMLElement>)=>{
+  const start=touchStartX.current;touchStartX.current=null;
+  if(start===null)return;
+  const change=event.changedTouches[0]?.screenX-start;
+  if(Math.abs(change)>55)goToSlide(slide+(change<0?1:-1));
+  setPause(false);
+ };
+ useEffect(()=>{if(pause)return;const id=setInterval(()=>setSlide(v=>(v+1)%slides.length),7300);return()=>clearInterval(id)},[pause]);
 
  useEffect(()=>{
   let last=window.scrollY;let frame=0;
@@ -41,20 +51,41 @@ export default function Homepage({featured}:{featured:FeaturedProperty[]}){
    <a className="logo" href="/" aria-label="Landshop home"><img src="/media/logo.webp" alt="Landshop official logo"/></a>
    <button type="button" className="mobile-nav" aria-expanded={mobile} onClick={()=>setMobile(v=>!v)} aria-label="Toggle navigation">☰</button>
    <nav className={'nav-links '+(mobile?'open':'')} aria-label="Main navigation"><a href="/">Home</a>
-    {nav.map(group=><div className="navdrop" key={group.text}><button type="button" aria-haspopup="true">{group.text} ⌄</button><div className="mega"><div className="intro"><strong>{group.text==='Product'?'Develop. Incubate. Grow.':group.text==='Company'?'Our Company':'Support for your goals'}</strong><p>Explore Landshop's official products, estate services and resources.</p><a className="primary" href="/applications">Get Started</a></div><div className="menuitems">{group.children.map(([title,url])=><a key={url+title} href={url}>{title} →</a>)}</div></div></div>)}
+    {nav.map(group=><div className={'navdrop '+(openMenu===group.text?'navdrop-open':'')} key={group.text}><button type="button" aria-haspopup="true" aria-expanded={openMenu===group.text} onClick={()=>setOpenMenu(current=>current===group.text?null:group.text)}>{group.text} <span className="nav-chevron" aria-hidden="true">⌄</span></button><div className="mega"><div className="intro"><strong>{group.text==='Product'?'Three paths to ownership':group.text==='Company'?'Our Company':'Support for your goals'}</strong><p>Explore Landshop's official products, estate services and resources.</p><a className="primary" href="/applications">Get Started</a></div><div className="menuitems">{group.children.map(([title,url])=><a key={url+title} href={url}>{title} →</a>)}</div></div></div>)}
     <a href="/properties">Properties</a><a href="/insights">Insights / Blog</a><a href="/contact">Contact Us</a></nav>
    <a className="primary" href="https://portal.landshopnigeria.com">Get Started ↗</a></div></header>
-  <section className="hero hero-v4" onMouseEnter={()=>setPause(true)} onMouseLeave={()=>setPause(false)} style={{backgroundImage:`linear-gradient(90deg,rgba(255,255,255,.95),rgba(255,255,255,.78) 36%,rgba(255,255,255,.08) 70%),url("${current.image}")`}} aria-roledescription="carousel" aria-label="Landshop Develop, Incubate and Grow products">
-   <div className="hero-inner">
-    <span className="eyebrow hero-v4-eyebrow">DEVELOP · INCUBATE · GROW</span>
-    <h1 className="hero-v4-title">{['Develop.','Incubate.','Grow.'].map((word,i)=><span key={word} className={slide===i?'active-word':''}>{word} </span>)}</h1>
-    <p className="hero-v4-subtitle">Everyone Deserves Affordable Property.</p>
-    <p className="hero-v4-copy hero-typing" key={current.name} aria-live="polite">{current.copy}</p>
-    <div className="hero-buttons"><a className="primary" href="https://portal.landshopnigeria.com">Get Started ↗</a><a className="outline" href={'/'+current.name.toLowerCase()}>Explore {current.name.toLowerCase()} →</a></div>
-    <div className="hero-counter" aria-label="Choose hero slide">{slides.map((s,i)=><button key={s.name} type="button" className={slide===i?'on':''} onClick={()=>setSlide(i)} aria-label={'View '+s.name+' slide'} aria-current={slide===i}>{String(i+1).padStart(2,'0')}</button>)}</div>
+  <section className="hero hero-v16" data-landshop-hero="v16-separated-product-slides"
+   data-active-product={current.name} aria-roledescription="carousel" aria-label="Landshop product opportunities"
+   onMouseEnter={()=>setPause(true)} onMouseLeave={()=>setPause(false)}
+   onFocusCapture={()=>setPause(true)} onBlurCapture={event=>{if(!event.currentTarget.contains(event.relatedTarget as Node|null))setPause(false)}}
+   onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}
+   onKeyDown={event=>{if(event.key==='ArrowLeft'){event.preventDefault();goToSlide(slide-1)}if(event.key==='ArrowRight'){event.preventDefault();goToSlide(slide+1)}}}>
+   <div className="hero-v16-media" aria-hidden="true">{slides.map((item,i)=>
+    <div key={item.name} className={'hero-v16-image '+(slide===i?'is-visible':'')}
+      style={{backgroundImage:'url("'+item.image+'")'}} />)}</div>
+   <div className="hero-v16-wash" aria-hidden="true"/>
+   <div className="hero-v16-inner">
+    <div className="hero-v16-content" key={current.name}>
+     <span className="eyebrow hero-v16-eyebrow">LANDSHOP <span aria-hidden="true">/</span> {current.name}</span>
+     <h1 className="hero-v16-title"><span>{current.title}</span> <strong>{current.tagline}</strong></h1>
+     <p className="hero-v16-promise">Everyone Deserves Affordable Property.</p>
+     <p className="hero-v16-copy">{current.copy}</p>
+     <div className="hero-v16-actions">
+      <a className="primary" href="https://portal.landshopnigeria.com">Get Started <span aria-hidden="true">↗</span></a>
+      <a className="hero-v16-secondary" href={current.href}>{current.action} <span aria-hidden="true">→</span></a>
+     </div>
+    </div>
+    <div className="hero-v16-controls" aria-label="Choose a Landshop product slide">
+     <span className="hero-v16-progress-label">{String(slide+1).padStart(2,'0')} <span>/</span> 03</span>
+     <div className="hero-v16-indicators">{slides.map((item,i)=>
+      <button key={item.name} type="button" aria-label={'Show '+item.name+' slide'}
+        aria-current={slide===i?'true':undefined} className={slide===i?'selected':''}
+        onClick={()=>goToSlide(i)}><span>{String(i+1).padStart(2,'0')}</span></button>)}</div>
+     <div className="hero-v16-arrows"><button type="button" aria-label="Previous slide" onClick={()=>goToSlide(slide-1)}>←</button>
+      <button type="button" aria-label="Next slide" onClick={()=>goToSlide(slide+1)}>→</button></div>
+    </div>
    </div>
-   <div className="hero-v4-arrows"><button type="button" aria-label="Previous product slide" onClick={()=>setSlide(v=>(v+2)%3)}>←</button><button type="button" aria-label="Next product slide" onClick={()=>setSlide(v=>(v+1)%3)}>→</button></div>
-   <div className="hero-v4-caption">Develop · Incubate · Grow — Your next property decision begins here.</div>
+   <span className="hero-v16-edge-note">DEVELOP <span>·</span> INCUBATE <span>·</span> GROW</span>
   </section>
   <form className="glass-search" onSubmit={search} aria-label="Find properties"><div className="search-tabs">{['Buy','Rent','Shortlet'].map(p=><button type="button" key={p} className={p===purpose?'active':''} onClick={()=>setPurpose(p)}>{p}</button>)}</div><div className="search-grid"><select aria-label="Property type" value={type} onChange={e=>setType(e.target.value)}><option value="">All property types</option><option value="land">Land</option><option value="house">House</option><option value="apartment">Apartment</option><option value="commercial">Commercial</option></select><select aria-label="Country" defaultValue="Nigeria"><option value="Nigeria">Nigeria</option></select><select aria-label="State or FCT" value={location} onChange={e=>setLocation(e.target.value)}><option value="">All Nigerian states</option>{["Abia","Adamawa","Akwa Ibom","Anambra","Bauchi","Bayelsa","Benue","Borno","Cross River","Delta","Ebonyi","Edo","Ekiti","Enugu","Federal Capital Territory","Gombe","Imo","Jigawa","Kaduna","Kano","Katsina","Kebbi","Kogi","Kwara","Lagos","Nasarawa","Niger","Ogun","Ondo","Osun","Oyo","Plateau","Rivers","Sokoto","Taraba","Yobe","Zamfara"].map(l=><option key={l} value={l}>{l}</option>)}</select><select aria-label="Budget" value={price} onChange={e=>setPrice(e.target.value)}><option value="">Any budget</option><option value="20000000">Up to ₦20 million</option><option value="50000000">Up to ₦50 million</option><option value="100000000">Up to ₦100 million</option></select><button className="primary" type="submit">Search Properties →</button></div></form>
   <section className="section-soft"><div className="container why"><div><span className="eyebrow green who-editorial">WHO WE ARE</span><h2>Building a more <strong>accessible Nigeria.</strong></h2><p>Landshop helps individuals, families and organizations navigate real estate decisions through property acquisition, documented investment enquiries and structured homeownership pathways.</p><div className="about-pillars"><span><strong>03</strong> Product pathways</span><span><strong>07</strong> Guided application forms</span><span><strong>01</strong> Connected experience</span></div><p><a className="primary about-learn" href="/about">Learn More ↗</a></p></div><div className="about-image-v4 about-collage"><img src="/media/event0.webp" alt="Landshop community event imagery"/><img src="/media/deck-architecture.webp" alt="Nigerian modern property architecture"/><img src="/media/famous0.webp" alt="Original Landshop estate gallery"/><span className="about-image-note">Building Wealth Through Real Estate.</span></div></div></section>
