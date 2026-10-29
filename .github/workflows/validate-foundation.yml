@@ -79,7 +79,7 @@ jobs:
                 /applications/mortgage-xtra /applications/develop-inspection \
                 /applications/mortgage-xtra-inspection /calculator)
             else
-              routes=(/ /dashboard)
+              routes=(/ /dashboard /dashboard/account /dashboard/kyc)
             fi
             for route in "${routes[@]}";do
               code=$(curl -sS --max-time 10 -o /dev/null -w '%{http_code}' \

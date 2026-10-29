@@ -125,6 +125,11 @@ jobs:
             and to_regclass('public.support_tickets') is not null
             and to_regclass('public.support_ticket_events') is not null
             and to_regprocedure('public.landshop_submit_application(uuid)') is not null
+            and exists(select 1 from pg_trigger
+              where tgrelid='auth.users'::regclass
+                and tgname='landshop_auth_user_profile_created' and tgenabled <> 'D')
+            and exists(select 1 from information_schema.columns
+              where table_schema='public' and table_name='profiles' and column_name='display_username')
             and (select relrowsecurity from pg_class where oid='public.support_tickets'::regclass)
             and not has_table_privilege('anon','public.support_tickets','SELECT')
           then 'ready' else 'not-ready' end
