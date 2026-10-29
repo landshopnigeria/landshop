@@ -25,8 +25,9 @@ PUBLIC_PAGES = [
     ("website", "/", "Own Your Future."),
     ("www", "/", "Own Your Future."),
     ("website", "/develop", "Own Your Future"),
-    ("website", "/incubate", "Build Wealth Through Property"),
-    ("website", "/grow", "A Smarter Path to Homeownership"),
+    ("www", "/develop", "Own Your Future"),
+    ("website", "/incubate", "Invest in Possibilities."),
+    ("website", "/grow", "Make Homeownership Possible."),
     ("website", "/properties", "Property Marketplace"),
     ("website", "/applications", "Your property journey"),
     ("website", "/search", "Search Landshop"),
@@ -117,9 +118,18 @@ def check(kind: str, route: str, expected: str | None):
         if "Develop. Incubate. Grow." in unescape(visible):
             raise AssertionError("obsolete combined three-product hero remains visible")
         for label in ("Show DEVELOP slide","Show INCUBATE slide","Show GROW slide",
-                      "Previous slide","Next slide"):
+                      "Previous slide","Next slide","Buy</button>","Sell</button>",
+                      "Rent</button>","Shortlet</button>","portal.landshopnigeria.com/applications/incubate-investment"):
             if label not in html:
                 raise AssertionError(f"required V16 slider control/action missing: {label}")
+    if kind in ("website","www") and route in ("/develop","/incubate","/grow"):
+        if 'data-product-journey=' not in html:
+            raise AssertionError("V16 premium product page template is missing")
+        if "portal.landshopnigeria.com/applications/" not in html:
+            raise AssertionError("secure guided product forms are not linked")
+    if kind == "website" and route == "/properties":
+        if "title=\"Sign in to list property for sale\"" not in html:
+            raise AssertionError("the marketplace Sell route is missing")
     for legacy in RECOVERY:
         if legacy.casefold() in visible.casefold():
             raise AssertionError("obsolete static recovery-page content is visible")

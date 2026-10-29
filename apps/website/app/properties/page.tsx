@@ -13,7 +13,7 @@ export default async function Properties({searchParams}:{searchParams:Promise<Pa
  return <main className="mk-layout"><MarketHeader/>
   <section className="mk-hero"><div><small>HOME / PROPERTIES</small><h1><em>Property</em> Marketplace</h1><p>Explore approved land, housing and estate opportunities with transparent property information, current published prices and guided enquiries.</p></div></section>
   <div className="mk-wrap"><form className="mk-search" action="/properties" method="get">
-   <div className="mk-tabs">{(['Buy','Rent','Shortlet'] as const).map(p=><Link key={p} className={filters.purpose===p?'active':''} href={marketHref(filters,{purpose:p,page:1,type:p==='Shortlet'?'shortlet':''})}>{p}</Link>)}</div>
+   <div className="mk-tabs">{(['Buy','Rent','Shortlet'] as const).map(p=><Link key={p} className={filters.purpose===p?'active':''} href={marketHref(filters,{purpose:p,page:1,type:p==='Shortlet'?'shortlet':''})}>{p}</Link>)}<a href="https://portal.landshopnigeria.com" title="Sign in to list property for sale">Sell</a></div>
    <input type="hidden" name="purpose" value={filters.purpose}/>
    <div className="mk-search-grid">
     <label>Property type<select name="type" defaultValue={filters.type}><option value="">All types</option>{['land','house','apartment','commercial','shortlet'].map(t=><option key={t} value={t}>{t[0].toUpperCase()+t.slice(1)}</option>)}</select></label>
