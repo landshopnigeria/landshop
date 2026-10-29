@@ -1,74 +1,33 @@
+
 import Link from 'next/link';
-import { createClient } from '@supabase/supabase-js';
-
+import {MarketHeader,MarketFooter} from '../../components/MarketChrome';
+import {NIGERIA_STATES,PAGE_SIZE,cleanFilters,listPublished,marketHref,money,type Params} from '../../lib/marketplace';
+import './property-market.css';
 export const dynamic='force-dynamic';
-export const metadata={title:'Properties | Landshop Nigeria',description:'Browse verified, published Landshop property inventory.'};
-
-type Property={id:string,title:string,property_type:string,amount_kobo:number|null,status:string,estates?:{state?:string|null;city?:string|null}|null};
-type Search={type?:string;query?:string;location?:string;price?:string;purpose?:string};
-export default async function Properties({searchParams}:{searchParams:Promise<Search>}){
- const args=await searchParams;
- const type=(args.type||'').trim().toLowerCase().slice(0,60);
- const query=(args.query||'').trim().slice(0,80);
- const location=(args.location||'').trim().slice(0,70);
- const purpose=(args.purpose||'Buy').trim().slice(0,30);
- const priceNum=Number(args.price||'');
- const price=Number.isSafeInteger(priceNum)&&priceNum>0&&priceNum<=1000000000000?priceNum:0;
- const url=process.env.NEXT_PUBLIC_SUPABASE_URL;
- const key=process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
- let properties:Property[]=[];
- let unavailable=false;
- if(url&&key){
-  const supabase=createClient(url,key,{auth:{persistSession:false,autoRefreshToken:false}});
-  let req=supabase.from('properties').select('id,title,property_type,amount_kobo,status,estates(state,city)')
-    .eq('status','published').order('created_at',{ascending:false}).limit(24);
-  if(type && /^[a-z_ -]+$/.test(type))req=req.eq('property_type',type);
-  if(purpose==='Shortlet')req=req.eq('property_type','shortlet');
-  if(price)req=req.lte('amount_kobo',price*100);
-  if(query)req=req.ilike('title',`%${query.replace(/[%_\\]/g,'')}%`);
-  const {data,error}=await req;
-  if(error)unavailable=true;
-  else {
-   const rows=(data||[]) as unknown as Property[];
-   const term=location.toLowerCase();
-   properties=term?rows.filter(p=>[p.estates?.state,p.estates?.city,p.title].some(value=>(value||'').toLowerCase().includes(term))):rows;
-  }
- }else unavailable=true;
- return <main style={{fontFamily:'Arial,Helvetica,sans-serif',color:'#073e34',minHeight:'100vh'}}>
- <header style={{padding:'23px 6%',borderBottom:'1px solid #d8e6df',display:'flex',justifyContent:'space-between',gap:20}}>
-  <Link href="/" style={{fontSize:26,color:'#078d70',fontWeight:800,textDecoration:'none'}}>Landshop</Link>
-  <Link href="https://portal.landshopnigeria.com" style={{color:'#078d70'}}>Account / Get Started</Link>
- </header>
- <section style={{background:'linear-gradient(115deg,#063e37,#088e75)',color:'white',padding:'56px 6%'}}>
-  <nav aria-label="Breadcrumb"><Link href="/" style={{color:'white'}}>Home</Link> / Properties</nav>
-  <h1 style={{fontSize:'clamp(40px,5vw,62px)',marginBottom:10}}>Discover Landshop Properties</h1>
-  <p>Explore company-published land and housing opportunities across Nigeria.</p>
- </section>
- <section style={{padding:'36px 6%'}}>
-  <form style={{display:'flex',flexWrap:'wrap',gap:12,marginBottom:32}}>
-   <input aria-label="Search properties" name="query" defaultValue={query} placeholder="Estate, property or project name" style={{padding:15,border:'1px solid #b7d7cb',borderRadius:12,flex:'1 1 230px'}}/>
-   <select aria-label="Property type" name="type" defaultValue={type} style={{padding:15,border:'1px solid #b7d7cb',borderRadius:12}}>
-    <option value="">All properties</option>
-    <option value="land">Land</option><option value="house">House</option>
-    <option value="apartment">Apartment</option><option value="commercial">Commercial</option>
-    <option value="shortlet">Shortlet</option>
-   </select>
-   <select aria-label="Search purpose" name="purpose" defaultValue={purpose} style={{padding:15,border:'1px solid #b7d7cb',borderRadius:12}}><option value="Buy">Buy</option><option value="Develop">Develop</option><option value="Incubate">Incubate</option><option value="Grow">Grow</option><option value="Rent">Rent</option><option value="Shortlet">Shortlet</option></select>
-   <input aria-label="Location" name="location" defaultValue={location} placeholder="City or state" maxLength={70} style={{padding:15,border:'1px solid #b7d7cb',borderRadius:12,minWidth:160}}/>
-   <select aria-label="Maximum budget" name="price" defaultValue={price?String(price):''} style={{padding:15,border:'1px solid #b7d7cb',borderRadius:12}}><option value="">Any budget</option><option value="20000000">Up to ₦20 million</option><option value="50000000">Up to ₦50 million</option><option value="100000000">Up to ₦100 million</option></select>
-   <button type="submit" style={{background:'#087f68',color:'white',border:0,borderRadius:12,padding:'15px 28px'}}>Search</button>
+export const metadata={title:'Property Marketplace | Landshop Nigeria',description:'Explore authentic, management-published Landshop property listings with location, type and price filters.'};
+export default async function Properties({searchParams}:{searchParams:Promise<Params>}){
+ const filters=cleanFilters(await searchParams),{rows,count,error}=await listPublished(filters);
+ const pages=Math.max(1,Math.ceil(count/PAGE_SIZE)),page=filters.page;
+ const start=count?((page-1)*PAGE_SIZE)+1:0,end=Math.min(count,page*PAGE_SIZE);
+ const paginationStart=Math.max(1,Math.min(Math.max(1,pages-6),page-3));
+ return <main className="mk-layout"><MarketHeader/>
+  <section className="mk-hero"><div><small>HOME / PROPERTIES</small><h1><em>Property</em> Marketplace</h1><p>Explore approved land, housing and estate opportunities with transparent property information, current published prices and guided enquiries.</p></div></section>
+  <div className="mk-wrap"><form className="mk-search" action="/properties" method="get">
+   <div className="mk-tabs">{(['Buy','Rent','Shortlet'] as const).map(p=><Link key={p} className={filters.purpose===p?'active':''} href={marketHref(filters,{purpose:p,page:1,type:p==='Shortlet'?'shortlet':''})}>{p}</Link>)}</div>
+   <input type="hidden" name="purpose" value={filters.purpose}/>
+   <div className="mk-search-grid">
+    <label>Property type<select name="type" defaultValue={filters.type}><option value="">All types</option>{['land','house','apartment','commercial','shortlet'].map(t=><option key={t} value={t}>{t[0].toUpperCase()+t.slice(1)}</option>)}</select></label>
+    <label>Country<select aria-label="Country" defaultValue="Nigeria"><option>Nigeria</option></select></label>
+    <label>State / FCT<select name="state" defaultValue={filters.state}><option value="">All Nigerian states</option>{NIGERIA_STATES.map(s=><option key={s} value={s}>{s}</option>)}</select></label>
+    <label>City / Town<input name="city" defaultValue={filters.city} placeholder="e.g. Lekki" maxLength={60}/></label>
+    <label>Max budget (₦)<input name="max" type="number" min="1" max="1000000000000" placeholder="No maximum" defaultValue={filters.max||''}/></label>
+    <button className="mk-btn" type="submit">Search ↗</button>
+   </div>
+   <div className="mk-search-bottom"><label>Property / Estate name<input name="query" defaultValue={filters.query} placeholder="Find a property" maxLength={80}/></label><label>Min budget (₦)<input name="min" type="number" min="1" defaultValue={filters.min||''}/></label><Link href="/properties">Clear filters ×</Link></div>
   </form>
-  {['Rent','Incubate','Grow'].includes(purpose)&&<p style={{background:'#eaf6ef',padding:15,borderRadius:12,marginBottom:24}}>Published property inventory is currently organized by property type, not by a confirmed {purpose.toLowerCase()} offer. Please request the relevant product-specific or rental terms from Landshop before making a decision.</p>}
-  {unavailable?<p role="status">The live property catalog is not available yet. Please contact Landshop for verified inventory.</p>:
-   properties.length===0?<p role="status">No published properties match your filters. Contact Landshop for current availability.</p>:
-   <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(245px,1fr))',gap:20}}>
-    {properties.map(item=><article key={item.id} style={{border:'1px solid #d4e5db',borderRadius:18,overflow:'hidden',background:'white'}}>
-     <div style={{height:170,display:'grid',placeItems:'center',background:'linear-gradient(130deg,#e8f3ee,#d5e5df)',color:'#316457'}}>Verified imagery pending</div>
-     <div style={{padding:20}}><p style={{textTransform:'capitalize',fontSize:13}}>{item.property_type}</p><h2 style={{fontSize:21}}>{item.title}</h2>{item.estates?.city||item.estates?.state?<p>{[item.estates?.city,item.estates?.state].filter(Boolean).join(', ')}</p>:null}
-     <strong>{typeof item.amount_kobo==='number'?(item.amount_kobo/100).toLocaleString('en-NG',{style:'currency',currency:'NGN',maximumFractionDigits:0}):'Price on request'}</strong>
-     <p><Link href="https://portal.landshopnigeria.com">Enquire through Landshop</Link></p></div>
-    </article>)}
-   </div>}
-  <p style={{marginTop:50}}>Only Landshop's authorized management team can publish properties. There is no public property-upload form.</p>
- </section></main>;
+  <div className="mk-title-row"><div><small>PUBLISHED INVENTORY</small><h2>Discover opportunities</h2><p>{count?'Showing '+start+'–'+end+' of '+count.toLocaleString('en-NG')+' published properties':'No matching published properties'}</p></div><div className="mk-tools"><span>Sort:</span><form action="/properties" method="get"><input type="hidden" name="purpose" value={filters.purpose}/>{filters.state&&<input type="hidden" name="state" value={filters.state}/>}<select name="sort" defaultValue={filters.sort} aria-label="Sort properties"><option value="newest">Latest</option><option value="price_asc">Price: low to high</option><option value="price_desc">Price: high to low</option></select><button type="submit">Apply</button></form></div></div>
+  <div className="mk-property-grid">{error||!rows.length?<div className="mk-blank"><h3>{error?'Listing information unavailable':'No properties match your filters'}</h3><p>{error||'Try another location, budget or property type. Only approved published listings appear here.'}</p><Link href="/properties" className="mk-btn">Explore all listings ↗</Link></div>:rows.map(v=><article className="mk-card" key={v.id}><div className="mk-photo"><span>PUBLISHED</span></div><div className="mk-card-body"><h3>{v.title}</h3><p>⌖ {[v.estates?.city,v.estates?.state].filter(Boolean).join(', ')||'Location on enquiry'}</p><p style={{textTransform:'capitalize'}}>{v.property_type} · {v.estates?.name||'Landshop'}</p><strong>{money(v.amount_kobo)}</strong><div className="mk-card-foot"><span>Ref: {v.id.slice(0,8).toUpperCase()}</span><Link href={'/properties/'+v.id}>View Property ↗</Link></div></div></article>)}</div>
+  {count>PAGE_SIZE&&<nav className="mk-pagination" aria-label="Property pages">{page>1&&<Link href={marketHref(filters,{page:page-1})}>←</Link>}{Array.from({length:Math.min(7,pages)},(_,i)=>paginationStart+i).filter(p=>p<=pages).map(p=><Link key={p} href={marketHref(filters,{page:p})} className={p===page?'selected':''} aria-current={p===page?'page':undefined}>{p}</Link>)}{page<pages&&<Link href={marketHref(filters,{page:page+1})}>→</Link>}</nav>}
+  <div className="mk-utility"><article><small>PROPERTY GUIDANCE</small><h2>Know your property before committing.</h2><p>Independently verify title, availability, pricing and authorized payment terms. Private legal evidence is never published through this marketplace.</p><Link href="/insights" className="mk-btn">Read property guides ↗</Link></article><article><small>LOCATION</small><h2>Find homes and land across Nigeria.</h2><p>Map markers will display when verified and approved coordinates are available. No fabricated property pins or addresses are shown.</p><Link href="/contact">Ask about an estate →</Link></article></div>
+  <MarketFooter/></div></main>;
 }
