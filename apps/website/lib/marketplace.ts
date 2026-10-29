@@ -1,6 +1,6 @@
 import {createClient} from '@supabase/supabase-js';
 export type Listing={
- id:string;title:string;slug:string|null;property_type:string;amount_kobo:number|null;status:string;estate_id:string|null;
+ id:string;title:string;slug:string|null;property_type:string;amount_kobo:number|null;price_is_starting_at:boolean;status:string;estate_id:string|null;
  sale_mode:'Buy'|'Rent'|'Shortlet'|null;bedrooms:number|null;bathrooms:number|null;floor_area_sqm:number|null;land_area_sqm:number|null;availability:string|null;
  estates?:{name:string;state:string|null;city:string|null;lga:string|null;area:string|null}|null
 };
@@ -8,6 +8,7 @@ export const NIGERIA_STATES=['Abia','Adamawa','Akwa Ibom','Anambra','Bauchi','Ba
 export type Params={purpose?:string;type?:string;state?:string;city?:string;lga?:string;area?:string;min?:string;max?:string;bedrooms?:string;query?:string;sort?:string;page?:string;view?:string};
 export const PAGE_SIZE=12;
 export function propertyHref(property:{id:string;slug?:string|null}){return '/properties/'+encodeURIComponent(property.slug||property.id)}
+export function propertyPrice(p:{amount_kobo:number|null|undefined;price_is_starting_at?:boolean|null}){return (p.price_is_starting_at?'From ':'')+money(p.amount_kobo)}
 export function money(kobo:number|null|undefined){return typeof kobo==='number'&&Number.isFinite(kobo)?new Intl.NumberFormat('en-NG',{style:'currency',currency:'NGN',maximumFractionDigits:0}).format(kobo/100):'Price on request'}
 export function publicDb(){const url=process.env.NEXT_PUBLIC_SUPABASE_URL,key=process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;return url&&key?createClient(url,key,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}}):null}
 export function cleanFilters(p:Params){
@@ -38,7 +39,7 @@ export async function listPublished(filters:Filters){
   if(!estateIds.length)return {rows:[] as Listing[],count:0,error:null};
  }
  let propertyQuery=db.from('properties')
-  .select('id,title,slug,estate_id,property_type,amount_kobo,status,sale_mode,bedrooms,bathrooms,floor_area_sqm,land_area_sqm,availability,estates(name,state,city,lga,area)',{count:'exact'})
+  .select('id,title,slug,estate_id,property_type,amount_kobo,price_is_starting_at,status,sale_mode,bedrooms,bathrooms,floor_area_sqm,land_area_sqm,availability,estates(name,state,city,lga,area)',{count:'exact'})
   .eq('status','published');
  if(estateIds)propertyQuery=propertyQuery.in('estate_id',estateIds);
  if(filters.purpose==='Buy')propertyQuery=propertyQuery.or('sale_mode.eq.Buy,sale_mode.is.null').neq('property_type','shortlet');

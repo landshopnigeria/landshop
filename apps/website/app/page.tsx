@@ -1,5 +1,5 @@
 import Homepage,{type FeaturedProperty} from '../components/LandshopHome';
-import {cleanFilters,listPublished,money,propertyHref} from '../lib/marketplace';
+import {cleanFilters,listPublished,propertyPrice,propertyHref} from '../lib/marketplace';
 import {loadPropertyMedia} from '../lib/property-showcase';
 export const dynamic='force-dynamic';
 export default async function Page(){
@@ -9,7 +9,7 @@ export default async function Page(){
  const featured:FeaturedProperty[]=selected.map(p=>({
   id:p.id,href:propertyHref(p),title:p.title,propertyType:p.property_type,
   location:[p.estates?.city,p.estates?.state].filter(Boolean).join(', ')||'Location on enquiry',
-  price:money(p.amount_kobo),
+  price:propertyPrice(p),
   image:gallery[p.id]?.find(m=>m.kind==='photo')?.src
  }));
  return <Homepage featured={featured}/>;

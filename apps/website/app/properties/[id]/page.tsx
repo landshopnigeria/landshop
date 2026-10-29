@@ -6,7 +6,7 @@ import PropertyActions from '../../../components/PropertyActions';
 import MortgageEstimator from '../../../components/MortgageEstimator';
 import PropertyInspectionForm from '../../../components/PropertyInspectionForm';
 import {MarketFooter} from '../../../components/MarketChrome';
-import {money,publicDb,propertyHref,type Listing} from '../../../lib/marketplace';
+import {money,propertyPrice,publicDb,propertyHref,type Listing} from '../../../lib/marketplace';
 import {loadShowcase,loadPropertyMedia,propertyAddress,type FeatureRow,type PriceRow,type PublicMedia} from '../../../lib/property-showcase';
 import {getApprovedPublicPropertyImages} from '../../../lib/public-property-media';
 import '../property-market.css';
@@ -28,14 +28,14 @@ export default async function PropertyDetails({params}:{params:Promise<{id:strin
  if(!isUuid(routeId)&&!/^[a-z0-9][a-z0-9-]{2,120}$/.test(routeId))notFound();
  const db=publicDb();if(!db)return <main className="mk-layout"><div className="mk-wrap"><h1>Property service unavailable</h1><Link href="/properties">Explore properties</Link></div></main>;
  const {data,error}=await db.from('properties')
- .select('id,slug,title,property_type,amount_kobo,status,estate_id,sale_mode,bedrooms,bathrooms,floor_area_sqm,land_area_sqm,availability,estates(name,state,city,lga,area)')
+ .select('id,slug,title,property_type,amount_kobo,price_is_starting_at,status,estate_id,sale_mode,bedrooms,bathrooms,floor_area_sqm,land_area_sqm,availability,estates(name,state,city,lga,area)')
  .eq(isUuid(routeId)?'id':'slug',routeId).eq('status','published').maybeSingle();
  if(error||!data)notFound();
  const property=data as unknown as Listing,id=property.id;
  if(isUuid(routeId)&&property.slug)redirect(propertyHref(property));
  const [profile,mediaById,similarResult]=await Promise.all([
   loadShowcase(property.id),loadPropertyMedia([property.id]),
-  db.from('properties').select('id,title,slug,property_type,amount_kobo').eq('status','published')
+  db.from('properties') .select('id,title,slug,property_type,amount_kobo,price_is_starting_at').eq('status','published')
     .eq('property_type',property.property_type).neq('id',property.id).limit(3)
  ]);
  const media=mediaById[property.id]||[];
@@ -56,7 +56,7 @@ export default async function PropertyDetails({params}:{params:Promise<{id:strin
   ...(property.availability?[{label:'Availability',value:property.availability.replaceAll('_',' ')}]:[]),
   ...profile.features
  ];
- const price:PriceRow[]=profile.pricing.length?profile.pricing:[{name:'Published asking price',amount_ngn:typeof property.amount_kobo==='number'?property.amount_kobo/100:null,details:'Request an updated quotation and full payment terms'}];
+ const price:PriceRow[]=profile.pricing.length?profile.pricing:[{name:property.price_is_starting_at?'Advertised starting price':'Published asking price',amount_ngn:typeof property.amount_kobo==='number'?property.amount_kobo/100:null,details:'Request an updated quotation and full payment terms'}];
  const canMap=profile.location_verified&&profile.latitude!==null&&profile.longitude!==null;
  const latitude=profile.latitude??0,longitude=profile.longitude??0;
  const coordinates=latitude+','+longitude;
@@ -66,7 +66,7 @@ export default async function PropertyDetails({params}:{params:Promise<{id:strin
  return <main className="mk-layout ld-page">
   <div className="ld-shell">
    <nav className="ld-breadcrumb" aria-label="Breadcrumb"><Link href="/">Home</Link><SiteIcon name="chevron" size={16}/><Link href="/properties">Properties</Link><SiteIcon name="chevron" size={16}/><span>{property.title}</span></nav>
-   <div className="ld-heading"><div><span className="ld-eyebrow">LANDSHOP VERIFIED INVENTORY <span className="ld-dot">·</span> {property.property_type.toUpperCase()}</span><h1>{property.title}</h1><p className="ld-location"><SiteIcon name="pin" size={20}/>{locationShort}<span>Reference: {id.slice(0,8).toUpperCase()}</span></p><PropertyActions propertyId={property.id} title={property.title} slug={property.slug||property.id}/></div><div className="ld-heading-price"><small>Published price</small><strong>{money(property.amount_kobo)}</strong><span>Confirm current terms before payment</span></div></div>
+   <div className="ld-heading"><div><span className="ld-eyebrow">LANDSHOP VERIFIED INVENTORY <span className="ld-dot">·</span> {property.property_type.toUpperCase()}</span><h1>{property.title}</h1><p className="ld-location"><SiteIcon name="pin" size={20}/>{locationShort}<span>Reference: {id.slice(0,8).toUpperCase()}</span></p><PropertyActions propertyId={property.id} title={property.title} slug={property.slug||property.id}/></div><div className="ld-heading-price"><small>{property.price_is_starting_at?'From — approved minimum price':'Published price'}</small><strong>{propertyPrice(property)}</strong><span>Confirm current terms before payment</span></div></div>
    <PropertyMediaCarousel title={property.title} images={gallery} videos={profile.videos}/>
    <nav className="ld-section-nav" aria-label="Property sections"><a href="#overview">Overview</a><a href="#features">Features</a><a href="#pricing">Pricing</a><a href="#inspection">Inspection</a><a href="#videos">Videos</a><a href="#layout">Layout</a><a href="#map">Map</a></nav>
    <div className="ld-main-grid">
@@ -76,7 +76,7 @@ export default async function PropertyDetails({params}:{params:Promise<{id:strin
      <section className="ld-panel" id="pricing"><span className="ld-overline">PRICE &amp; AVAILABILITY</span><h2>Property pricing</h2><p>Unit types, official prices and accompanying terms are displayed below when approved. These are not payment instructions.</p><div className="ld-table-scroll"><table className="ld-data-table ld-price-table"><thead><tr><th scope="col">Unit / Option</th><th scope="col">Price (NGN)</th><th scope="col">Terms / Notes</th></tr></thead><tbody>{price.map((r,i)=><tr key={r.name+'-'+i}><th scope="row">{r.name}</th><td className="ld-money">{r.amount_ngn===null?'On request':display(r.amount_ngn)}</td><td>{r.details||'Confirm with Landshop'}</td></tr>)}</tbody></table></div><p className="ld-disclaimer">All availability, title claims, charges, instalments, mortgage terms and prices must be independently confirmed through Landshop before payment.</p></section>
      <section className="ld-panel" id="documents"><span className="ld-overline">OWNERSHIP CHECKS</span><h2>Documents &amp; verification</h2><p>Property title records, surveys, approvals and marketing-authority evidence are not publicly exposed. Request authorized documents for independent professional review.</p><Link className="ld-inline-link" href={mail}>Request property documents <SiteIcon name="external" size={17}/></Link></section>
      <section className="ld-panel" id="inspection"><span className="ld-overline">SITE INSPECTION</span><h2>Schedule a Property Inspection</h2><p>Select your preferred date and time. Landshop will review and confirm availability.</p><PropertyInspectionForm propertyId={property.id} title={property.title}/></section>
-     <section className="ld-panel" id="related"><span className="ld-overline">MORE OPPORTUNITIES</span><h2>Similar properties</h2>{!similarResult.data?.length?<p>No similar published properties are currently available.</p>:<div className="ld-related">{similarResult.data.map(p=><Link key={p.id} href={propertyHref(p)}><strong>{p.title}</strong><small>{p.property_type} · {money(p.amount_kobo)}</small><SiteIcon name="arrow" size={20}/></Link>)}</div>}</section>
+     <section className="ld-panel" id="related"><span className="ld-overline">MORE OPPORTUNITIES</span><h2>Similar properties</h2>{!similarResult.data?.length?<p>No similar published properties are currently available.</p>:<div className="ld-related">{similarResult.data.map(p=><Link key={p.id} href={propertyHref(p)}><strong>{p.title}</strong><small>{p.property_type} · {propertyPrice(p)}</small><SiteIcon name="arrow" size={20}/></Link>)}</div>}</section>
     </div>
     <aside className="ld-sidebars" aria-label="Property enquiries and tools">
      <section className="ld-sidebar ld-sidebar-primary"><span className="ld-overline">ENQUIRE ABOUT THIS PROPERTY</span><h2>Ready to explore further?</h2><p>Speak to Landshop about authentic photos, inspection availability, verified documents and current pricing.</p><a className="ld-side-cta" href={mail}><SiteIcon name="mail" size={20}/> Send an enquiry <SiteIcon name="external" size={18}/></a><a className="ld-side-outline" href="#inspection"><SiteIcon name="calendar" size={20}/> Request inspection</a><a className="ld-side-outline" href="tel:+2349169973359"><SiteIcon name="phone" size={20}/> Call customer care</a><small>Quote reference {id.slice(0,8).toUpperCase()}</small></section>
