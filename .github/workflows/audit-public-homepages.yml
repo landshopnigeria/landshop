@@ -87,6 +87,16 @@ jobs:
             [ -s "$app/LANDSHOP_RELEASE_SHA" ] && { echo -n "Node release: ";head -c 40 "$app/LANDSHOP_RELEASE_SHA";echo; } || echo "Node release: not found"
             echo "::endgroup::"
           done
+          echo "::group::Legacy product routes in website public document root"
+          for slug in develop incubate grow;do
+            echo "-- $slug --"
+            for path in "$HOME/public_html/$slug" "$HOME/public_html/$slug.html" "$HOME/public_html/$slug.php" "$HOME/public_html/$slug/index.html" "$HOME/public_html/$slug/index.php";do
+              if [ -e "$path" ];then
+                echo "Existing docroot path: ${path#"$HOME"/} (type: $(stat -c '%F' "$path" 2>/dev/null || echo unknown))"
+              fi
+            done
+          done
+          echo "::endgroup::"
           REMOTE
 
       - name: Verify production website and portal paths are Next.js pages, not legacy fallbacks
@@ -118,7 +128,16 @@ jobs:
             path="$RUNNER_TEMP/$name.html"
             code=$(curl -sS -L --max-time 25 -H 'Cache-Control: no-cache' -o "$path" -w '%{http_code}' "$url?landshop_route_audit=$GITHUB_RUN_ID" || true)
             if [ "$code" != 200 ];then echo "::error::$name HTTP $code";errors=$((errors+1));continue;fi
-            if ! grep -q '/_next/' "$path";then echo "::error::$name did not render Next.js assets";errors=$((errors+1));continue;fi
+            if ! grep -q '/_next/' "$path";then
+              NAME="$name" FILE="$path" python3 - <<'PY'
+          import os,re,html
+          text=open(os.environ["FILE"],encoding="utf-8",errors="replace").read()
+          title=re.search(r'<title[^>]*>(.*?)</title>',text,re.I|re.S)
+          heading=re.search(r'<h1[^>]*>(.*?)</h1>',text,re.I|re.S)
+          clean=lambda s:html.unescape(re.sub('<[^>]+>',' ',s or '')).strip()[:140]
+          print('Unexpected',os.environ['NAME'],'HTML:',{'bytes':len(text),'title':clean(title.group(1) if title else ''),'h1':clean(heading.group(1) if heading else ''),'wordpress':('wp-content' in text)})
+          PY
+              echo "::error::$name did not render Next.js assets";errors=$((errors+1));continue;fi
             if grep -qEi 'Property ownership starts with possibility.|We are preparing secure account registration|temporarily unavailable while we' "$path";then echo "::error::$name still renders legacy recovery content";errors=$((errors+1));continue;fi
             echo "$name: HTTP 200, Next.js rendered, no legacy recovery text"
           done
