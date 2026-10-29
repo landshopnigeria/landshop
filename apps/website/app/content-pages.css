@@ -15,3 +15,22 @@
 
 /* Official graphic logo at original aspect ratio, without duplicate wordmark text. */
 .content-brand{font-size:0!important}.content-brand img{width:124px!important;max-height:58px!important;height:auto!important;object-fit:contain}.content-header{background:#ffffffc9!important;backdrop-filter:blur(19px)!important;box-shadow:0 7px 27px #0c4f3213}.content-cta:hover,.content-link:hover{background:#f57f18!important;color:white!important}
+
+/* V16 — accessible secure contact intake and independently navigable editorial pages. */
+.contact-enquiry-form{background:#fff;border:1px solid #d6e8dc;border-radius:24px;padding:clamp(20px,3vw,38px);box-shadow:0 15px 45px #073d3420;max-width:1050px}
+.contact-enquiry-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.contact-enquiry-fields label{display:grid;gap:9px;font-size:14px;font-weight:700;color:#123e33}
+.contact-enquiry-fields input,.contact-enquiry-fields select,.contact-enquiry-fields textarea{width:100%;border:1px solid #bbd5c9;border-radius:11px;background:#fff;padding:14px;color:#173d32;font:inherit;font-weight:400;line-height:1.5}
+.contact-enquiry-fields textarea{resize:vertical;min-height:130px}
+.contact-enquiry-fields .contact-wide{grid-column:1/-1}
+.contact-hidden-field{display:none!important}
+.contact-enquiry-consent{display:flex;align-items:flex-start;gap:11px;margin:23px 0;color:#285144;font-size:13px;line-height:1.65}
+.contact-enquiry-consent input{width:19px;height:19px;accent-color:#2ba47a;flex-shrink:0;margin-top:2px}
+.contact-enquiry-actions{display:flex;flex-wrap:wrap;align-items:center;gap:18px}.contact-enquiry-actions p{font-size:12px!important;margin:0!important}
+.contact-enquiry-actions button{border:0;cursor:pointer}.contact-enquiry-actions button:disabled{opacity:.7;cursor:progress}
+.contact-enquiry-feedback{padding:14px 17px;margin:20px 0 0!important;border-radius:11px;background:#e8f6ee;color:#075f49!important}.contact-enquiry-feedback.error{background:#fef0ed;color:#9c3426!important}
+.insight-card-image{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:15px;margin-bottom:18px}
+.insight-card h3 a{color:#153b32}.insight-navigation{display:flex;justify-content:space-between;gap:12px;margin-bottom:35px;font-size:13px;color:#4f6d61}.insight-navigation a{color:#087d61;font-weight:800}
+.insight-article{max-width:900px}.insight-article section{padding:16px 0 27px;border-bottom:1px solid #d5e8dd;margin-bottom:24px}.insight-article ul{padding-left:24px}.insight-article li{margin:10px 0}
+.contact-enquiry-form :is(input,textarea,select,button):focus-visible,.insight-card a:focus-visible{outline:3px solid #f26b10;outline-offset:3px}
+@media(max-width:650px){.contact-enquiry-fields{grid-template-columns:1fr}.contact-enquiry-form{border-radius:16px}}
