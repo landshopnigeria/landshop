@@ -32,7 +32,7 @@ export default function SiteHeader(){
  const [menuOpen,setMenuOpen]=useState(false);
  const [expanded,setExpanded]=useState<string|null>(null);
  const [focused,setFocused]=useState<string|null>(null);
- const frame=useRef<HTMLElement>(null);
+ const frame=useRef<HTMLDivElement>(null);
  const activeGroup=expanded?groupsByLabel[expanded]:null;
  const selected=activeGroup?.items.find(i=>i.title===focused)||activeGroup?.items[0];
  useEffect(()=>{setMenuOpen(false);setExpanded(null);setFocused(null)},[pathname]);

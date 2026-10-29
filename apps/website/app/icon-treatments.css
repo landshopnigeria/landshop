@@ -1,0 +1,7 @@
+/* Site-wide outlined icon chips remain legible across all screen sizes. */
+.lp-highlight-icon{display:flex;align-items:center}.lp-highlight-icon .ls-icon-chip{background:#eff8f5}
+.lp-card-icon{display:flex}.lp-card-icon .ls-icon-chip{width:48px;height:48px}
+.lp-highlights>div{gap:17px}.lp-highlights>div .ls-icon-chip{min-width:45px}
+.lc-icon-chip{display:inline-flex;margin:7px 0}
+.lc-icon-chip .ls-icon-chip{background:#eff9f4}
+@media(max-width:690px){.lp-highlight-icon .ls-icon-chip,.lp-card-icon .ls-icon-chip,.lc-icon-chip .ls-icon-chip{min-width:47px;width:47px;height:47px}.lp-highlight-icon .ls-icon,.lp-card-icon .ls-icon,.lc-icon-chip .ls-icon{width:25px;height:25px}}
