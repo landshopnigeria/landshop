@@ -9,7 +9,7 @@ const links=[
  ['Dashboard','/admin','⌂'],['Property Management','/admin/properties','▦'],['Leads & Applications','/admin/applications','▣'],
  ['CRM Application Queue','/admin/applications','↗'],['Mortgage Reviews','/admin/applications','◉'],
  ['Property Import','/admin/properties/import/advanced','⇧'],['Import Approval','/admin/properties/import/review','✓'],
- ['Workflow Automation','/admin/automation','⌘'],['Customer Support','/admin/support','☏'],
+ ['Workflow Automation','/admin/automation','⌘'],['Website Enquiries','/admin/enquiries','✉'],['Customer Support','/admin/support','☏'],
  ['Referral Records','/admin/reports','♧'],['Staff & Roles','/admin/staff','♙'],
  ['KYC & Compliance','/admin/kyc','◈'],['Survey & Allocation','/admin/seven-cities','⌖'],
  ['Reports & Analytics','/admin/reports','▥']];
@@ -34,17 +34,17 @@ export default async function Admin(){
  if(!allowed.length)return <main className="command-denied">Your account is not authorized for management access.</main>;
  const {data:orgs}=await db.from('organizations').select('id').eq('kind','landshop').in('id',allowed.map(m=>m.organization_id));
  if(!orgs?.length)return <main className="command-denied">No active Landshop management assignment found.</main>;
- const [properties,apps,kyc,imports,staff,allocations,tickets,referrals,workflows,published]=await Promise.all([
+ const [properties,apps,kyc,imports,staff,allocations,tickets,enquiries,referrals,workflows,published]=await Promise.all([
   count(db,'properties'),count(db,'applications'),count(db,'kyc_submissions'),
   count(db,'property_import_batches'),count(db,'organization_members'),count(db,'allocation_cases'),
-  count(db,'support_tickets'),count(db,'referral_edges'),count(db,'automation_workflows'),
+  count(db,'support_tickets'),count(db,'contact_enquiries'),count(db,'referral_edges'),count(db,'automation_workflows'),
   db.from('properties').select('*',{count:'exact',head:true}).eq('status','published').then(result=>result.error?null:result.count)
  ]);
  const {data:recent}=await db.from('properties').select('id,title,status,property_type,created_at').order('created_at',{ascending:false}).limit(8);
  const {data:latestApplications}=await db.from('applications').select('id,kind,status,created_at').order('created_at',{ascending:false}).limit(8);
  const {data:recentTickets}=await db.from('support_tickets').select('id,subject,priority,status,updated_at').order('updated_at',{ascending:false}).limit(6);
  const {data:recentAudits}=await db.from('audit_events').select('id,event_type,created_at').order('created_at',{ascending:false}).limit(6);
- const statList=[['Total Properties',properties,'⌂'],['Published Properties',published,'▦'],['Applications',apps,'▣'],['Support Tickets',tickets,'☏'],['Staff Records',staff,'♙'],['Import Batches',imports,'⇧'],['Referrals',referrals,'♧'],['Automations',workflows,'⌘']];
+ const statList=[['Total Properties',properties,'⌂'],['Published Properties',published,'▦'],['Applications',apps,'▣'],['Support Tickets',tickets,'☏'],['Website Enquiries',enquiries,'✉'],['Staff Records',staff,'♙'],['Import Batches',imports,'⇧'],['Referrals',referrals,'♧'],['Automations',workflows,'⌘']];
  return <div className="command-shell">
   <aside className="command-side"><div className="command-brand"><img src="/media/logo.webp" alt="Landshop official logo" width={139} height={65}/><small>GLOBAL COMMAND CENTER</small></div>
    <nav aria-label="Global Command Center navigation">{links.map(([name,url,icon])=><Link href={url} className={url==='/admin'?'active':''} key={url}><span aria-hidden="true">{icon}</span> {name}</Link>)}</nav>
