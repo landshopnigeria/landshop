@@ -43,10 +43,14 @@ jobs:
           website_app="$1"; portal_app="$2"; expected="$3";runid="$4"
           case "$runid" in *[!0-9]*|'')exit 1;;esac
           for role in website portal;do
-            if [ "$role" = website ];then docroot="$HOME/public_html";app="$website_app";marker="Property ownership starts with possibility.";else docroot="$HOME/portal.landshopnigeria.com";app="$portal_app";marker="registration and account verification are being prepared";fi
+            if [ "$role" = website ];then docroot="$HOME/public_html";app="$website_app";else docroot="$HOME/portal.landshopnigeria.com";app="$portal_app";fi
             [ -d "$docroot" ] && [ ! -L "$docroot" ] || { echo "::error::Unexpected $role document root";exit 1; }
             [ -f "$docroot/index.html" ] && [ ! -L "$docroot/index.html" ] || { echo "::error::No ordinary legacy $role index.html to archive";exit 1; }
-            grep -qiF "$marker" "$docroot/index.html" || { echo "::error::$role entry file not the known recovery page; not modifying";exit 1; }
+            if [ "$role" = website ];then
+              grep -qiF 'Property ownership starts with possibility.' "$docroot/index.html" || { echo "::error::Unexpected main homepage file";exit 1; }
+            else
+              grep -qiE 'registration and account verification are being prepared|We are preparing secure account registration|Welcome to your property journey|sign-in and registration are temporarily unavailable' "$docroot/index.html" || { echo "::error::Unexpected portal homepage file";exit 1; }
+            fi
             [ -s "$docroot/.htaccess" ] || { echo "::error::Missing $role Passenger route";exit 1; }
             grep -qF 'PassengerAppRoot' "$docroot/.htaccess" && grep -qF "$app" "$docroot/.htaccess" || { echo "::error::Unexpected $role app routing";exit 1; }
             [ -s "$app/server.js" ] && [ -s "$app/LANDSHOP_RELEASE_SHA" ] || exit 1
