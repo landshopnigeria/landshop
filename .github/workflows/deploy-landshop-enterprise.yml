@@ -145,6 +145,50 @@ jobs:
             }
             echo "TLS and response verified for $host"
           done
+      - name: Audit Namecheap website routing and legacy document-root files
+        shell: bash
+        env:
+          SSH_PORT: ${{ vars.LANDSHOP_SSH_PORT || secrets.LANDSHOP_SSH_PORT || secrets.NAMECHEAP_SSH_PORT || '21098' }}
+          SSH_HOST: ${{ secrets.LANDSHOP_SSH_HOST || secrets.NAMECHEAP_SSH_HOST || vars.LANDSHOP_SSH_HOST }}
+          SSH_USER: ${{ secrets.LANDSHOP_SSH_USER || secrets.NAMECHEAP_SSH_USER || vars.LANDSHOP_SSH_USER }}
+          WEBSITE_ROOT: ${{ secrets.LANDSHOP_WEBSITE_APPROOT || vars.LANDSHOP_WEBSITE_APPROOT || '/home/maleghif/landshop-website' }}
+          PORTAL_ROOT: ${{ secrets.LANDSHOP_PORTAL_APPROOT || vars.LANDSHOP_PORTAL_APPROOT || '/home/maleghif/landshop-portal' }}
+          DASHBOARD_ROOT: ${{ secrets.LANDSHOP_DASHBOARD_APPROOT || vars.LANDSHOP_DASHBOARD_APPROOT || '/home/maleghif/landshop-app' }}
+        run: |
+          set -euo pipefail
+          # Read-only. Prints route and release metadata, never env files or credentials.
+          ssh -p "$SSH_PORT" -o BatchMode=yes -o StrictHostKeyChecking=yes "$SSH_USER@$SSH_HOST" bash -s -- "$WEBSITE_ROOT" "$PORTAL_ROOT" "$DASHBOARD_ROOT" <<'REMOTE'
+          set -eu
+          for app in website portal dashboard; do
+            case "$app" in website) root="$1";;portal) root="$2";;dashboard) root="$3";;esac
+            echo "DEPLOYED_APP=$app"
+            test -s "$root/server.js" || { echo "ERROR: Passenger entry missing"; exit 1; }
+            if test -s "$root/LANDSHOP_RELEASE_SHA";then
+              printf '  release=';head -c 40 "$root/LANDSHOP_RELEASE_SHA";echo
+            else echo "  release=missing";fi
+            if test -s "$root/apps/$app/.next/BUILD_ID";then
+              printf '  build_id=';head -c 80 "$root/apps/$app/.next/BUILD_ID";echo
+            else echo "  build_id=missing";fi
+            test -d "$root/apps/$app/.next/static" || { echo "ERROR: static asset directory missing"; exit 1; }
+            echo "  static_assets_present=true"
+          done
+          for file in "$HOME/public_html/wp-config.php" "$HOME/public_html/index.php" "$HOME/public_html/index.html"; do
+            if test -f "$file"; then
+              printf 'DOCROOT_LEGACY_FILE_PRESENT=%s\n' "${file##*/}"
+            fi
+          done
+          if test -f "$HOME/public_html/.htaccess";then
+            echo "DOCROOT_ROUTING_RULES:"
+            grep -Ei '^([[:space:]]*Passenger|[[:space:]]*Rewrite|[[:space:]]*# BEGIN WordPress|[[:space:]]*# END WordPress)' "$HOME/public_html/.htaccess" | head -25 || true
+          fi
+          userdir="$HOME/.cpanel/userdata/$(id -un)"
+          for domain in landshopnigeria.com www.landshopnigeria.com portal.landshopnigeria.com app.landshopnigeria.com; do
+            if test -f "$userdir/$domain"; then
+              echo "CPANEL_DOMAIN=$domain"
+              grep -E '^(documentroot|servername|serveralias):' "$userdir/$domain" || true
+            fi
+          done
+          REMOTE
       - name: Back up existing production Next.js release before overwriting
         shell: bash
         env:
@@ -235,3 +279,8 @@ jobs:
       - name: Assert real public UI, forms, product routes and navigation (not only health JSON)
         shell: bash
         run: python3 scripts/check-landshop-public-pages.py
+      - name: Verify actual browser HTML, CSS, JavaScript and release parity on apex + www
+        shell: bash
+        env:
+          LANDSHOP_EXPECTED_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+        run: python3 scripts/check-landshop-live-assets.py
