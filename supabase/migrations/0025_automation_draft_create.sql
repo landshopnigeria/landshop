@@ -36,7 +36,7 @@ begin
  if exists (
   select 1 from jsonb_array_elements(p_graph->'nodes') n
   where jsonb_typeof(n)<>'object'
-    or n->>'type' not in ('trigger','condition','notification','wait','approval','task','webhook','end')
+    or coalesce(n->>'type','') not in ('trigger','condition','notification','wait','approval','task','webhook','end')
     or char_length(coalesce(n->>'id','')) not between 1 and 80
     or char_length(coalesce(n->>'label','')) not between 1 and 80
  ) then
