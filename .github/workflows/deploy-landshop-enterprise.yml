@@ -214,3 +214,6 @@ jobs:
           PY
             echo "Confirmed exact Next.js release for ${urls[$i]}"
           done
+      - name: Assert real public UI, forms, product routes and navigation (not only health JSON)
+        shell: bash
+        run: python3 scripts/check-landshop-public-pages.py
