@@ -19,8 +19,8 @@
 
 ## V18 frontend integration
 
-- Homepage editorial/archive cards now display checked-in genuine Famous Gardens and Maiyegun Beach source photos, clearly labeled as **estate archives**, never as live listings.
-- Product hero imagery uses original Landshop product-deck files: Develop, Incubate, and Grow each gets its corresponding original branded photograph.
+- Homepage archival cards now use genuine original Famous Gardens and Merit Park site photographs selected after visual inspection of the original ZIP-derived assets. Some `famous*.webp` images visibly contain Merit Park signage: **filenames alone are not sufficient provenance**. Maiyegun's inspected images show people at events/site visits, so they were excluded from the property-construction cards.
+- Product hero imagery uses Pexels-licensed actual Nigerian photographs matched to development, Lagos real estate investment context and home-financing discussions. A watermark-bearing deck image was intentionally excluded from Grow.
 - All published property cards and detailed galleries read from `apps/website/lib/public-property-media.ts` which requires an **explicit property UUID → reviewed public image filename** association.
 - The manifest is intentionally empty while the live database has no properties or approved media. The placeholder is retained rather than fabricating listings.
 - Private originals in `landshop-property-private` and title/identity evidence must **never** be linked from a public page. Upload and approval must first produce an authorized public web derivative and a traceable, verified property-specific mapping.

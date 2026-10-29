@@ -1,6 +1,6 @@
 /**
  * Genuine Nigerian photography for LANDSHOP marketing/editorial use.
- * Product hero photography comes from the official Landshop product deck. Other editorial photos are licensed Pexels images.
+ * These are licensed photographs of real Nigerian places and people. Product-deck archives and owner imagery remain separate.
  * These are location-tagged images of Nigeria, NOT synthetic renders.
  *
  * Editorial licensing: https://www.pexels.com/legal-pages/license/; deck media remains Landshop source material.
@@ -14,22 +14,22 @@
 export type EditorialPhoto={src:string;alt:string;credit:string;source:string};
 export const editorialImages={
  develop:{
-  src:'/media/deck-develop.webp',
-  alt:'Original Landshop Develop product-deck image illustrating land and home ownership; not a particular listed property',
-  credit:'Landshop product deck',
-  source:'Landshop Product Deck'
+  src:'https://images.pexels.com/photos/36622005/pexels-photo-36622005.jpeg?auto=compress&cs=tinysrgb&w=2000',
+  alt:'Actual photograph of a residential development in Lagos, Nigeria; illustrative, not an identified Landshop property',
+  credit:'Taiwo Samson / Pexels',
+  source:'https://www.pexels.com/photo/modern-apartment-complex-under-construction-in-lagos-36622005/'
  },
  incubate:{
-  src:'/media/deck-investment.webp',
-  alt:'Original Landshop Incubate product-deck image illustrating property-linked investment; not a listed offer',
-  credit:'Landshop product deck',
-  source:'Landshop Product Deck'
+  src:'https://images.pexels.com/photos/27938900/pexels-photo-27938900.jpeg?auto=compress&cs=tinysrgb&w=2000',
+  alt:'Real aerial photograph of Lagos Osapa London neighborhood for property investment context, not a specific offer',
+  credit:'Ben Iwara / Pexels',
+  source:'https://www.pexels.com/photo/drone-view-osapa-london-lagos-state-27938900/'
  },
  grow:{
-  src:'/media/deck-mortgage.webp',
-  alt:'Original Landshop Grow mortgage product-deck image illustrating a home-financing pathway; not an approved loan or listing',
-  credit:'Landshop product deck',
-  source:'Landshop Product Deck'
+  src:'https://images.pexels.com/photos/30690402/pexels-photo-30690402.jpeg?auto=compress&cs=tinysrgb&w=2000',
+  alt:'Real photograph of Nigerian professionals in a Lagos office, illustrating mortgage and home-financing guidance; not Landshop employees',
+  credit:'Ninthgrid / Pexels',
+  source:'https://www.pexels.com/photo/confident-african-businesswomen-collaborating-in-lagos-office-30690402/'
  },
  team:{
   src:'https://images.pexels.com/photos/30688593/pexels-photo-30688593.jpeg?auto=compress&cs=tinysrgb&w=1600',
