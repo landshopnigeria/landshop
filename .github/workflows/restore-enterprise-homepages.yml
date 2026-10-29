@@ -1,0 +1,116 @@
+name: Expose Landshop Enterprise Homepages (Remove Superseded Recovery Entry Files)
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/restore-enterprise-homepages.yml']
+permissions:
+  contents: read
+concurrency:
+  group: landshop-enterprise-homepage-repair
+  cancel-in-progress: false
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+    environment: landshop-production
+    timeout-minutes: 15
+    steps:
+      - name: Archive only the known legacy recovery index files outside Namecheap web roots
+        shell: bash
+        env:
+          SSH_HOST: ${{ secrets.LANDSHOP_SSH_HOST || secrets.NAMECHEAP_SSH_HOST || vars.LANDSHOP_SSH_HOST }}
+          SSH_PORT: ${{ vars.LANDSHOP_SSH_PORT || secrets.LANDSHOP_SSH_PORT || secrets.NAMECHEAP_SSH_PORT || '21098' }}
+          SSH_USER: ${{ secrets.LANDSHOP_SSH_USER || secrets.NAMECHEAP_SSH_USER || vars.LANDSHOP_SSH_USER }}
+          SSH_KEY: ${{ secrets.LANDSHOP_SSH_KEY || secrets.NAMECHEAP_SSH_PRIVATE_KEY }}
+          KNOWN_HOSTS: ${{ secrets.LANDSHOP_SSH_KNOWN_HOSTS || secrets.NAMECHEAP_SSH_KNOWN_HOSTS || vars.LANDSHOP_SSH_KNOWN_HOSTS }}
+          WEBSITE_ROOT: ${{ secrets.LANDSHOP_WEBSITE_APPROOT || vars.LANDSHOP_WEBSITE_APPROOT || '/home/maleghif/landshop-website' }}
+          PORTAL_ROOT: ${{ secrets.LANDSHOP_PORTAL_APPROOT || vars.LANDSHOP_PORTAL_APPROOT || '/home/maleghif/landshop-portal' }}
+          EXPECTED_COMMIT: 2fb1ef2e863cef76b082a50839a79e42abb4df28
+        run: |
+          set -euo pipefail
+          for name in SSH_HOST SSH_USER SSH_KEY KNOWN_HOSTS WEBSITE_ROOT PORTAL_ROOT;do
+            [ -n "${!name:-}" ] || { echo "::error::Missing SSH prerequisite $name";exit 1; }
+          done
+          [[ "$SSH_PORT" =~ ^[0-9]{1,5}$ ]] || exit 1
+          install -d -m 700 "$HOME/.ssh"
+          printf '%s\n' "$SSH_KEY" > "$HOME/.ssh/id_ed25519"
+          printf '%s\n' "$KNOWN_HOSTS" > "$HOME/.ssh/known_hosts"
+          chmod 600 "$HOME/.ssh/id_ed25519" "$HOME/.ssh/known_hosts"
+          SSH=(ssh -p "$SSH_PORT" -o BatchMode=yes -o StrictHostKeyChecking=yes -o ConnectTimeout=20 "$SSH_USER@$SSH_HOST")
+          echo "Verifying exact legacy entry files and production Next.js release before any move"
+          "${SSH[@]}" bash -s -- "$WEBSITE_ROOT" "$PORTAL_ROOT" "$EXPECTED_COMMIT" "$GITHUB_RUN_ID" <<'REMOTE'
+          set -eu
+          website_app="$1"; portal_app="$2"; expected="$3";runid="$4"
+          case "$runid" in *[!0-9]*|'')exit 1;;esac
+          for role in website portal;do
+            if [ "$role" = website ];then docroot="$HOME/public_html";app="$website_app";marker="Property ownership starts with possibility.";else docroot="$HOME/portal.landshopnigeria.com";app="$portal_app";marker="registration and account verification are being prepared";fi
+            [ -d "$docroot" ] && [ ! -L "$docroot" ] || { echo "::error::Unexpected $role document root";exit 1; }
+            [ -f "$docroot/index.html" ] && [ ! -L "$docroot/index.html" ] || { echo "::error::No ordinary legacy $role index.html to archive";exit 1; }
+            grep -qiF "$marker" "$docroot/index.html" || { echo "::error::$role entry file not the known recovery page; not modifying";exit 1; }
+            [ -s "$docroot/.htaccess" ] || { echo "::error::Missing $role Passenger route";exit 1; }
+            grep -qF 'PassengerAppRoot' "$docroot/.htaccess" && grep -qF "$app" "$docroot/.htaccess" || { echo "::error::Unexpected $role app routing";exit 1; }
+            [ -s "$app/server.js" ] && [ -s "$app/LANDSHOP_RELEASE_SHA" ] || exit 1
+            [ "$(tr -d '\r\n' < "$app/LANDSHOP_RELEASE_SHA")" = "$expected" ] || { echo "::error::Wrong packaged release in $role";exit 1; }
+            echo "Confirmed $role: legacy entrypoint and current Passenger app"
+          done
+          backup="$HOME/landshop-deployment-backups/legacy-entry-$runid"
+          mkdir -p "$backup"
+          chmod 700 "$backup"
+          for role in website portal;do
+            if [ "$role" = website ];then docroot="$HOME/public_html";else docroot="$HOME/portal.landshopnigeria.com";fi
+            cp -p "$docroot/index.html" "$backup/$role-index.html"
+            cmp -s "$docroot/index.html" "$backup/$role-index.html" || exit 1
+          done
+          for role in website portal;do
+            if [ "$role" = website ];then docroot="$HOME/public_html";app="$website_app";else docroot="$HOME/portal.landshopnigeria.com";app="$portal_app";fi
+            mv "$docroot/index.html" "$backup/$role-moved-index.html"
+            cmp -s "$backup/$role-moved-index.html" "$backup/$role-index.html" || exit 1
+            mkdir -p "$app/tmp"
+            touch "$app/tmp/restart.txt"
+            echo "Archived superseded $role index.html outside document root; restarted Passenger"
+          done
+          REMOTE
+          verify_page() {
+            local role="$1" origin="$2" file="$RUNNER_TEMP/${1}.html"
+            local attempt
+            for attempt in $(seq 1 18);do
+              if curl -fsSL --max-time 18 -H 'Cache-Control: no-cache, no-store' -o "$file" "$origin/?landshop_homepage_repair=$GITHUB_RUN_ID";then
+                if python3 - "$role" "$file" <<'PY'
+          import sys
+          from pathlib import Path
+          role,path=sys.argv[1:]
+          s=Path(path).read_text(errors="replace")
+          forbidden=("Property ownership starts with possibility.","registration and account verification are being prepared","We are preparing secure account registration","temporarily unavailable while we")
+          expected="Own Your" if role=="website" else "Sign in to your secure Landshop portal"
+          valid="/_next/" in s and expected in s and not any(x in s for x in forbidden)
+          print(role,"Next.js homepage valid:",valid)
+          sys.exit(0 if valid else 1)
+          PY
+                then return 0;fi
+              fi
+              sleep 3
+            done
+            echo "::error::Expected new $role homepage not publicly visible";return 1
+          }
+          failed=0
+          verify_page website https://landshopnigeria.com || failed=1
+          verify_page website https://www.landshopnigeria.com || failed=1
+          verify_page portal https://portal.landshopnigeria.com || failed=1
+          if [ "$failed" != 0 ];then
+            echo "::warning::New UI not visible; restoring legacy indexes to previous state"
+            "${SSH[@]}" bash -s -- "$GITHUB_RUN_ID" "$WEBSITE_ROOT" "$PORTAL_ROOT" <<'ROLLBACK'
+          set -eu
+          runid="$1";web_app="$2";portal_app="$3"
+          backup="$HOME/landshop-deployment-backups/legacy-entry-$runid"
+          for role in website portal;do
+            if [ "$role" = website ];then docroot="$HOME/public_html";app="$web_app";else docroot="$HOME/portal.landshopnigeria.com";app="$portal_app";fi
+            if [ -s "$backup/$role-index.html" ];then
+              cp -p "$backup/$role-index.html" "$docroot/index.html"
+              touch "$app/tmp/restart.txt"
+              echo "Restored original $role recovery entrypoint"
+            fi
+          done
+          ROLLBACK
+            exit 1
+          fi
+          echo "All three homepage addresses show new enterprise Next.js interface; legacy files retained only in private backup"
