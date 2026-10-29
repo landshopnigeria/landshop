@@ -3,14 +3,15 @@ import {useState} from 'react';
 import Link from 'next/link';
 import {createBrowserClient} from '@supabase/ssr';
 
-type Property={id:string;title:string;property_type:string;status:string;amount_kobo:number|null;created_by:string|null};
+type Property={id:string;title:string;property_type:string;status:string;amount_kobo:number|null;created_by:string|null;estate_id:string|null;source_url:string|null;source_price_note:string|null;price_last_confirmed_at:string|null};
+type Estate={id:string;name:string;state:string|null;city:string|null;status:string};
 function db(){
  const url=process.env.NEXT_PUBLIC_SUPABASE_URL,key=process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
  if(!url||!key)throw Error('Landshop database not configured');
  return createBrowserClient(url,key,{cookieOptions:{domain:'.landshopnigeria.com',path:'/',sameSite:'lax',secure:true}});
 }
-export default function PropertyManagement({initial,currentUserId,canApprove}:{initial:Property[];currentUserId:string;canApprove:boolean}){
- const [items,setItems]=useState(initial),[title,setTitle]=useState(''),[type,setType]=useState('land'),[price,setPrice]=useState('');
+export default function PropertyManagement({initial,estates,currentUserId,canApprove}:{initial:Property[];estates:Estate[];currentUserId:string;canApprove:boolean}){
+ const [items,setItems]=useState(initial),[title,setTitle]=useState(''),[type,setType]=useState('land'),[price,setPrice]=useState(''),[estate,setEstate]=useState('');
  const [selection,setSelection]=useState(''),[nextStatus,setNextStatus]=useState('review'),[reason,setReason]=useState('');
  const [busy,setBusy]=useState(false),[message,setMessage]=useState('');
  const field={padding:13,border:'1px solid #cce0d5',borderRadius:12,maxWidth:'100%',background:'#fff'};
@@ -21,10 +22,10 @@ export default function PropertyManagement({initial,currentUserId,canApprove}:{i
    if(amount!==null&&(!Number.isSafeInteger(amount)||amount<0||amount>90000000000000))throw Error('Enter a valid price in NGN.');
    const value=amount===null?null:amount*100;
    if(value!==null&&!Number.isSafeInteger(value))throw Error('Price exceeds safe precision.');
-   const {data,error}=await db().rpc('landshop_property_create',{p_title:title,p_type:type,p_amount_kobo:value,p_estate:null});
+   const {data,error}=await db().rpc('landshop_property_create',{p_title:title,p_type:type,p_amount_kobo:value,p_estate:estate||null});
    if(error)throw Error('Could not create draft. Check staff permissions and inputs.');
-   setItems(previous=>[{id:String(data),title,property_type:type,status:'draft',amount_kobo:value,created_by:currentUserId},...previous]);
-   setTitle('');setPrice('');setMessage('Draft created. A separate reviewer must authorize publication.');
+   setItems(previous=>[{id:String(data),title,property_type:type,status:'draft',amount_kobo:value,created_by:currentUserId,estate_id:estate||null,source_url:null,source_price_note:null,price_last_confirmed_at:null},...previous]);
+   setTitle('');setPrice('');setEstate('');setMessage('Draft created. A separate reviewer must authorize publication.');
   }catch(e){setMessage(e instanceof Error?e.message:'Unable to create property')}finally{setBusy(false)}
  }
  async function transition(e:React.FormEvent<HTMLFormElement>){
@@ -43,8 +44,11 @@ export default function PropertyManagement({initial,currentUserId,canApprove}:{i
     <select style={field} value={type} onChange={e=>setType(e.target.value)} aria-label="Property type">
      {['land','house','apartment','commercial','shortlet'].map(x=><option value={x} key={x}>{x}</option>)}
     </select>
-    <input style={field} type="number" min={0} step={1} value={price} onChange={e=>setPrice(e.target.value)} placeholder="Price (₦)" aria-label="Price in naira"/>
-    <button disabled={busy} style={{padding:'13px 24px',background:'#087f62',color:'white',border:0,borderRadius:12}}>Create Draft</button>
+    <select style={{...field,flex:'1 1 225px'}} required value={estate} onChange={e=>setEstate(e.target.value)} aria-label="Estate for this property">
+     <option value="">Choose a registered estate</option>{estates.map(e=><option value={e.id} key={e.id}>{e.name} — {e.state||'Location pending'} ({e.status})</option>)}
+    </select>
+    <input style={field} type="number" min={1} step={1} value={price} onChange={e=>setPrice(e.target.value)} placeholder="Price (₦)" aria-label="Price in naira"/>
+    <button disabled={busy||!estate||!price.trim()} style={{padding:'13px 24px',background:'#087f62',color:'white',border:0,borderRadius:12}}>Create Draft</button>
    </form>
   </section>
   {canApprove&&<section style={{padding:26,background:'white',borderRadius:20,border:'1px solid #dbe8df'}}>
@@ -63,14 +67,14 @@ export default function PropertyManagement({initial,currentUserId,canApprove}:{i
   <section style={{padding:26,background:'white',borderRadius:20,border:'1px solid #dbe8df'}}>
    <h2>Property inventory <small>({items.length})</small></h2>
    {!items.length?<p>No verified inventory available.</p>:<div style={{overflowX:'auto'}}><table style={{width:'100%',borderCollapse:'collapse'}}>
-    <thead><tr>{['Property','Type','Status','Price','Created by'].map(x=><th key={x} style={{textAlign:'left',padding:12,borderBottom:'1px solid #ddd'}}>{x}</th>)}</tr></thead>
+    <thead><tr>{['Property','Estate','Type','Status','Starting Price','Source / Review'].map(x=><th key={x} style={{textAlign:'left',padding:12,borderBottom:'1px solid #ddd'}}>{x}</th>)}</tr></thead>
     <tbody>{items.map(p=><tr key={p.id}>
-     <td style={{padding:12,borderBottom:'1px solid #eee'}}><Link href={'/admin/properties/'+p.id}>{p.title}</Link></td><td style={{padding:12}}>{p.property_type}</td>
+     <td style={{padding:12,borderBottom:'1px solid #eee'}}><Link href={'/admin/properties/'+p.id}>{p.title}</Link></td><td style={{padding:12}}>{estates.find(e=>e.id===p.estate_id)?.name||'Not assigned'}</td><td style={{padding:12}}>{p.property_type}</td>
      <td style={{padding:12}}>{p.status}</td>
      <td style={{padding:12}}>{p.amount_kobo===null?'Price on request':(p.amount_kobo/100).toLocaleString('en-NG',{style:'currency',currency:'NGN'})}</td>
-     <td style={{padding:12}}>{p.created_by===currentUserId?'You':'Landshop staff'}</td>
+     <td style={{padding:12,fontSize:12}}>{p.source_url?<a href={p.source_url} target="_blank" rel="noopener noreferrer" style={{color:'#0c8668'}}>Official source ↗</a>:(p.created_by===currentUserId?'Created by you':'Staff record')}<div style={{color:p.price_last_confirmed_at?'#138258':'#e0701b',fontWeight:750,marginTop:5}}>{p.price_last_confirmed_at?'Price reconfirmed':'Price requires approval'}</div></td>
     </tr>)}</tbody></table></div>}
-   <p style={{fontSize:13}}>Images, title and ownership documents must be verified before any property is made publicly visible.</p>
+   <p style={{fontSize:13}}>Images, title, ownership authority, matching map coordinates and current prices must be verified before publication. Use the property title to edit the original source record.</p>
   </section>
   <p role="status" aria-live="polite">{message}</p>
  </div>;
