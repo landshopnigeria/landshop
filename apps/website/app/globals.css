@@ -38,3 +38,6 @@
 @media(max-width:1080px){.featured-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.footer-inner{grid-template-columns:repeat(2,minmax(0,1fr))}.hero-v4 .hero-inner{padding-left:9%;padding-right:9%}.hero-v4-arrows{left:2%;right:2%}}
 @media(max-width:650px){.hero-v4{min-height:565px;background-position:60% center}.hero-v4 .hero-inner{padding:70px 7% 115px;background:#ffffffe0}.hero-v4 .hero-v4-title{font-size:clamp(38px,10vw,54px);letter-spacing:-1.8px}.hero-v4 .hero-v4-subtitle{font-size:21px}.hero-v4-arrows{bottom:70px}.hero-v4-caption{font-size:9px;max-width:60%;padding:8px 10px}.featured-grid,.footer-inner{grid-template-columns:1fr}.v4-trust-inner,.v4-updates{display:block}.v4-trust-action{margin-top:18px;display:inline-flex}.about-pillars{gap:10px}.about-pillars span{flex-basis:40%}}
 @media(prefers-reduced-motion:reduce){.hero-v4-title span{transition:none}}
+
+/* V16: only verifiably published property records can appear as live featured cards. */
+.property-image-pending{height:180px;background:linear-gradient(135deg,#eaf4ee,#d7eadf);display:grid;place-items:center;text-align:center;color:#497768;padding:20px;font-size:12px;font-weight:750}.property-image-pending span{border:1px dashed #9cbfab;padding:14px 18px;border-radius:9px}.property-price{font-size:19px!important;color:#087858!important;font-weight:800}
