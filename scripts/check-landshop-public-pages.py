@@ -33,7 +33,7 @@ PUBLIC_PAGES = [
     ("website", "/applications", "Your property journey"),
     ("website", "/search", "Search Landshop"),
     ("website", "/about", "Building wealth through real estate"),
-    ("website", "/contact", "Your next property decision starts with a conversation"),
+    ("website", "/contact", "Let\'s talk about your next move."),
     ("website", "/insights", "Better property decisions start with better questions"),
     ("website", "/company/team", "The work behind every decision"),
     ("website", "/thrift", "Build towards property goals, together"),
@@ -135,6 +135,9 @@ def check(kind: str, route: str, expected: str | None):
             raise AssertionError("V16 premium product page template is missing")
         if "portal.landshopnigeria.com/applications/" not in html:
             raise AssertionError("secure guided product forms are not linked")
+    if kind == "website" and route == "/contact":
+        if 'class="lc-hero-photo"' not in html or 'class="contact-enquiry-form"' not in html:
+            raise AssertionError("premium customer care image or secure enquiry form is missing")
     if kind == "website" and route == "/properties":
         if "title=\"Sign in to list property for sale\"" not in html:
             raise AssertionError("the marketplace Sell route is missing")
