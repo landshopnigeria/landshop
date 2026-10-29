@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import SiteIcon,{IconChip} from '../../components/SiteIcon';
 import ContactForm from './ContactForm';
+import {MarketFooter} from '../../components/MarketChrome';
+import '../properties/property-market.css';
 import './contact-premium.css';
 export const metadata={title:'Contact Landshop | Property Enquiries & Customer Care',description:'Talk with Landshop Nigeria about property enquiries, estate inspections, mortgages, investments, customer service and your account.'};
 const phone='+2349169973359',email='care@landshopnigeria.com';
@@ -48,4 +50,5 @@ export default function Contact(){return <main className="lc-premium">
   <div className="lc-map-landscape"><iframe src={mapEmbed} title="Google Maps — Landshop HQ, King's Deck, Chevron Drive, Lekki, Lagos" loading="lazy" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen/></div>
   <p className="lc-map-note">Google Maps directions open in a separate tab. Please confirm your appointment before visiting.</p>
  </section>
+ <div className="lc-footer"><MarketFooter includeUpdates={false}/></div>
  </main>;}
