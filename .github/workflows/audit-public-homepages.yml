@@ -32,7 +32,7 @@ jobs:
             "legacy_homepage_marker":'Property ownership starts with possibility.' in html,
             "new_homepage_marker":'Own Your' in html or 'Grow Your' in html or 'Make Home' in html,
             "legacy_portal_marker":'We are preparing secure account registration' in html or 'temporarily unavailable' in html or 'Customer registration and account verification are being prepared' in html,
-            "new_portal_marker":'Sign in to your secure Landshop portal' in html,
+            "new_portal_marker":'Create your Landshop account' in html,
             "portal_auth_form":'Continue with Google' in html and 'Sign In' in html,
           }
           print('HTML markers:',markers)
@@ -88,3 +88,39 @@ jobs:
             echo "::endgroup::"
           done
           REMOTE
+
+      - name: Verify production website and portal paths are Next.js pages, not legacy fallbacks
+        shell: bash
+        run: |
+          set -euo pipefail
+          paths=(
+            'website|https://landshopnigeria.com/'
+            'develop|https://landshopnigeria.com/develop'
+            'incubate|https://landshopnigeria.com/incubate'
+            'grow|https://landshopnigeria.com/grow'
+            'properties|https://landshopnigeria.com/properties'
+            'website-applications|https://landshopnigeria.com/applications'
+            'customer-portal|https://portal.landshopnigeria.com/'
+            'portal-applications|https://portal.landshopnigeria.com/applications'
+            'develop-land-form|https://portal.landshopnigeria.com/applications/develop-land'
+            'develop-house-form|https://portal.landshopnigeria.com/applications/develop-house'
+            'incubate-form|https://portal.landshopnigeria.com/applications/incubate-investment'
+            'beta-mortgage-form|https://portal.landshopnigeria.com/applications/beta-mortgage'
+            'mortgage-xtra-form|https://portal.landshopnigeria.com/applications/mortgage-xtra'
+            'develop-inspection-form|https://portal.landshopnigeria.com/applications/develop-inspection'
+            'mortgage-xtra-inspection-form|https://portal.landshopnigeria.com/applications/mortgage-xtra-inspection'
+            'mortgage-calculator|https://portal.landshopnigeria.com/calculator'
+            'support|https://portal.landshopnigeria.com/support'
+          )
+          errors=0
+          for entry in "${paths[@]}";do
+            IFS='|' read -r name url <<< "$entry"
+            path="$RUNNER_TEMP/$name.html"
+            code=$(curl -sS -L --max-time 25 -H 'Cache-Control: no-cache' -o "$path" -w '%{http_code}' "$url?landshop_route_audit=$GITHUB_RUN_ID" || true)
+            if [ "$code" != 200 ];then echo "::error::$name HTTP $code";errors=$((errors+1));continue;fi
+            if ! grep -q '/_next/' "$path";then echo "::error::$name did not render Next.js assets";errors=$((errors+1));continue;fi
+            if grep -qEi 'Property ownership starts with possibility.|We are preparing secure account registration|temporarily unavailable while we' "$path";then echo "::error::$name still renders legacy recovery content";errors=$((errors+1));continue;fi
+            echo "$name: HTTP 200, Next.js rendered, no legacy recovery text"
+          done
+          [ "$errors" = 0 ] || { echo "::error::$errors production routes failed audit";exit 1; }
+          echo "All 17 public pages/forms passed route-availability and rendering checks; authenticated transactions are separate tests."
