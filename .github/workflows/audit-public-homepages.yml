@@ -60,9 +60,11 @@ jobs:
           printf '%s\n' "$SSH_KEY" > "$HOME/.ssh/id_ed25519"
           printf '%s\n' "$KNOWN_HOSTS" > "$HOME/.ssh/known_hosts"
           chmod 600 "$HOME/.ssh/id_ed25519" "$HOME/.ssh/known_hosts"
-          ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -p "$SSH_PORT" "$SSH_USER@$SSH_HOST" bash -s -- "$WEBSITE_DOCROOT" "$PORTAL_DOCROOT" "$WEBSITE_APPROOT" "$PORTAL_APPROOT" <<'REMOTE'
+          ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -p "$SSH_PORT" "$SSH_USER@$SSH_HOST" bash -s -- "${WEBSITE_DOCROOT:-__AUTO__}" "${PORTAL_DOCROOT:-__AUTO__}" "$WEBSITE_APPROOT" "$PORTAL_APPROOT" <<'REMOTE'
           set -eu
           website_docroot="$1"; portal_docroot="$2";website_app="$3";portal_app="$4"
+          [ "$website_docroot" = __AUTO__ ] && website_docroot="$HOME/public_html"
+          [ "$portal_docroot" = __AUTO__ ] && portal_docroot="$HOME/portal.landshopnigeria.com"
           for role in website portal;do
             if [ "$role" = website ];then docroot="${website_docroot:-$HOME/public_html}";app="$website_app";else docroot="${portal_docroot:-$HOME/portal.landshopnigeria.com}";app="$portal_app";fi
             echo "::group::Namecheap $role"
