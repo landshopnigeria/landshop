@@ -38,7 +38,7 @@ const menus:{label:string;intro:string;groups:{label:string;items:MenuItem[]}[]}
 export default function SiteHeader(){
  const [open,setOpen]=useState<string|null>(null);
  const [mobile,setMobile]=useState(false);
- const ref=useRef<HTMLElement|null>(null);
+ const ref=useRef<HTMLDivElement>(null);
  const path=usePathname();
  useEffect(()=>{setOpen(null);setMobile(false)},[path]);
  useEffect(()=>{
@@ -47,7 +47,7 @@ export default function SiteHeader(){
   document.addEventListener('pointerdown',outside);document.addEventListener('keydown',escape);
   return()=>{document.removeEventListener('pointerdown',outside);document.removeEventListener('keydown',escape)};
  },[]);
- return <div className="v16-header-wrap" ref={ref as React.RefObject<HTMLDivElement>}>
+ return <div className="v16-header-wrap" ref={ref}>
   <div className="v16-topbar"><span>Everyone Deserves Affordable Property.</span><form action="/search" method="get" role="search"><label className="v16-sr" htmlFor="v16-search">Search Landshop</label><input id="v16-search" name="q" type="search" maxLength={90} placeholder="Search property, mortgage and insights…"/><button aria-label="Search Landshop" type="submit">⌕</button></form><div><a href="https://portal.landshopnigeria.com">Account</a><a href="https://portal.landshopnigeria.com/support">Support</a></div></div>
   <header className="v16-header">
    <div className="v16-header-inner">

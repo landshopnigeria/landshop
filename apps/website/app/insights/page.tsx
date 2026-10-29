@@ -1,3 +1,4 @@
+import '../properties/property-market.css';
 
 import Link from 'next/link';
 import SiteHeader from '../../components/SiteHeader';
