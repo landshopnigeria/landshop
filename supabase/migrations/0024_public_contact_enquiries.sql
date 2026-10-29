@@ -22,5 +22,20 @@ drop policy if exists contact_enquiries_public_intake on public.contact_enquirie
 create policy contact_enquiries_public_intake on public.contact_enquiries
  for insert to anon,authenticated
  with check (status='new' and assigned_to is null and consent=true and created_at >=now()-interval '5 minutes' and created_at<=now()+interval '5 minutes');
--- Service-role back-office workflows may view and assign new enquiries after separate staff authorization checks.
--- No anonymous or ordinary customer read access, including INSERT RETURNING, is granted.
+
+-- Approved Landshop management members may review incoming leads.
+-- Organization membership is a trusted table; user metadata never conveys role.
+grant select on public.contact_enquiries to authenticated;
+drop policy if exists contact_enquiries_landshop_management_read on public.contact_enquiries;
+create policy contact_enquiries_landshop_management_read on public.contact_enquiries
+  for select to authenticated
+  using(exists(
+    select 1 from public.organization_members m
+    join public.organizations o on o.id=m.organization_id
+    where m.user_id=(select auth.uid()) and m.status='active'
+      and m.role in ('owner','executive','admin','operations','sales','marketing')
+      and o.kind='landshop'
+  ));
+-- Insert-only for everyone else; only authorized staff can SELECT.
+-- Updates and assignments remain service-role workflow operations, not browser mutations.
+
