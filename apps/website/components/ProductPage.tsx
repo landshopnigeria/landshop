@@ -74,12 +74,6 @@ const stages=[
 export default function ProductPage({product}:{product:Product}){
  const p=content[product];
  return <main className="landshop-product" data-product-journey={product}>
-  <div className="lp-topline"><span>Everyone Deserves Affordable Property.</span><div><a href={portal}>Account</a><a href={portal+'/applications'}>Application Center</a><a href="/contact">Contact Us</a></div></div>
-  <header className="lp-nav">
-   <Link className="lp-brand" href="/" aria-label="Landshop homepage"><img src="/media/logo-transparent.png" alt="Landshop official logo" width={126} height={53}/></Link>
-   <nav aria-label="Main navigation"><Link href="/">Home</Link><Link href="/develop" aria-current={product==='develop'?'page':undefined}>Develop</Link><Link href="/incubate" aria-current={product==='incubate'?'page':undefined}>Incubate</Link><Link href="/grow" aria-current={product==='grow'?'page':undefined}>Grow</Link><Link href="/properties">Properties</Link><Link href="/insights">Insights</Link></nav>
-   <a className="lp-primary" href={portal}>Get Started ↗</a>
-  </header>
   <section className="lp-hero">
    <img src={p.image} alt={p.alt} className="lp-hero-image" fetchPriority="high"/>
    <div className="lp-hero-shade" aria-hidden="true"/>

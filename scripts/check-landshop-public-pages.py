@@ -106,6 +106,13 @@ def check(kind: str, route: str, expected: str | None):
     html = fetch_html(url)
     if "/_next/" not in html:
         raise AssertionError("response is not a Next.js rendered document")
+    if kind in ("website","www"):
+        if 'class="ls-glass-header"' not in html:
+            raise AssertionError("unified glass navigation is missing from public page")
+        if '/media/logo-transparent.png' not in html:
+            raise AssertionError("approved transparent logo PNG is not mounted in the shared header")
+        if 'class="ls-utility-bar"' not in html:
+            raise AssertionError("shared desktop/mobile utility navigation is missing")
     parser = VisibleHTML()
     parser.feed(html)
     visible = " ".join(" ".join(parser.words).split())
