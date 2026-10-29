@@ -1,0 +1,77 @@
+name: Rehearse Restoring Encrypted Landshop Supabase Backup
+on:
+  workflow_dispatch:
+  push:
+    branches: [engineering/forms-and-production-diagnostics-20261027]
+    paths: ['.github/workflows/verify-encrypted-db-restore.yml']
+permissions:
+  contents: read
+concurrency:
+  group: landshop-restore-verification
+  cancel-in-progress: false
+jobs:
+  restore-rehearsal:
+    runs-on: ubuntu-latest
+    environment: landshop-production
+    timeout-minutes: 25
+    steps:
+      - name: Restore verified database snapshot into isolated temporary PostgreSQL 17
+        shell: bash
+        env:
+          SSH_HOST: ${{ secrets.LANDSHOP_SSH_HOST || secrets.NAMECHEAP_SSH_HOST || vars.LANDSHOP_SSH_HOST }}
+          SSH_USER: ${{ secrets.LANDSHOP_SSH_USER || secrets.NAMECHEAP_SSH_USER || vars.LANDSHOP_SSH_USER }}
+          SSH_PORT: ${{ vars.LANDSHOP_SSH_PORT || secrets.LANDSHOP_SSH_PORT || secrets.NAMECHEAP_SSH_PORT || '21098' }}
+          SSH_KEY: ${{ secrets.LANDSHOP_SSH_KEY || secrets.NAMECHEAP_SSH_PRIVATE_KEY }}
+          KNOWN_HOSTS: ${{ secrets.LANDSHOP_SSH_KNOWN_HOSTS || secrets.NAMECHEAP_SSH_KNOWN_HOSTS || vars.LANDSHOP_SSH_KNOWN_HOSTS }}
+          ENCRYPTION_KEY: ${{ secrets.LANDSHOP_DB_BACKUP_ENCRYPTION_PASSPHRASE }}
+        run: |
+          set -euo pipefail
+          umask 077
+          for name in SSH_HOST SSH_USER SSH_KEY KNOWN_HOSTS ENCRYPTION_KEY; do
+            [ -n "${!name:-}" ] || { echo "::error::Missing restore prerequisite $name"; exit 1; }
+          done
+          [ "${#ENCRYPTION_KEY}" -ge 20 ] || exit 1
+          [[ "$SSH_PORT" =~ ^[0-9]{1,5}$ ]] || exit 1
+          work="$RUNNER_TEMP/landshop-restore"
+          install -d -m 700 "$work" "$HOME/.ssh"
+          printf '%s\n' "$SSH_KEY" > "$HOME/.ssh/id_ed25519"
+          printf '%s\n' "$KNOWN_HOSTS" > "$HOME/.ssh/known_hosts"
+          chmod 600 "$HOME/.ssh/id_ed25519" "$HOME/.ssh/known_hosts"
+          finish() {
+            docker rm -f landshop-db-restore-check >/dev/null 2>&1 || true
+            rm -f "$work/snapshot.dump" "$work/snapshot.dump.gpg"
+          }
+          trap finish EXIT
+          snapshot="landshop-supabase-40500325257.dump.gpg"
+          scp -q -P "$SSH_PORT" -o BatchMode=yes -o StrictHostKeyChecking=yes \
+            "$SSH_USER@$SSH_HOST:landshop-deployment-backups/supabase/$snapshot" "$work/snapshot.dump.gpg"
+          test -s "$work/snapshot.dump.gpg"
+          gpg --batch --yes --pinentry-mode loopback --passphrase-fd 3 --decrypt \
+            "$work/snapshot.dump.gpg" 3<<< "$ENCRYPTION_KEY" > "$work/snapshot.dump"
+          test -s "$work/snapshot.dump"
+          docker run --rm -v "$work:/restore:ro" postgres:17 pg_restore --list /restore/snapshot.dump > /dev/null
+          # A real restore is performed in a disposable, host-local container, NOT the Supabase project.
+          # Restore two canonical seeded, referentially independent tables and verify their data.
+          docker run -d --rm --name landshop-db-restore-check \
+            -e POSTGRES_PASSWORD=isolated-restore-only \
+            -e POSTGRES_DB=landshop_rehearsal \
+            -p 127.0.0.1:55432:5432 postgres:17 >/dev/null
+          ready=0
+          for i in $(seq 1 45); do
+            if docker exec landshop-db-restore-check pg_isready -U postgres -d landshop_rehearsal >/dev/null 2>&1; then ready=1;break;fi
+            sleep 2
+          done
+          [ "$ready" = 1 ] || { echo "::error::Isolated PostgreSQL did not start";exit 1; }
+          for table in organizations allocation_programmes; do
+            docker run --rm --network host -v "$work:/restore:ro" \
+              -e PGPASSWORD=isolated-restore-only postgres:17 \
+              pg_restore --no-owner --no-acl --exit-on-error -h 127.0.0.1 -p 55432 \
+              -U postgres -d landshop_rehearsal --schema=public --table="$table" \
+              /restore/snapshot.dump >/dev/null
+            count=$(docker exec -e PGPASSWORD=isolated-restore-only landshop-db-restore-check \
+              psql -U postgres -d landshop_rehearsal -At -c "select count(*) from public.$table")
+            [ "$count" = 1 ] || { echo "::error::Restored $table row count differs from expected immutable snapshot";exit 1; }
+            echo "Isolated restore verified: $table (1 expected seed record)"
+          done
+          echo "Validated encrypted archive, decryption, sample schema/data restoration in PostgreSQL 17 and seeded record counts"
+          echo "Scope: sample restore of two independent seeded tables; NOT a full Supabase service/database or Storage object restore."
