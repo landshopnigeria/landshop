@@ -27,6 +27,8 @@ jobs:
           node-version: '22'
       - name: Install dependencies
         run: npm install --no-audit --no-fund
+      - name: Verify real Nigerian editorial photo licenses and CDN availability
+        run: python3 scripts/validate-genuine-photos.py
       - name: Build applications
         env:
           NEXT_PUBLIC_SUPABASE_URL: https://iwkfagzkogzidrbbezds.supabase.co

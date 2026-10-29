@@ -60,6 +60,8 @@ jobs:
           for img in deck-building.webp deck-investment.webp deck-mortgage.webp famous0.webp maiyegun0.webp; do
             test -s "apps/website/public/media/$img" || { echo "::error::Missing V4 estate image $img"; exit 1; }
           done
+      - name: Verify real Nigerian editorial photo CDN assets
+        run: python3 scripts/validate-genuine-photos.py
       - name: Install and validate
         run: |
           set -euo pipefail
