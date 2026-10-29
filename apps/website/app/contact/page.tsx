@@ -11,13 +11,16 @@ const placeId="ChIJDRqfXxH3OxARXRWo0lGm7Sc";
 const googleMaps="https://www.google.com/maps/search/?"+new URLSearchParams({api:"1",query:office,query_place_id:placeId}).toString();
 const directions="https://www.google.com/maps/dir/?"+new URLSearchParams({api:"1",destination:office,destination_place_id:placeId}).toString();
 const mapEmbed="https://www.google.com/maps?q="+encodeURIComponent("Landshop HQ, "+office)+"&output=embed&z=16";
+const businessSchema={"@context":"https://schema.org","@type":"RealEstateAgent","@id":"https://www.landshopnigeria.com/#landshop",name:"Landshop",url:"https://www.landshopnigeria.com",
+ telephone:phone,email,hasMap:googleMaps,address:{"@type":"PostalAddress",streetAddress:"3rd Floor, King's Deck, Alternative Route, off Chevron Drive",addressLocality:"Lekki",addressRegion:"Lagos",addressCountry:"NG"}};
+
 const topics=[
  {name:'Develop — Property',topic:'Develop',icon:'building' as const,description:'Land, houses, locations, inspections and acquisition documentation.'},
  {name:'Incubate — Investment',topic:'Incubate',icon:'chart' as const,description:'Property-linked investment enquiries, applications and current terms.'},
  {name:'Grow — Mortgage',topic:'Grow',icon:'key' as const,description:'Beta Mortgage, Mortgage Xtra and financing guidance.'},
  {name:'Customer & Realtor Support',topic:'Customer Support',icon:'help' as const,description:'Account access, applications, customer care and support requests.'}
 ];
-export default function Contact(){return <main className="lc-premium">
+export default function Contact(){return <main className="lc-premium"><script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify(businessSchema)}}/>
  <section className="lc-hero"><div className="lc-hero-grid">
   <div className="lc-hero-copy">
    <nav className="lc-crumb" aria-label="Breadcrumb"><Link href="/">Home</Link><span>/</span>Contact Landshop</nav>
@@ -40,7 +43,7 @@ export default function Contact(){return <main className="lc-premium">
  <section className="lc-enquiry-grid" id="enquiry">
   <div className="lc-form-col"><span className="lc-kicker">SEND A MESSAGE</span><h2>How can we help?</h2><p>Share your enquiry and the Landshop team can route it to the right department. Do not submit passwords, complete identity documents or card details in this form.</p><ContactForm/></div>
   <aside className="lc-help-col"><span className="lc-kicker">YOUR SUPPORT OPTIONS</span><h2>Find the right team.</h2><p>Choose the pathway that fits your question.</p>
-   {topics.map(t=><Link href={"/contact?topic="+encodeURIComponent(t.topic)+"#enquiry"} className="lc-help-row" key={t.name}><IconChip name={t.icon}/><div><strong>{t.name}</strong><p>{t.description}</p><span className="lc-help-follow">Send this enquiry <SiteIcon name="arrow" size={17}/></span></div></Link>)}
+   {topics.map(t=><a href={"/contact?topic="+encodeURIComponent(t.topic)+"#enquiry"} className="lc-help-row" key={t.name}><IconChip name={t.icon}/><div><strong>{t.name}</strong><p>{t.description}</p><span className="lc-help-follow">Send this enquiry <SiteIcon name="arrow" size={17}/></span></div></a>)}
    <div className="lc-inspection"><SiteIcon name="calendar" size={30}/><h3>Book a property inspection</h3><p>Choose an inspection application and request a preferred date. Bookings require staff confirmation.</p><Link href="https://portal.landshopnigeria.com/applications/develop-inspection">Start an inspection request <SiteIcon name="external" size={18}/></Link></div>
   </aside>
  </section>
