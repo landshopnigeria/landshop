@@ -13,16 +13,16 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - name: Read only public portal h1 and h2 headings
+      - name: Compare public portal HTML with and without cache busting
         shell: bash
         run: |
           python3 - <<'PY'
           from html.parser import HTMLParser
           from urllib.request import Request,urlopen
-          import re
+          from urllib.error import HTTPError
+          import json,re
           class H(HTMLParser):
-            def __init__(self):
-              super().__init__(convert_charrefs=True);self.level=0;self.buffer=[];self.headings=[]
+            def __init__(self):super().__init__(convert_charrefs=True);self.level=0;self.buffer=[];self.headings=[]
             def handle_starttag(self,tag,attrs):
               if tag in ('h1','h2'):self.level+=1
             def handle_data(self,data):
@@ -31,12 +31,18 @@ jobs:
               if tag in ('h1','h2') and self.level:
                 self.level-=1
                 if not self.level:self.headings.append(' '.join(' '.join(self.buffer).split()));self.buffer=[]
-          u='https://portal.landshopnigeria.com/'
-          with urlopen(Request(u,headers={'Cache-Control':'no-cache','User-Agent':'Landshop-Portal-Public-Heading-Audit/1'}),timeout=25) as f:
-            raw=f.read(350000).decode('utf-8','replace')
-            print('Status',f.status,'HTML bytes',len(raw),'NextJS', '/_next/' in raw)
-          h=H();h.feed(raw)
-          print('PUBLIC HEADING TEXTS:',repr(h.headings[:8]))
-          print('Is One Account visible?', 'One Account.' in ' '.join(h.headings))
-          print('Contains Welcome Back?', 'Welcome Back' in ' '.join(h.headings))
+          urls=['https://portal.landshopnigeria.com/',
+             'https://portal.landshopnigeria.com/?landshop_diagnostic=20261029A',
+             'https://portal.landshopnigeria.com/?landshop_diagnostic=20261029B',
+             'https://portal.landshopnigeria.com/api/release-health',
+             'https://landshopnigeria.com/']
+          for url in urls:
+            with urlopen(Request(url,headers={'Cache-Control':'no-cache,no-store','Pragma':'no-cache','User-Agent':'Landshop-Public-Diagnostics/1'}),timeout=25) as f:
+              data=f.read(380000).decode('utf-8','replace')
+              print('URL',url,'STATUS',f.status,'LEN',len(data))
+              print('HEADERS',{k:f.headers.get(k) for k in ['server','cache-control','age','x-nextjs-cache','x-cache','cf-cache-status','x-litespeed-cache','x-powered-by','etag'] if f.headers.get(k) is not None})
+              if '/release-health' in url:print('RELEASE',data[:260]);continue
+            h=H();h.feed(data);print('HEADINGS',repr(h.headings[:6]))
+            print('CHUNKS',re.findall(r'/_next/static/[^"\s<>]+',data)[:3])
+            print('EXPECTED NEW DESIGN', 'One Account.' in ' '.join(h.headings),'OLD DESIGN', 'Create your Landshop account' in ' '.join(h.headings))
           PY
