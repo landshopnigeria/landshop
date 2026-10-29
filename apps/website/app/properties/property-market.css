@@ -5,3 +5,9 @@
 @media(max-width:720px){.mk-header nav{overflow-x:auto;flex-wrap:nowrap;max-width:100%;padding:5px 0}.mk-header nav a{white-space:nowrap}.mk-search-grid{grid-template-columns:1fr 1fr}.mk-property-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.mk-utility,.mk-footer-grid{grid-template-columns:1fr 1fr}.mk-detail-head{display:block}.mk-newsletter{display:block}.mk-newsletter .mk-btn{margin-top:12px}.mk-gallery{grid-template-columns:1fr}.mk-gallery-main{height:230px}}
 @media(max-width:520px){.mk-search-grid,.mk-property-grid,.mk-utility,.mk-footer-grid{grid-template-columns:1fr}.mk-header{gap:7px}.mk-detail-head h1{font-size:32px}.mk-specs{grid-template-columns:1fr 1fr}.mk-title-row{display:block}.mk-search{padding:16px}.mk-top{gap:8px}}
 @media(prefers-reduced-motion:reduce){.mk-layout *{scroll-behavior:auto!important}}
+
+/* V16: configurable published inventory grid/list and advanced Nigerian geography filters. */
+.mk-view-switch{display:flex;gap:4px;background:#eef6f0;border-radius:9px;padding:4px}.mk-view-switch a{padding:9px 12px;border-radius:7px;color:#345e50;font-size:12px;font-weight:750}.mk-view-switch a[aria-current=page]{background:#2ba47a;color:#fff}
+.mk-property-grid.mk-property-list{display:grid;grid-template-columns:1fr}.mk-property-list .mk-card{display:grid;grid-template-columns:minmax(170px,30%) minmax(0,1fr)}.mk-property-list .mk-photo{height:100%;min-height:200px}
+.mk-search :is(input,select):focus-visible,.mk-tools :is(input,select,button):focus-visible,.mk-view-switch a:focus-visible{outline:3px solid #f26b10;outline-offset:2px}
+@media(max-width:720px){.mk-tools{flex-wrap:wrap;justify-content:flex-start}.mk-property-list .mk-card{grid-template-columns:1fr}.mk-property-list .mk-photo{height:190px;min-height:190px}}
