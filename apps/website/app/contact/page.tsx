@@ -7,9 +7,8 @@ import './contact-premium.css';
 export const metadata={title:'Contact Landshop | Property Enquiries & Customer Care',description:'Talk with Landshop Nigeria about property enquiries, estate inspections, mortgages, investments, customer service and your account.'};
 const phone='+2349169973359',email='care@landshopnigeria.com';
 const office="3rd Floor, King's Deck, Alternative Route, off Chevron Drive, Lekki, Lagos, Nigeria";
-const placeId="ChIJDRqfXxH3OxARXRWo0lGm7Sc";
-const googleMaps="https://www.google.com/maps/search/?"+new URLSearchParams({api:"1",query:office,query_place_id:placeId}).toString();
-const directions="https://www.google.com/maps/dir/?"+new URLSearchParams({api:"1",destination:office,destination_place_id:placeId}).toString();
+const googleMaps="https://maps.app.goo.gl/GLiNo6LfYWhWvJV1A";
+const directions="https://www.google.com/maps/dir/?"+new URLSearchParams({api:"1",destination:office}).toString();
 const mapEmbed="https://www.google.com/maps?q="+encodeURIComponent("Landshop HQ, "+office)+"&output=embed&z=16";
 const businessSchema={"@context":"https://schema.org","@type":"RealEstateAgent","@id":"https://www.landshopnigeria.com/#landshop",name:"Landshop",url:"https://www.landshopnigeria.com",
  telephone:phone,email,hasMap:googleMaps,address:{"@type":"PostalAddress",streetAddress:"3rd Floor, King's Deck, Alternative Route, off Chevron Drive",addressLocality:"Lekki",addressRegion:"Lagos",addressCountry:"NG"}};

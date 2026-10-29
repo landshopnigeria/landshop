@@ -1,1 +1,10 @@
 .featured-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}.ld-home-more{display:flex;justify-content:center;margin-top:30px}.ld-home-more>a{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:50px;font-size:14px;font-weight:750}@media(max-width:900px){.featured-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:630px){.featured-grid{grid-template-columns:1fr}.ld-home-more>a{width:100%}}
+/* Published listings only; never misrepresent estate progress archives as inventory. */
+.ls-featured-empty{display:flex;align-items:center;gap:22px;border:1px solid #d6eadf;background:linear-gradient(122deg,#f0faf4,#fff);border-radius:20px;padding:clamp(25px,4vw,45px);min-height:235px}
+.ls-featured-empty-icon{width:77px;height:77px;flex:none;display:grid;place-items:center;color:#f26b10;border-radius:20px;background:#fff0e2;border:1px solid #f7dac1}
+.ls-featured-empty h3{font-size:clamp(23px,2.4vw,33px);margin:8px 0;color:#164a37;line-height:1.2}
+.ls-featured-empty p{color:#5b796b;font-size:14px;line-height:1.75;max-width:770px}
+.ls-featured-empty-links{display:flex;gap:11px;flex-wrap:wrap;margin-top:17px}
+.ls-featured-empty-links>a{min-height:46px;display:inline-flex;align-items:center;justify-content:center;gap:8px;font-size:13px}
+.property-card .card-content>a{display:inline-flex;align-items:center;gap:9px;color:#db6816;font-weight:750}
+@media(max-width:650px){.ls-featured-empty{flex-direction:column;align-items:flex-start;gap:12px}.ls-featured-empty-links{width:100%}.ls-featured-empty-links>a{width:100%}}

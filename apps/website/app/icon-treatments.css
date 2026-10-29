@@ -13,3 +13,6 @@
  .lp-highlight-icon .ls-icon-chip,.lp-card-icon .ls-icon-chip,.lc-icon-chip .ls-icon-chip,.ls-product-icon .ls-icon-chip,.lp-pathway-card .ls-icon-chip{width:56px;height:56px;min-width:56px}
  :is(.lp-highlight-icon,.lp-card-icon,.lc-icon-chip,.ls-product-icon,.lp-pathway-card) .ls-icon-chip .ls-icon{width:30px;height:30px}
 }
+
+/* Orange-highlight line icons on all product pages and mobile sizes. */
+:is(.lp-highlight-icon,.lp-card-icon,.lc-icon-chip,.ls-product-icon,.lp-pathway-card) .ls-icon-chip{color:#f26b10;background:#fff1e5;border-color:rgba(242,107,16,.18)}

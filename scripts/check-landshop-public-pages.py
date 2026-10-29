@@ -119,6 +119,11 @@ def check(kind: str, route: str, expected: str | None):
     if expected and expected.casefold() not in unescape(visible).casefold():
         raise AssertionError(f"expected visible page heading missing: {expected}")
     if kind in ("website", "www") and route == "/":
+        # A successful Next.js page must not show stock estate photo archives as live properties.
+        if "Explore genuine photographs from Landshop estate archives" in visible:
+            raise AssertionError("obsolete estate archive is still substituted for public property listings")
+        if "New properties will appear here after verification." not in visible and "View Property" not in visible:
+            raise AssertionError("property section must show real published cards or the verified inventory empty state")
         if 'data-landshop-hero="v16-separated-product-slides"' not in html:
             raise AssertionError("approved V16 distinct-slide homepage is missing")
         if 'data-active-product="DEVELOP"' not in html:

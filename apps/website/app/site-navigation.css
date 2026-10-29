@@ -131,3 +131,18 @@ body{scroll-padding-top:105px}
 }
 @media(max-width:390px){.ls-brand img{width:112px}.ls-menu-button{width:46px;height:46px}.ls-start{padding:10px 11px}}
 @media(prefers-reduced-transparency:reduce){.ls-glass-header,.ls-mega{background:#f8fcf9}.ls-utility-bar{background:#063b31}}
+
+/* V21 visual rectification: exact brand orange on tactile icons, independent transparent glass nav. */
+:root{--ls-orange:#f26b10;--ls-icon-bg:#fff1e5}
+.ls-site-chrome .ls-glass-header{background:rgba(248,253,249,.69);border:1px solid rgba(207,230,216,.8);box-shadow:0 12px 35px rgba(11,65,46,.11);backdrop-filter:blur(22px) saturate(1.4);-webkit-backdrop-filter:blur(22px) saturate(1.4)}
+.ls-icon-chip{background:var(--ls-icon-bg);border:1px solid rgba(242,107,16,.19);color:var(--ls-orange);box-shadow:0 5px 15px rgba(242,107,16,.06)}
+.ls-icon-chip .ls-icon{stroke-width:2.15}
+.ls-site-chrome .ls-header-link .ls-icon,.ls-site-chrome .ls-global-search .ls-icon,.ls-site-chrome .ls-mobile-bottom .ls-icon{stroke:var(--ls-orange)}
+.ls-site-chrome .ls-glass-header .ls-brand img{mix-blend-mode:normal;filter:none;object-fit:contain}
+.ls-mega-list a.ls-selected .ls-icon-chip{background:#fff1e5;color:var(--ls-orange)}
+.ls-site-chrome .ls-menu-button{color:#ed7415;background:rgba(255,244,233,.94);border-color:#f4dac3}
+.ls-header-link{align-items:center;line-height:1.28}
+.ls-header-link .ls-icon{align-self:center;margin-top:0;vertical-align:middle}
+html{scroll-padding-top:168px}
+@media(max-width:1050px){html{scroll-padding-top:150px}.ls-mobile-subnav .ls-icon-chip{width:52px;height:52px;min-width:52px}.ls-mobile-subnav .ls-icon-chip .ls-icon{width:28px;height:28px}}
+@media(max-width:680px){html{scroll-padding-top:135px}.ls-primary-nav.ls-nav-mobile-open{max-width:calc(100vw - 20px);box-sizing:border-box}}
