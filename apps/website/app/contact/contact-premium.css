@@ -41,3 +41,23 @@
 @media(max-width:1040px){.lc-hero-grid{min-height:520px;gap:24px}.lc-hero-photo{min-height:465px}.lc-enquiry-grid{grid-template-columns:1fr}.lc-methods{grid-template-columns:1fr 1fr}.lc-help-col{display:grid;grid-template-columns:1fr 1fr;gap:10px}.lc-help-col>.lc-kicker,.lc-help-col>h2,.lc-help-col>p,.lc-inspection{grid-column:1/-1}.lc-help-row{border:0}}
 @media(max-width:720px){.lc-hero-grid{grid-template-columns:1fr;padding-top:30px}.lc-crumb{margin-bottom:26px}.lc-hero-photo{min-height:350px;height:450px}.lc-methods{grid-template-columns:1fr;margin-top:17px}.lc-enquiry-grid{padding-top:65px;padding-bottom:60px}.lc-help-col{display:block}.lc-help-row{border-bottom:1px solid #e3eee7}.lc-visit{grid-template-columns:1fr}.lc-hero-copy h1{font-size:clamp(40px,9vw,60px)}}
 @media(max-width:430px){.lc-hero-photo{height:355px}.lc-hero-actions>a{width:100%}.lc-photo-overlay{left:12px;right:12px;bottom:12px}.lc-help-col{padding:20px}}
+
+/* V20: consent-based support routing, orange active icons, and landscape map as final contact section. */
+.lc-premium #enquiry{scroll-margin-top:150px}
+.lc-premium .ls-icon-chip{color:#f26b10;border-color:rgba(242,107,16,.17);background:#fff2e8}
+.lc-premium .lc-help-row{color:inherit;text-decoration:none;transition:background .2s,border-color .2s;min-height:91px}
+.lc-premium .lc-help-row:hover,.lc-premium .lc-help-row:focus-visible{background:#f6fcf8;border-radius:13px;border-color:#c6e6d5}
+.lc-help-follow{display:inline-flex;align-items:center;gap:7px;color:#de6813;font-size:11px;font-weight:850;margin-top:8px}
+.lc-office-map{max-width:1480px;padding:46px clamp(18px,5vw,70px) 76px;margin:0 auto}
+.lc-map-intro{display:flex;justify-content:space-between;align-items:end;gap:25px;flex-wrap:wrap;margin-bottom:22px}
+.lc-map-intro h2{font-size:clamp(27px,3.2vw,45px);letter-spacing:-.035em;margin:11px 0}
+.lc-map-intro p{line-height:1.65;color:#617c6d;margin:0;max-width:680px}
+.lc-map-actions{display:flex;gap:10px;flex-wrap:wrap}
+.lc-map-actions a{border-radius:11px;min-height:47px;padding:12px 17px;display:inline-flex;align-items:center;gap:9px;border:1px solid #bedcc9;background:#fff;color:#087b60;font-weight:800;font-size:13px}
+.lc-map-actions a.lc-map-directions{background:#2ba47a;color:white;border-color:#2ba47a}
+.lc-map-actions a .ls-icon{color:#f26b10}
+.lc-map-landscape{overflow:hidden;aspect-ratio:16/6.4;min-height:330px;border:1px solid #d4e4dc;border-radius:20px;background:#e8f3eb;box-shadow:0 18px 36px #0a492710}
+.lc-map-landscape iframe{width:100%;height:100%;border:0;display:block}
+.lc-map-note{font-size:12px;color:#6b8075;margin-top:12px}
+@media(max-width:700px){.lc-map-landscape{min-height:330px;aspect-ratio:1/1.05}.lc-map-actions{width:100%}.lc-map-actions a{flex:1;justify-content:center}}
+@media(max-width:430px){.lc-map-actions{display:grid;grid-template-columns:1fr}.lc-office-map{padding-bottom:45px}}

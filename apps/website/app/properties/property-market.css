@@ -26,3 +26,34 @@
 .mk-view-switch a{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:42px}
 .mk-view-switch .ls-icon{width:20px;height:20px}
 @media(max-width:640px){.mk-view-switch .ls-icon{width:23px;height:23px}.mk-gallery-pending .ls-icon-chip{width:68px;height:68px}}
+
+/* V20 marketplace refinement: 3x4 listing page, no sideways layout shift. */
+.mk-layout,.mk-layout .mk-wrap,.mk-layout .mk-search,.mk-layout .mk-title-row{min-width:0;max-width:100%;box-sizing:border-box}
+.mk-layout .mk-wrap{width:100%}
+.mk-search-grid{grid-template-columns:minmax(0,1.2fr) minmax(0,.65fr) minmax(0,1.15fr) minmax(0,1fr) minmax(0,1fr) auto}
+.mk-search-bottom{min-width:0}
+.mk-search-bottom label{flex:1 1 155px;min-width:0}
+.mk-search-bottom :is(input,select){width:100%;min-width:0}
+.mk-tools{flex-wrap:wrap;max-width:100%;justify-content:flex-end}
+.mk-tools form{display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-width:0}
+.mk-tools form select{width:auto;max-width:240px;min-width:160px}
+.mk-tools form button{min-height:42px;align-self:stretch;background:#2ba47a;color:#fff;border:0;border-radius:10px;padding:0 18px;font-weight:750;cursor:pointer}
+.mk-property-grid:not(.mk-property-list){grid-template-columns:repeat(3,minmax(0,1fr))}
+.mk-card{min-width:0;display:flex;flex-direction:column}
+.mk-card-body{display:flex;flex:1;flex-direction:column;min-width:0}
+.mk-card-body h3{overflow-wrap:anywhere}
+.mk-card-body strong{margin-top:auto;padding-top:14px;color:#0b8469;font-size:clamp(17px,1.5vw,22px)}
+.mk-card .mk-photo{overflow:hidden;height:235px}
+.mk-card .mk-photo>img{display:block}
+.mk-card .mk-photo .ls-icon-chip,.mk-utility .ls-icon-chip{color:#f26b10;background:#fff4eb;border-color:#f7d5be}
+.mk-card-foot{margin-top:16px}
+.mk-card-foot a{color:#ed7416;font-size:13px}
+.mk-pagination{flex-wrap:wrap;align-items:center;gap:10px}
+.mk-pagination a{width:auto;min-width:44px;padding:0 14px;border-radius:11px;min-height:44px;height:auto}
+.mk-pagination a:first-child,.mk-pagination a:last-child{font-weight:800}
+.mk-pagination .selected{background:#2ba47a}
+.mk-property-grid.mk-property-list .mk-card{display:grid}
+.mk-layout :is(a,button,input,select):focus-visible{outline:3px solid #f26b10;outline-offset:3px}
+@media(max-width:1150px){.mk-search-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.mk-title-row{align-items:start}}
+@media(max-width:850px){.mk-title-row{flex-wrap:wrap}.mk-property-grid:not(.mk-property-list){grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:580px){.mk-search-grid,.mk-property-grid:not(.mk-property-list){grid-template-columns:1fr}.mk-search{margin-top:-25px}.mk-tools{justify-content:flex-start}.mk-tools form select{min-width:160px}.mk-card .mk-photo{height:235px}}
