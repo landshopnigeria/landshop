@@ -1,9 +1,19 @@
 import Link from 'next/link';
+import {editorialImages,type EditorialPhoto} from '../../lib/editorial-imagery';
 import './application-center.css';
 export const metadata={title:'Applications Center | Landshop',description:'Develop, Incubate and Grow product application forms and mortgage pre-qualification.'};
 type Search={product?:string};
 const forms=[{"slug":"develop-house","title":"Develop House","sub":"Own a house or apartment","product":"Develop","img":"deck-develop.webp","steps":8,"summary":"Select your estate and home, choose a payment preference, provide your next of kin and submit for review."},{"slug":"develop-land","title":"Develop Land","sub":"Own a residential or commercial plot","product":"Develop","img":"famous0.webp","steps":8,"summary":"Choose an approved estate and plot size, enter your subscription preferences and complete your declaration."},{"slug":"incubate-investment","title":"Incubate Investment","sub":"Explore property-linked investments","product":"Incubate","img":"deck-investment.webp","steps":7,"summary":"Submit an investment interest, preferred duration, identity documents and payout preferences for suitability review."},{"slug":"beta-mortgage","title":"Beta Mortgage","sub":"Mortgage pre-qualification","product":"Grow","img":"deck-mortgage.webp","steps":7,"summary":"Provide income, employment, household and equity details for an eligibility assessment."},{"slug":"mortgage-xtra","title":"Mortgage Xtra","sub":"Structured home financing","product":"Grow","img":"deck-building.webp","steps":7,"summary":"Start a financing request, review estimated affordability and follow your application through inspection and review."},{"slug":"develop-inspection","title":"Develop Inspection","sub":"Book or record a property inspection","product":"Inspection","img":"maiyegun0.webp","steps":6,"summary":"Enter your preferred estate and date; Landshop staff record verified inspection outcomes."},{"slug":"mortgage-xtra-inspection","title":"Mortgage Xtra Inspection","sub":"Mortgage-linked property inspection","product":"Inspection","img":"drone0.webp","steps":6,"summary":"Coordinate inspection for your selected property and capture prospect feedback after the visit."}];
 const portal='https://portal.landshopnigeria.com';
+const formVisuals:Record<string,EditorialPhoto>={
+ 'develop-house':editorialImages.residential,
+ 'develop-land':editorialImages.develop,
+ 'incubate-investment':editorialImages.incubate,
+ 'beta-mortgage':editorialImages.grow,
+ 'mortgage-xtra':editorialImages.planning,
+ 'develop-inspection':editorialImages.architecture,
+ 'mortgage-xtra-inspection':editorialImages.skyline
+};
 export default async function ApplicationsCenter({searchParams}:{searchParams:Promise<Search>}){
  const {product}=await searchParams;
  const focus=(product||'').toLowerCase();
@@ -20,7 +30,7 @@ export default async function ApplicationsCenter({searchParams}:{searchParams:Pr
    <div className="lc-steps"><span className="lc-step"><strong>01</strong> Select product</span><span className="lc-step"><strong>02</strong> Enter information</span><span className="lc-step"><strong>03</strong> Save and review</span><span className="lc-step"><strong>04</strong> Submit securely</span></div>
    <aside className="lc-guidance"><strong>Before you apply:</strong> Use your own verified information and attach the documents requested for your product. Submitted applications are reviewed by authorized Landshop staff; submission is not automatic approval or a confirmed allocation.</aside>
    <div className="lc-grid">{ordered.map(item=><article className={'lc-card '+(focus===item.product.toLowerCase()?'featured':'')} key={item.slug}>
-     <img className="lc-photo" src={'/media/'+item.img} alt={item.title+' official Landshop supporting imagery'}/>
+     <img className="lc-photo" src={formVisuals[item.slug].src} alt={formVisuals[item.slug].alt} loading="lazy"/>
      <div className="lc-cardbody"><span className="lc-tag">{item.product}</span><h3>{item.title}</h3><p className="lc-sub">{item.sub}</p><p>{item.summary}</p><p className="lc-small">{item.steps} guided stages · private draft saving</p>
       <a href={portal+'/applications/'+item.slug}>Start {item.title} →</a></div>
     </article>)}</div>

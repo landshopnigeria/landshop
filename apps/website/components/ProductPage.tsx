@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import FAQAssistant from './FAQAssistant';
+import {editorialImages} from '../lib/editorial-imagery';
 import '../app/product-journeys.css';
 
 type Product='develop'|'incubate'|'grow';
@@ -10,8 +11,8 @@ const content={
   eyebrow:'01 / DEVELOP',label:'Develop.',headline:'Own Your Future.',
   intro:'Property ownership, made more understandable.',
   description:'Explore documented land and housing opportunities through Landshop. Choose the right product, learn what to verify, book an inspection, and submit a guided application for review.',
-  image:'/media/deck-develop.webp',
-  alt:'Official Landshop property development imagery',
+  image:editorialImages.develop.src,
+  alt:editorialImages.develop.alt,
   heroAction:'Explore Available Properties',heroHref:'/properties',
   secondaryAction:'Start a Develop Application',secondaryHref:'/applications?product=develop',
   quote:'Your next ownership decision deserves clear information.',
@@ -27,8 +28,8 @@ const content={
   eyebrow:'02 / INCUBATE',label:'Incubate.',headline:'Invest in Possibilities.',
   intro:'Explore property-led investment, with informed decisions at every step.',
   description:'Incubate provides a structured entry point for property-linked investment enquiries. Explore eligibility, review available opportunities and disclosures, and submit your interest for suitability and compliance review.',
-  image:'/media/deck-investment.webp',
-  alt:'Official Landshop property investment project imagery',
+  image:editorialImages.incubate.src,
+  alt:editorialImages.incubate.alt,
   heroAction:'Start Investment Application',heroHref:portal+'/applications/incubate-investment',
   secondaryAction:'Read Property Investment Guidance',secondaryHref:'/insights',
   quote:'Growth begins with understanding the opportunity and its risks.',
@@ -42,8 +43,8 @@ const content={
   eyebrow:'03 / GROW',label:'Grow.',headline:'Make Homeownership Possible.',
   intro:'Structured financing pathways for informed homeowners.',
   description:'Understand the available financing pathways, compare indicative affordability and submit the appropriate multi-step application. Every mortgage or credit decision remains subject to lender eligibility, documentation and approval.',
-  image:'/media/deck-mortgage.webp',
-  alt:'Official Landshop mortgage and housing imagery',
+  image:editorialImages.grow.src,
+  alt:editorialImages.grow.alt,
   heroAction:'Calculate Your Affordability',heroHref:portal+'/calculator',
   secondaryAction:'Explore Financing Applications',secondaryHref:'/applications?product=grow',
   quote:'A better financing decision starts with a clear understanding of the numbers.',
