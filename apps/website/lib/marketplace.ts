@@ -20,7 +20,7 @@ export async function listPublished(filters:Filters){
  const db=publicDb();if(!db)return {rows:[] as Listing[],count:0,error:'Property service is not configured'};
  if(filters.purpose==='Rent')return {rows:[] as Listing[],count:0,error:'Rental offers are not yet verified in the current public inventory.'};
  let estateIds:string[]|null=null;
- if(filters.state||filters.city){let estateQuery=db.from('estates').select('id').eq('status','active').limit(500);if(filters.state)estateQuery=estateQuery.eq('state',filters.state);if(filters.city)estateQuery=estateQuery.ilike('city','%'+filters.city.replace(/[%_,\\]/g,'')+'%');const {data,error}=await estateQuery;if(error)return {rows:[] as Listing[],count:0,error:'Location lookup is temporarily unavailable'};estateIds=(data||[]).map(v=>v.id);if(!estateIds.length)return {rows:[] as Listing[],count:0,error:null};}
+ if(filters.state||filters.city){let estateQuery=db.from('estates').select('id').eq('status','published').limit(500);if(filters.state)estateQuery=estateQuery.eq('state',filters.state);if(filters.city)estateQuery=estateQuery.ilike('city','%'+filters.city.replace(/[%_,\\]/g,'')+'%');const {data,error}=await estateQuery;if(error)return {rows:[] as Listing[],count:0,error:'Location lookup is temporarily unavailable'};estateIds=(data||[]).map(v=>v.id);if(!estateIds.length)return {rows:[] as Listing[],count:0,error:null};}
  let query=db.from('properties').select('id,title,estate_id,property_type,amount_kobo,status,estates(name,state,city)',{count:'exact'}).eq('status','published');
  if(estateIds)query=query.in('estate_id',estateIds);
  if(filters.type)query=query.eq('property_type',filters.type);
