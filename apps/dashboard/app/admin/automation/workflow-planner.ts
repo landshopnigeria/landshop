@@ -98,20 +98,46 @@ function fromSteps(steps:Step[]):Graph{
  const edges=nodes.slice(1).map((node,i):WorkflowEdge=>({from:nodes[i].id,to:node.id}));
  return {nodes,edges};
 }
+function customSteps(prompt:string):Step[]{
+ const line=prompt.replace(/[\r\n]+/g,' ').trim();
+ const when=line.match(/(?:when|whenever|upon)\s+(.{5,100}?)(?=,|\bthen\b|\band\b|$)/i);
+ const triggerLabel=when?('Event: '+when[1]).slice(0,78):'Requested business event received';
+ const steps:Step[]=[
+  {type:'trigger',label:triggerLabel,config:{event:'custom.requested'}},
+  {type:'task',label:'Validate event, identity and permissions'}
+ ];
+ if(/assign|route|delegate|owner|team/i.test(line))steps.push({type:'task',label:'Assign to responsible team'});
+ if(/document|file|upload|verify|check|validate/i.test(line))steps.push({type:'task',label:'Review required source records'});
+ if(/if\s+|whether|depending on|condition|eligib/i.test(line))steps.push({type:'condition',label:'Check requested business condition'});
+ if(/calendar|booking|appointment|schedule|meeting/i.test(line))steps.push({type:'task',label:'Prepare calendar or scheduling step'});
+ if(/report|dashboard|spreadsheet|analytics/i.test(line))steps.push({type:'task',label:'Prepare report or update records'});
+ if(/content|post|publish|blog|social/i.test(line))steps.push({type:'task',label:'Prepare and review publication'});
+ // Outbound channels are represented as configuration only, never live integrations.
+ const channels=([
+  ['email',/e-?mail/i],['whatsapp',/whats\s?app/i],
+  ['sms',/sms|text message/i],['internal',/notify|notification|alert/i]
+ ] as const).filter(([,pattern])=>pattern.test(line)).map(([channel])=>channel);
+ const needsApproval=/payment|finance|approve|invest|loan|refund|mortgage/i.test(line);
+ steps.push({type:'approval',label:needsApproval?'Authorized finance or compliance approval':'Operator approval before execution',config:{approvalRole:needsApproval?'Finance & Compliance':'Operations'}});
+ for(const channel of channels.slice(0,3)){
+  steps.push({type:'notification',label:'Prepare '+channel.toUpperCase()+' notification',config:{channel}});
+ }
+ if(/webhook|api|integration|http/i.test(line))steps.push({type:'webhook',label:'Prepare authenticated integration request'});
+ if(/wait|delay|after \d+ day|every day|daily|weekly|remind|recurr/i.test(line))steps.push({type:'wait',label:'Wait for reviewed schedule',config:{waitDays:/weekly/i.test(line)?7:1}});
+ steps.push({type:'task',label:'Record outcome and follow-up'});
+ steps.push({type:'end',label:'Custom process ready for review'});
+ return steps;
+}
 export function composeWorkflow(raw:string):DraftPlan{
- const sourcePrompt=raw.trim().slice(0,1500);
+ const sourcePrompt=raw.trim().slice(0,1500)
+  .replace(/[\w.+-]+@[\w.-]+\.[a-z]{2,}/gi,'[email address]')
+  .replace(/(?:sk-[\w-]{12,}|Bearer\s+[A-Za-z0-9._-]{10,})/gi,'[secret]')
+  .replace(/\+?\d[\d ()-]{8,}\d/g,'[phone number]');
  if(sourcePrompt.length<12)throw Error('Describe the trigger, action and intended outcome in at least 12 characters.');
  const q=sourcePrompt.toLowerCase();
  const matches=recipes.map(recipe=>({recipe,score:recipe.terms.reduce((sum,term)=>sum+(q.includes(term)?term.length>6?3:2:0),0)})).sort((a,b)=>b.score-a.score);
  const matched=matches[0].score>0?matches[0].recipe:null;
- let steps:Step[]=matched?matched.steps.map(s=>({...s,config:s.config?{...s.config}:undefined})):[
-  {type:'trigger',label:'Requested event received',config:{event:'event.received'}},
-  {type:'task',label:'Validate input and permissions'},
-  {type:'task',label:'Route to responsible operator'},
-  {type:'approval',label:'Authorized human review',config:{approvalRole:'Operations'}},
-  {type:'notification',label:'Send approved status update',config:{channel:'internal'}},
-  {type:'end',label:'Outcome documented'}
- ];
+ let steps:Step[]=matched?matched.steps.map(s=>({...s,config:s.config?{...s.config}:undefined})):customSteps(sourcePrompt);
  const channel=SAFE_CHANNELS.find(x=>new RegExp('\\b'+x+'\\b','i').test(q));
  if(channel){
   steps=steps.map(s=>s.type==='notification'?{...s,label:channel==='internal'?'Create internal notification':('Send approved '+channel.toUpperCase()+' update'),config:{...s.config,channel}}:s);
