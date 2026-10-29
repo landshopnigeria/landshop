@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import FAQAssistant from './FAQAssistant';
 import {editorialImages} from '../lib/editorial-imagery';
+import {IconChip} from './SiteIcon';
 import '../app/product-journeys.css';
 
 type Product='develop'|'incubate'|'grow';
@@ -73,12 +74,6 @@ const stages=[
 export default function ProductPage({product}:{product:Product}){
  const p=content[product];
  return <main className="landshop-product" data-product-journey={product}>
-  <div className="lp-topline"><span>Everyone Deserves Affordable Property.</span><div><a href={portal}>Account</a><a href={portal+'/applications'}>Application Center</a><a href="/contact">Contact Us</a></div></div>
-  <header className="lp-nav">
-   <Link className="lp-brand" href="/" aria-label="Landshop homepage"><img src="/media/logo.webp" alt="Landshop official logo" width={126} height={53}/></Link>
-   <nav aria-label="Main navigation"><Link href="/">Home</Link><Link href="/develop" aria-current={product==='develop'?'page':undefined}>Develop</Link><Link href="/incubate" aria-current={product==='incubate'?'page':undefined}>Incubate</Link><Link href="/grow" aria-current={product==='grow'?'page':undefined}>Grow</Link><Link href="/properties">Properties</Link><Link href="/insights">Insights</Link></nav>
-   <a className="lp-primary" href={portal}>Get Started ↗</a>
-  </header>
   <section className="lp-hero">
    <img src={p.image} alt={p.alt} className="lp-hero-image" fetchPriority="high"/>
    <div className="lp-hero-shade" aria-hidden="true"/>
@@ -97,7 +92,7 @@ export default function ProductPage({product}:{product:Product}){
   <section className="lp-overview">
    <div className="lp-container lp-overview-grid">
     <div className="lp-overview-heading"><span className="lp-eyebrow">WHAT {p.label.toUpperCase()} OFFERS</span><h2>Clarity at every <em>decision point.</em></h2><p>{p.quote}</p><Link href="/about">About Landshop ↗</Link></div>
-    <div className="lp-highlights">{p.highlights.map((item,i)=><div key={item}><span>{String(i+1).padStart(2,'0')}</span><p>{item}</p></div>)}</div>
+    <div className="lp-highlights">{p.highlights.map((item,i)=><div key={item}><span className="lp-highlight-icon"><IconChip name={i===0?'home':i===1?'shield':i===2?'document':'check'}/></span><p>{item}</p></div>)}</div>
    </div>
   </section>
   <section className="lp-process" id="how-it-works"><div className="lp-container"><div className="lp-heading"><span className="lp-eyebrow">YOUR LANDSHOP JOURNEY</span><h2>From interest to informed action.</h2><p>Product forms are decision-making applications, not Sign In or Sign Up forms.</p></div>
@@ -105,11 +100,11 @@ export default function ProductPage({product}:{product:Product}){
   </div></section>
   <section className="lp-container lp-pathways" id="applications">
    <div className="lp-heading"><span className="lp-eyebrow">CHOOSE YOUR APPLICATION</span><h2>Find the right next step.</h2><p>Every pathway opens a secure, product-specific, multi-step application in the Landshop portal.</p></div>
-   <div className="lp-pathway-grid">{p.pathways.map(item=><article key={item.name} className="lp-pathway-card"><span className="lp-card-number">{item.number}</span><h3>{item.name}</h3><p>{item.detail}</p><a href={item.href}>{item.action} ↗</a></article>)}</div>
+   <div className="lp-pathway-grid">{p.pathways.map(item=><article key={item.name} className="lp-pathway-card"><span className="lp-card-number">{item.number}</span><span className="lp-card-icon"><IconChip name={item.name.toLowerCase().includes('inspection')?'calendar':product==='grow'?'calculator':product==='incubate'?'chart':'home'}/></span><h3>{item.name}</h3><p>{item.detail}</p><a href={item.href}>{item.action} ↗</a></article>)}</div>
    <aside className="lp-disclosure"><strong>Important product information</strong><p>{p.disclaimer}</p></aside>
   </section>
   <section className="lp-knowledge"><FAQAssistant product={product}/></section>
   <section className="lp-contact"><div className="lp-container"><div><span className="lp-eyebrow">TALK TO LANDSHOP</span><h2>Need more information before you decide?</h2><p>Our team can help you understand a product or request verified current information.</p></div><Link href="/contact">Speak With Our Team ↗</Link></div></section>
-  <footer className="lp-footer"><div><Link href="/"><img src="/media/logo.webp" width={139} height={58} alt="Landshop logo"/></Link><p>Building Wealth Through Real Estate.</p></div><nav aria-label="Footer links"><Link href="/develop">Develop</Link><Link href="/incubate">Incubate</Link><Link href="/grow">Grow</Link><Link href="/applications">Applications</Link><Link href="/contact">Contact</Link></nav><small>© {new Date().getFullYear()} Landshop. All rights reserved.</small></footer>
+  <footer className="lp-footer"><div><Link href="/"><img src="/media/logo-transparent.png" width={139} height={58} alt="Landshop logo"/></Link><p>Building Wealth Through Real Estate.</p></div><nav aria-label="Footer links"><Link href="/develop">Develop</Link><Link href="/incubate">Incubate</Link><Link href="/grow">Grow</Link><Link href="/applications">Applications</Link><Link href="/contact">Contact</Link></nav><small>© {new Date().getFullYear()} Landshop. All rights reserved.</small></footer>
  </main>;
 }

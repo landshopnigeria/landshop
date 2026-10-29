@@ -1,5 +1,6 @@
 
 import Link from 'next/link';
+import SiteIcon,{IconChip} from '../../../components/SiteIcon';
 import {notFound} from 'next/navigation';
 import {MarketHeader,MarketFooter} from '../../../components/MarketChrome';
 import MortgageEstimator from '../../../components/MortgageEstimator';
@@ -19,9 +20,9 @@ export default async function PropertyDetails({params}:{params:Promise<{id:strin
  return <main className="mk-layout"><MarketHeader/>
  <section className="mk-hero" style={{minHeight:150}}><div><small><Link href="/">HOME</Link> / <Link href="/properties">PROPERTIES</Link> / {prop.title}</small><h1>Find your next <em>opportunity.</em></h1></div></section>
  <div className="mk-wrap">
-  <div className="mk-detail-head"><div><span style={{color:'#007e64',fontSize:12,fontWeight:800}}>PUBLISHED PROPERTY · {prop.property_type.toUpperCase()}</span><h1>{prop.title}</h1><p>⌖ {loc||'Location details available on enquiry'} · Ref: {prop.id.slice(0,8).toUpperCase()}</p></div><div><small>Current published price</small><br/><strong>{money(prop.amount_kobo)}</strong></div></div>
+  <div className="mk-detail-head"><div><span style={{color:'#007e64',fontSize:12,fontWeight:800}}>PUBLISHED PROPERTY · {prop.property_type.toUpperCase()}</span><h1>{prop.title}</h1><p className="mk-location"><SiteIcon name="pin" size={18}/>{loc||'Location details available on enquiry'} · Ref: {prop.id.slice(0,8).toUpperCase()}</p></div><div><small>Current published price</small><br/><strong>{money(prop.amount_kobo)}</strong></div></div>
   <div className="mk-detail-grid"><div>
-   <div className="mk-gallery"><div className="mk-gallery-main"><div><strong>Property media pending approval</strong><p>Original developer / property owner photographs only</p></div></div><div className="mk-gallery-side"><div>Approved property gallery will appear here</div><div>Virtual tours only when independently supplied and verified</div></div></div>
+   <div className="mk-gallery"><div className="mk-gallery-main"><div className="mk-gallery-pending"><IconChip name="camera"/><strong>Property media pending approval</strong><p>Original developer / property owner photographs only</p></div></div><div className="mk-gallery-side"><div>Approved property gallery will appear here</div><div>Virtual tours only when independently supplied and verified</div></div></div>
    <nav className="mk-details-nav" aria-label="Property sections">{['Overview','Specifications','Payment','Documents','Location','FAQ','Similar'].map(x=><a href={'#'+x.toLowerCase()} key={x}>{x}</a>)}</nav>
    <section className="mk-card-panel" id="overview"><h2>About {prop.title}</h2><p>This published {prop.property_type} belongs to the Landshop property inventory. Request the current property brochure, available units and viewing information before committing any payment.</p></section>
    <section className="mk-card-panel" id="specifications"><h2>Key specifications</h2><div className="mk-specs"><div><span>Property type</span>{prop.property_type}</div><div><span>Estate</span>{prop.estates?.name||'On enquiry'}</div><div><span>State</span>{prop.estates?.state||'On enquiry'}</div><div><span>City</span>{prop.estates?.city||'On enquiry'}</div><div><span>Reference</span>{prop.id.slice(0,8).toUpperCase()}</div><div><span>Publication status</span>Published</div></div><p className="mk-legal-note">Bedrooms, area, title, utilities and amenities appear only when supporting verified records are available.</p></section>

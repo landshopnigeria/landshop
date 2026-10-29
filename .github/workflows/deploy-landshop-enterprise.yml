@@ -62,6 +62,11 @@ jobs:
           done
       - name: Verify real Nigerian editorial photo CDN assets
         run: python3 scripts/validate-genuine-photos.py
+      - name: Prepare faithful transparent Landshop PNG logo
+        run: |
+          python3 -m pip install --quiet Pillow==11.3.0
+          python3 scripts/prepare-transparent-logo.py
+          test -s apps/website/public/media/logo-transparent.png
       - name: Install and validate
         run: |
           set -euo pipefail

@@ -29,6 +29,11 @@ jobs:
         run: npm install --no-audit --no-fund
       - name: Verify real Nigerian editorial photo licenses and CDN availability
         run: python3 scripts/validate-genuine-photos.py
+      - name: Prepare faithful transparent Landshop PNG logo
+        run: |
+          python3 -m pip install --quiet Pillow==11.3.0
+          python3 scripts/prepare-transparent-logo.py
+          test -s apps/website/public/media/logo-transparent.png
       - name: Build applications
         env:
           NEXT_PUBLIC_SUPABASE_URL: https://iwkfagzkogzidrbbezds.supabase.co
