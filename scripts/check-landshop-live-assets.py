@@ -57,7 +57,9 @@ def addresses(host):
         return ["DNS lookup failed: "+str(exc)]
 
 def check(host,path,marker,css_class):
-    url=f"https://{host}{path}?landshop_probe={EXPECTED[:12]}"
+    # Verify both the URL a real visitor types and an explicitly cache-busted request.
+    # A successful cache-busted request is not proof the ordinary URL is fresh.
+    url=f"https://{host}{path}"
     status,h,body,final=request(url)
     html=body.decode("utf-8","replace")
     parser=Assets()
@@ -69,6 +71,14 @@ def check(host,path,marker,css_class):
         raise AssertionError(f"{host}{path} not serving the approved real Next.js page")
     if parser.meta_sha!=EXPECTED:
         raise AssertionError(f"{host}{path} HTML release {parser.meta_sha!r} does not match deployed commit")
+    cache_control=get_header(h,"Cache-Control").lower()
+    if "no-store" not in cache_control:
+        raise AssertionError(f"{host}{path} HTML can be cached stale: {cache_control}")
+    # The same route with a cache-busting query must also be the identical release.
+    fresh_url=url+("?landshop_probe="+EXPECTED[:12])
+    fresh_status,_,fresh_data,_=request(fresh_url)
+    if fresh_status!=200 or f'content="{EXPECTED}"' not in fresh_data.decode("utf-8","replace"):
+        raise AssertionError(f"{host}{path} cache-busted response does not match the active build")
     if not parser.css or not parser.js:
         raise AssertionError(f"{host}{path} lacks Next.js stylesheet or JavaScript references")
     found=False
