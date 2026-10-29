@@ -2,6 +2,7 @@ import {createServerClient} from '@supabase/ssr';
 import {cookies} from 'next/headers';
 import {redirect,notFound} from 'next/navigation';
 import PropertyAssets from './PropertyAssets';
+import ShowcaseEditor from './ShowcaseEditor';
 export const dynamic='force-dynamic';
 
 export default async function Page({params}:{params:Promise<{id:string}>}){
@@ -27,9 +28,15 @@ export default async function Page({params}:{params:Promise<{id:string}>}){
  if(error||!property)notFound();
  const {data:assets}=await db.from('property_assets').select('id,kind,status,object_path,uploaded_by')
   .eq('property_id',id).order('created_at',{ascending:false}).limit(100);
+ const [{data:draft},{data:published},{data:media}]=await Promise.all([
+  db.from('property_showcase_drafts').select('payload').eq('property_id',id).maybeSingle(),
+  db.from('property_showcase').select('payload').eq('property_id',id).maybeSingle(),
+  db.from('property_showcase_media').select('id,kind,status,object_path,title,submitted_by,created_at').eq('property_id',id).order('created_at',{ascending:false}).limit(100)
+ ]);
  return <main style={{fontFamily:'Arial,sans-serif',padding:'clamp(20px,5vw,60px)',background:'#f1f8f5',minHeight:'100vh',color:'#073f34'}}>
   <a href="/admin/properties">← Property Management</a>
   <h1>{property.title}</h1><p>{property.property_type} · {property.status}</p>
+  <ShowcaseEditor propertyId={id} propertyStatus={property.status} initial={(draft?.payload||published?.payload||{}) as Record<string,unknown>} approved={Boolean(published)} currentUserId={user.id} canApprove={qualified.some(m=>['owner','admin','legal','operations'].includes(m.role))} assets={assets||[]} initialMedia={media||[]}/>
   <PropertyAssets propertyId={id} propertyStatus={property.status} items={assets||[]}
    allowReview={qualified.some(m=>['owner','admin','legal','operations'].includes(m.role))}/>
  </main>;
