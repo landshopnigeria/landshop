@@ -5,3 +5,21 @@
 @media(max-width:720px){.mk-header nav{overflow-x:auto;flex-wrap:nowrap;max-width:100%;padding:5px 0}.mk-header nav a{white-space:nowrap}.mk-search-grid{grid-template-columns:1fr 1fr}.mk-property-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.mk-utility,.mk-footer-grid{grid-template-columns:1fr 1fr}.mk-detail-head{display:block}.mk-newsletter{display:block}.mk-newsletter .mk-btn{margin-top:12px}.mk-gallery{grid-template-columns:1fr}.mk-gallery-main{height:230px}}
 @media(max-width:520px){.mk-search-grid,.mk-property-grid,.mk-utility,.mk-footer-grid{grid-template-columns:1fr}.mk-header{gap:7px}.mk-detail-head h1{font-size:32px}.mk-specs{grid-template-columns:1fr 1fr}.mk-title-row{display:block}.mk-search{padding:16px}.mk-top{gap:8px}}
 @media(prefers-reduced-motion:reduce){.mk-layout *{scroll-behavior:auto!important}}
+
+
+/* V16 verified advanced search; responsive, fully native form controls. */
+.mk-advanced{margin-top:13px;border-top:1px solid #d9e9df;padding:14px 2px 2px}
+.mk-advanced summary{cursor:pointer;color:#066f57;font-size:12px;font-weight:800;list-style-position:inside}
+.mk-advanced summary::marker{color:#f26b10}
+.mk-advanced summary:hover{color:#f26b10}
+.mk-advanced-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));align-items:end;gap:12px;margin:15px 0 4px}
+.mk-advanced-grid label{display:grid;min-width:0}
+.mk-search-bottom{display:flex;justify-content:space-between;gap:12px;font-size:12px;color:#617d70;margin:13px 0 0}
+.mk-search-bottom a{color:#007a61;font-weight:750}
+.mk-search input:focus-visible,.mk-search select:focus-visible,.mk-search button:focus-visible{outline:3px solid #f26b10;outline-offset:2px}
+.mk-search{background:#ffffffbb;backdrop-filter:blur(25px);box-shadow:0 22px 55px #114d3d28}
+.mk-hero h1{font-weight:590}.mk-title-row h2{font-weight:590}
+.mk-btn:hover{background:#f26b10;color:#fff}
+@media(max-width:1000px){.mk-advanced-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:650px){.mk-advanced-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:430px){.mk-advanced-grid{grid-template-columns:1fr}.mk-search-bottom{display:block}}
