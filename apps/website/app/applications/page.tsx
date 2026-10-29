@@ -20,7 +20,7 @@ export default async function ApplicationsCenter({searchParams}:{searchParams:Pr
  const focus=(product||'').toLowerCase();
  const ordered=[...forms].sort((a,b)=>Number(b.product.toLowerCase()===focus)-Number(a.product.toLowerCase()===focus));
  return <main className="lc-scene">
-  <header className="lc-sitebar"><Link href="/" className="lc-brand"><img src="/media/logo.webp" alt="Landshop logo"/> Landshop</Link>
+  <header className="lc-sitebar"><Link href="/" className="lc-brand"><img src="/media/logo-transparent.png" alt="Landshop logo"/> Landshop</Link>
    <nav aria-label="Applications navigation"><Link href="/">Home</Link><Link href="/properties">Properties</Link><Link href="/develop">Develop</Link><Link href="/incubate">Incubate</Link><Link href="/grow">Grow</Link><a href={portal}>My Account</a></nav></header>
   <section className="lc-hero"><div className="lc-herotext"><div className="lc-eyebrow">Welcome to Landshop Applications</div>
    <h1>Your property journey <span>starts here.</span></h1>

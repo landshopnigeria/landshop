@@ -76,7 +76,7 @@ export default function ProductPage({product}:{product:Product}){
  return <main className="landshop-product" data-product-journey={product}>
   <div className="lp-topline"><span>Everyone Deserves Affordable Property.</span><div><a href={portal}>Account</a><a href={portal+'/applications'}>Application Center</a><a href="/contact">Contact Us</a></div></div>
   <header className="lp-nav">
-   <Link className="lp-brand" href="/" aria-label="Landshop homepage"><img src="/media/logo.webp" alt="Landshop official logo" width={126} height={53}/></Link>
+   <Link className="lp-brand" href="/" aria-label="Landshop homepage"><img src="/media/logo-transparent.png" alt="Landshop official logo" width={126} height={53}/></Link>
    <nav aria-label="Main navigation"><Link href="/">Home</Link><Link href="/develop" aria-current={product==='develop'?'page':undefined}>Develop</Link><Link href="/incubate" aria-current={product==='incubate'?'page':undefined}>Incubate</Link><Link href="/grow" aria-current={product==='grow'?'page':undefined}>Grow</Link><Link href="/properties">Properties</Link><Link href="/insights">Insights</Link></nav>
    <a className="lp-primary" href={portal}>Get Started ↗</a>
   </header>
@@ -111,6 +111,6 @@ export default function ProductPage({product}:{product:Product}){
   </section>
   <section className="lp-knowledge"><FAQAssistant product={product}/></section>
   <section className="lp-contact"><div className="lp-container"><div><span className="lp-eyebrow">TALK TO LANDSHOP</span><h2>Need more information before you decide?</h2><p>Our team can help you understand a product or request verified current information.</p></div><Link href="/contact">Speak With Our Team ↗</Link></div></section>
-  <footer className="lp-footer"><div><Link href="/"><img src="/media/logo.webp" width={139} height={58} alt="Landshop logo"/></Link><p>Building Wealth Through Real Estate.</p></div><nav aria-label="Footer links"><Link href="/develop">Develop</Link><Link href="/incubate">Incubate</Link><Link href="/grow">Grow</Link><Link href="/applications">Applications</Link><Link href="/contact">Contact</Link></nav><small>© {new Date().getFullYear()} Landshop. All rights reserved.</small></footer>
+  <footer className="lp-footer"><div><Link href="/"><img src="/media/logo-transparent.png" width={139} height={58} alt="Landshop logo"/></Link><p>Building Wealth Through Real Estate.</p></div><nav aria-label="Footer links"><Link href="/develop">Develop</Link><Link href="/incubate">Incubate</Link><Link href="/grow">Grow</Link><Link href="/applications">Applications</Link><Link href="/contact">Contact</Link></nav><small>© {new Date().getFullYear()} Landshop. All rights reserved.</small></footer>
  </main>;
 }
