@@ -12,3 +12,6 @@
 @media(max-width:850px){.content-hero-inner{grid-template-columns:1fr;padding-top:65px;padding-bottom:70px}.content-hero img{max-height:300px}.content-grid,.content-grid.two,.content-split{grid-template-columns:1fr}.content-split img{height:260px}.content-nav{gap:12px}.content-header-inner{flex-wrap:wrap}.content-main{padding-top:50px}}
 @media(max-width:520px){.content-header-inner{display:block}.content-brand{margin-bottom:12px}.content-nav{gap:12px}.content-nav a{font-size:12px}.content-nav .content-cta{padding:9px 12px}.content-hero h1{letter-spacing:-1px}.content-hero-inner{gap:25px}.content-grid{gap:12px}.content-tile{padding:23px}.content-band{padding:25px}.content-footer a{display:inline-block;margin:0 12px 0 0}}
 @media(prefers-reduced-motion:reduce){.content-page *{scroll-behavior:auto!important;animation:none!important}}
+
+/* Official graphic logo at original aspect ratio, without duplicate wordmark text. */
+.content-brand{font-size:0!important}.content-brand img{width:124px!important;max-height:58px!important;height:auto!important;object-fit:contain}.content-header{background:#ffffffc9!important;backdrop-filter:blur(19px)!important;box-shadow:0 7px 27px #0c4f3213}.content-cta:hover,.content-link:hover{background:#f57f18!important;color:white!important}

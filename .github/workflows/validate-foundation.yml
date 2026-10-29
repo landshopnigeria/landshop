@@ -70,7 +70,7 @@ jobs:
           PY
             # Verify source-aligned product/application pages render, not just the health route.
             if [ "$app" = "website" ]; then
-              routes=(/ /develop /incubate /grow /applications /properties /about /contact /insights
+              routes=(/ /develop /incubate /grow /applications /properties /search /about /contact /insights
                 /company/team /thrift /services/property-acquisition /services/advisory
                 /services/mortgage /services/construction-credit /grow/beta-mortgage /grow/mortgage-xtra)
             elif [ "$app" = "portal" ]; then
