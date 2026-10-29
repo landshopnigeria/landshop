@@ -132,6 +132,17 @@ jobs:
               where table_schema='public' and table_name='profiles' and column_name='display_username')
             and (select relrowsecurity from pg_class where oid='public.support_tickets'::regclass)
             and not has_table_privilege('anon','public.support_tickets','SELECT')
+            and (select count(*) from supabase_migrations.schema_migrations
+                where name in ('public_contact_enquiries','property_search_dimensions'))=2
+            and to_regclass('public.contact_enquiries') is not null
+            and (select relrowsecurity from pg_class where oid='public.contact_enquiries'::regclass)
+            and not has_table_privilege('anon','public.contact_enquiries','SELECT')
+            and exists(select 1 from pg_policies where schemaname='public'
+                and tablename='contact_enquiries' and cmd='INSERT')
+            and exists(select 1 from information_schema.columns where table_schema='public'
+                and table_name='properties' and column_name='sale_mode')
+            and exists(select 1 from information_schema.columns where table_schema='public'
+                and table_name='estates' and column_name='lga')
           then 'ready' else 'not-ready' end
           SQL
           result=$(docker run --rm --network host -e DATABASE_URL -e SQL="$sql" postgres:17 \
