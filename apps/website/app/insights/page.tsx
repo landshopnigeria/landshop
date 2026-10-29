@@ -1,8 +1,9 @@
 import ContentShell from '../../components/ContentShell';
+import {editorialImages} from '../../lib/editorial-imagery';
 import Link from 'next/link';
 import {guides} from '../../lib/guides';
 export const metadata={title:'Property Insights & Guides | Landshop Nigeria',description:'Practical Landshop guides to property due diligence, mortgage pre-qualification and inspections in Nigeria.'};
-export default function Insights(){return <ContentShell eyebrow="Insights & Education" title="Better property decisions start with better questions." intro="Explore practical Landshop education on acquisition, inspections and mortgage planning. These guides are informational, not a substitute for project-specific contracts or independent advice." image="/media/deck-infrastructure.webp">
+export default function Insights(){return <ContentShell eyebrow="Insights & Education" title="Better property decisions start with better questions." intro="Explore practical Landshop education on acquisition, inspections and mortgage planning. These guides are informational, not a substitute for project-specific contracts or independent advice." image={editorialImages.skyline.src} imageAlt={editorialImages.skyline.alt}>
  <section><h2>Explore our knowledge center</h2><p className="content-subhead">Choose an article to read the full guide, including important checks to make before taking the next step.</p>
  <div className="content-grid">{guides.map((guide,i)=><article className="content-tile insight-card" key={guide.slug}>
   <Link href={'/insights/'+guide.slug} aria-label={'Read '+guide.title}><img src={guide.image} alt="" loading="lazy" className="insight-card-image"/></Link>

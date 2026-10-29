@@ -1,5 +1,6 @@
 
 import ContentShell from '../../components/ContentShell';
+import {editorialImages} from '../../lib/editorial-imagery';
 import Link from 'next/link';
 export const metadata={title:'About Landshop | Real Estate Development & Ownership in Nigeria',description:'Discover the purpose, values, approach and three product pathways of Landshop: Develop, Incubate and Grow.'};
 const pillars=[
@@ -7,8 +8,8 @@ const pillars=[
  {name:'Accessible pathways',description:'Different property goals call for different solutions. We organize ownership, investment enquiries and mortgage-related applications separately.'},
  {name:'Customer-centered process',description:'From the first enquiry to inspections, document review and post-application follow-up, each stage should have a clear next action.'}
 ];
-export default function About(){return <ContentShell eyebrow="About Landshop" title="Building wealth through real estate." intro="Landshop brings property development, ownership opportunities and structured financial pathways into one connected experience." image="/media/about.webp">
- <section id="who-we-are" className="content-split"><div><span className="content-kicker" style={{color:'#0b886a'}}>Who we are</span><h2>Don't just buy property. Own your future.</h2><p>Landshop is a Nigerian real estate business focused on making property decisions clearer and more accessible. Our operating experience covers property acquisition and development opportunities, investment enquiries and pathways to home ownership.</p><p>We work to distinguish confirmed project facts from estimates or proposals, and to connect customers to the correct application process for their needs.</p></div><img src="/media/deck-architecture.webp" alt="Architectural property development imagery"/></section>
+export default function About(){return <ContentShell eyebrow="About Landshop" title="Building wealth through real estate." intro="Landshop brings property development, ownership opportunities and structured financial pathways into one connected experience." image={editorialImages.team.src} imageAlt={editorialImages.team.alt}>
+ <section id="who-we-are" className="content-split"><div><span className="content-kicker" style={{color:'#0b886a'}}>Who we are</span><h2>Don't just buy property. Own your future.</h2><p>Landshop is a Nigerian real estate business focused on making property decisions clearer and more accessible. Our operating experience covers property acquisition and development opportunities, investment enquiries and pathways to home ownership.</p><p>We work to distinguish confirmed project facts from estimates or proposals, and to connect customers to the correct application process for their needs.</p></div><img src={editorialImages.architecture.src} alt={editorialImages.architecture.alt} loading="lazy"/></section>
  <section id="vision" className="content-grid two" aria-label="Vision and mission">
   <div className="content-tile"><span className="number">01 / OUR VISION</span><h2>More people building lasting property wealth.</h2><p>To help make responsible property ownership, development and property-led wealth creation more accessible to people and communities across Nigeria.</p></div>
   <div className="content-tile"><span className="number">02 / OUR MISSION</span><h2>Make every decision informed.</h2><p>To connect individuals, families and organizations with documented real estate opportunities, guided applications and support from enquiry to decision.</p></div>
