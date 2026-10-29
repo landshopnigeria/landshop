@@ -1,0 +1,88 @@
+name: Audit Landshop Public Pages vs Deployed Passenger Roots
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/audit-public-homepages.yml']
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    environment: landshop-production
+    steps:
+      - name: Compare actual homepage content with enterprise UI
+        shell: bash
+        run: |
+          set -euo pipefail
+          for entry in "website|https://landshopnigeria.com" "website-www|https://www.landshopnigeria.com" "portal|https://portal.landshopnigeria.com" "dashboard|https://app.landshopnigeria.com"; do
+            IFS='|' read -r app base <<< "$entry"
+            echo "::group::Public $app"
+            f="$RUNNER_TEMP/$app.html"
+            code=$(curl --silent --show-error --location --max-time 22 -H 'Cache-Control: no-cache, no-store' -o "$f" -w '%{http_code}' "$base/?landshop_audit=$GITHUB_RUN_ID")
+            echo "Root HTTP: $code"
+            if [ "$code" = 200 ]; then
+              HTML="$f" APP="$app" python3 - <<'PY'
+          import os
+          from pathlib import Path
+          html=Path(os.environ["HTML"]).read_text(errors="replace")
+          markers={
+            "nextjs_bundle_reference":'/_next/' in html,
+            "legacy_homepage_marker":'Property ownership starts with possibility.' in html,
+            "new_homepage_marker":'Own Your' in html or 'Grow Your' in html or 'Make Home' in html,
+            "legacy_portal_marker":'We are preparing secure account registration' in html or 'temporarily unavailable' in html or 'Customer registration and account verification are being prepared' in html,
+            "new_portal_marker":'Sign in to your secure Landshop portal' in html,
+            "portal_auth_form":'Continue with Google' in html and 'Sign In' in html,
+          }
+          print('HTML markers:',markers)
+          print('HTML length:',len(html))
+          PY
+            fi
+            curl --silent --show-error --location --max-time 15 --fail "$base/api/release-health" | python3 -c 'import json,sys; j=json.load(sys.stdin);print("Health:",{k:j.get(k) for k in ("service","status","commit")})' || echo 'Health unavailable'
+            echo "::endgroup::"
+          done
+      - name: Inspect Namecheap public entry-file and Passenger mapping without changing data
+        shell: bash
+        env:
+          SSH_HOST: ${{ secrets.LANDSHOP_SSH_HOST || secrets.NAMECHEAP_SSH_HOST || vars.LANDSHOP_SSH_HOST }}
+          SSH_PORT: ${{ vars.LANDSHOP_SSH_PORT || secrets.LANDSHOP_SSH_PORT || secrets.NAMECHEAP_SSH_PORT || '21098' }}
+          SSH_USER: ${{ secrets.LANDSHOP_SSH_USER || secrets.NAMECHEAP_SSH_USER || vars.LANDSHOP_SSH_USER }}
+          SSH_KEY: ${{ secrets.LANDSHOP_SSH_KEY || secrets.NAMECHEAP_SSH_PRIVATE_KEY }}
+          KNOWN_HOSTS: ${{ secrets.LANDSHOP_SSH_KNOWN_HOSTS || secrets.NAMECHEAP_SSH_KNOWN_HOSTS || vars.LANDSHOP_SSH_KNOWN_HOSTS }}
+          WEBSITE_DOCROOT: ${{ secrets.LANDSHOP_WWW_DOCROOT }}
+          PORTAL_DOCROOT: ${{ secrets.LANDSHOP_PORTAL_DOCROOT }}
+          WEBSITE_APPROOT: ${{ secrets.LANDSHOP_WEBSITE_APPROOT || vars.LANDSHOP_WEBSITE_APPROOT || '/home/maleghif/landshop-website' }}
+          PORTAL_APPROOT: ${{ secrets.LANDSHOP_PORTAL_APPROOT || vars.LANDSHOP_PORTAL_APPROOT || '/home/maleghif/landshop-portal' }}
+        run: |
+          set -euo pipefail
+          install -d -m 700 "$HOME/.ssh"
+          printf '%s\n' "$SSH_KEY" > "$HOME/.ssh/id_ed25519"
+          printf '%s\n' "$KNOWN_HOSTS" > "$HOME/.ssh/known_hosts"
+          chmod 600 "$HOME/.ssh/id_ed25519" "$HOME/.ssh/known_hosts"
+          ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -p "$SSH_PORT" "$SSH_USER@$SSH_HOST" bash -s -- "$WEBSITE_DOCROOT" "$PORTAL_DOCROOT" "$WEBSITE_APPROOT" "$PORTAL_APPROOT" <<'REMOTE'
+          set -eu
+          website_docroot="$1"; portal_docroot="$2";website_app="$3";portal_app="$4"
+          for role in website portal;do
+            if [ "$role" = website ];then docroot="${website_docroot:-$HOME/public_html}";app="$website_app";else docroot="${portal_docroot:-$HOME/portal.landshopnigeria.com}";app="$portal_app";fi
+            echo "::group::Namecheap $role"
+            echo "Docroot set: $docroot"
+            [ -d "$docroot" ] || { echo "Document root missing";echo "::endgroup::";continue; }
+            if [ -s "$docroot/index.html" ];then
+              echo "index.html: EXISTS"
+              if grep -qF 'Property ownership starts with possibility.' "$docroot/index.html";then echo "index.html source: legacy website recovery";fi
+              if grep -qEi 'registration and account verification are being prepared|We are preparing secure account registration|Welcome to your property journey' "$docroot/index.html";then echo "index.html source: legacy portal recovery";fi
+            else echo "index.html: not present";fi
+            if [ -s "$docroot/index.php" ];then echo "index.php: EXISTS";else echo "index.php: not present";fi
+            if [ -s "$docroot/.htaccess" ];then
+              echo ".htaccess: exists"
+              if grep -qF "PassengerAppRoot" "$docroot/.htaccess";then echo "PassengerAppRoot directive present";else echo "PassengerAppRoot directive absent";fi
+              if grep -qF "DirectoryIndex" "$docroot/.htaccess";then echo "DirectoryIndex directive present";fi
+              if grep -qF "RewriteRule" "$docroot/.htaccess";then echo "RewriteRule directive present";fi
+              if grep -qF 'PassengerAppRoot' "$docroot/.htaccess" && grep -qF "$app" "$docroot/.htaccess";then echo "PassengerAppRoot matches expected app";else echo "PassengerAppRoot expected app binding not detected";fi
+            else echo ".htaccess absent";fi
+            [ -s "$app/server.js" ] && echo "Node app server.js: exists" || echo "Node app server.js: missing"
+            [ -s "$app/LANDSHOP_RELEASE_SHA" ] && { echo -n "Node release: ";head -c 40 "$app/LANDSHOP_RELEASE_SHA";echo; } || echo "Node release: not found"
+            echo "::endgroup::"
+          done
+          REMOTE
