@@ -9,7 +9,7 @@ export const metadata={title:'My Landshop | Customer Dashboard'};
 const nav=[
  ['Overview','/dashboard','⌂'],['My Applications','/dashboard/applications','▣'],['KYC & Documents','/dashboard/kyc','◈'],
  ['Properties','https://www.landshopnigeria.com/properties','▦'],['Mortgage Calculator','https://portal.landshopnigeria.com/calculator','▤'],
- ['Product Forms','https://portal.landshopnigeria.com/applications','♧'],['Customer Support','https://portal.landshopnigeria.com/support','☏']
+ ['Product Forms','https://portal.landshopnigeria.com/applications','♧'],['Profile & Security','/dashboard/account','◉'],['Customer Support','https://portal.landshopnigeria.com/support','☏']
 ];
 export default async function Dashboard(){
  const url=process.env.NEXT_PUBLIC_SUPABASE_URL,key=process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
