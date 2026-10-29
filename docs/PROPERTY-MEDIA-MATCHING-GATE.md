@@ -16,3 +16,12 @@
 6. Show property-specific approved images on the listing cards and property gallery. Keep audit trail for provenance, rights and property association.
 
 **No actual property pictures were added in this change**, because the original ZIPs and verified asset mapping were unavailable. The shared header/icon overhaul does not invent media.
+
+## V18 frontend integration
+
+- Homepage editorial/archive cards now display checked-in genuine Famous Gardens and Maiyegun Beach source photos, clearly labeled as **estate archives**, never as live listings.
+- Product hero imagery uses original Landshop product-deck files: Develop, Incubate, and Grow each gets its corresponding original branded photograph.
+- All published property cards and detailed galleries read from `apps/website/lib/public-property-media.ts` which requires an **explicit property UUID → reviewed public image filename** association.
+- The manifest is intentionally empty while the live database has no properties or approved media. The placeholder is retained rather than fabricating listings.
+- Private originals in `landshop-property-private` and title/identity evidence must **never** be linked from a public page. Upload and approval must first produce an authorized public web derivative and a traceable, verified property-specific mapping.
+- Future import: validate the original ZIP, match exact UUID and estate, verify rights, approve by staff, publish safe resized images to `/media/verified-properties/<uuid>/`, then update the manifest with review evidence.

@@ -5,3 +5,11 @@
 .lc-icon-chip{display:inline-flex;margin:7px 0}
 .lc-icon-chip .ls-icon-chip{background:#eff9f4}
 @media(max-width:690px){.lp-highlight-icon .ls-icon-chip,.lp-card-icon .ls-icon-chip,.lc-icon-chip .ls-icon-chip{min-width:47px;width:47px;height:47px}.lp-highlight-icon .ls-icon,.lp-card-icon .ls-icon,.lc-icon-chip .ls-icon{width:25px;height:25px}}
+
+/* V18 visual parity: mobile icon chips are at least as readable as desktop. */
+.lp-highlight-icon .ls-icon-chip,.lp-card-icon .ls-icon-chip,.lc-icon-chip .ls-icon-chip,.ls-product-icon .ls-icon-chip,.lp-pathway-card .ls-icon-chip{width:54px;height:54px;min-width:54px;border-radius:14px}
+:is(.lp-highlight-icon,.lp-card-icon,.lc-icon-chip,.ls-product-icon,.lp-pathway-card) .ls-icon-chip .ls-icon{width:28px;height:28px;stroke-width:2.15}
+@media(max-width:690px){
+ .lp-highlight-icon .ls-icon-chip,.lp-card-icon .ls-icon-chip,.lc-icon-chip .ls-icon-chip,.ls-product-icon .ls-icon-chip,.lp-pathway-card .ls-icon-chip{width:56px;height:56px;min-width:56px}
+ :is(.lp-highlight-icon,.lp-card-icon,.lc-icon-chip,.ls-product-icon,.lp-pathway-card) .ls-icon-chip .ls-icon{width:30px;height:30px}
+}

@@ -85,3 +85,49 @@ body{scroll-padding-top:105px}
 }
 @media(max-width:390px){.ls-tagline{display:none}.ls-global-search{width:100%;flex:1}.ls-brand{min-width:0}.ls-brand img{width:103px}.ls-start{padding:8px 10px;font-size:11px}.ls-menu-button{width:42px;height:42px}}
 @media(prefers-reduced-motion:reduce){.ls-site-chrome *, .ls-site-chrome *::before, .ls-site-chrome *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+/* Landshop V18: one tactile, genuinely translucent header and consistent icon geometry.
+   Keep the same component at every public route; no page-level replacement headers. */
+.ls-site-chrome{font-synthesis:none}
+.ls-utility-bar{background:rgba(5,57,47,.92);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+.ls-utility-inner{min-height:46px}
+.ls-utility-links a{font-size:11px;gap:8px;font-weight:650;line-height:1.3}
+.ls-utility-links .ls-icon{width:19px;height:19px;stroke-width:2.15}
+.ls-global-search{height:35px;border-radius:11px}
+.ls-global-search input{font-size:12px}
+.ls-glass-wrap{padding-bottom:10px}
+.ls-glass-header,.ls-mega{background:rgba(247,252,249,.73);-webkit-backdrop-filter:blur(18px) saturate(1.35);backdrop-filter:blur(18px) saturate(1.35);border-color:rgba(209,229,219,.84)}
+.ls-glass-header{min-height:79px}
+.ls-brand{flex-shrink:0}
+.ls-brand img{width:148px;height:auto;max-height:64px;mix-blend-mode:normal;object-fit:contain}
+.ls-header-link{font-size:14px;line-height:1.25;font-weight:650;gap:8px;min-height:46px}
+.ls-header-link .ls-icon{margin-top:0;align-self:center;stroke-width:2.25}
+.ls-header-actions .ls-icon{stroke-width:2.2}
+.ls-icon-chip{width:52px;height:52px;min-width:52px;border-radius:14px;background:rgba(232,246,239,.86);color:#057c67;border:1px solid rgba(155,210,184,.55);box-shadow:0 4px 13px rgba(11,95,71,.06)}
+.ls-icon-chip .ls-icon{width:27px;height:27px;stroke-width:2.1}
+.ls-mega-list a{min-height:67px}
+.ls-mobile-bottom .ls-icon{stroke-width:2.2}
+@media(max-width:1240px){.ls-brand img{width:126px}.ls-header-link{font-size:13px}.ls-utility-links a{font-size:10px}}
+@media(max-width:1050px){
+ .ls-glass-header{min-height:72px}
+ .ls-primary-nav.ls-nav-mobile-open{background:rgba(249,253,250,.96);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
+ .ls-primary-nav>.ls-header-link,.ls-header-group>.ls-header-link{min-height:51px;font-size:15px;line-height:1.35}
+ .ls-header-group>.ls-header-link .ls-icon{width:21px;height:21px}
+ .ls-mobile-subnav a{min-height:62px;font-size:14px}
+ .ls-mobile-subnav .ls-icon-chip{width:51px;height:51px;min-width:51px}
+ .ls-mobile-subnav .ls-icon-chip .ls-icon{width:28px;height:28px}
+ .ls-mobile-bottom a{min-height:49px;font-size:14px}
+}
+@media(max-width:680px){
+ .ls-utility-inner{min-height:42px}
+ .ls-glass-header{min-height:68px}
+ .ls-brand img{width:124px;max-height:59px}
+ .ls-menu-button{width:48px;height:48px}
+ .ls-menu-button .ls-icon{width:28px;height:28px}
+ .ls-start{min-height:46px;gap:7px}
+ .ls-start .ls-icon{width:19px;height:19px}
+ .ls-global-search input{font-size:12px}
+ .ls-primary-nav.ls-nav-mobile-open{left:10px;right:10px;max-height:calc(100dvh - 138px);overscroll-behavior:contain}
+}
+@media(max-width:390px){.ls-brand img{width:112px}.ls-menu-button{width:46px;height:46px}.ls-start{padding:10px 11px}}
+@media(prefers-reduced-transparency:reduce){.ls-glass-header,.ls-mega{background:#f8fcf9}.ls-utility-bar{background:#063b31}}

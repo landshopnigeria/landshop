@@ -49,30 +49,30 @@ export default function SiteHeader(){
   <div className="ls-utility-bar"><div className="ls-utility-inner">
    <span className="ls-tagline">Everyone Deserves Affordable Property.</span>
    <form role="search" action="/search" method="get" className="ls-global-search">
-    <SiteIcon name="search" size={17}/><input name="q" type="search" placeholder="Search properties, products, guides…" maxLength={90} aria-label="Search Landshop"/><button type="submit" aria-label="Submit search"><SiteIcon name="arrow" size={18}/></button>
+    <SiteIcon name="search" size={20}/><input name="q" type="search" placeholder="Search properties, products, guides…" maxLength={90} aria-label="Search Landshop"/><button type="submit" aria-label="Submit search"><SiteIcon name="arrow" size={18}/></button>
    </form>
-   <div className="ls-utility-links">{topLinks.map(x=><a href={x.url} key={x.text}><SiteIcon name={x.icon} size={15}/>{x.text}</a>)}</div>
+   <div className="ls-utility-links">{topLinks.map(x=><a href={x.url} key={x.text}><SiteIcon name={x.icon} size={19}/>{x.text}</a>)}</div>
   </div></div>
   <div className="ls-glass-wrap"><header className="ls-glass-header">
    <Link href="/" className="ls-brand" aria-label="Landshop homepage">
-    <img src="/media/logo-transparent.png" alt="Landshop" width={137} height={57} onError={event=>{event.currentTarget.src='/media/logo.webp'}}/>
+    <img src="/media/logo-transparent.png" alt="Landshop" width={150} height={63} decoding="async" fetchPriority="high" onError={event=>{event.currentTarget.src='/media/logo.webp'}}/>
    </Link>
    <nav className={'ls-primary-nav '+(menuOpen?'ls-nav-mobile-open':'')} aria-label="Site navigation">
     <Link className={'ls-header-link '+(pathname==='/'?'ls-nav-active':'')} href="/" onClick={()=>setMenuOpen(false)}><span>Home</span></Link>
     {groups.map(group=><div className={'ls-header-group '+(expanded===group.label?'ls-group-open':'')} key={group.label}>
      <button type="button" className={'ls-header-link ls-nav-toggle '+(group.items.some(item=>pathname===item.href)?'ls-nav-active':'')} onClick={()=>toggle(group.label)} aria-haspopup="true" aria-expanded={expanded===group.label} aria-controls="ls-site-mega">
-      <span>{group.label}</span><SiteIcon name="chevron" size={15}/>
+      <span>{group.label}</span><SiteIcon name="chevron" size={19}/>
      </button>
-     {menuOpen&&expanded===group.label&&<div className="ls-mobile-subnav">{group.items.map(item=><Link key={item.title} href={item.href}><IconChip name={item.icon}/><span><strong>{item.title}</strong><small>{item.description}</small></span><SiteIcon name="arrow" size={17}/></Link>)}</div>}
+     {menuOpen&&expanded===group.label&&<div className="ls-mobile-subnav">{group.items.map(item=><Link key={item.title} href={item.href}><IconChip name={item.icon}/><span><strong>{item.title}</strong><small>{item.description}</small></span><SiteIcon name="arrow" size={22}/></Link>)}</div>}
     </div>)}
     <Link href="/properties" className={'ls-header-link '+(pathname.startsWith('/properties')?'ls-nav-active':'')}>Properties</Link>
     <Link href="/insights" className={'ls-header-link '+(pathname.startsWith('/insights')?'ls-nav-active':'')}>Insights</Link>
     <Link href="/contact" className={'ls-header-link '+(pathname==='/contact'?'ls-nav-active':'')}>Contact</Link>
-    <div className="ls-mobile-bottom"><a href={portal}><SiteIcon name="users" size={19}/>Customer / Realtor Account</a><a href="/contact"><SiteIcon name="help" size={19}/>Support</a></div>
+    <div className="ls-mobile-bottom"><a href={portal}><SiteIcon name="users" size={23}/>Customer / Realtor Account</a><a href="/contact"><SiteIcon name="help" size={23}/>Support</a></div>
    </nav>
    <div className="ls-header-actions"><a className="ls-start" href={portal}><span>Get Started</span><SiteIcon name="external" size={17}/></a>
     <button className="ls-menu-button" type="button" aria-expanded={menuOpen} aria-label={menuOpen?'Close navigation':'Open navigation'} onClick={()=>{setMenuOpen(x=>!x);setExpanded(null)}}>
-     <SiteIcon name={menuOpen?'close':'menu'} size={25}/>
+     <SiteIcon name={menuOpen?'close':'menu'} size={28}/>
     </button>
    </div>
   </header>
