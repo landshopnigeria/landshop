@@ -11,11 +11,11 @@ DECLARE
 BEGIN
   IF requested IS NULL OR length(requested) NOT BETWEEN 6 AND 254 OR requested !~* '^[^@\s]+@[^@\s]+\.[^@\s]+$'
     THEN RAISE EXCEPTION 'Invalid pre-approved owner email'; END IF;
-  SELECT count(*),max(id) INTO matches,target_user_id FROM auth.users
+  SELECT count(*),(array_agg(id))[1] INTO matches,target_user_id FROM auth.users
     WHERE lower(email)=requested AND email_confirmed_at IS NOT NULL
       AND deleted_at IS NULL AND (banned_until IS NULL OR banned_until<now());
   IF matches<>1 THEN RAISE EXCEPTION 'Owner requires exactly one active, email-confirmed Supabase account; matches %',matches; END IF;
-  SELECT count(*),max(id) INTO orgs,org_id FROM public.organizations WHERE kind='landshop';
+  SELECT count(*),(array_agg(id))[1] INTO orgs,org_id FROM public.organizations WHERE kind='landshop';
   IF orgs<>1 THEN RAISE EXCEPTION 'Expected exactly one parent Landshop organization, found %',orgs; END IF;
   SELECT count(*) INTO other_owners FROM public.organization_members m
     WHERE m.organization_id=org_id AND m.role='owner' AND m.status='active' AND m.user_id<>target_user_id;
