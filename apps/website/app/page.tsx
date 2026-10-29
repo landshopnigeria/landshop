@@ -23,14 +23,20 @@ const nav=[{text:'Product',children:[['Develop','/develop'],['Incubate','/incuba
  {text:'Company',children:[['About Landshop','/about'],['Vision & Mission','/about#vision'],['Leadership & Team','/company/team'],['How Landshop Works','/about#approach']]},
  {text:'Services',children:[['Property Acquisition','/services/property-acquisition'],['Property Advisory','/services/advisory'],['Mortgage Guidance','/services/mortgage'],['Property Inspection','/applications'],['Construction Credit','/services/construction-credit'],['Cooperatives & Thrift','/thrift']]}];
 export default function Homepage(){
- const [slide,setSlide]=useState(0),[purpose,setPurpose]=useState('Buy'),[type,setType]=useState(''),[location,setLocation]=useState(''),[price,setPrice]=useState(''),[mobile,setMobile]=useState(false),[pause,setPause]=useState(false);
+ const [slide,setSlide]=useState(0),[purpose,setPurpose]=useState('Buy'),[type,setType]=useState(''),[location,setLocation]=useState(''),[price,setPrice]=useState(''),[mobile,setMobile]=useState(false),[pause,setPause]=useState(false),[hideHeader,setHideHeader]=useState(false);
  useEffect(()=>{if(pause)return;const id=setInterval(()=>setSlide(v=>(v+1)%3),6500);return()=>clearInterval(id)},[pause]);
+
+ useEffect(()=>{
+  let last=window.scrollY;let frame=0;
+  const change=()=>{cancelAnimationFrame(frame);frame=requestAnimationFrame(()=>{const pos=window.scrollY;if(Math.abs(pos-last)>10){setHideHeader(pos>170&&pos>last&&!mobile);last=pos;}if(pos<70)setHideHeader(false);});};
+  window.addEventListener('scroll',change,{passive:true});return ()=>{window.removeEventListener('scroll',change);cancelAnimationFrame(frame)};
+ },[mobile]);
  const current=slides[slide];
  function search(e:React.FormEvent<HTMLFormElement>){e.preventDefault();const args=new URLSearchParams({purpose});if(type)args.set('type',type);if(location)args.set('state',location);if(price)args.set('price',price);locationAssign('/properties?'+args.toString())}
  function locationAssign(path:string){window.location.href=path}
  return <main>
   <div className="top-strip"><span>Everyone Deserves Affordable Property.</span><div><a href="https://portal.landshopnigeria.com">Account</a><a href="https://portal.landshopnigeria.com">Realtor Portal</a><a href="https://portal.landshopnigeria.com">Become a Realtor</a><a href="https://app.landshopnigeria.com/admin">Command Center</a><a href="/contact">Support</a></div></div>
-  <header className="site-header"><div className="header-inner">
+  <header className={"site-header "+(hideHeader?"header-hide":"")}><div className="header-inner">
    <a className="logo" href="/" aria-label="Landshop home"><img src="/media/logo.webp" alt="Landshop official logo"/></a>
    <button type="button" className="mobile-nav" aria-expanded={mobile} onClick={()=>setMobile(v=>!v)} aria-label="Toggle navigation">☰</button>
    <nav className={'nav-links '+(mobile?'open':'')} aria-label="Main navigation"><a href="/">Home</a>
