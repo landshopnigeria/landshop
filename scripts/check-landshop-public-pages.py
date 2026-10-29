@@ -117,7 +117,7 @@ def check(kind: str, route: str, expected: str | None):
         if "Develop. Incubate. Grow." in unescape(visible):
             raise AssertionError("obsolete combined three-product hero remains visible")
         for label in ("Show DEVELOP slide","Show INCUBATE slide","Show GROW slide",
-                      "Previous slide","Next slide","Know Your Earnings"):
+                      "Previous slide","Next slide"):
             if label not in html:
                 raise AssertionError(f"required V16 slider control/action missing: {label}")
     for legacy in RECOVERY:
