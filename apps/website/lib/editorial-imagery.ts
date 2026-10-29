@@ -61,6 +61,12 @@ export const editorialImages={
   credit:'Faith Stephen / Pexels',
   source:'https://www.pexels.com/photo/modern-urban-building-with-clear-sky-34189426/'
  },
+ officeTower:{
+  src:'https://images.pexels.com/photos/20430713/pexels-photo-20430713.jpeg?auto=compress&cs=tinysrgb&w=1600',
+  alt:'Actual contemporary office building facade photographed in Lagos, Nigeria; editorial photograph',
+  credit:'Ebenezer Idowu / Pexels',
+  source:'https://www.pexels.com/photo/exterior-of-a-glass-office-building-20430713/'
+ },
  skyline:{
   src:'https://images.pexels.com/photos/32656347/pexels-photo-32656347.jpeg?auto=compress&cs=tinysrgb&w=1600',
   alt:'Real Lagos, Nigeria city skyline near the Atlantic coast, photographed in daylight',
