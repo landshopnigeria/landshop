@@ -1,5 +1,5 @@
-import SiteHeader from '../components/SiteHeader';
 'use client';
+import SiteHeader from '../components/SiteHeader';
 import {useEffect,useState} from 'react';
 type Listing={title:string,location:string,type:string,img:string,category:string,details:string};
 const slides=[
