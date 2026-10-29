@@ -1,0 +1,51 @@
+name: Activate Verified Landshop Owner Account
+on:
+  workflow_dispatch:
+    inputs:
+      owner_email:
+        description: Exact email used to register and confirm the Landshop owner account
+        type: string
+        required: true
+permissions:
+  contents: read
+concurrency:
+  group: landshop-owner-bootstrap
+  cancel-in-progress: false
+jobs:
+  activate:
+    runs-on: ubuntu-latest
+    environment: landshop-production
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify the independent owner-email allowlist and private PostgreSQL URL
+        shell: bash
+        env:
+          ALLOWED_OWNER_EMAIL: ${{ vars.LANDSHOP_OWNER_EMAIL }}
+          REQUESTED_OWNER_EMAIL: ${{ inputs.owner_email }}
+          DATABASE_URL: ${{ secrets.LANDSHOP_SUPABASE_DATABASE_URL }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import os,re,sys
+          a=os.environ.get('ALLOWED_OWNER_EMAIL','').strip().lower()
+          b=os.environ.get('REQUESTED_OWNER_EMAIL','').strip().lower()
+          if not a or not b:
+              sys.exit('::error::First configure LANDSHOP_OWNER_EMAIL in the landshop-production environment variables.')
+          if a!=b or not re.fullmatch(r'[^@\s]+@[^@\s]+\.[^@\s]+',b):
+              sys.exit('::error::Requested email does not match the separately approved owner email.')
+          if not os.environ.get('DATABASE_URL','').startswith(('postgresql://','postgres://')):
+              sys.exit('::error::Production database URL is missing or invalid.')
+          print('Owner email matches the independently configured production allowlist.')
+          PY
+      - name: Confirm account in Supabase and atomically record audited owner membership
+        shell: bash
+        env:
+          DATABASE_URL: ${{ secrets.LANDSHOP_SUPABASE_DATABASE_URL }}
+          REQUESTED_OWNER_EMAIL: ${{ inputs.owner_email }}
+        run: |
+          set -euo pipefail
+          docker run --rm --network host -e DATABASE_URL -e REQUESTED_OWNER_EMAIL \
+            -v "$PWD/scripts/bootstrap-landshop-owner.sql:/work/bootstrap.sql:ro" \
+            postgres:17 sh -ec 'psql "$DATABASE_URL" -X -v ON_ERROR_STOP=1 -v owner_email="$REQUESTED_OWNER_EMAIL" -f /work/bootstrap.sql'
+          echo 'Confirmed-account verification and owner membership transaction completed.'
