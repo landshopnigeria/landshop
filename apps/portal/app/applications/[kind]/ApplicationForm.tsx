@@ -112,11 +112,11 @@ export default function ApplicationForm({slug}:{slug:string}){
      setMessage(f.label+' must be a JPG, PNG, WEBP or PDF under 10 MiB.');return false;
     }
    }
-   if(f.type==='email'&&!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(value)){
+   if(f.type==='email'&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)){
     setMessage('Enter a valid email address for '+f.label+'.');return false;
    }
    if(f.type==='tel'){
-    const digits=value.replace(/\\D/g,'');
+    const digits=value.replace(/\D/g,'');
     if(digits.length<7||digits.length>15){setMessage('Enter a valid phone number for '+f.label+'.');return false}
    }
    if(f.type==='number'){
@@ -127,7 +127,7 @@ export default function ApplicationForm({slug}:{slug:string}){
     }
    }
    if(f.type==='date'){
-    if(!/^\\d{4}-\\d{2}-\\d{2}$/.test(value)||Number.isNaN(Date.parse(value))){
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(value)||Number.isNaN(Date.parse(value))){
      setMessage('Select a valid date for '+f.label+'.');return false;
     }
     if(f.key==='date_of_birth'&&value>=today){
