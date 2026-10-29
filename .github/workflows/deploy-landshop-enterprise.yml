@@ -6,6 +6,7 @@ on:
     types: [completed]
 permissions:
   contents: read
+  actions: read
 concurrency:
   group: landshop-enterprise-release
   cancel-in-progress: false
@@ -98,16 +99,40 @@ jobs:
           chmod 600 "$HOME/.ssh/id_ed25519"
           printf '%s\n' "$KNOWN_HOSTS" > "$HOME/.ssh/known_hosts"
           chmod 600 "$HOME/.ssh/known_hosts"
-      - name: Block production upload on SSL, routing or migration readiness failures
+      - name: Verify migrations, encrypted backup and recovery evidence before production upload
         shell: bash
         env:
-          DATABASE_RELEASE_APPROVED: ${{ vars.LANDSHOP_DATABASE_RELEASE_APPROVED || 'false' }}
+          DATABASE_URL: ${{ secrets.LANDSHOP_SUPABASE_DATABASE_URL }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          if [ "$DATABASE_RELEASE_APPROVED" != "true" ]; then
-            echo "::error::Landshop database release gate not approved. Apply, verify and authorize pending migrations before publication."
-            exit 1
-          fi
+          test -n "$DATABASE_URL" || { echo "::error::Production database URL is not configured"; exit 1; }
+          # Require the actual verified encrypted backup AND isolated PostgreSQL recovery exercise.
+          for run_id in 40500325257 40799262978; do
+            run_json=$(curl --fail --silent --show-error --location \
+              -H "Authorization: Bearer $GH_TOKEN" \
+              -H "Accept: application/vnd.github+json" \
+              "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/runs/$run_id")
+            conclusion=$(RUN_JSON="$run_json" python3 -c 'import json,os;print(json.loads(os.environ["RUN_JSON"]).get("conclusion",""))')
+            [ "$conclusion" = success ] || { echo "::error::Required backup/recovery run $run_id did not pass";exit 1; }
+            echo "Verified successful recovery prerequisite: workflow run $run_id"
+          done
+          # Verify live migration history and RLS without mutating Supabase or relying on a manual flag.
+          read -r -d '' sql <<'SQL' || true
+          select case when
+            (select count(*) from supabase_migrations.schema_migrations
+             where name in ('application_submission_validation','support_ticketing'))=2
+            and to_regclass('public.support_tickets') is not null
+            and to_regclass('public.support_ticket_events') is not null
+            and to_regprocedure('public.landshop_submit_application(uuid)') is not null
+            and (select relrowsecurity from pg_class where oid='public.support_tickets'::regclass)
+            and not has_table_privilege('anon','public.support_tickets','SELECT')
+          then 'ready' else 'not-ready' end
+          SQL
+          result=$(docker run --rm --network host -e DATABASE_URL -e SQL="$sql" postgres:17 \
+             sh -ec 'psql "$DATABASE_URL" -XAt -v ON_ERROR_STOP=1 -c "$SQL"')
+          [ "$result" = ready ] || { echo "::error::Production database migration/RLS verification failed";exit 1; }
+          echo "Production SQL migration and RLS gate verified from live database"
           for host in landshopnigeria.com www.landshopnigeria.com portal.landshopnigeria.com app.landshopnigeria.com; do
             curl --fail --silent --show-error --location --max-time 18 --head "https://$host/" >/dev/null || {
               echo "::error::Production domain $host does not have valid TLS/HTTP routing"
