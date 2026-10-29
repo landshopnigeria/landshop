@@ -1,0 +1,105 @@
+name: Remove Landshop Legacy Product Route Shadows
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/expose-enterprise-product-pages.yml']
+permissions:
+  contents: read
+concurrency:
+  group: landshop-enterprise-homepage-repair
+  cancel-in-progress: false
+jobs:
+  route-repair:
+    runs-on: ubuntu-latest
+    environment: landshop-production
+    timeout-minutes: 12
+    steps:
+      - name: Back up known legacy static product directories and expose Next.js routes
+        shell: bash
+        env:
+          SSH_HOST: ${{ secrets.LANDSHOP_SSH_HOST || secrets.NAMECHEAP_SSH_HOST || vars.LANDSHOP_SSH_HOST }}
+          SSH_PORT: ${{ vars.LANDSHOP_SSH_PORT || secrets.LANDSHOP_SSH_PORT || secrets.NAMECHEAP_SSH_PORT || '21098' }}
+          SSH_USER: ${{ secrets.LANDSHOP_SSH_USER || secrets.NAMECHEAP_SSH_USER || vars.LANDSHOP_SSH_USER }}
+          SSH_KEY: ${{ secrets.LANDSHOP_SSH_KEY || secrets.NAMECHEAP_SSH_PRIVATE_KEY }}
+          KNOWN_HOSTS: ${{ secrets.LANDSHOP_SSH_KNOWN_HOSTS || secrets.NAMECHEAP_SSH_KNOWN_HOSTS || vars.LANDSHOP_SSH_KNOWN_HOSTS }}
+          WEBSITE_ROOT: ${{ secrets.LANDSHOP_WEBSITE_APPROOT || vars.LANDSHOP_WEBSITE_APPROOT || '/home/maleghif/landshop-website' }}
+          EXPECTED_SHA: 2fb1ef2e863cef76b082a50839a79e42abb4df28
+        run: |
+          set -euo pipefail
+          umask 077
+          install -d -m 700 "$HOME/.ssh"
+          printf '%s\n' "$SSH_KEY" > "$HOME/.ssh/id_ed25519"
+          printf '%s\n' "$KNOWN_HOSTS" > "$HOME/.ssh/known_hosts"
+          chmod 600 "$HOME/.ssh/id_ed25519" "$HOME/.ssh/known_hosts"
+          SSH=(ssh -p "$SSH_PORT" -o BatchMode=yes -o StrictHostKeyChecking=yes "$SSH_USER@$SSH_HOST")
+          "${SSH[@]}" bash -s -- "$WEBSITE_ROOT" "$EXPECTED_SHA" "$GITHUB_RUN_ID" <<'REMOTE'
+          set -eu
+          app="$1";sha="$2";runid="$3";docroot="$HOME/public_html"
+          [ -d "$docroot" ] && [ -s "$docroot/.htaccess" ] || exit 1
+          grep -qF 'PassengerAppRoot' "$docroot/.htaccess" && grep -qF "$app" "$docroot/.htaccess" || { echo "::error::Website Passenger mapping differs from expected";exit 1; }
+          [ "$(tr -d '\r\n' < "$app/LANDSHOP_RELEASE_SHA")" = "$sha" ] || { echo "::error::Wrong website release";exit 1; }
+          [ ! -e "$docroot/index.html" ] || { echo "::error::Legacy root index still exists, stop";exit 1; }
+          # Validate ALL targets before changing any of them.
+          for slug in develop incubate grow;do
+            directory="$docroot/$slug"
+            [ -d "$directory" ] && [ ! -L "$directory" ] && [ -f "$directory/index.html" ] || { echo "::error::Unexpected product document root $slug";exit 1; }
+            if find "$directory" -type l -print -quit | grep -q .;then echo "::error::Symlinks in $slug, manual review required";exit 1;fi
+            if find "$directory" -type f \( -name '*.php' -o -name '.htaccess' -o -name 'wp-config.php' \) -print -quit | grep -q .;then echo "::error::Active server configuration in $slug, manual review required";exit 1;fi
+            case "$slug" in
+              develop) marker="Secure Verified Property With Just 1% Upfront";;
+              incubate) marker="Earn From Real Estate Appreciation Without Buying the Whole Property";;
+              grow) marker="Own a Home Through Flexible Mortgage Financing";;
+            esac
+            grep -qFi "$marker" "$directory/index.html" || { echo "::error::$slug is not the expected old static landing page";exit 1; }
+            echo "Confirmed older static $slug landing page shadows enterprise route"
+          done
+          backup="$HOME/landshop-deployment-backups/legacy-products-$runid"
+          [ ! -e "$backup" ] || exit 1
+          mkdir -p "$backup";chmod 700 "$backup"
+          for slug in develop incubate grow;do
+            mv "$docroot/$slug" "$backup/$slug"
+            [ -s "$backup/$slug/index.html" ] && [ ! -e "$docroot/$slug" ] || exit 1
+            echo "Preserved legacy product directory privately: $slug"
+          done
+          mkdir -p "$app/tmp";touch "$app/tmp/restart.txt"
+          REMOTE
+          validate() {
+            local slug="$1" expected="$2" html="$RUNNER_TEMP/$1.html"
+            for attempt in $(seq 1 8);do
+              if curl -fsSL --max-time 20 -H 'Cache-Control: no-cache' -o "$html" "https://landshopnigeria.com/$slug?landshop_new_routes=$GITHUB_RUN_ID";then
+                if NAME="$slug" WANT="$expected" HTML="$html" python3 - <<'PY'
+          import os,sys
+          from pathlib import Path
+          s=Path(os.environ["HTML"]).read_text(errors="replace")
+          passed="/_next/" in s and os.environ["WANT"] in s
+          print(os.environ["NAME"],"Next.js product route:",passed,"assets:",'/_next/' in s,"expected_title:",os.environ["WANT"] in s)
+          sys.exit(0 if passed else 1)
+          PY
+                then return 0;fi
+              fi
+              sleep 2
+            done
+            echo "::error::Enterprise Next.js page failed for $slug"
+            return 1
+          }
+          failed=0
+          validate develop 'Own Your Future' || failed=1
+          validate incubate 'Build Wealth Through Property' || failed=1
+          validate grow 'A Smarter Path to Homeownership' || failed=1
+          if [ "$failed" != 0 ];then
+            echo "::warning::Product pages are not correct, restoring all original directories"
+            "${SSH[@]}" bash -s -- "$WEBSITE_ROOT" "$GITHUB_RUN_ID" <<'ROLLBACK'
+          set -eu
+          app="$1";runid="$2";docroot="$HOME/public_html";backup="$HOME/landshop-deployment-backups/legacy-products-$runid"
+          for slug in develop incubate grow;do
+            if [ -d "$backup/$slug" ] && [ ! -e "$docroot/$slug" ];then
+              mv "$backup/$slug" "$docroot/$slug"
+              echo "Recovered previous static $slug"
+            fi
+          done
+          touch "$app/tmp/restart.txt"
+          ROLLBACK
+            exit 1
+          fi
+          echo "All three product routes now serve current enterprise Next.js; old directories preserved in private backups"
