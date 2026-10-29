@@ -41,7 +41,7 @@ PUBLIC_PAGES = [
     ("website", "/services/construction-credit", "Plan your development financing"),
     ("website", "/grow/beta-mortgage", "Explore a structured route"),
     ("website", "/grow/mortgage-xtra", "Plan a financing journey"),
-    ("portal", "/", "Create your Landshop account"),
+    ("portal", "/", "One Account."),
     ("portal", "/applications", None),
     ("portal", "/applications/develop-land", None),
     ("portal", "/applications/develop-house", None),
