@@ -102,3 +102,16 @@
 @media(max-width:620px){.ld-inspection-fields{grid-template-columns:1fr}}
 
 .ld-map-actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:flex-end}.ld-map-actions a{color:#08765d;display:inline-flex;align-items:center;gap:7px;font-weight:800;font-size:13px}.ld-map-actions a .ls-icon{color:#f26b10}.ld-page .ld-section-nav a:hover,.ld-page .ld-inline-link .ls-icon,.ld-page .ld-related a .ls-icon{color:#f26b10}@media(max-width:640px){.ld-map-actions{width:100%;justify-content:flex-start}}
+
+.ld-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:20px}
+.ld-actions button,.ld-actions>a{display:inline-flex;align-items:center;gap:7px;justify-content:center;border:1px solid #d7e7db;background:#fff;color:#236b51;border-radius:11px;padding:10px 14px;min-height:43px;font-size:12px;font-weight:750;cursor:pointer}
+.ld-actions :is(button,a) .ls-icon{color:#f26b10}
+.ld-actions button:hover,.ld-actions>a:hover{background:#eef9f1;border-color:#b4d8c6}
+.ld-action-feedback{flex-basis:100%;font-size:12px;color:#0a7457}
+.ld-action-feedback a{margin-left:8px;text-decoration:underline}
+.ld-category-pill{display:inline-flex!important;align-items:center;justify-content:space-between;gap:15px;border:1px solid #c8e2d2;border-radius:10px;padding:12px 13px;margin:10px 0 8px;color:#08775c;font-size:13px;font-weight:800}
+.ld-category-pill .ls-icon{color:#f26b10}
+.ld-property-tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}.ld-property-tags span{font-size:11px;border:1px solid #d8e6dd;padding:8px 11px;border-radius:999px;color:#427359;background:#f4fbf6}
+@media(max-width:580px){.ld-actions>*:not(.ld-action-feedback){flex:1 1 auto}}
+
+.ld-gallery-stage .ld-gallery-image{cursor:zoom-in}.ld-gallery-stage .ld-gallery-image.ld-gallery-zoom{transform:scale(1.5);cursor:zoom-out;object-fit:contain}.ld-gallery-stage>button.ld-gallery-zoom-control{top:auto;right:132px;bottom:15px;transform:none;border-radius:10px;width:auto;height:36px;padding:0 13px;font-size:12px}.ld-gallery-caption{padding:8px 15px 12px;margin:0;background:#fff;color:#59796b;font-size:12px}

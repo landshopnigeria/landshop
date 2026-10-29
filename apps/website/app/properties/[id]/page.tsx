@@ -2,6 +2,7 @@ import Link from 'next/link';
 import {notFound,redirect} from 'next/navigation';
 import SiteIcon,{IconChip} from '../../../components/SiteIcon';
 import PropertyMediaCarousel from '../../../components/PropertyMediaCarousel';
+import PropertyActions from '../../../components/PropertyActions';
 import MortgageEstimator from '../../../components/MortgageEstimator';
 import PropertyInspectionForm from '../../../components/PropertyInspectionForm';
 import {MarketFooter} from '../../../components/MarketChrome';
@@ -65,7 +66,7 @@ export default async function PropertyDetails({params}:{params:Promise<{id:strin
  return <main className="mk-layout ld-page">
   <div className="ld-shell">
    <nav className="ld-breadcrumb" aria-label="Breadcrumb"><Link href="/">Home</Link><SiteIcon name="chevron" size={16}/><Link href="/properties">Properties</Link><SiteIcon name="chevron" size={16}/><span>{property.title}</span></nav>
-   <div className="ld-heading"><div><span className="ld-eyebrow">LANDSHOP VERIFIED INVENTORY <span className="ld-dot">·</span> {property.property_type.toUpperCase()}</span><h1>{property.title}</h1><p className="ld-location"><SiteIcon name="pin" size={20}/>{locationShort}<span>Reference: {id.slice(0,8).toUpperCase()}</span></p></div><div className="ld-heading-price"><small>Published price</small><strong>{money(property.amount_kobo)}</strong><span>Confirm current terms before payment</span></div></div>
+   <div className="ld-heading"><div><span className="ld-eyebrow">LANDSHOP VERIFIED INVENTORY <span className="ld-dot">·</span> {property.property_type.toUpperCase()}</span><h1>{property.title}</h1><p className="ld-location"><SiteIcon name="pin" size={20}/>{locationShort}<span>Reference: {id.slice(0,8).toUpperCase()}</span></p><PropertyActions propertyId={property.id} title={property.title} slug={property.slug||property.id}/></div><div className="ld-heading-price"><small>Published price</small><strong>{money(property.amount_kobo)}</strong><span>Confirm current terms before payment</span></div></div>
    <PropertyMediaCarousel title={property.title} images={gallery} videos={profile.videos}/>
    <nav className="ld-section-nav" aria-label="Property sections"><a href="#overview">Overview</a><a href="#features">Features</a><a href="#pricing">Pricing</a><a href="#inspection">Inspection</a><a href="#videos">Videos</a><a href="#layout">Layout</a><a href="#map">Map</a></nav>
    <div className="ld-main-grid">
@@ -80,6 +81,7 @@ export default async function PropertyDetails({params}:{params:Promise<{id:strin
     <aside className="ld-sidebars" aria-label="Property enquiries and tools">
      <section className="ld-sidebar ld-sidebar-primary"><span className="ld-overline">ENQUIRE ABOUT THIS PROPERTY</span><h2>Ready to explore further?</h2><p>Speak to Landshop about authentic photos, inspection availability, verified documents and current pricing.</p><a className="ld-side-cta" href={mail}><SiteIcon name="mail" size={20}/> Send an enquiry <SiteIcon name="external" size={18}/></a><a className="ld-side-outline" href="#inspection"><SiteIcon name="calendar" size={20}/> Request inspection</a><a className="ld-side-outline" href="tel:+2349169973359"><SiteIcon name="phone" size={20}/> Call customer care</a><small>Quote reference {id.slice(0,8).toUpperCase()}</small></section>
      <section className="ld-sidebar"><span className="ld-overline">YOUR FINANCING</span><h2>Mortgage estimator</h2><MortgageEstimator priceKobo={property.amount_kobo}/><p className="ld-disclaimer">Estimates are illustrative, not loan approvals.</p></section>
+     <section className="ld-sidebar ld-sidebar-categories"><span className="ld-overline">PROPERTY CATEGORIES</span><h2>Explore similar categories</h2><Link className="ld-category-pill" href={"/properties?type="+encodeURIComponent(property.property_type)}>{property.property_type.toUpperCase()} <SiteIcon name="arrow" size={17}/></Link>{profile.amenities.length>0&&<div className="ld-property-tags" aria-label="Property features">{profile.amenities.slice(0,7).map(t=><span key={t}>{t}</span>)}</div>}</section>
      <section className="ld-sidebar ld-sidebar-help"><IconChip name="shield"/><h2>Buy with clarity</h2><p>Check title, survey, precise location, occupancy and written contract terms. Never transfer funds based only on a property webpage.</p><Link href="/insights">Property buying guides <SiteIcon name="arrow" size={18}/></Link></section>
     </aside>
    </div>
