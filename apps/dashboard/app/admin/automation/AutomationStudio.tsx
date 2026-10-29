@@ -1,9 +1,14 @@
 'use client';
-import {useState,useRef} from 'react';
+import {useState,useRef,useEffect} from 'react';
 import Link from 'next/link';
 import {createBrowserClient} from '@supabase/ssr';
 import {composeWorkflow,validateGraph,types,type DraftPlan,type NodeType,type WorkflowNode as Node,type Graph} from './workflow-planner';
 type Workflow={id:string;name:string;description:string|null;version:number;state:string;draft_graph:Graph};
+type Rehearsal={id:string;status:string;started_at:string;context:{
+ mode?:string;current_node?:string|null;started_by?:string;
+ graph_snapshot?:Graph;step_count?:number;external_actions_executed?:number
+}};
+type RunEvent={id:number;node_id:string;event_type:string;created_at:string;details:Record<string,unknown>};
 function client(){
  const url=process.env.NEXT_PUBLIC_SUPABASE_URL,key=process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
  if(!url||!key)throw Error('Automation service not configured');
@@ -13,11 +18,19 @@ export default function AutomationStudio({initial}:{initial:Workflow[]}){
  const [flows,setFlows]=useState(initial),[current,setCurrent]=useState(initial[0]?.id||'');
  const [selected,setSelected]=useState<string|null>(null),[connect,setConnect]=useState<string|null>(null);
  const [prompt,setPrompt]=useState(''),[generated,setGenerated]=useState<DraftPlan|null>(null);
+ const savedGraphs=useRef<Record<string,string>>(Object.fromEntries(initial.map(f=>[f.id,JSON.stringify(f.draft_graph)])));
+ const [testRun,setTestRun]=useState<Rehearsal|null>(null),[runEvents,setRunEvents]=useState<RunEvent[]>([]);
+ const [testBusy,setTestBusy]=useState(false);
  const [nav,setNav]=useState(true),[inspector,setInspector]=useState(true),[busy,setBusy]=useState(false),[message,setMessage]=useState('');
  const board=useRef<HTMLDivElement>(null),drag=useRef<{id:string;startX:number;startY:number;offsetX:number;offsetY:number}|null>(null);
  const flow=generated?undefined:flows.find(f=>f.id===current);const graph:Graph=generated?.graph||flow?.draft_graph||{nodes:[],edges:[]};
  const issues=validateGraph(graph);
  const focused=graph.nodes.find(n=>n.id===selected);
+ const unsaved=Boolean(flow&&JSON.stringify(graph)!==savedGraphs.current[flow.id]);
+ const runGraph=testRun?.context.graph_snapshot;
+ const nextNode=runGraph?.nodes.find(n=>n.id===testRun?.context.current_node);
+ const nextRoutes=(runGraph?.edges||[]).filter(e=>e.from===nextNode?.id)
+  .map(e=>({id:e.to,label:runGraph?.nodes.find(n=>n.id===e.to)?.label||'Unknown node'}));
  function update(g:Graph){if(generated){setGenerated(d=>d?{...d,graph:g}:d);return;}if(!flow)return;setFlows(fs=>fs.map(x=>x.id===current?{...x,draft_graph:g}:x));}
  function add(type:NodeType){const n={id:crypto.randomUUID(),type,label:type[0].toUpperCase()+type.slice(1)+' step',x:220+graph.nodes.length*22,y:180+(graph.nodes.length%4)*75};update({...graph,nodes:[...graph.nodes,n]});setSelected(n.id)}
  function changeNode(patch:Partial<Node>){if(!selected)return;update({...graph,nodes:graph.nodes.map(x=>x.id===selected?{...x,...patch}:x)})}
@@ -44,6 +57,7 @@ export default function AutomationStudio({initial}:{initial:Workflow[]}){
     });
     if(error||!data)throw Error('Could not create workflow. Confirm authorized Landshop staff access and the workflow migration.');
     const record:Workflow={id:String(data),name:generated.name,description:generated.description,version:1,state:'draft',draft_graph:graph};
+    savedGraphs.current[record.id]=JSON.stringify(graph);
     setFlows(fs=>[...fs,record]);setCurrent(record.id);setGenerated(null);setSelected(null);
     setMessage('New workflow saved securely as a versioned DRAFT. Activation remains provider-gated.');
    }else if(flow){
@@ -51,11 +65,83 @@ export default function AutomationStudio({initial}:{initial:Workflow[]}){
      p_workflow:flow.id,p_graph:graph,p_expected_version:flow.version
     });
     if(error)throw Error('Could not save workflow: verify staff permissions and any version conflict.');
+    savedGraphs.current[current]=JSON.stringify(graph);
     setFlows(fs=>fs.map(x=>x.id===current?{...x,version:Number(data),state:'draft'}:x));
     setMessage('Draft v'+String(data)+' saved. Outbound actions remain inactive.');
    }
   }catch(e){setMessage(e instanceof Error?e.message:'Save failed');}
   finally{setBusy(false);}
+ }
+ async function loadRun(workflowId:string){
+  try{
+   const db=client();
+   const {data,error}=await db.from('automation_runs')
+    .select('id,status,started_at,context')
+    .eq('workflow_id',workflowId)
+    .eq('context->>mode','rehearsal')
+    .order('started_at',{ascending:false})
+    .limit(1);
+   if(error)throw Error('Could not read rehearsal history.');
+   const latest=(data?.[0]||null) as Rehearsal|null;
+   setTestRun(latest);
+   if(latest){
+    const {data:history,error:eventsError}=await db.from('automation_run_events')
+     .select('id,node_id,event_type,created_at,details')
+     .eq('run_id',latest.id).order('id',{ascending:false}).limit(12);
+    if(eventsError)throw Error('Could not read rehearsal events.');
+    setRunEvents((history||[]) as RunEvent[]);
+   }else{setRunEvents([]);}
+  }catch(e){setMessage(e instanceof Error?e.message:'Unable to fetch rehearsal history.');}
+ }
+ useEffect(()=>{
+  if(generated||!current){setTestRun(null);setRunEvents([]);return;}
+  let active=true;
+  (async()=>{
+   try{
+    const {data,error}=await client().from('automation_runs')
+     .select('id,status,started_at,context')
+     .eq('workflow_id',current).eq('context->>mode','rehearsal')
+     .order('started_at',{ascending:false}).limit(1);
+    if(!active)return;
+    if(error)throw error;
+    const latest=(data?.[0]||null) as Rehearsal|null;
+    setTestRun(latest);
+    if(!latest){setRunEvents([]);return;}
+    const {data:history}=await client().from('automation_run_events')
+     .select('id,node_id,event_type,created_at,details')
+     .eq('run_id',latest.id).order('id',{ascending:false}).limit(12);
+    if(active)setRunEvents((history||[]) as RunEvent[]);
+   }catch{if(active){setTestRun(null);setRunEvents([]);}}
+  })();
+  return()=>{active=false;};
+ },[current,generated]);
+ async function startTest(){
+  if(!flow||generated||unsaved)return;
+  setTestBusy(true);setMessage('');
+  try{
+   const {data,error}=await client().rpc('landshop_automation_rehearse',{
+    p_workflow:flow.id,p_expected_version:flow.version
+   });
+   if(error||!data)throw Error(error?.message||'Unable to start workflow rehearsal.');
+   await loadRun(flow.id);
+   setMessage('New rehearsal started. Walk through each node to record its simulated outcome.');
+  }catch(e){setMessage(e instanceof Error?e.message:'Rehearsal unavailable.');}
+  finally{setTestBusy(false);}
+ }
+ async function advanceTest(next?:string){
+  if(!flow||!testRun)return;
+  setTestBusy(true);setMessage('');
+  try{
+   const {data,error}=await client().rpc('landshop_automation_rehearsal_step',{
+    p_run:testRun.id,p_next_node:next||null
+   });
+   if(error||!data)throw Error(error?.message||'Unable to advance rehearsal.');
+   await loadRun(flow.id);
+   setMessage(data.status==='completed'?
+    'Rehearsal completed with audit evidence. No live actions were performed.':
+    'Step recorded. Communication, approval and integration actions remain simulated.');
+  }catch(e){setMessage(e instanceof Error?e.message:'Rehearsal step failed.');}
+  finally{setTestBusy(false);}
  }
  function reset(){
   if(!confirm('Discard unsaved changes and reload the workflow?'))return;
@@ -66,7 +152,10 @@ export default function AutomationStudio({initial}:{initial:Workflow[]}){
  return <main className="auto-studio">
   <header className="auto-top"><Link href="/admin">← Global Command Center</Link><strong>LANDSHOP · AUTOMATION STUDIO</strong><span>{generated?.name||flow?.name||'No workflows'}</span><button onClick={save} disabled={(!flow&&!generated)||busy}>{busy?'Saving…':generated?'Save as New Draft':'Save Draft'}</button></header>
   <section className="auto-composer"><div><span>WORKFLOW BUILDER</span><h2>Describe your business process. Create its connected workflow.</h2><p>Turn a written process into a structured, editable draft: triggers, reviews, conditions, communications, wait steps and connected outcomes. Templates are rule-based, not autonomous AI execution.</p></div><form onSubmit={e=>{e.preventDefault();buildFromPrompt()}}><label htmlFor="automation-description">Describe the trigger, action and outcome</label><textarea id="automation-description" rows={3} maxLength={1500} value={prompt} onChange={e=>setPrompt(e.target.value)} placeholder="For example: When a customer requests a property inspection, validate their details, assign a staff member, confirm the date and email the customer."/><button type="submit" disabled={busy}>Build Editable Workflow →</button></form>{generated&&<div className="auto-generated"><label htmlFor="new-workflow-name">New workflow name<input id="new-workflow-name" maxLength={100} value={generated.name} onChange={e=>setGenerated(d=>d?{...d,name:e.target.value}:d)}/></label><span>{generated.recipe} · {graph.nodes.length} connected nodes · unsaved</span></div>}</section>
-  <div className="auto-toolbar"><button onClick={()=>setNav(x=>!x)} aria-label="Toggle node sidebar">☰ Node Library</button><select aria-label="Workflow template" value={generated?'__generated':current} onChange={e=>{if(e.target.value==='__generated')return;setGenerated(null);setCurrent(e.target.value);setSelected(null);setConnect(null)}}>{generated&&<option value="__generated">New generated draft (unsaved)</option>}{flows.map(f=><option key={f.id} value={f.id}>{f.name}</option>)}</select><span>{generated?'Unsaved generated draft':'Version '+(flow?.version||'—')+' · '+(flow?.state||'Not configured')}</span><button onClick={()=>setConnect(selected)} disabled={!selected}>Connect selected node →</button><button onClick={()=>setInspector(x=>!x)}>{inspector?'Hide':'Show'} Inspector</button><button onClick={exportGraph} disabled={!flow&&!generated}>Export JSON</button><button onClick={reset}>Reset</button></div>
+  <div className="auto-toolbar"><button onClick={()=>setNav(x=>!x)} aria-label="Toggle node sidebar">☰ Node Library</button><select aria-label="Workflow template" value={generated?'__generated':current} onChange={e=>{if(e.target.value==='__generated')return;setGenerated(null);setCurrent(e.target.value);setSelected(null);setConnect(null)}}>{generated&&<option value="__generated">New generated draft (unsaved)</option>}{flows.map(f=><option key={f.id} value={f.id}>{f.name}</option>)}</select><span>{generated?'Unsaved generated draft':'Version '+(flow?.version||'—')+' · '+(flow?.state||'Not configured')}</span><button onClick={()=>setConnect(selected)} disabled={!selected}>Connect selected node →</button><button onClick={()=>setInspector(x=>!x)}>{inspector?'Hide':'Show'} Inspector</button><button onClick={exportGraph} disabled={!flow&&!generated}>Export JSON</button><button onClick={reset}>Reset</button>
+   <button className="auto-test-button" onClick={startTest} disabled={!flow||!!generated||unsaved||testBusy||busy}>
+    {testBusy?'Working…':'Rehearse Saved Workflow'}
+   </button></div>
   <div className={'auto-workspace '+(!nav?'no-nav ':'')+(!inspector?'no-inspector':'')}>
    {nav&&<aside className="auto-library"><h2>Workflow Library</h2><p>Add process steps to your editable canvas. Connect steps using the Connect control.</p>{types.map(type=><button key={type} onClick={()=>add(type)}><span className={'node-dot '+type}/><strong>{type}</strong><small>＋ Add step</small></button>)}<div className="auto-warning">Preview and draft only. Email, SMS, WhatsApp and financial tasks will not execute until integration, consent and approvals pass.</div></aside>}
    <section className="auto-board-shell"><div className="auto-board-head"><div><h1>{generated?.name||flow?.name||'Automation Workflow'}</h1><p>{generated?.description||flow?.description||'Build a workflow with governed actions.'}</p></div><span>{graph.nodes.length} nodes · {graph.edges.length} links</span></div>
@@ -90,6 +179,29 @@ export default function AutomationStudio({initial}:{initial:Workflow[]}){
     {graph.edges.filter(e=>e.from===focused.id||e.to===focused.id).map(e=><button className="auto-disconnect" key={e.from+'-'+e.to} onClick={()=>update({...graph,edges:graph.edges.filter(link=>link!==e)})}>Disconnect {e.from===focused.id?'to '+(graph.nodes.find(n=>n.id===e.to)?.label||'step'):'from '+(graph.nodes.find(n=>n.id===e.from)?.label||'step')}</button>)}
     <button onClick={remove}>Delete node</button></>:<p>Click a workflow node to inspect or edit it.</p>}
     <div className="auto-warning"><strong>Publishing gate</strong><p>Changes are drafts until a separate review and verified provider setup. Do not include sensitive credentials or private client data in node labels.</p></div></aside>}
-  </div>{issues.length>0&&<section className="auto-diagnostics" aria-label="Workflow validation"><strong>Graph review: {issues.length} item(s)</strong><ul>{issues.map(issue=><li key={issue}>{issue}</li>)}</ul><p>Existing workflow drafts can still be saved while incomplete; new generated workflows require a connected graph.</p></section>}<p className="auto-message" role="status" aria-live="polite">{message}</p>
+  </div>
+  <section className="auto-test-panel" aria-label="Workflow execution rehearsal">
+   <div className="auto-test-heading"><div><span>INTERNAL REHEARSAL & AUDIT</span><h2>Execute a safe, step-by-step test</h2>
+    <p>Rehearsals run against the last saved version. They persist test steps and decisions, but never deliver emails or messages, call APIs, grant approvals, schedule real waits or transfer funds.</p></div>
+    <div><strong>{testRun?'Run '+testRun.id.slice(0,8):'No rehearsal yet'}</strong><small>{testRun?testRun.status.toUpperCase():'Save a workflow to start'}</small></div></div>
+   {unsaved&&<p className="auto-test-hint">Unsaved diagram edits detected. Save your draft before rehearsing so the database uses your latest graph.</p>}
+   {testRun&&<div className="auto-test-grid"><div className="auto-test-current">
+      <strong>{testRun.status==='completed'?'Rehearsal completed':nextNode?.label||'No current step'}</strong>
+      <span>{nextNode?.type.toUpperCase()||'COMPLETE'} · {testRun.context.step_count||0} steps reviewed</span>
+      {testRun.status==='running'&&<>
+       <p>{nextNode?.type==='notification'||nextNode?.type==='webhook'?'This provider action will be logged as skipped; no external call will occur.':nextNode?.type==='approval'?'This step records a hypothetical review only. It cannot authorize an actual business decision.':'Advance to log the simulated step and continue to the next connected node.'}</p>
+       {nextRoutes.length>1?
+        <div className="auto-test-choices">{nextRoutes.map(next=><button key={next.id} disabled={testBusy} onClick={()=>advanceTest(next.id)}>Follow: {next.label}</button>)}</div>:
+        <button className="auto-test-advance" disabled={testBusy} onClick={()=>advanceTest()}>
+         {nextNode?.type==='end'?'Finish Rehearsal':testBusy?'Recording…':'Review Step & Continue →'}
+        </button>}
+      </>}
+      <small>External actions performed: {testRun.context.external_actions_executed||0}</small>
+    </div><div className="auto-test-timeline"><h3>Recorded run history</h3><ol>{runEvents.map(e=><li key={e.id}>
+     <strong>{e.event_type.replaceAll('_',' ').replaceAll('.',' · ')}</strong>
+     <small>Node: {e.node_id} · {new Date(e.created_at).toLocaleString('en-NG')}</small>
+    </li>)}</ol></div></div>}
+   {!testRun&&<p className="auto-test-hint">No rehearsal history for the selected workflow. Select “Rehearse Saved Workflow” above after saving your connected diagram.</p>}
+  </section>{issues.length>0&&<section className="auto-diagnostics" aria-label="Workflow validation"><strong>Graph review: {issues.length} item(s)</strong><ul>{issues.map(issue=><li key={issue}>{issue}</li>)}</ul><p>Existing workflow drafts can still be saved while incomplete; new generated workflows require a connected graph.</p></section>}<p className="auto-message" role="status" aria-live="polite">{message}</p>
  </main>;
 }
