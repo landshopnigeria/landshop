@@ -153,7 +153,7 @@ begin
      completed_at=case when v_completed then now() else null end,
      context=jsonb_set(
        jsonb_set(
-         jsonb_set(v_run.context,'{current_node}',to_jsonb(v_next),true),
+         jsonb_set(v_run.context,'{current_node}',coalesce(to_jsonb(v_next),'null'::jsonb),true),
          '{visited}',coalesce(v_run.context->'visited','[]'::jsonb)||to_jsonb(v_current),true),
        '{step_count}',to_jsonb(v_steps+1),true
      )
