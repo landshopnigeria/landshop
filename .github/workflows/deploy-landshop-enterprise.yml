@@ -191,8 +191,21 @@ jobs:
             root="${roots[$i]}";app="${apps[$i]}"
             remote_path=$(printf '%q' "$root")
             ssh "${ssh_args[@]}" "$target" "set -eu; test -d $remote_path; mkdir -p $remote_path/tmp"
-            # Do not wipe app root or delete business data. Deploy only intended files.
-            rsync -az --exclude='tmp/' --exclude='.env*' -e "ssh -p $SSH_PORT -o BatchMode=yes -o StrictHostKeyChecking=yes"               "release/$app/" "$target:$root/"
+            # Keep the app root, environment secrets, application data and Passenger restart directory intact.
+            # Next's standalone .next tree is a GENERATED build artifact, not customer storage.
+            # Stale ISR/pre-rendered HTML can otherwise survive partial rsync updates and make
+            # /api/release-health report the new commit while / still renders the previous UI.
+            test -s "release/$app/apps/$app/.next/BUILD_ID" || {
+              echo "::error::Missing generated Next.js BUILD_ID for $app"
+              exit 1
+            }
+            rsync -az --exclude='tmp/' --exclude='.env*' --exclude="apps/$app/.next/" \
+              -e "ssh -p $SSH_PORT -o BatchMode=yes -o StrictHostKeyChecking=yes" \
+              "release/$app/" "$target:$root/"
+            # The only --delete scope is inside that app's generated Next.js build folder.
+            # No environment file, uploads, database or user-managed directory is removed.
+            rsync -az --delete -e "ssh -p $SSH_PORT -o BatchMode=yes -o StrictHostKeyChecking=yes" \
+              "release/$app/apps/$app/.next/" "$target:$root/apps/$app/.next/"
             ssh "${ssh_args[@]}" "$target" "touch $remote_path/tmp/restart.txt"
           done
       - name: Verify all three domains serve the newly published Next.js applications

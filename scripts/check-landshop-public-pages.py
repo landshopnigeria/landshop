@@ -22,8 +22,8 @@ SITES = {
 # Each expected heading must exist in visible server-rendered text, not only
 # buried in Next.js hydration payloads or metadata.
 PUBLIC_PAGES = [
-    ("website", "/", "Everyone Deserves Affordable Property."),
-    ("www", "/", "Everyone Deserves Affordable Property."),
+    ("website", "/", "Develop. Incubate. Grow."),
+    ("www", "/", "Develop. Incubate. Grow."),
     ("website", "/develop", "Own Your Future"),
     ("website", "/incubate", "Build Wealth Through Property"),
     ("website", "/grow", "A Smarter Path to Homeownership"),
