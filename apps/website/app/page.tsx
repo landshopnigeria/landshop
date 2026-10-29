@@ -1,6 +1,6 @@
 'use client';
 import SiteHeader from '../components/SiteHeader';
-import {useEffect,useState} from 'react';
+import {useEffect,useRef,useState} from 'react';
 type Listing={title:string,location:string,type:string,img:string,category:string,details:string};
 const slides=[
  {name:'DEVELOP',copy:'Explore documented land and home opportunities with clearer acquisition and payment information.',image:'/media/deck-building.webp'},
@@ -21,15 +21,16 @@ const listings:Listing[]=[
  {title:'Development Portfolio',location:'Nigeria',type:'Project gallery',img:'/media/deck-construction.webp',category:'Project Media',details:'Project imagery from the Landshop source deck'}
 ];
 export default function Homepage(){
+ const touchStartX=useRef<number|null>(null);
  const [slide,setSlide]=useState(0),[purpose,setPurpose]=useState('Buy'),[type,setType]=useState(''),[location,setLocation]=useState(''),[price,setPrice]=useState(''),[mobile,setMobile]=useState(false),[pause,setPause]=useState(false);
- useEffect(()=>{if(pause)return;const id=setInterval(()=>setSlide(v=>(v+1)%3),6500);return()=>clearInterval(id)},[pause]);
+ useEffect(()=>{if(pause||window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;const id=setInterval(()=>setSlide(v=>(v+1)%3),6500);return()=>clearInterval(id)},[pause]);
 
  const current=slides[slide];
  function search(e:React.FormEvent<HTMLFormElement>){e.preventDefault();const args=new URLSearchParams({purpose});if(type)args.set('type',type);if(location)args.set('state',location);if(price)args.set('max',price);locationAssign('/properties?'+args.toString())}
  function locationAssign(path:string){window.location.href=path}
  return <main>
   <SiteHeader/>
-  <section className="hero hero-v4" onMouseEnter={()=>setPause(true)} onMouseLeave={()=>setPause(false)} style={{backgroundImage:`linear-gradient(90deg,rgba(255,255,255,.95),rgba(255,255,255,.78) 36%,rgba(255,255,255,.08) 70%),url("${current.image}")`}} aria-roledescription="carousel" aria-label="Landshop Develop, Incubate and Grow products">
+  <section className="hero hero-v4" onMouseEnter={()=>setPause(true)} onMouseLeave={()=>setPause(false)} onFocusCapture={()=>setPause(true)} onBlurCapture={()=>setPause(false)} onTouchStart={e=>{touchStartX.current=e.touches[0]?.clientX??null}} onTouchEnd={e=>{if(touchStartX.current===null)return;const dx=(e.changedTouches[0]?.clientX??touchStartX.current)-touchStartX.current;if(Math.abs(dx)>55)setSlide(v=>(v+(dx<0?1:2))%3);touchStartX.current=null}} style={{backgroundImage:`linear-gradient(90deg,rgba(255,255,255,.95),rgba(255,255,255,.78) 36%,rgba(255,255,255,.08) 70%),url("${current.image}")`}} aria-roledescription="carousel" aria-label="Landshop Develop, Incubate and Grow products">
    <div className="hero-inner">
     <span className="eyebrow hero-v4-eyebrow">DEVELOP · INCUBATE · GROW</span>
     <h1 className="hero-v4-title">{['Develop.','Incubate.','Grow.'].map((word,i)=><span key={word} className={slide===i?'active-word':''}>{word} </span>)}</h1>
