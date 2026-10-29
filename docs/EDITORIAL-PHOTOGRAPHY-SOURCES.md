@@ -18,6 +18,8 @@ This revision intentionally **replaces AI-generated and unsuitable generic marke
 | Architecture editorial | [Modern urban building, Lagos](https://www.pexels.com/photo/modern-urban-building-with-clear-sky-34189426/) | Faith Stephen | Lagos, Nigeria | Generic urban architecture |
 | Insights / regional context | [Lagos coastal skyline](https://www.pexels.com/photo/aerial-view-of-lagos-cityscape-with-ocean-horizon-32656347/) | onaopemipo Rufus | Lagos, June 2 2025 | City context |
 
+| Office-building editorial | [Lagos glass building](https://www.pexels.com/photo/exterior-of-a-glass-office-building-20430713/) | Ebenezer Idowu | Lagos, Nigeria | General Lagos architecture, not a Landshop-owned building |
+
 ## License and release verification
 
 - Pexels: https://www.pexels.com/legal-pages/license/
@@ -34,3 +36,10 @@ This revision intentionally **replaces AI-generated and unsuitable generic marke
 - Use sizes approximating 1600–2000 px for large hero shots; page cards should load lazily.
 - Maintain descriptive alt text that clearly distinguishes editorial photos from real Landshop property assets.
 - For approved listings, the property owner/developer must upload their original unaltered media; never borrow a third-party listing photo.
+
+## Scope of replacement and media safety
+
+- Replaced non-listing imagery on the homepage carousel, three product cards, three product landing pages, About, Contact, Leadership/team categories, the seven-form directory, mortgage detail pages, Thrift, Services, and property education/Insights pages with sourced Lagos photography.
+- The homepage six-card fallback, used **only when there are no approved published properties**, now presents clearly labeled real Nigerian architecture editorial photos instead of implying generic assets are current listings.
+- Real property listing media is excluded from this broad replacement. An approved listing's photo must be the actual unit/estate, with developer/owner authorization.
+- Next step for full photographic independence: commission/obtain a Landshop-owned 4K architectural and lifestyle photo library with written photographer/model/property releases. As part of the asset pipeline, host licensed copies in Landshop-controlled storage rather than relying indefinitely on third-party CDN URLs.

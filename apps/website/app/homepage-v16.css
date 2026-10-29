@@ -90,3 +90,17 @@ body{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif}
 .landshop-sell-panel p{font-size:13px;line-height:1.7;color:#506f60;margin:7px 0;max-width:780px}
 .landshop-sell-panel>a{flex-shrink:0;white-space:nowrap}
 @media(max-width:720px){.landshop-sell-panel{align-items:stretch;flex-direction:column}.landshop-sell-panel>a{align-self:flex-start}.search-tabs button{min-width:70px}}
+
+/* V16.2 editorial photography: visually polished, authentic Nigerian photographs. */
+.hero-v16-image{background-color:#e1ede7;filter:saturate(1.03) contrast(1.03);background-position:60% 48%}
+.hero-v16[data-active-product="DEVELOP"] .hero-v16-image.is-visible{background-position:57% 55%}
+.hero-v16[data-active-product="INCUBATE"] .hero-v16-image.is-visible{background-position:57% 47%}
+.hero-v16[data-active-product="GROW"] .hero-v16-image.is-visible{background-position:60% 48%}
+.hero-v16-wash{background:linear-gradient(90deg,rgba(248,252,248,.98) 0%,rgba(248,252,248,.93) 25%,rgba(248,252,248,.77) 43%,rgba(248,252,248,.18) 69%,rgba(248,252,248,.05))}
+.about-image-v4.about-collage img:nth-child(1){object-position:center 33%}
+.about-image-v4.about-collage img:nth-child(3){object-position:center 19%}
+.prod-card img,.content-card img,.property-card img{background:#e9f0ec;object-position:center 42%}
+@media(max-width:740px){
+ .hero-v16-wash{background:linear-gradient(90deg,rgba(249,253,249,.98),rgba(249,253,249,.81) 72%,rgba(249,253,249,.4))}
+ .hero-v16[data-active-product="GROW"] .hero-v16-image.is-visible{background-position:58% 45%}
+}
