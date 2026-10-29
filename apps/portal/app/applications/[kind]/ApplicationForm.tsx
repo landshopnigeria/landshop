@@ -9,6 +9,7 @@ export default function ApplicationForm({slug}:{slug:string}){
  const [step,setStep]=useState(0),[answers,setAnswers]=useState<Value>({}),[draftId,setDraftId]=useState<string|null>(null);
  const [busy,setBusy]=useState(false),[message,setMessage]=useState(''),[files,setFiles]=useState<Record<string,File>>({});
  const [loading,setLoading]=useState(true),[submitted,setSubmitted]=useState(false),[savedDocuments,setSavedDocuments]=useState<string[]>([]),[autosaveStatus,setAutosaveStatus]=useState('');
+ const [authenticated,setAuthenticated]=useState<boolean|null>(null);
  const lastSaved=useRef(''),autoSaving=useRef(false),submissionInFlight=useRef(false);
  // Restore only the authenticated user's own matching unsubmitted subscription, never another form.
  useEffect(()=>{
@@ -18,7 +19,8 @@ export default function ApplicationForm({slug}:{slug:string}){
    try{
     const db=browserSupabase();
     const {data:{user}}=await db.auth.getUser();
-    if(!user)return;
+    if(!user){if(active)setAuthenticated(false);return}
+    if(active)setAuthenticated(true);
     const {data,error}=await db.from('applications').select('id,answers').eq('applicant_id',user.id).eq('kind',definition.kind)
       .eq('status','draft').order('created_at',{ascending:false}).limit(20);
     if(error)throw error;
@@ -96,11 +98,45 @@ export default function ApplicationForm({slug}:{slug:string}){
   finally{if(!submissionInFlight.current)setBusy(false)}
  }
  function validateFields(stageFields:Field[]=fields){
+  const positiveNumbers=new Set(['quantity','investment_amount','investment_quantity','investment_duration','annual_income','mortgage_amount']);
+  const wholeNumbers=new Set(['quantity','investment_quantity','dependents','years_until_retirement']);
+  const today=new Date().toISOString().slice(0,10);
   for(const f of stageFields){
-   if(!f.required)continue;
-   const present=f.type==='file'?Boolean(files[f.key]||savedDocuments.includes(f.key)):
-    Boolean(answers[f.key]?.trim())&&answers[f.key]!=='false';
-   if(!present){setMessage('Complete '+f.label+' before continuing.');return false}
+   const value=(answers[f.key]||'').trim();
+   const exists=f.type==='file'?Boolean(files[f.key]||savedDocuments.includes(f.key)):Boolean(value&&value!=='false');
+   if(f.required&&!exists){setMessage('Complete '+f.label+' before continuing.');return false}
+   if(!exists)continue;
+   if(f.type==='file'){
+    const selected=files[f.key];
+    if(selected&&(!['image/jpeg','image/png','image/webp','application/pdf'].includes(selected.type)||selected.size<=0||selected.size>10485760)){
+     setMessage(f.label+' must be a JPG, PNG, WEBP or PDF under 10 MiB.');return false;
+    }
+   }
+   if(f.type==='email'&&!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(value)){
+    setMessage('Enter a valid email address for '+f.label+'.');return false;
+   }
+   if(f.type==='tel'){
+    const digits=value.replace(/\\D/g,'');
+    if(digits.length<7||digits.length>15){setMessage('Enter a valid phone number for '+f.label+'.');return false}
+   }
+   if(f.type==='number'){
+    const number=Number(value);
+    if(!Number.isFinite(number)||number<0||(positiveNumbers.has(f.key)&&number<=0)||
+       (wholeNumbers.has(f.key)&&!Number.isInteger(number))){
+     setMessage('Enter a valid '+(positiveNumbers.has(f.key)?'positive ':'')+'number for '+f.label+'.');return false;
+    }
+   }
+   if(f.type==='date'){
+    if(!/^\\d{4}-\\d{2}-\\d{2}$/.test(value)||Number.isNaN(Date.parse(value))){
+     setMessage('Select a valid date for '+f.label+'.');return false;
+    }
+    if(f.key==='date_of_birth'&&value>=today){
+     setMessage('Date of Birth must be in the past.');return false;
+    }
+    if(f.key==='inspection_date'&&value<today){
+     setMessage('Preferred Inspection Date cannot be in the past.');return false;
+    }
+   }
   }
   setMessage('');return true;
  }
@@ -123,10 +159,16 @@ export default function ApplicationForm({slug}:{slug:string}){
  }
  function input(field:Field){
   const val=answers[field.key]||'';
-  const label=<label htmlFor={field.key}>{field.label}{field.required?' *':''}</label>;
+  const label=field.type==='checkbox'?null:<label htmlFor={field.key}>{field.label}{field.required?' *':''}</label>;
   const common={id:field.key,'aria-label':field.label};
   return <div key={field.key} className="app-field">{label}
-   {field.type==='file'?<><input {...common} type="file" accept=".pdf,.jpg,.jpeg,.png,.webp" onChange={e=>{const f=e.target.files?.[0];if(f)setFiles(prev=>({...prev,[field.key]:f}))}}/>{savedDocuments.includes(field.key)&&<small style={{color:'#07805e'}}>Previously uploaded securely ✓</small>}</>:
+   {field.type==='file'?<><input {...common} type="file" accept=".pdf,.jpg,.jpeg,.png,.webp" onChange={e=>{
+      const f=e.target.files?.[0];if(!f)return;
+      if(f.size<=0||f.size>10485760||!['image/jpeg','image/png','image/webp','application/pdf'].includes(f.type)){
+       setMessage('Choose a JPG, PNG, WEBP or PDF document no larger than 10 MiB.');e.currentTarget.value='';return;
+      }
+      setMessage('');setFiles(prev=>({...prev,[field.key]:f}));
+     }}/>{savedDocuments.includes(field.key)&&<small style={{color:'#07805e'}}>Previously uploaded securely ✓</small>}</>:
     field.type==='select'?<select {...common} value={val} required={field.required} onChange={e=>set(field.key,e.target.value)}><option value="">Select {field.label.toLowerCase()}</option>{field.choices?.map(option=><option key={option}>{option}</option>)}</select>:
     field.type==='textarea'?<textarea {...common} value={val} rows={3} required={field.required} onChange={e=>set(field.key,e.target.value)} placeholder={field.placeholder||'Enter '+field.label.toLowerCase()}/>:
     field.type==='checkbox'?<label className="check"><input type="checkbox" checked={val==='true'} required={field.required} onChange={e=>set(field.key,String(e.target.checked))}/> {field.label}</label>:
@@ -141,6 +183,10 @@ export default function ApplicationForm({slug}:{slug:string}){
    </div>
    <div className="application-body">
     {loading?<p role="status">Checking for an existing saved application…</p>:null}
+    {!loading&&authenticated===false?<div role="status" style={{border:'1px solid #f1c28d',background:'#fff7ed',padding:16,borderRadius:12,marginBottom:18,color:'#704515'}}>
+     You can review this form, but a verified Landshop account is required to save a draft, upload documents or submit.
+     <a href="https://portal.landshopnigeria.com" style={{display:'inline-block',marginLeft:9,fontWeight:800,color:'#006d58'}}>Sign In or Sign Up →</a>
+    </div>:null}
     <div className="progress-title"><strong>Step {step+1} of {definition.steps.length}</strong><span>{definition.steps[step].name}</span></div>
     <div className="step-progress">{definition.steps.map((s,i)=><button key={s.name} aria-label={'Open '+s.name} disabled={i>step} className={i===step?'current':''} onClick={()=>setStep(i)}><span>{i+1}</span><small>{s.name}</small></button>)}</div>
     {fields.length?<div className="application-grid">{fields.map(input)}</div>:
