@@ -1,0 +1,91 @@
+name: Activate Landshop Customer Portal Next.js Home
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/activate-customer-portal-homepage.yml']
+permissions:
+  contents: read
+concurrency:
+  group: landshop-enterprise-homepage-repair
+  cancel-in-progress: false
+jobs:
+  activate:
+    runs-on: ubuntu-latest
+    environment: landshop-production
+    timeout-minutes: 10
+    steps:
+      - name: Archive obsolete portal placeholder and expose verified Next.js signup
+        shell: bash
+        env:
+          SSH_HOST: ${{ secrets.LANDSHOP_SSH_HOST || secrets.NAMECHEAP_SSH_HOST || vars.LANDSHOP_SSH_HOST }}
+          SSH_PORT: ${{ vars.LANDSHOP_SSH_PORT || secrets.LANDSHOP_SSH_PORT || secrets.NAMECHEAP_SSH_PORT || '21098' }}
+          SSH_USER: ${{ secrets.LANDSHOP_SSH_USER || secrets.NAMECHEAP_SSH_USER || vars.LANDSHOP_SSH_USER }}
+          SSH_KEY: ${{ secrets.LANDSHOP_SSH_KEY || secrets.NAMECHEAP_SSH_PRIVATE_KEY }}
+          KNOWN_HOSTS: ${{ secrets.LANDSHOP_SSH_KNOWN_HOSTS || secrets.NAMECHEAP_SSH_KNOWN_HOSTS || vars.LANDSHOP_SSH_KNOWN_HOSTS }}
+          PORTAL_ROOT: ${{ secrets.LANDSHOP_PORTAL_APPROOT || vars.LANDSHOP_PORTAL_APPROOT || '/home/maleghif/landshop-portal' }}
+          EXPECTED_SHA: 2fb1ef2e863cef76b082a50839a79e42abb4df28
+        run: |
+          set -euo pipefail
+          umask 077
+          install -d -m 700 "$HOME/.ssh"
+          printf '%s\n' "$SSH_KEY" > "$HOME/.ssh/id_ed25519"
+          printf '%s\n' "$KNOWN_HOSTS" > "$HOME/.ssh/known_hosts"
+          chmod 600 "$HOME/.ssh/id_ed25519" "$HOME/.ssh/known_hosts"
+          SSH=(ssh -p "$SSH_PORT" -o BatchMode=yes -o StrictHostKeyChecking=yes "$SSH_USER@$SSH_HOST")
+          "${SSH[@]}" bash -s -- "$PORTAL_ROOT" "$EXPECTED_SHA" "$GITHUB_RUN_ID" <<'REMOTE'
+          set -eu
+          app="$1";expected="$2";runid="$3"
+          docroot="$HOME/portal.landshopnigeria.com"
+          [ -d "$docroot" ] && [ ! -L "$docroot" ] && [ -f "$docroot/index.html" ] && [ ! -L "$docroot/index.html" ] || { echo "::error::Unexpected portal document root or index";exit 1; }
+          grep -qiE 'registration and account verification are being prepared|We are preparing secure account registration|Welcome to your property journey|sign-in and registration are temporarily unavailable' "$docroot/index.html" || { echo "::error::Portal index is not the approved superseded recovery placeholder";exit 1; }
+          [ -s "$docroot/.htaccess" ] && grep -qF 'PassengerAppRoot' "$docroot/.htaccess" && grep -qF "$app" "$docroot/.htaccess" || { echo "::error::Passenger app routing mismatch";exit 1; }
+          [ -s "$app/server.js" ] && [ -s "$app/LANDSHOP_RELEASE_SHA" ] || exit 1
+          [ "$(tr -d '\r\n' < "$app/LANDSHOP_RELEASE_SHA")" = "$expected" ] || { echo "::error::Expected enterprise release not on server";exit 1; }
+          backup="$HOME/landshop-deployment-backups/legacy-portal-$runid"
+          mkdir -p "$backup";chmod 700 "$backup"
+          cp -p "$docroot/index.html" "$backup/portal-index.html"
+          cmp -s "$docroot/index.html" "$backup/portal-index.html" || exit 1
+          mv "$docroot/index.html" "$backup/portal-moved-index.html"
+          mkdir -p "$app/tmp";touch "$app/tmp/restart.txt"
+          echo "Old customer portal index safely archived outside public document root"
+          REMOTE
+          check() {
+            local name="$1" url="$2" expected="$3" file="$RUNNER_TEMP/$1.html"
+            local n
+            for n in $(seq 1 7);do
+              if curl -fsSL --max-time 18 -H 'Cache-Control: no-store, no-cache' -o "$file" "$url/?landshop_portal_repair=$GITHUB_RUN_ID";then
+                if python3 - "$name" "$expected" "$file" <<'PY'
+          import sys
+          from pathlib import Path
+          name,required,path=sys.argv[1:]
+          text=Path(path).read_text(errors="replace")
+          old=('Property ownership starts with possibility.','We are preparing secure account registration','registration and account verification are being prepared','temporarily unavailable while we')
+          ready='/_next/' in text and required in text and not any(a in text for a in old)
+          print(name,"enterprise homepage:",ready,"Next.js:",'/_next/' in text,"heading:",required in text,"old_placeholder:",any(a in text for a in old))
+          sys.exit(0 if ready else 1)
+          PY
+                then return 0;fi
+              fi
+              sleep 3
+            done
+            return 1
+          }
+          failed=0
+          check website https://landshopnigeria.com "Own Your" || failed=1
+          check portal https://portal.landshopnigeria.com "Create your Landshop account" || failed=1
+          check dashboard-guest https://app.landshopnigeria.com "Create your Landshop account" || failed=1
+          if [ "$failed" -ne 0 ];then
+            echo "::warning::Portal content verification failed; restoring previous portal entry file only"
+            "${SSH[@]}" bash -s -- "$PORTAL_ROOT" "$GITHUB_RUN_ID" <<'ROLLBACK'
+          set -eu
+          app="$1";runid="$2";docroot="$HOME/portal.landshopnigeria.com";backup="$HOME/landshop-deployment-backups/legacy-portal-$runid"
+          if [ -s "$backup/portal-index.html" ];then
+            cp -p "$backup/portal-index.html" "$docroot/index.html"
+            touch "$app/tmp/restart.txt"
+            echo "Portal placeholder restored safely"
+          fi
+          ROLLBACK
+            exit 1
+          fi
+          echo "Website, portal signup, and dashboard guest redirect all expose the current enterprise Next.js interface"
