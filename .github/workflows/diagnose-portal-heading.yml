@@ -46,3 +46,30 @@ jobs:
             print('CHUNKS',re.findall(r'/_next/static/[^"\s<>]+',data)[:3])
             print('EXPECTED NEW DESIGN', 'One Account.' in ' '.join(h.headings),'OLD DESIGN', 'Create your Landshop account' in ' '.join(h.headings))
           PY
+
+      - name: Reject unauthenticated access to customer and management routes
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import urllib.request,urllib.error,sys
+          class NoRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self,req,fp,code,msg,headers,newurl):
+                  return None
+          client=urllib.request.build_opener(NoRedirect)
+          routes=['/dashboard','/dashboard/account','/dashboard/kyc','/admin']
+          errors=[]
+          for route in routes:
+              url='https://app.landshopnigeria.com'+route
+              try:
+                  response=client.open(urllib.request.Request(url,headers={'Cache-Control':'no-store','User-Agent':'Landshop-Guest-RBAC-Check/1'}),timeout=25)
+                  status=response.status
+                  redirect=response.headers.get('Location','')
+              except urllib.error.HTTPError as error:
+                  status=error.code
+                  redirect=error.headers.get('Location','')
+              ok=status in (307,308,302,303) and redirect.startswith('https://portal.landshopnigeria.com/')
+              print(('PASS' if ok else 'FAIL'),route,'HTTP',status,'redirects_to_portal',redirect.startswith('https://portal.landshopnigeria.com/'))
+              if not ok:errors.append(route)
+          if errors:sys.exit('::error::Unauthenticated protected route boundary failure: '+','.join(errors))
+          print('PASS: 4/4 protected routes reject guest sessions')
+          PY
