@@ -1,5 +1,5 @@
 import type {SVGProps} from 'react';
-export type SiteIconName='home'|'building'|'land'|'chart'|'briefcase'|'users'|'shield'|'document'|'wallet'|'key'|'compass'|'calendar'|'help'|'mail'|'phone'|'pin'|'search'|'menu'|'close'|'chevron'|'arrow'|'external'|'book'|'heart'|'sparkles'|'clock'|'grid'|'list'|'camera'|'check'|'calculator'|'settings';
+export type SiteIconName='home'|'building'|'land'|'chart'|'briefcase'|'users'|'shield'|'document'|'wallet'|'key'|'compass'|'calendar'|'help'|'mail'|'phone'|'pin'|'search'|'menu'|'close'|'chevron'|'arrow'|'external'|'book'|'heart'|'sparkles'|'clock'|'grid'|'list'|'camera'|'check'|'calculator'|'settings'|'share'|'copy';
 const paths:Record<SiteIconName,string>={
  home:'m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z',
  building:'M3 21h18 M5 21V7l7-4 7 4v14 M9 10h.01 M15 10h.01 M9 14h.01 M15 14h.01 M10 21v-4h4v4',
@@ -32,6 +32,8 @@ const paths:Record<SiteIconName,string>={
  camera:'M3 7h4l2-3h6l2 3h4v13H3z M12 17a4 4 0 1 0 0-8 4 4 0 0 0 0 8',
  check:'m4 12 5 5L20 6',
  calculator:'M5 2h14v20H5z M8 6h8 M8 11h2 M14 11h2 M8 15h2 M14 15h2',
+ share:'M18 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6z M6 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z M18 22a3 3 0 1 0 0-6 3 3 0 0 0 0 6z M8.7 11.4l6.6-4.1 M8.7 12.6l6.6 4.1',
+ copy:'M8 4h12v16H8z M4 8v12a2 2 0 0 0 2 2h10',
  settings:'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z M19 13v-2l2-2-2-4-3 1-2-3h-4L8 6 5 5 3 9l2 2v2l-2 2 2 4 3-1 2 3h4l2-3 3 1 2-4z'
 };
 export default function SiteIcon({name,size=24,className='',...props}:{name:SiteIconName,size?:number,className?:string}&Omit<SVGProps<SVGSVGElement>,'name'>){
