@@ -22,8 +22,8 @@ SITES = {
 # Each expected heading must exist in visible server-rendered text, not only
 # buried in Next.js hydration payloads or metadata.
 PUBLIC_PAGES = [
-    ("website", "/", "Develop. Incubate. Grow."),
-    ("www", "/", "Develop. Incubate. Grow."),
+    ("website", "/", "Own Your Future."),
+    ("www", "/", "Own Your Future."),
     ("website", "/develop", "Own Your Future"),
     ("website", "/incubate", "Build Wealth Through Property"),
     ("website", "/grow", "A Smarter Path to Homeownership"),
@@ -109,6 +109,17 @@ def check(kind: str, route: str, expected: str | None):
     visible = " ".join(" ".join(parser.words).split())
     if expected and expected.casefold() not in unescape(visible).casefold():
         raise AssertionError(f"expected visible page heading missing: {expected}")
+    if kind in ("website", "www") and route == "/":
+        if 'data-landshop-hero="v16-separated-product-slides"' not in html:
+            raise AssertionError("approved V16 distinct-slide homepage is missing")
+        if 'data-active-product="DEVELOP"' not in html:
+            raise AssertionError("initial Develop slide is not rendered separately")
+        if "Develop. Incubate. Grow." in unescape(visible):
+            raise AssertionError("obsolete combined three-product hero remains visible")
+        for label in ("Show DEVELOP slide","Show INCUBATE slide","Show GROW slide",
+                      "Previous slide","Next slide","Know Your Earnings"):
+            if label not in html:
+                raise AssertionError(f"required V16 slider control/action missing: {label}")
     for legacy in RECOVERY:
         if legacy.casefold() in visible.casefold():
             raise AssertionError("obsolete static recovery-page content is visible")
