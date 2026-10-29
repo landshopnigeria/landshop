@@ -90,11 +90,10 @@ const recipes:{name:string;terms:string[];steps:Step[]}[]=[
    {type:'task',label:'Update customer ledger'},
    {type:'end',label:'Payment event reconciled'}]}
 ];
-function safeName(raw:string){return raw.replace(/\s+/g,' ').replace(/[<>]/g,'').trim().slice(0,100)}
 function fromSteps(steps:Step[]):Graph{
  const nodes=steps.map((step,i):WorkflowNode=>({
   id:'generated-'+(i+1),type:step.type,label:step.label,
-  x:60+(i%5)*250,y:110+Math.floor(i/5)*170,config:step.config
+  x:70+i*230,y:210,config:step.config
  }));
  const edges=nodes.slice(1).map((node,i):WorkflowEdge=>({from:nodes[i].id,to:node.id}));
  return {nodes,edges};
