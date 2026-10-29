@@ -3,6 +3,7 @@ import {createServerClient} from '@supabase/ssr';
 import {cookies} from 'next/headers';
 import {redirect} from 'next/navigation';
 import PropertyManagement from './PropertyManagement';
+import EstateManagement from './EstateManagement';
 
 export const dynamic='force-dynamic';
 export const metadata={title:'Property Management | Landshop Command Center'};
@@ -24,15 +25,18 @@ export default async function Page(){
  const {data:organizations,error:orgError}=await db.from('organizations').select('id')
   .eq('kind','landshop').in('id',allowed.map(x=>x.organization_id));
  if(orgError||!organizations?.length)return <main style={{padding:40}}>Access denied.</main>;
+ const {data:estates,error:estateError}=await db.from('estates').select('id,name,state,city,lga,area,status,created_by,source_note').order('name',{ascending:true}).limit(300);
  const {data:properties,error:listingError}=await db.from('properties')
-  .select('id,title,property_type,status,amount_kobo,created_by')
+  .select('id,title,property_type,status,amount_kobo,created_by,estate_id,source_url,source_price_note,price_last_confirmed_at')
   .order('created_at',{ascending:false}).limit(100);
  return <main style={{minHeight:'100vh',background:'#f1f8f4',padding:'clamp(18px,4vw,55px)',fontFamily:'Arial, sans-serif',color:'#073e35'}}>
   <nav style={{display:'flex',gap:20,marginBottom:25}}><Link href="/dashboard">Dashboard</Link>
    <Link href="/admin/kyc">KYC</Link><Link href="/admin/properties">Properties</Link><Link href="/admin/properties/import">Bulk Import</Link><Link href="/admin/properties/inspections">Inspection Requests</Link><Link href="/admin/contact">Contact Enquiries</Link><Link href="/admin/properties/import/review">Import Reviews</Link></nav>
   <h1>Landshop Property Command Center</h1>
+  <p style={{color:'#bc5d12',fontSize:13,fontWeight:700}}>Draft listings are staff-only and do not appear in the public marketplace until title, price, location, marketing authority and media have been reviewed.</p>
   <p>Staff-only inventory management. No customer or realtor self-publication.</p>
+  {estateError?<p role="alert">Estate catalog could not be loaded. Check authorization and permissions.</p>:<EstateManagement initial={estates||[]} canApprove={allowed.some(m=>['owner','admin','operations','legal'].includes(m.role))}/>}
   {listingError?<p role="alert">Property data is unavailable; database migration and privileges must be verified.</p>:
-   <PropertyManagement initial={properties||[]} currentUserId={user.id} canApprove={allowed.some(m=>['owner','admin','operations','legal'].includes(m.role))}/>}
+   <PropertyManagement initial={properties||[]} estates={estates||[]} currentUserId={user.id} canApprove={allowed.some(m=>['owner','admin','operations','legal'].includes(m.role))}/>}
  </main>;
 }
