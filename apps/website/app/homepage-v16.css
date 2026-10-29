@@ -82,3 +82,11 @@ body{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif}
 @media(prefers-reduced-motion:reduce){
  .hero-v16-image,.hero-v16-content,.hero-v16-secondary,.hero-v16-indicators button,.nav-chevron{animation:none!important;transition:none!important}
 }
+/* Real Sell intent: no false sale search; direct the owner to verified listing onboarding. */
+.search-tabs{flex-wrap:nowrap;overflow-x:auto;padding-bottom:3px}
+.search-tabs button{white-space:nowrap;min-height:44px;min-width:76px;font-weight:750}
+.landshop-sell-panel{display:flex;justify-content:space-between;align-items:center;gap:23px;padding:12px 5px 7px}
+.landshop-sell-panel strong{font-size:18px;color:#115e47}
+.landshop-sell-panel p{font-size:13px;line-height:1.7;color:#506f60;margin:7px 0;max-width:780px}
+.landshop-sell-panel>a{flex-shrink:0;white-space:nowrap}
+@media(max-width:720px){.landshop-sell-panel{align-items:stretch;flex-direction:column}.landshop-sell-panel>a{align-self:flex-start}.search-tabs button{min-width:70px}}

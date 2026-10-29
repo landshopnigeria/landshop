@@ -1,0 +1,51 @@
+/* Landshop V16 product-specific journeys, all 2D and sourced from official deck media. */
+.landshop-product{color:#183e34;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;background:#fff;overflow-x:clip}
+.landshop-product *{box-sizing:border-box}.landshop-product a{text-decoration:none}
+.lp-topline{display:flex;justify-content:space-between;align-items:center;background:#053f36;color:#e6f7ec;padding:12px clamp(20px,5vw,80px);font-size:11px;gap:14px}
+.lp-topline>div{display:flex;gap:20px;flex-wrap:wrap}.lp-topline a{color:#e6f7ec}
+.lp-nav{z-index:10;position:relative;display:flex;justify-content:space-between;align-items:center;gap:22px;background:rgba(255,255,255,.94);border-bottom:1px solid #dceee2;box-shadow:0 12px 35px rgba(0,50,35,.055);padding:15px clamp(18px,5vw,80px)}
+.lp-brand{display:flex;align-items:center;flex-shrink:0}.lp-brand img{object-fit:contain;width:126px;height:53px}
+.lp-nav nav{display:flex;flex-wrap:wrap;justify-content:center;gap:clamp(10px,1.9vw,27px)}.lp-nav nav a{font-size:13px;font-weight:750;white-space:nowrap;color:#194739;border-bottom:2px solid transparent;padding:10px 0}.lp-nav nav a:hover,.lp-nav nav a[aria-current=page]{color:#13866b;border-color:#2ba47a}
+.lp-primary{display:inline-flex;align-items:center;justify-content:center;gap:10px;background:linear-gradient(105deg,#2ba47a,#03765d);color:#fff!important;border-radius:11px;border:1px solid transparent;padding:15px 22px;font-weight:800;font-size:13px;min-height:48px;text-align:center}
+.lp-primary:hover{background:#ef7f1a}
+.lp-hero{position:relative;min-height:650px;display:flex;isolation:isolate;background:#dfeee5}
+.lp-hero-image,.lp-hero-shade{position:absolute;inset:0;width:100%;height:100%}.lp-hero-image{object-fit:cover;object-position:center;z-index:-2}
+.lp-hero-shade{z-index:-1;background:linear-gradient(94deg,rgba(249,252,250,.98),rgba(249,252,250,.93) 37%,rgba(249,252,250,.55) 62%,rgba(249,252,250,.05))}
+.lp-hero-inner{max-width:1550px;width:100%;margin:auto;padding:40px clamp(24px,6vw,100px) 50px;display:flex;flex-direction:column;justify-content:space-between;gap:64px}
+.lp-breadcrumb{display:flex;gap:13px;align-items:center;font-size:11px;letter-spacing:1px;font-weight:750;color:#185b49;flex-wrap:wrap}.lp-breadcrumb a{color:#185b49}.lp-breadcrumb span{color:#ec831e}
+.lp-hero-content{max-width:700px}.lp-eyebrow{font-size:11px;letter-spacing:2.2px;font-weight:850;color:#087b61}
+.lp-hero h1{font-weight:750;line-height:1.02;letter-spacing:-2px;font-size:clamp(48px,6.2vw,88px);margin:16px 0 23px}
+.lp-hero h1 em,.lp-hero h1 strong{display:block;font-style:normal}
+.lp-hero h1 em{color:#ef7f1a;font-weight:850}.lp-hero h1 strong{font-size:clamp(35px,4.4vw,62px);font-weight:740;color:#143c31;margin-top:10px}
+.lp-lead{font-size:clamp(19px,2vw,25px);font-weight:750;color:#204a3d;margin:0 0 13px;line-height:1.35}
+.lp-description{font-size:15px;line-height:1.85;max-width:610px;color:#456a59;margin:0}
+.lp-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}
+.lp-secondary{border:1px solid #9fcab5;border-radius:11px;background:#ffffffc7;color:#145c47;padding:15px 21px;font-size:13px;font-weight:800;min-height:48px;display:inline-flex;justify-content:center;align-items:center;text-align:center}
+.lp-secondary:hover{color:#fff;background:#ef7f1a;border-color:#ef7f1a}
+.lp-hero-count{display:flex;align-items:baseline;gap:15px;color:#11634e}.lp-hero-count strong{font-size:39px;color:#ef7f1a;line-height:1}.lp-hero-count span{font-size:11px;letter-spacing:2px;font-weight:800}
+.lp-container{width:min(1340px,100%);margin:auto;padding-left:clamp(22px,5vw,74px);padding-right:clamp(22px,5vw,74px)}
+.lp-overview{background:#f2f9f5;padding:85px 0}.lp-overview-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(35px,6vw,90px);align-items:start}
+.lp-overview h2,.lp-heading h2{font-size:clamp(30px,3.2vw,48px);letter-spacing:-1.6px;line-height:1.13;margin:15px 0}.lp-overview h2 em{color:#2ba47a;font-style:normal}
+.lp-overview-heading>p{max-width:490px;line-height:1.8;font-size:16px;color:#5b7668}.lp-overview-heading>a{color:#078064;font-size:13px;font-weight:800}
+.lp-highlights{display:grid;gap:10px}.lp-highlights>div{display:flex;align-items:center;gap:20px;padding:19px 21px;background:#fff;border:1px solid #dcece2;border-radius:13px;box-shadow:0 8px 22px #15493407}.lp-highlights span{font-size:22px;color:#ef7f1a;font-weight:850}.lp-highlights p{margin:0;font-size:14px;line-height:1.55;font-weight:650}
+.lp-process{padding:90px 0;background:#fff}.lp-heading{max-width:780px;margin-bottom:28px}.lp-heading p{font-size:15px;line-height:1.7;color:#61786b}
+.lp-steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:15px}.lp-steps article{padding:24px;border-radius:17px;border:1px solid #dfece5;background:linear-gradient(180deg,#fcfefd,#f5faf7)}.lp-steps article>span{font-size:30px;font-weight:850;color:#2ba47a}.lp-steps h3{font-size:21px;margin:15px 0 10px}.lp-steps p{font-size:13px;line-height:1.7;color:#5d7568;margin:0}
+.lp-pathways{padding-top:80px;padding-bottom:80px}.lp-pathway-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(265px,1fr));gap:19px}
+.lp-pathway-card{background:#fff;border:1px solid #d9e8df;border-radius:19px;box-shadow:0 16px 38px #12583c0d;padding:25px;display:flex;flex-direction:column;gap:16px}
+.lp-card-number{font-size:12px;font-weight:850;letter-spacing:1px;color:#df781b}.lp-pathway-card h3{font-size:23px;letter-spacing:-.5px;margin:0}
+.lp-pathway-card p{font-size:14px;line-height:1.8;color:#62766b;margin:0;flex:1}
+.lp-pathway-card a{display:inline-flex;align-items:center;justify-content:center;text-align:center;background:#ecf9f3;border:1px solid #c4e1d1;border-radius:10px;color:#067757;font-weight:850;font-size:13px;padding:14px 18px;margin-top:9px}
+.lp-pathway-card a:hover{background:#2ba47a;color:#fff}
+.lp-disclosure{margin-top:30px;border-left:4px solid #ef7f1a;padding:19px 22px;background:#fff9ed;border-radius:0 12px 12px 0;color:#655330}.lp-disclosure strong{font-size:13px}.lp-disclosure p{font-size:13px;line-height:1.7;margin:8px 0 0}
+.lp-knowledge{background:#f4faf6}.lp-contact{background:linear-gradient(115deg,#064f3e,#00896c);padding:58px 0;color:#fff}
+.lp-contact .lp-container{display:flex;justify-content:space-between;gap:30px;align-items:center}.lp-contact .lp-eyebrow{color:#ffa74c}
+.lp-contact h2{font-size:clamp(27px,3vw,42px);margin:12px 0}.lp-contact p{line-height:1.7;color:#e1f3e9}
+.lp-contact a{flex-shrink:0;background:white;border-radius:12px;padding:17px 22px;color:#0a7256;font-weight:850;font-size:14px}
+.lp-contact a:hover{background:#ef7f1a;color:#fff}
+.lp-footer{background:#f7faf7;border-top:1px solid #dbece2;padding:42px clamp(22px,5vw,80px);display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:25px}
+.lp-footer img{object-fit:contain}.lp-footer p{font-size:12px;color:#5c796c}.lp-footer nav{display:flex;flex-wrap:wrap;gap:15px}.lp-footer nav a{font-size:13px;color:#116d53;font-weight:750}.lp-footer small{color:#648275}
+.landshop-product :is(a,button,input,select):focus-visible{outline:3px solid #ef7f1a;outline-offset:3px}
+@media(max-width:1100px){.lp-nav nav{gap:13px}.lp-nav nav a{font-size:12px}}
+@media(max-width:850px){.lp-nav{flex-wrap:wrap}.lp-nav nav{order:3;flex:1 0 100%;justify-content:flex-start;overflow-x:auto;flex-wrap:nowrap}.lp-overview-grid{grid-template-columns:1fr}.lp-steps{grid-template-columns:repeat(2,minmax(0,1fr))}.lp-hero{min-height:620px}}
+@media(max-width:580px){.lp-topline{flex-wrap:wrap;font-size:10px}.lp-topline>div{gap:12px}.lp-nav{gap:9px;padding:10px 5%}.lp-nav>.lp-primary{padding:11px 13px;font-size:12px;min-height:41px}.lp-nav nav a{padding:9px 0}.lp-hero-inner{padding:35px 6% 31px;gap:55px}.lp-hero{min-height:690px}.lp-hero-shade{background:linear-gradient(90deg,rgba(249,252,250,.98),rgba(249,252,250,.82) 73%,rgba(249,252,250,.48))}.lp-hero h1{font-size:clamp(46px,12vw,63px)}.lp-hero h1 strong{font-size:clamp(34px,9vw,46px)}.lp-description{font-size:14px}.lp-steps{grid-template-columns:1fr 1fr;gap:10px}.lp-steps article{padding:16px}.lp-steps h3{font-size:18px}.lp-process,.lp-overview{padding:56px 0}.lp-pathways{padding-top:50px;padding-bottom:50px}.lp-contact .lp-container{display:block}.lp-contact a{display:inline-block;margin-top:13px}.lp-footer{padding:32px 6%}.lp-primary,.lp-secondary{padding:12px 17px}}
+@media(prefers-reduced-motion:reduce){.landshop-product *{scroll-behavior:auto!important;transition:none!important}}
