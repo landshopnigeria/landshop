@@ -30,7 +30,7 @@ export default function Contact(){return <main className="lc-premium"><script ty
    <small>Authentic support for Develop · Incubate · Grow</small>
   </div>
   <div className="lc-hero-photo">
-   <img src="https://images.pexels.com/photos/7709195/pexels-photo-7709195.jpeg?auto=compress&cs=tinysrgb&w=1800" alt="Customer-care professional in an office answering calls with a headset and laptop; illustrative model, not a Landshop employee" fetchPriority="high" decoding="async"/>
+   <img src="https://images.unsplash.com/photo-1645620413090-f458f39aea04?auto=format&fit=crop&q=80&w=1600" alt="Nigerian customer-service professional working at a laptop with a headset in Lagos; illustrative photograph, not a Landshop employee" fetchPriority="high" decoding="async"/>
    <div className="lc-photo-overlay"><IconChip name="phone"/><div><strong>We're here to listen.</strong><span>Property · Investment · Financing</span></div></div>
   </div>
  </div></section>
