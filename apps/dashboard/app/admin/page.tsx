@@ -10,7 +10,7 @@ const links=[
  ['CRM Application Queue','/admin/applications','↗'],['Mortgage Reviews','/admin/applications','◉'],
  ['Property Import','/admin/properties/import/advanced','⇧'],['Import Approval','/admin/properties/import/review','✓'],
  ['Workflow Automation','/admin/automation','⌘'],['Website Enquiries','/admin/enquiries','✉'],['Article Comments','/admin/comments','☷'],['Customer Support','/admin/support','☏'],
- ['Referral Records','/admin/reports','♧'],['Staff & Roles','/admin/staff','♙'],
+ ['Referral Records','/admin/reports','♧'],['Staff & Roles','/admin/staff','♙'],['Workforce & Attendance','/admin/workforce','◷'],
  ['KYC & Compliance','/admin/kyc','◈'],['Survey & Allocation','/admin/seven-cities','⌖'],
  ['Reports & Analytics','/admin/reports','▥']];
 async function count(db:any,table:string){
@@ -30,7 +30,7 @@ export default async function Admin(){
  const {data:members,error:membershipError}=await db.from('organization_members')
   .select('role,organization_id').eq('user_id',user.id).eq('status','active');
  if(membershipError||!members?.length)return <main className="command-denied">Landshop Global Command Center — staff account required. <Link href="/dashboard">Customer Dashboard</Link></main>;
- const allowed=members.filter(m=>['owner','admin','executive','operations','legal','finance','sales','hr','marketing'].includes(m.role));
+ const allowed=members.filter(m=>['owner','ceo','founder','admin','technology_officer','technology_consultant'].includes(m.role));
  if(!allowed.length)return <main className="command-denied">Your account is not authorized for management access.</main>;
  const {data:orgs}=await db.from('organizations').select('id').eq('kind','landshop').in('id',allowed.map(m=>m.organization_id));
  if(!orgs?.length)return <main className="command-denied">No active Landshop management assignment found.</main>;

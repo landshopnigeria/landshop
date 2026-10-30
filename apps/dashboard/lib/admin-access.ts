@@ -13,7 +13,9 @@ export async function requireLandshopStaff(roles:string[]){
   .select('organization_id,role').eq('user_id',user.id).eq('status','active');
   return {data: q.data,membershipError:q.error}})();
  if(membershipError||!members?.length)redirect('/dashboard');
- const eligible=members.filter(member=>roles.includes(member.role));
+ const managementRoles=['owner','ceo','founder','admin','technology_officer','technology_consultant'];
+ const ownerOnly=roles.length===1&&roles[0]==='owner';
+ const eligible=members.filter(member=>managementRoles.includes(member.role)&&(!ownerOnly||member.role==='owner'));
  if(!eligible.length)redirect('/dashboard');
  const {data:organizations,error:orgError}=await db.from('organizations').select('id').eq('kind','landshop')
    .in('id',eligible.map(member=>member.organization_id));
