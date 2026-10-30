@@ -39,8 +39,8 @@ export default function ContactForm(){
    <label className="contact-wide">How can we help? <span aria-hidden="true">*</span><textarea name="message" rows={6} minLength={20} maxLength={3000} required placeholder="Share the property, product, location, or question. Please do not include sensitive documents."/></label>
    <div className="contact-hidden-field" aria-hidden="true"><label>Website<input name="website" type="text" tabIndex={-1} autoComplete="off"/></label></div>
   </div>
-  <label className="contact-enquiry-consent"><input type="checkbox" name="consent" value="yes" required/><span>I agree to Landshop using the details I provide to respond to this enquiry. <strong>Required</strong></span></label>
-  <div className="contact-enquiry-actions"><button className="content-cta" disabled={status==='sending'} type="submit">{status==='sending'?'Sending enquiry…':'Send Enquiry ↗'}</button><p>We will never ask you to send passwords or card details.</p></div>
+  <label className="contact-enquiry-consent"><input type="checkbox" name="consent" value="yes" required/><span>I agree to Landshop using the details I provide to respond to this enquiry.</span></label>
+  <div className="contact-enquiry-actions"><button className="content-cta" disabled={status==='sending'} type="submit">{status==='sending'?'Sending enquiry…':'Send Enquiry ↗'}</button></div>
   {feedback&&<p role={status==='error'?'alert':'status'} className={'contact-enquiry-feedback '+status}>{feedback}</p>}
  </form>;
 }
