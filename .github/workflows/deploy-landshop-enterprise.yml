@@ -272,20 +272,33 @@ jobs:
           RELEASE_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
         run: |
           set -euo pipefail
-          urls=(https://landshopnigeria.com https://portal.landshopnigeria.com https://app.landshopnigeria.com)
-          apps=(website portal dashboard)
-          for i in 0 1 2; do
-            url="${urls[$i]}/api/release-health"
-            result=$(curl --fail-with-body -sS -L --max-time 40 -H 'Cache-Control: no-cache' "$url")
-            ACTUAL="$result" SERVICE="landshop-${apps[$i]}" SHA="$RELEASE_SHA" python3 - <<'PY'
-          import json,os
-          body=json.loads(os.environ['ACTUAL'])
-          assert body.get('service')==os.environ['SERVICE'], 'Wrong app or static fallback is serving the domain'
-          assert body.get('commit')==os.environ['SHA'], 'Domain is serving an older release'
-          assert body.get('status')=='serving-nextjs', 'Next.js startup health was not confirmed'
+          # cPanel Passenger may keep the previous Node worker briefly after tmp/restart.txt.
+          # Retry exact-commit checks without accepting stale or static fallback content.
+          python3 - <<'PY'
+          import json,os,time,urllib.request
+          expected=os.environ['RELEASE_SHA']
+          for app,base in [
+           ('website','https://landshopnigeria.com'),
+           ('portal','https://portal.landshopnigeria.com'),
+           ('dashboard','https://app.landshopnigeria.com')]:
+            ok=False
+            for attempt in range(1,19):
+             try:
+              req=urllib.request.Request(base+'/api/release-health?release='+expected[:12]+'&attempt='+str(attempt),
+                headers={'Cache-Control':'no-store, no-cache','Pragma':'no-cache','User-Agent':'Landshop-Release-Verification/1.0'})
+              with urllib.request.urlopen(req,timeout=25) as response:
+               body=json.load(response)
+              if body.get('service')=='landshop-'+app and body.get('commit')==expected and body.get('status')=='serving-nextjs':
+               print(f"Verified {app} exact commit {expected[:12]} after {attempt} attempt(s)",flush=True)
+               ok=True
+               break
+              print(f"Still waiting for {app} Passenger restart: attempt {attempt}, reported commit {str(body.get('commit'))[:12]}",flush=True)
+             except Exception as exc:
+              print(f"{app} health not yet ready on attempt {attempt}: {type(exc).__name__}",flush=True)
+             if attempt<18: time.sleep(8)
+            if not ok:
+             raise SystemExit('ERROR: '+app+' never served the expected exact Next.js release; rollback required')
           PY
-            echo "Confirmed exact Next.js release for ${urls[$i]}"
-          done
       - name: Assert real public UI, forms, product routes and navigation (not only health JSON)
         shell: bash
         run: python3 scripts/check-landshop-public-pages.py
