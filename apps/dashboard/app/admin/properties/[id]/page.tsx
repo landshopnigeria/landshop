@@ -24,7 +24,7 @@ export default async function Page({params}:{params:Promise<{id:string}>}){
  const {data:orgs,error:orgError}=await db.from('organizations').select('id').eq('kind','landshop')
   .in('id',qualified.map(m=>m.organization_id));
  if(orgError||!orgs?.length)return <main>Access denied.</main>;
- const {data:property,error}=await db.from('properties').select('id,title,status,property_type,estate_id,amount_kobo,sale_mode,bedrooms,bathrooms,land_area_sqm,floor_area_sqm,source_url,source_price_note,price_last_confirmed_at,price_is_starting_at')
+ const {data:property,error}=await db.from('properties').select('id,title,status,property_type,estate_id,amount_kobo,sale_mode,bedrooms,bathrooms,land_area_sqm,floor_area_sqm,source_url,source_price_note,price_last_confirmed_at,price_is_starting_at,collection_type,collection_source,collection_verified_at')
   .eq('id',id).maybeSingle();
  if(error||!property)notFound();
  const {data:estates}=await db.from('estates').select('id,name,state,city,status').order('name',{ascending:true}).limit(300);
