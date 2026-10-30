@@ -7,9 +7,9 @@ import {editorialImages} from '../lib/editorial-imagery';
 import SiteIcon from './SiteIcon';
 export type FeaturedProperty={id:string,href:string,title:string,location:string,propertyType:string,price:string,image?:string};
 const slides=[
- {name:'DEVELOP',title:'Develop.',tagline:'Own Your Future.',copy:'Discover land and homes with confidence. Explore verified property opportunities, transparent guidance and a clearer path to ownership.',image:'/media/deck-building.webp',action:'Develop',href:'/develop',alt:editorialImages.develop.alt},
- {name:'INCUBATE',title:'Incubate.',tagline:'Invest in Possibilities.',copy:'Explore property-linked investment opportunities with documented terms, eligibility requirements and a responsible investment review.',image:'/media/deck-investment.webp',action:'Invest Now',href:'https://portal.landshopnigeria.com/applications/incubate-investment',alt:editorialImages.incubate.alt},
- {name:'GROW',title:'Grow.',tagline:'Make Homeownership Possible.',copy:'Explore Beta Mortgage and Mortgage Xtra, calculate your potential affordability, and take the next step with informed financial guidance.',image:'/media/deck-mortgage.webp',action:'Know Your Earnings',href:'https://portal.landshopnigeria.com/calculator',alt:editorialImages.grow.alt}
+ {name:'LANDSHOP',subtitle:'Welcome To Landshop',title:'Everyone deserves affordable property.',copy:'Your first home is a home for later and a place to put down roots. Explore your options and take the next step with Landshop.',image:'/media/deck-building.webp',primary:'Get Started',href:'https://portal.landshopnigeria.com',secondary:'Explore Famous Gardens',secondaryHref:'/projects/famous-gardens'},
+ {name:'FAMOUS GARDENS',subtitle:'Welcome To Landshop',title:'Plot Your Future. Save ₦5 million.',copy:'Your Famous Gardens home could be your next chapter. Explore qualifying homes in Iberekodo, Ibeju-Lekki, with clear prices and ownership options.',image:'/media/famous0.webp',primary:'Get Started',href:'https://portal.landshopnigeria.com',secondary:'Book Inspection',secondaryHref:'/visit?project=famous-gardens'},
+ {name:'FUTURE LOCATIONS',subtitle:'Own a property with ease.',title:'Where would you own next?',copy:'Choose a Nigerian state, tell us why it matters to you and join Landshop’s interest list for future property opportunities.',image:'/media/deck-develop.webp',primary:'Invest Today',href:'/mortgage-calculator',secondary:'Speak With Consultant',secondaryHref:'/visit?topic=consultation'}
 ] as const;
 const products=[
  {title:'Develop',sub:'Own your future',description:'Discover land and housing opportunities, Prime and Luxury selections.',img:editorialImages.develop.src,href:'/develop'},
@@ -58,16 +58,12 @@ export default function Homepage({featured}:{featured:FeaturedProperty[]}){
    <div className="hero-v16-wash ls-v23-hero-wash" aria-hidden="true"/>
    <div className="hero-v16-inner ls-v23-hero-inner">
     <div className="hero-v16-content ls-v23-hero-content" key={current.name}>
-     <span className="eyebrow hero-v16-eyebrow">LANDSHOP <span aria-hidden="true">/</span> {current.name}</span>
-     <h1 className="hero-v16-title ls-v23-hero-title">
-      {slide===0?<><span>Your Property.</span><strong>Your Future.</strong></>:
-       slide===1?<><span>Invest in Knowledge.</span><strong>Incubate Possibility.</strong></>:
-       <><span>A Clearer Path</span><strong>to Homeownership.</strong></>}
-     </h1>
+     <span className="eyebrow hero-v16-eyebrow">{current.subtitle}</span>
+     <h1 className="hero-v16-title ls-v23-hero-title">{current.title}</h1>
      <p className="hero-v16-copy ls-v23-hero-description">{current.copy}</p>
      <div className="hero-v16-actions ls-v23-hero-actions">
-      <Link className="primary" href={current.href}>Get Started <span aria-hidden="true">↗</span></Link>
-      <Link className="hero-v16-secondary" href="/properties">Discover Properties <span aria-hidden="true">↗</span></Link>
+      <Link className="primary" href={current.href}>{current.primary} <span aria-hidden="true">↗</span></Link>
+      <Link className="hero-v16-secondary" href={current.secondaryHref}>{current.secondary} <span aria-hidden="true">↗</span></Link>
      </div>
     </div>
     <div className="hero-v16-controls ls-v23-hero-controls" aria-label="Choose a Landshop product slide">
@@ -97,7 +93,7 @@ export default function Homepage({featured}:{featured:FeaturedProperty[]}){
     </div>:<>
     <div className="ls-v23-form-grid">
      <label>Location or keyword<input name="query" placeholder="Estate, location or keyword" maxLength={80}/></label>
-     <label>State / FCT<select name="state" defaultValue=""><option value="">All Nigeria</option>{["Abia","Adamawa","Akwa Ibom","Anambra","Bauchi","Bayelsa","Benue","Borno","Cross River","Delta","Ebonyi","Edo","Ekiti","Enugu","Federal Capital Territory","Gombe","Imo","Jigawa","Kaduna","Kano","Katsina","Kebbi","Kogi","Kwara","Lagos","Nasarawa","Niger","Ogun","Ondo","Osun","Oyo","Plateau","Rivers","Sokoto","Taraba","Yobe","Zamfara"].map(x=><option value={x} key={x}>{x}</option>)}</select></label>
+     <label>State / FCT<select name="state" defaultValue=""><option value="">Select a listed location</option>{["Lagos","Federal Capital Territory","Ogun","Oyo","Delta","Edo","Akwa Ibom","Anambra"].map(x=><option value={x} key={x}>{x}</option>)}</select></label>
      <label>City / Local Government<input name="city" placeholder="City or town" maxLength={60}/></label>
      <label>Area / Estate<input name="area" placeholder="Area or estate" maxLength={70}/></label>
      <label>Property type<select name="type" defaultValue=""><option value="">Any type</option><option value="land">Land</option><option value="apartment">Apartment</option><option value="house">House</option><option value="commercial">Commercial</option></select></label>
