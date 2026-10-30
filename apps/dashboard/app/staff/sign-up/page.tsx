@@ -1,4 +1,6 @@
 'use client';
+import BrandedSelect from '../../../components/BrandedSelect';
+
 import {useState,type FormEvent} from 'react';
 import Link from 'next/link';
 import {createBrowserClient} from '@supabase/ssr';
@@ -38,9 +40,9 @@ export default function StaffSignUp(){
    <label>Email<input required type="email" autoComplete="email" style={control} value={v.email} onChange={e=>update('email',e.target.value)} placeholder="you@company.com"/></label>
    <label>Username<input required autoComplete="username" minLength={3} maxLength={30} style={control} value={v.username} onChange={e=>update('username',e.target.value)} placeholder="your.username"/></label>
    <label>Age<input required min={18} max={120} type="number" style={control} value={v.age} onChange={e=>update('age',e.target.value)}/></label>
-   <label>Gender<select required style={control} value={v.gender} onChange={e=>update('gender',e.target.value)}><option value="female">Female</option><option value="male">Male</option><option value="non_binary">Non-binary</option><option value="prefer_not_to_say">Prefer not to say</option></select></label>
+   <label>Gender<BrandedSelect required style={control} value={v.gender} onChange={e=>update('gender',e.target.value)}><option value="female">Female</option><option value="male">Male</option><option value="non_binary">Non-binary</option><option value="prefer_not_to_say">Prefer not to say</option></BrandedSelect></label>
   </div>
-  <label style={{margin:'14px 0'}}>Requested staff role<select style={control} value={v.role} onChange={e=>update('role',e.target.value)}>{roles.map(([key,name])=><option key={key} value={key}>{name}</option>)}</select></label>
+  <label style={{margin:'14px 0'}}>Requested staff role<BrandedSelect style={control} value={v.role} onChange={e=>update('role',e.target.value)}>{roles.map(([key,name])=><option key={key} value={key}>{name}</option>)}</BrandedSelect></label>
   <div className="ls-staff-grid">
    <label>Password<input required minLength={12} autoComplete="new-password" type="password" style={control} value={v.password} onChange={e=>update('password',e.target.value)}/></label>
    <label>Confirm password<input required minLength={12} autoComplete="new-password" type="password" style={control} value={v.confirm} onChange={e=>update('confirm',e.target.value)}/></label>
