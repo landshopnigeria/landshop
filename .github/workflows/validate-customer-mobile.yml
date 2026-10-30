@@ -58,6 +58,13 @@ jobs:
           }
           if(builds['android-internal'].android.buildType!=='apk'||builds['ios-simulator'].ios.simulator!==true)throw Error('Invalid internal QA build config');
           if(builds.production.autoSubmit===true)throw Error('App store auto-submission is prohibited');
+          for(const profile of ['android-internal','ios-simulator','ios-internal']){
+            if(builds[profile].environment!=='preview')throw Error('Internal EAS builds must use Preview');
+            if(builds[profile].env.EXPO_PUBLIC_SUPABASE_URL!=='https://iwkfagzkogzidrbbezds.supabase.co')throw Error('Incorrect Supabase project');
+          }
+          const flow=fs.readFileSync('../../.github/workflows/build-landshop-native-internal.yml','utf8');
+          if(!flow.includes('workflow_dispatch:')||flow.includes('    push:')||flow.includes('    pull_request:'))throw Error('Internal EAS builds must be manually initiated');
+          if(flow.includes('eas submit')||flow.includes('--auto-submit'))throw Error('Unexpected store submission in internal CI');
           NODE
       - name: Verify Metro bundles Android and iOS JavaScript
         run: npx expo export --platform all --output-dir "$RUNNER_TEMP/landshop-mobile-bundle"
