@@ -31,7 +31,7 @@ export default async function Page(){
   .order('created_at',{ascending:false}).limit(100);
  return <main style={{minHeight:'100vh',background:'#f1f8f4',padding:'clamp(18px,4vw,55px)',fontFamily:'Arial, sans-serif',color:'#073e35'}}>
   <nav style={{display:'flex',gap:20,marginBottom:25}}><Link href="/dashboard">Dashboard</Link>
-   <Link href="/admin/kyc">KYC</Link><Link href="/admin/properties">Properties</Link><Link href="/admin/properties/import">Bulk Import</Link><Link href="/admin/properties/inspections">Inspection Requests</Link><Link href="/admin/contact">Contact Enquiries</Link><Link href="/admin/properties/import/review">Import Reviews</Link></nav>
+   <Link href="/admin/kyc">KYC</Link><Link href="/admin/properties">Properties</Link><Link href="/admin/properties/import">Bulk Import</Link><Link href="/admin/properties/readiness">Readiness</Link>{allowed.some(m=>m.role==='owner')&&<Link href="/admin/properties/team">Review Team</Link>}<Link href="/admin/properties/inspections">Inspection Requests</Link><Link href="/admin/contact">Contact Enquiries</Link><Link href="/admin/properties/import/review">Import Reviews</Link></nav>
   <h1>Landshop Property Command Center</h1>
   <p style={{color:'#bc5d12',fontSize:13,fontWeight:700}}>Draft listings are staff-only and do not appear in the public marketplace until title, price, location, marketing authority and media have been reviewed.</p>
   <p>Staff-only inventory management. No customer or realtor self-publication.</p>
