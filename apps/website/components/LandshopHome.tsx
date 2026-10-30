@@ -5,7 +5,7 @@ import V22HomeSections from './V22HomeSections';
 import {useRouter} from 'next/navigation';
 import {editorialImages} from '../lib/editorial-imagery';
 import SiteIcon from './SiteIcon';
-export type FeaturedProperty={id:string,href:string,title:string,location:string,propertyType:string,price:string,image?:string};
+export type FeaturedProperty={id:string,href:string,title:string,location:string,propertyType:string,price:string,collection?:'Prime'|'Luxury',image?:string};
 const slides=[
  {name:'LANDSHOP',subtitle:'Welcome To Landshop',title:'Everyone deserves affordable property.',copy:'Your first home is a home for later and a place to put down roots. Explore your options and take the next step with Landshop.',image:'/media/deck-building.webp',primary:'Get Started',href:'https://portal.landshopnigeria.com',secondary:'Explore Famous Gardens',secondaryHref:'/projects/famous-gardens'},
  {name:'FAMOUS GARDENS',subtitle:'Welcome To Landshop',title:'Plot Your Future. Save ₦5 million.',copy:'Your Famous Gardens home could be your next chapter. Explore qualifying homes in Iberekodo, Ibeju-Lekki, with clear prices and ownership options.',image:'/media/famous0.webp',primary:'Get Started',href:'https://portal.landshopnigeria.com',secondary:'Book Inspection',secondaryHref:'/visit?project=famous-gardens'},
