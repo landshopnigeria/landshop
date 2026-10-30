@@ -20,7 +20,7 @@ export default function StaffWorkspace({userId,initialProfile,initialTasks,role,
  const [wanted,setWanted]=useState(typeof metadata.requested_role==='string'?metadata.requested_role:'staff');
  const [message,setMessage]=useState(''),[busy,setBusy]=useState(false),[image,setImage]=useState<string|null>(null);
  const [attendance,setAttendance]=useState<Attendance[]>([]),[report,setReport]=useState<Report|null>(null),[period,setPeriod]=useState('month');
- const [daily,setDaily]=useState(''),[blockers,setBlockers]=useState(''),[selected,setSelected]=useState(''),[taskNote,setTaskNote]=useState('');
+ const [daily,setDaily]=useState(''),[blockers,setBlockers]=useState(''),[selected,setSelected]=useState(''),[taskNote,setTaskNote]=useState(''),[opened,setOpened]=useState('');
  const verified=Boolean(profile?.employment_state==='active'&&profile?.kyc_state==='approved');
  const management=['owner','ceo','founder','admin','technology_officer','technology_consultant'].includes(role||'');
  function notify(err:unknown){setMessage(err instanceof Error?err.message:'Unable to save changes')}
@@ -125,16 +125,20 @@ export default function StaffWorkspace({userId,initialProfile,initialTasks,role,
  <div className="ls-work-layout" style={{marginTop:20}}>
  <section className="ls-work-card"><h2>Assigned tasks</h2>{!verified&&<p className="ls-work-small">Task actions become available after staff verification.</p>}
  {tasks.map(t=><article className="staff-task" key={t.id}>
-  <small style={{color:'#cb741c',fontWeight:850}}>{t.status.toUpperCase()}</small><h3>{t.title}</h3><p>{t.details}</p>
+  <small style={{color:'#cb741c',fontWeight:850}}>{t.status.toUpperCase()}</small><h3>{t.title}</h3>
+  <button type="button" disabled={busy} onClick={()=>{setOpened(opened===t.id?'':t.id);if(opened!==t.id&&!t.viewed_at&&verified)void action(t.id,'view')}} style={{...buttonStyle,background:'#f0f8f3',color:'#127b58',border:'1px solid #d6e6dc',marginBottom:9}}>
+   {opened===t.id?'Close assignment':'Open assignment & record view'}
+  </button>
+  {opened===t.id&&<><p>{t.details}</p>
   <p>Deadline: {new Date(t.due_at).toLocaleString('en-NG',{timeZone:'Africa/Lagos'})} WAT</p>
   <p>Manager estimate: {t.planned_minutes||'—'} min · Allowance: {t.delay_allowance_minutes||0} min</p>
   <p>Viewed: {t.viewed_at?new Date(t.viewed_at).toLocaleString('en-NG',{timeZone:'Africa/Lagos'}):'Not opened'} · Score: {t.score??'Pending review'}</p>
   {t.review_comment&&<p>Manager feedback: {t.review_comment}</p>}
   {verified&&<div className="ls-work-actions">
-   {!t.viewed_at&&<button disabled={busy} style={buttonStyle} onClick={()=>action(t.id,'view')}>Mark Viewed</button>}
    {['assigned','returned','blocked','in_progress'].includes(t.status)&&<><button disabled={busy} style={buttonStyle} onClick={()=>action(t.id,'start')}>Start Timer</button><button disabled={busy} style={{...buttonStyle,background:'#526857'}} onClick={()=>action(t.id,'pause')}>Pause</button><button disabled={busy} style={{...buttonStyle,background:'#d57819'}} onClick={()=>setSelected(t.id===selected?'':t.id)}>Report / Submit</button></>}
   </div>}
   {selected===t.id&&<div style={{display:'grid',gap:9,marginTop:12}}><textarea rows={3} placeholder="Work completed, any blockers, and reason for delays" style={inputStyle} value={taskNote} onChange={e=>setTaskNote(e.target.value)}/><div className="ls-work-actions"><button style={buttonStyle} disabled={busy} onClick={()=>action(t.id,'submit',taskNote)}>Submit work</button><button style={{...buttonStyle,background:'#c78122'}} disabled={busy} onClick={()=>action(t.id,'blocked',taskNote)}>Flag blocker</button></div></div>}
+ </>}
  </article>)}
  {!tasks.length&&<p className="ls-work-small">No assignments yet. Your manager will enter tasks and expected completion times here.</p>}
  </section>
