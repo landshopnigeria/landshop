@@ -43,3 +43,20 @@ Enable only after the following have been manually verified by an authorized Sup
 - Google login opens the existing website until the flag above is enabled. The in-app implementation is ready for controlled test, not yet production-proven.
 - Deep links received from untrusted websites cannot be used as an arbitrary redirect or session; the backend verifies PKCE codes, token hashes and referral attribution.
 - A successful `npm run typecheck` or GitHub workflow is **not equivalent to device testing**. Expo build signing, approved credentials, QR appearance, biometric/storage review, Android/iOS accessibility and full KYC/document capture remain required before store release.
+
+## Native KYC & application tracking (V3)
+
+The individual-customer mobile KYC screen uses the **existing** `public.kyc_submissions`, `public.kyc_documents` and private `landshop-kyc` Storage bucket. Existing database row-level security requires the signed-in user to own the draft and the path; it forbids changing submitted applications. The app uploads to `<userId>/<submissionId>/<documentType>-<uuid>.<extension>`. It never creates public document links or includes a document filename/contents in analytics. The server reviews and approves; **uploads alone never mark KYC verified**.
+
+The flow captures full name, phone and address; selects an ID and address evidence from the document picker; and captures a selfie through the device's front camera with camera permission requested at the point of use. Supported formats are JPEG, PNG, WebP and PDF, each at most 10 MB. It validates a file signature in addition to the declared MIME type, uses an ArrayBuffer upload (not a React Native Blob/FormData), and attempts to delete the uploaded object if its document record cannot be created. Native handling currently covers individual KYC; company, realtor and staff verification stays on its existing protected web flow.
+
+Application tracking reads the signed-in customer's existing `applications` and `application_events` via owner-scoped RLS. It shows real status and recorded changes only; submitting or resuming drafts still opens the web application and may require a separate web sign-in. Neither this native UI nor the referral UI grants approval or money.
+
+**Security and device acceptance gates before Android/iOS publication:**
+
+- Validate Supabase Storage owner-only RLS with two disposable accounts: a user must not upload into another user's prefix, read another user's files, or upload to a submitted draft. Confirm the documents bucket remains private.
+- Test selfie camera permission granted and denied, iOS/Android file selection, PDFs, HEIC rejection, oversize rejection, altered-extension rejection, network loss during upload, metadata-record failure cleanup, and repeated uploads.
+- Test consent, first-time draft, resume draft, pending/submitted state, rejected state, and business/realtor web fallback. Verify staff and existing KYC records remain untouched.
+- Test the application timeline with a user who has no applications, multiple applications, and draft/submitted records with/without activity events. Verify account isolation.
+- Test on physical Android and iOS devices, tablets and small screens, accessibility font scaling, screen readers, foreground/background transitions, and unstable network connections. A successful TypeScript build does not establish these results.
+- Obtain app-store privacy approvals and provide a deletion/retention policy for identity files before distribution. The private bucket limits access but is **not proof of regulatory compliance**.
