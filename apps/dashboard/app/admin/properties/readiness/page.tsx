@@ -19,9 +19,9 @@ export default async function Readiness(){
   db.from('property_showcase_drafts').select('property_id,edited_by').limit(250)
  ]);
  const bad=[p,e,profiles,assets,media,edits].some(x=>x.error);
- const estates=new Map(((e.data||[]) as Estate[]).map(x=>[x.id,x]));
- const showcases=new Map(((profiles.data||[]) as unknown as Profile[]).map(x=>[x.property_id,x]));
- const draftMap=new Map(((edits.data||[]) as {property_id:string;edited_by:string}[]).map(x=>[x.property_id,x.edited_by]));
+ const estates=new Map<string,Estate>(((e.data||[]) as Estate[]).map(x=>[x.id,x] as const));
+ const showcases=new Map<string,Profile>(((profiles.data||[]) as unknown as Profile[]).map(x=>[x.property_id,x] as const));
+ const draftMap=new Map<string,string>(((edits.data||[]) as {property_id:string;edited_by:string}[]).map(x=>[x.property_id,x.edited_by] as const));
  const evidence=(assets.data||[]) as Asset[],gallery=(media.data||[]) as Media[];
  const list=((p.data||[]) as Property[]).map(property=>{
   const estate=estates.get(property.estate_id||''),showcase=showcases.get(property.id);
@@ -35,7 +35,7 @@ export default async function Readiness(){
    {name:'Estate independently approved',ok:Boolean(estate?.status==='published'&&estate.review_requested_by),reason:'Submit estate to review and have a second reviewer confirm the real development location'},
    {name:'Positive current price',ok:typeof property.amount_kobo==='number'&&property.amount_kobo>0,reason:'Confirm current owner/developer unit quote, not an old promotional minimum'},
    {name:'Price independently reconfirmed',ok:priceCurrent&&Boolean(property.price_confirmed_by),reason:'Second reviewer must independently confirm the current price within 30 days'},
-   {name:'Property description approved',ok:Boolean(showcase?.approved_by),reason:'Save a complete showcase and obtain independent approval'},
+   {name:'Property description approved',ok:Boolean(showcase?.approved_by),reason:draftMap.has(property.id)?'Showcase draft saved; obtain independent review approval':'Save a complete property showcase draft and obtain independent approval'},
    {name:'Exact street/map pin confirmed',ok:Boolean(showcase?.location_verified),reason:'Confirm the exact street address and latitude/longitude; never use an estate-centroid substitute'},
    {name:'Marketing authorization verified',ok:sourceAssets.some(x=>x.kind==='marketing_authority'),reason:'Upload the developer/owner authority document privately and obtain approval'},
    {name:'Title evidence verified',ok:sourceAssets.some(x=>x.kind==='title_document'),reason:'Upload actual title/survey or authority evidence privately and obtain approval'},
