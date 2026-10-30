@@ -9,7 +9,7 @@
 - Locations: eight state/FCT directory/detail pages, with historical estate data separated from current published marketplace search.
 - Partners: dedicated directory including 11 historical references; no unverified active endorsements claimed.
 - Insights: 20 routes, new category/search controls, editorial image cards, longer articles, reading sidebars, related links, article tags, and existing consent-based ContactForm capture.
-- Article comments: sign-in gate only. Comments insertion/read, moderation and secure cross-domain session handoff are NOT implemented; must not be represented as live.
+- Article comments: authenticated POST API, public approved-only GET, secure Supabase RLS migration 20261030010331, client editor, cross-subdomain sign-in return, and a staff-only moderation page at /admin/comments have been implemented. Live authenticated smoke testing still required.
 - Shared footer: visually unchanged homepage footer extracted as `SiteFooter`, reused across home, content, and marketplace/contact page templates.
 - Existing property details and marketplace property filter files remain untouched. Only approved published property database inventory is shown.
 
@@ -21,7 +21,7 @@
 5. Check all current service routes, 8 location URLs and 20 Insights routes for 200/404 accuracy, canonical metadata and internal links.
 6. Confirm original Landshop asset licensing, image credit, and current partner logo permission before replacing editorial imagery or historical name treatments.
 7. Verify property-detail image/media integration with the three genuine approved active listings; no archival sample property must be published as a live listing.
-8. Portal sign-in and comment moderation workflow require an approved backend design, row-level security policies, rate limits and consent before activation.
+8. Portal sign-in and comment moderation require a confirmed authorized management membership and live, consent-aware smoke testing before activation.
 9. Reconcile duplicate footer calls on any application or enterprise route outside the public marketing app without restyling the approved public footer.
 10. Make a verified database/file backup and validate deployment/rollback procedures, transactional notification delivery and Supabase authorization policies.
 11. Only after successful checks, merge the approved PR and deploy directly to the existing production destinations. No public staging domain.
@@ -30,7 +30,7 @@
 - No production deployment has been performed by this branch.
 - CI/build and cross-browser E2E tests are pending until GitHub Actions runs.
 - Original product-deck image binary assets were not uploaded into the GitHub repository in this change; existing approved editorial photography is reused and historic project assets remain archive-only.
-- Authentication-based article comment publishing remains blocked pending secure portal API integration and moderation data model.
+- Article comment data model and moderation UI are committed; final authenticated publish/approve/reject smoke testing requires a verified staff account.
 - Historical financial offerings (70% ROI, historic mortgage interest and instalment terms) are intentionally not marketed as current financial offers.
 
 ## Protected assets
@@ -39,3 +39,9 @@
 - `apps/website/app/icon-treatments.css` unchanged.
 - The original homepage hero section and `glass-search` form unchanged.
 - `apps/website/lib/marketplace.ts` unchanged.
+
+## Deployment workflow hardening (V22)
+- Existing `.github/workflows/deploy-landshop-enterprise.yml` automatically releases a successful `main` foundation workflow to Namecheap. It validates backups and rollback prerequisites, database migrations, current TLS routing, and app build bundles before touching production.
+- Added an upload-start marker and an automatic backup restoration step on failure after upload, protecting all three application roots.
+- Earlier run 40413886726 had uploaded files but failed public `/api/release-health` with HTTP 404. Publication is not considered successful until the current run confirms exact commit and HTML/asset parity on production domains.
+- New Supabase comments migration is already applied and verified with RLS; it is also versioned in the GitHub repo.
