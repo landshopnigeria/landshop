@@ -122,6 +122,13 @@ jobs:
               if grep -Fq "Sign in to your work dashboard. Only authorized" /tmp/landshop-staff-signin.html; then
                 echo "::error::Removed sign-in paragraph has returned"; exit 1
               fi
+              # Email confirmation is enough for entry to the PERSONAL staff dashboard.
+              # Sensitive employee/management operations retain independent authorization.
+              grep -Fq "selfServiceAccess={confirmedStaffSignup&&Boolean(profile)}" apps/dashboard/app/staff/page.tsx || { echo "::error::Staff dashboard email activation missing"; exit 1; }
+              grep -Fq "if(!dashboardActive)return" apps/dashboard/app/staff/StaffWorkspace.tsx || { echo "::error::Management gate still blocks personal dashboard"; exit 1; }
+              grep -Fq "landshop_staff_can_work" apps/dashboard/app/staff/page.tsx || { echo "::error::Employee work authorization missing"; exit 1; }
+              grep -Fq "landshop_is_management" apps/dashboard/app/staff/page.tsx || { echo "::error::Owner management gate missing"; exit 1; }
+              echo "Automatic dashboard activation with protected internal permissions verified"
               echo "Approved staff sign-in and sign-up UI regression smoke passed"
             fi
             kill "$pid" || true
