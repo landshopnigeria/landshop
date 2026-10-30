@@ -1,0 +1,62 @@
+name: Landshop Daily Newsletter (Approval-Gated)
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/landshop-daily-newsletter.yml'
+      - 'scripts/landshop-daily-newsletter.mjs'
+      - 'apps/dashboard/app/admin/newsletter/**'
+  # 07:00 UTC = 08:00 WAT (Africa/Lagos), no daylight saving.
+  schedule:
+    - cron: '0 7 * * *'
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'Preview checks only or attempt gated delivery'
+        type: choice
+        options:
+          - preview
+          - send
+        default: preview
+permissions:
+  contents: read
+concurrency:
+  group: landshop-newsletter-digest
+  cancel-in-progress: false
+jobs:
+  review_and_dispatch:
+    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    # No production environment secrets are exposed to pull-request tests.
+    environment: ${{ github.event_name == 'pull_request' && 'landshop-newsletter-ci' || 'landshop-production' }}
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install project dependencies without changing lockfile
+        run: npm install --no-audit --no-fund --no-package-lock
+      - name: Verify safe digest generation
+        run: node scripts/landshop-daily-newsletter.mjs --self-test
+      - name: Pull-request preview only (no secrets)
+        if: github.event_name == 'pull_request'
+        run: node scripts/landshop-daily-newsletter.mjs --preview
+      - name: Check today's campaign and deliver only when authorized
+        if: github.event_name != 'pull_request'
+        env:
+          GITHUB_REF: ${{ github.ref }}
+          LANDSHOP_NEWSLETTER_LIVE_ENABLED: ${{ vars.LANDSHOP_NEWSLETTER_LIVE_ENABLED || 'false' }}
+          LANDSHOP_SUPABASE_URL: ${{ vars.LANDSHOP_SUPABASE_URL || 'https://iwkfagzkogzidrbbezds.supabase.co' }}
+          LANDSHOP_SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.LANDSHOP_SUPABASE_SERVICE_ROLE_KEY }}
+          LANDSHOP_POSTMARK_BROADCAST_TOKEN: ${{ secrets.LANDSHOP_POSTMARK_BROADCAST_TOKEN }}
+          LANDSHOP_POSTMARK_BROADCAST_STREAM: ${{ vars.LANDSHOP_POSTMARK_BROADCAST_STREAM || 'broadcast' }}
+          LANDSHOP_NEWSLETTER_FROM: ${{ vars.LANDSHOP_NEWSLETTER_FROM }}
+          LANDSHOP_NEWSLETTER_MAX_RECIPIENTS: ${{ vars.LANDSHOP_NEWSLETTER_MAX_RECIPIENTS || '2000' }}
+          REQUESTED_MODE: ${{ inputs.mode || 'send' }}
+        run: |
+          set -euo pipefail
+          if [ "$REQUESTED_MODE" = "send" ];then
+            node scripts/landshop-daily-newsletter.mjs --send
+          else
+            node scripts/landshop-daily-newsletter.mjs --preview
+          fi
