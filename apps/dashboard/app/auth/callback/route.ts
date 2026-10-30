@@ -34,6 +34,18 @@ export async function GET(request:NextRequest){
  if(error)return NextResponse.redirect(origin+'/staff/sign-in?error=verification_failed');
  const {data:{user}}=await supabase.auth.getUser();
  if(!user)return NextResponse.redirect(origin+'/staff/sign-in?error=session_unavailable');
+ // Initialize verified staff personal profile; no employment, KYC or role elevation.
+ if(type!=='recovery'&&user.email_confirmed_at&&user.user_metadata?.staff_signup===true){
+  const fields=user.user_metadata,age=fields.age_at_registration;
+  if(typeof fields.preferred_username==='string'&&typeof age==='number'&&
+     Number.isInteger(age)&&age>=18&&age<=120&&typeof fields.gender==='string'&&
+     typeof fields.requested_role==='string'){
+   await supabase.rpc('landshop_staff_onboard',{
+    p_username:fields.preferred_username,p_age:age,p_gender:fields.gender,
+    p_requested_role:fields.requested_role
+   });
+  }
+ }
  // Recovery links must remain password recovery links and may not bypass that flow.
  if(type==='recovery')response.headers.set('Location','https://portal.landshopnigeria.com/update-password');
  else if(user.user_metadata?.staff_signup!==true){
