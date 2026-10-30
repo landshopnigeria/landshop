@@ -7,7 +7,7 @@
 ## Role and access model
 - Owner: separately authorized bootstrap with verified email and production allowlist, direct Command Center access; does not self-approve new identity records.
 - CEO, Founder, Admin, Technology Officer, Technology Consultant: management-approved employment and photo KYC required. Only the owner can approve these privileged roles. They receive the Command Center and operational management access.
-- HR Officer (HRO), Head of Finance, Customer Service Manager, Social Media Manager, Department Manager, Operations, Marketing, Sales, Legal, Youth Corps, Intern, Staff: individual work dashboards. No Command Center access merely from choosing a title.
+- HR Officer (HRO), Head of Finance, Customer Service Manager, Social Media Manager, Department Manager, Operations, Marketing, Sales, Legal, Youth Corps, Intern, Staff: individual work dashboards. No Command Center access merely from choosing a title. Approved department managers (HR Officer, Head of Finance, Social Media Manager, Customer Service Manager, Department Manager and Operations) can assign and review tasks through https://app.landshopnigeria.com/staff/team, limited to their own assignments.
 - Management must manually approve a submitted portrait/identity before issuing staff ID `LS-XXXXXXXXXXXX`. Staff registration never grants permissions by itself.
 - Passwords are handled by Supabase Auth only; never stored in workforce tables.
 
