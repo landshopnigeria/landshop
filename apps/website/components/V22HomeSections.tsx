@@ -4,7 +4,7 @@ import {useState} from 'react';
 import {editorialImages} from '../lib/editorial-imagery';
 import {IconChip} from './SiteIcon';
 
-export type V22Property={id:string;href:string;title:string;location:string;propertyType:string;price:string;image?:string};
+export type V22Property={id:string;href:string;title:string;location:string;propertyType:string;price:string;collection?:'Prime'|'Luxury';image?:string};
 const paths=[
  {name:'Develop',tag:'01 / ACQUIRE PROPERTY',intro:'Prefer outright property acquisition? Explore structured land and apartment ownership, including Prime and Luxury selections.',href:'/plans/develop',photo:editorialImages.develop.src,logo:'/brand/develop.svg',icon:'building' as const},
  {name:'Incubate',tag:'02 / SHARED OWNERSHIP',intro:'Explore shared ownership with others and register to receive confirmed opportunities and participation terms.',href:'/plans/incubate',photo:editorialImages.incubate.src,logo:'/brand/incubate.svg',icon:'chart' as const},
@@ -57,7 +57,7 @@ export default function V22HomeSections({featured}:{featured:V22Property[]}){
    <div className="v22-heading"><div><span className="v22-eyebrow">PROPERTY MARKETPLACE</span><h2 id="v22-properties-title">Explore property with clarity.</h2></div><Link className="v22-text-link" href="/properties">View published listings ↗</Link></div>
    <div className="v22-featured">{featured.length?featured.slice(0,3).map(p=><Link href={p.href} className="v22-feature" key={p.id}>
      {p.image?<img src={p.image} alt={'Owner-approved photograph of '+p.title} loading="lazy"/>:<div className="v22-photo-pending">Original media awaiting approval</div>}
-     <div className="v22-feature-info"><span>{p.propertyType} · {p.location}</span><h3>{p.title}</h3><b>{p.price}</b></div></Link>):
+     <div className="v22-feature-info">{p.collection&&<span className="ls26-collection-badge">{p.collection}</span>}<span>{p.propertyType} · {p.location}</span><h3>{p.title}</h3><b>{p.price}</b></div></Link>):
     <div className="v22-inventory-empty"><h3>Verified opportunities, not placeholder listings.</h3><p>Only approved, published properties appear here. Explore the marketplace for the latest available inventory.</p><Link href="/properties" className="v22-btn">Browse the marketplace ↗</Link></div>}
    </div><div className="v22-collections"><Link href="/collections/prime"><span>PRIME ESTATES</span><strong>Considered homes for everyday living.</strong><em>Explore residential properties ↗</em></Link>
     <Link href="/collections/luxury"><span>LUXURY ESTATES</span><strong>Explore land with the right documentation.</strong><em>Explore Luxury Estates ↗</em></Link></div>
