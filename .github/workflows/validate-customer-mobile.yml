@@ -47,6 +47,8 @@ jobs:
           if(builds['android-internal'].android.buildType!=='apk'||builds['ios-simulator'].ios.simulator!==true)throw Error('Invalid internal QA build config');
           if(builds.production.autoSubmit===true)throw Error('App store auto-submission is prohibited');
           NODE
+      - name: Verify Metro bundles Android and iOS JavaScript
+        run: npx expo export --platform all --output-dir "$RUNNER_TEMP/landshop-mobile-bundle"
       - name: Confirm no native secret keys in source
         run: |
           if grep -rE 'service_role|sb_secret_' src App.tsx; then
