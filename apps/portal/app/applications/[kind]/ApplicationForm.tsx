@@ -1,4 +1,6 @@
 'use client';
+import BrandedSelect from '../../../components/BrandedSelect';
+
 import {useEffect,useRef,useState} from 'react';
 import Link from 'next/link';
 import {browserSupabase} from '../../../lib/supabase-browser';
@@ -169,7 +171,7 @@ export default function ApplicationForm({slug}:{slug:string}){
       }
       setMessage('');setFiles(prev=>({...prev,[field.key]:f}));
      }}/>{savedDocuments.includes(field.key)&&<small style={{color:'#07805e'}}>Previously uploaded securely ✓</small>}</>:
-    field.type==='select'?<select {...common} value={val} required={field.required} onChange={e=>set(field.key,e.target.value)}><option value="">Select {field.label.toLowerCase()}</option>{field.choices?.map(option=><option key={option}>{option}</option>)}</select>:
+    field.type==='select'?<BrandedSelect {...common} value={val} required={field.required} onChange={e=>set(field.key,e.target.value)}><option value="">Select {field.label.toLowerCase()}</option>{field.choices?.map(option=><option key={option}>{option}</option>)}</BrandedSelect>:
     field.type==='textarea'?<textarea {...common} value={val} rows={3} required={field.required} onChange={e=>set(field.key,e.target.value)} placeholder={field.placeholder||'Enter '+field.label.toLowerCase()}/>:
     field.type==='checkbox'?<label className="check"><input type="checkbox" checked={val==='true'} required={field.required} onChange={e=>set(field.key,String(e.target.checked))}/> {field.label}</label>:
     <input {...common} type={field.type||'text'} value={val} onChange={e=>set(field.key,e.target.value)}
