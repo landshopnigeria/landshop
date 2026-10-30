@@ -18,13 +18,16 @@ export default async function Page(){
  const {data:ownerMember,error:ownerMembershipError}=await db.from('organization_members')
   .select('organization_id').eq('user_id',user.id).eq('role','owner').eq('status','active')
   .limit(1).maybeSingle();
+ // The owner remains on their personal dashboard and can explicitly enter the
+ // Global Command Center; only verified active owner membership grants that link.
+ let verifiedOwner=false;
  if(!ownerMembershipError&&ownerMember){
   const [{data:landshopOrg},{data:verifiedManagement,error:managerError}]=await Promise.all([
    db.from('organizations').select('id').eq('id',ownerMember.organization_id)
     .eq('kind','landshop').maybeSingle(),
    db.rpc('landshop_is_management',{p_user:user.id})
   ]);
-  if(landshopOrg&&managerError==null&&verifiedManagement===true)redirect('/admin');
+  verifiedOwner=Boolean(landshopOrg&&managerError==null&&verifiedManagement===true);
  }
  // Confirmed staff signup creates only a personal profile, never membership.
  const confirmedStaffSignup=Boolean(user.email_confirmed_at&&user.user_metadata?.staff_signup===true);
@@ -56,5 +59,6 @@ export default async function Page(){
  return <StaffWorkspace userId={user.id} initialProfile={profile||null} initialTasks={tasks||[]}
   role={member?.role||null} initialVerified={verified}
   selfServiceAccess={confirmedStaffSignup&&Boolean(profile)}
+  ownerAccess={verifiedOwner}
   metadata={(user.user_metadata||{}) as Record<string,unknown>} userEmail={user.email||''}/>;
 }
