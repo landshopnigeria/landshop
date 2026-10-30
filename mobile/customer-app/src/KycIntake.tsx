@@ -11,7 +11,7 @@ type DocType='portrait'|'government_id'|'utility_bill';
 type KycDraft={id:string;status:string;kind:string;metadata:Record<string,unknown>|null};
 type ExistingDoc={document_type:string;object_path:string};
 const green='#078a6b',ink='#143a30',muted='#587568';
-import {hasExpectedSignature,kycObjectKey,validateKycFile,type KycMime} from './kyc-file';
+import {KYC_MIME,hasExpectedSignature,kycObjectKey,validateKycFile,type KycMime} from './kyc-file';
 const docs:{type:DocType;label:string}[]=[
  {type:'portrait',label:'Current selfie / portrait'},
  {type:'government_id',label:'Government-issued identification'},
@@ -98,7 +98,7 @@ export default function KycIntake({onClose}:{onClose:()=>void}){
     if(result.canceled||!result.assets?.length)return;
     const asset=result.assets[0];uri=asset.uri;mime=asset.mimeType||'image/jpeg';size=asset.fileSize;
    }else{
-    const result=await DocumentPicker.getDocumentAsync({type:[...allowed],copyToCacheDirectory:true,multiple:false});
+    const result=await DocumentPicker.getDocumentAsync({type:[...KYC_MIME],copyToCacheDirectory:true,multiple:false});
     if(result.canceled||!result.assets?.length)return;
     const asset=result.assets[0];uri=asset.uri;mime=asset.mimeType||'';size=asset.size;
    }
