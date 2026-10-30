@@ -49,6 +49,10 @@ export default function StaffSignIn(){
    if(!url||!key)throw Error('Supabase environment unavailable');
    const db=createBrowserClient(url,key,{cookieOptions:{domain:'.landshopnigeria.com',secure:true,path:'/',sameSite:'lax'}});
    const {data,error}=await db.auth.signInWithPassword({email:email.trim().toLowerCase(),password});
+   if(error?.code==='email_not_confirmed'||/email (is )?not confirmed|confirm your email/i.test(error?.message||'')){
+    setShowConfirmationRecovery(true);
+    throw Error('Your email address needs confirmation. Enter it above and request another confirmation email.');
+   }
    if(error||!data.user)throw Error(error?.message||'Unable to verify this account');
    window.location.assign('/staff');
   }catch(e){setMessage(e instanceof Error?e.message:'Login failed')}finally{setBusy(false)}

@@ -14,7 +14,7 @@ const roles=[
 export default function StaffSignUp(){
  const [v,setV]=useState({email:'',username:'',age:'',gender:'',role:'',password:'',confirm:''});
  const [busy,setBusy]=useState(false),[msg,setMsg]=useState(''),[acknowledged,setAcknowledged]=useState(false);
- const [confirmationPending,setConfirmationPending]=useState(false),[resendCompleted,setResendCompleted]=useState(false);
+ const [confirmationPending,setConfirmationPending]=useState(false),[resendCompleted,setResendCompleted]=useState(false),[pendingEmail,setPendingEmail]=useState('');
  const update=(k:keyof typeof v,s:string)=>setV(p=>({...p,[k]:s}));
  async function resendConfirmation(){
   if(!confirmationPending||resendCompleted||busy)return;
@@ -23,7 +23,7 @@ export default function StaffSignUp(){
    const url=process.env.NEXT_PUBLIC_SUPABASE_URL,key=process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
    if(!url||!key)throw Error('Email service unavailable');
    const db=createBrowserClient(url,key,{cookieOptions:{domain:'.landshopnigeria.com',secure:true,sameSite:'lax',path:'/'}});
-   const {error}=await db.auth.resend({type:'signup',email:v.email.trim().toLowerCase(),
+   const {error}=await db.auth.resend({type:'signup',email:pendingEmail,
     options:{emailRedirectTo:'https://app.landshopnigeria.com/auth/callback'}});
    if(error)throw error;
    setResendCompleted(true);
@@ -48,6 +48,7 @@ export default function StaffSignUp(){
    data:{staff_signup:true,preferred_username:v.username.toLowerCase(),age_at_registration:+v.age,gender:v.gender,requested_role:v.role}
   }});
   if(error)throw error;
+  setPendingEmail(v.email.trim().toLowerCase());
   setConfirmationPending(true);
   setResendCompleted(false);
   setMsg('Check your email to confirm your account. Your requested staff role remains subject to identity verification and management approval.');
