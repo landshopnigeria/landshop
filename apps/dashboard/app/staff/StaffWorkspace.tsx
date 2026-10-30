@@ -3,9 +3,10 @@ import BrandedSelect from '../../components/BrandedSelect';
 
 import {useEffect,useState,type FormEvent} from 'react';
 import Link from 'next/link';
+import StaffAuthShell from './StaffAuthShell';
 import './staff-dashboard.css';
 import {createBrowserClient} from '@supabase/ssr';
-type Profile={user_id:string;username:string;requested_role:string;age_at_registration:number;gender:string;kyc_state:string;employment_state:string;photo_path:string|null;staff_number:string|null;joined_at:string|null};
+type Profile={user_id:string;organization_id:string;username:string;requested_role:string;age_at_registration:number;gender:string;kyc_state:string;employment_state:string;photo_path:string|null;staff_number:string|null;joined_at:string|null};
 type Task={id:string;title:string;details:string|null;status:string;starts_at:string;due_at:string;planned_minutes:number|null;delay_allowance_minutes:number;viewed_at:string|null;started_at:string|null;submitted_at:string|null;score:number|null;review_comment:string|null;assigned_by:string};
 type Attendance={id:string;action:string;occurred_at:string;place:string;latitude:number;longitude:number;accuracy_m:number};
 type Report={score_percent:number|null;assigned_tasks:number;reviewed_tasks:number;planned_minutes:number;tracked_work_minutes:number;recommendation:string;payroll_action:string;period:string};
@@ -16,8 +17,11 @@ function browser(){
  if(!u||!k)throw Error('Secure employee database unavailable');
  return createBrowserClient(u,k,{cookieOptions:{domain:'.landshopnigeria.com',path:'/',sameSite:'lax',secure:true}});
 }
-export default function StaffWorkspace({userId,initialProfile,initialTasks,role,metadata,userEmail}:{userId:string;initialProfile:Profile|null;initialTasks:Task[];role:string|null;metadata:Record<string,unknown>;userEmail:string}){
- const [profile,setProfile]=useState(initialProfile),[tasks,setTasks]=useState(initialTasks),[username,setUsername]=useState(typeof metadata.preferred_username==='string'?metadata.preferred_username:'');
+export default function StaffWorkspace({userId,initialProfile,initialTasks,role,initialVerified,metadata,userEmail}:{userId:string;initialProfile:Profile|null;initialTasks:Task[];role:string|null;initialVerified:boolean;metadata:Record<string,unknown>;userEmail:string}){
+ const [profile,setProfile]=useState(initialProfile),[tasks,setTasks]=useState(initialTasks);
+ const [approvedRole,setApprovedRole]=useState<string|null>(role);
+ const [verifiedAccess,setVerifiedAccess]=useState(initialVerified);
+ const [username,setUsername]=useState(typeof metadata.preferred_username==='string'?metadata.preferred_username:'');
  const [age,setAge]=useState(typeof metadata.age_at_registration==='number'?String(metadata.age_at_registration):'');
  const [gender,setGender]=useState(typeof metadata.gender==='string'?metadata.gender:'prefer_not_to_say');
  const [wanted,setWanted]=useState(typeof metadata.requested_role==='string'?metadata.requested_role:'staff');
@@ -26,21 +30,47 @@ export default function StaffWorkspace({userId,initialProfile,initialTasks,role,
  const [activeTab,setActiveTab]=useState('dashboard'),[collapsed,setCollapsed]=useState(false),[mobileNav,setMobileNav]=useState(false),[search,setSearch]=useState(''),[notifyOpen,setNotifyOpen]=useState(false),[profileOpen,setProfileOpen]=useState(false);
  const [scoreSet,setScoreSet]=useState<Record<string,Report|null>>({day:null,week:null,month:null,year:null});
  const [daily,setDaily]=useState(''),[blockers,setBlockers]=useState(''),[selected,setSelected]=useState(''),[taskNote,setTaskNote]=useState(''),[opened,setOpened]=useState('');
- const verified=Boolean(profile?.employment_state==='active'&&profile?.kyc_state==='approved');
- const management=['owner','ceo','founder','admin','technology_officer','technology_consultant'].includes(role||'');
- const supervisor=management||['hr_officer','head_finance','social_media_manager','customer_service_manager','department_manager','operations','hr','finance'].includes(role||'');
+ const verified=Boolean(verifiedAccess&&approvedRole&&profile?.employment_state==='active'&&profile?.kyc_state==='approved');
+ const management=verified&&['owner','ceo','founder','admin','technology_officer','technology_consultant'].includes(approvedRole||'');
+ const supervisor=verified&&(management||['hr_officer','head_finance','social_media_manager','customer_service_manager','department_manager','operations','hr','finance'].includes(approvedRole||''));
  function notify(err:unknown){setMessage(err instanceof Error?err.message:'Unable to save changes')}
  async function refresh(){
-  try{const db=browser();const [{data:p},{data:t}]=await Promise.all([
+  try{
+   const db=browser();
+   const [{data:p,error:pError},{data:allowed,error:workError}]=await Promise.all([
     db.from('landshop_staff_profiles').select('*').eq('user_id',userId).maybeSingle(),
-    db.from('staff_tasks').select('id,title,details,status,starts_at,due_at,planned_minutes,delay_allowance_minutes,viewed_at,started_at,submitted_at,score,review_comment,assigned_by').eq('assignee_id',userId).order('created_at',{ascending:false}).limit(100)
-  ]);
-  if(p)setProfile(p as Profile);if(t)setTasks(t as Task[]);
-  const [a,...results]=await Promise.all([db.rpc('landshop_attendance_history',{p_user:userId}),...(['day','week','month','year'] as const).map(p=>db.rpc('landshop_staff_performance',{p_staff:userId,p_period:p}))]);
-  if(!a.error&&Array.isArray(a.data))setAttendance(a.data as Attendance[]);
-  const nextScores:Record<string,Report|null>={};(['day','week','month','year'] as const).forEach((key,i)=>{nextScores[key]=results[i].error?null:(results[i].data as Report|null)});
-  setScoreSet(nextScores);setReport(nextScores[period]);
-  if(p?.photo_path){const x=await db.storage.from('landshop-staff-private').createSignedUrl(p.photo_path,600);if(x.data?.signedUrl)setImage(x.data.signedUrl)}
+    db.rpc('landshop_staff_can_work',{p_user:userId})
+   ]);
+   if(pError)throw Error(pError.message);
+   const latest=(p||null) as Profile|null;
+   setProfile(latest);
+   const permitted=workError==null&&allowed===true&&latest?.kyc_state==='approved'&&latest?.employment_state==='active';
+   const {data:membership}=permitted?await db.from('organization_members').select('role')
+    .eq('organization_id',latest.organization_id).eq('user_id',userId)
+    .eq('status','active').limit(1).maybeSingle():{data:null};
+   setApprovedRole(membership?.role||null);
+   setVerifiedAccess(Boolean(permitted&&membership?.role));
+   if(!permitted||!membership?.role){
+    setTasks([]);
+    setAttendance([]);
+    setScoreSet({day:null,week:null,month:null,year:null});
+    setReport(null);
+   }else{
+    const [{data:t},a,...results]=await Promise.all([
+     db.from('staff_tasks').select('id,title,details,status,starts_at,due_at,planned_minutes,delay_allowance_minutes,viewed_at,started_at,submitted_at,score,review_comment,assigned_by').eq('assignee_id',userId).order('created_at',{ascending:false}).limit(100),
+     db.rpc('landshop_attendance_history',{p_user:userId}),
+     ...(['day','week','month','year'] as const).map(p=>db.rpc('landshop_staff_performance',{p_staff:userId,p_period:p}))
+    ]);
+    setTasks((t||[]) as Task[]);
+    if(!a.error&&Array.isArray(a.data))setAttendance(a.data as Attendance[]);
+    const nextScores:Record<string,Report|null>={};
+    (['day','week','month','year'] as const).forEach((key,i)=>{nextScores[key]=results[i].error?null:(results[i].data as Report|null)});
+    setScoreSet(nextScores);setReport(nextScores[period]);
+   }
+   if(latest?.photo_path){
+    const result=await db.storage.from('landshop-staff-private').createSignedUrl(latest.photo_path,600);
+    setImage(result.data?.signedUrl||null);
+   }else setImage(null);
   }catch(e){notify(e)}
  }
  useEffect(()=>{if(profile)void refresh()},[period]);
@@ -95,7 +125,7 @@ export default function StaffWorkspace({userId,initialProfile,initialTasks,role,
  const go=(item:string)=>{setActiveTab(item);setMobileNav(false);setNotifyOpen(false)};
  const unviewed=tasks.filter(t=>!t.viewed_at&&t.status==='assigned').length;
  const filteredTasks=tasks.filter(t=>(t.title+' '+(t.details||'')).toLowerCase().includes(search.toLowerCase()));
- const roleLabel=(role||profile?.requested_role||wanted).replaceAll('_',' ').replace(/\b\w/g,x=>x.toUpperCase());
+ const roleLabel=(verified?(approvedRole||'staff'):'Requested: '+(profile?.requested_role||wanted)).replaceAll('_',' ').replace(/\b\w/g,x=>x.toUpperCase());
  const kycLabel=(profile?.kyc_state||'not_started').replaceAll('_',' ');
  const todayAttendance=attendance.filter(a=>new Date(a.occurred_at).toLocaleDateString('en-CA',{timeZone:'Africa/Lagos'})===new Date().toLocaleDateString('en-CA',{timeZone:'Africa/Lagos'}));
  const lastClock=attendance[0];
@@ -164,6 +194,24 @@ export default function StaffWorkspace({userId,initialProfile,initialTasks,role,
   {!verified&&<p className="ls25-disclaimer">Submitting daily activity reports requires an approved employee identity.</p>}
  </section>;
  const menuName:Record<string,string>={dashboard:'Staff Dashboard',overview:'Work Overview',profile:'My Profile',attendance:'Attendance',tasks:'Assigned Tasks',daily:'Daily Routine',performance:'My Performance'};
+ // Until both identity verification and an active Landshop membership are present,
+ // show only onboarding and approval status—not the employee command dashboard.
+ if(!verified)return <StaffAuthShell><section className="ls25-applicant" aria-labelledby="staff-onboarding-title">
+  <div className="ls25-applicant-heading"><p>LANDSHOP PEOPLE & MANAGEMENT</p>
+   <h1 id="staff-onboarding-title">Staff <span>registration</span></h1>
+   <p>{!profile?'Complete your registration to request staff access.':
+      profile.kyc_state==='submitted'?'Your portrait was submitted. Management verification is pending.':
+      profile.kyc_state==='rejected'?'Your identity review needs attention. Submit a new portrait for reassessment.':
+      profile.employment_state==='suspended'?'Your staff access is currently suspended. Contact management.':
+      'Complete identity verification before your staff access can be approved.'}</p></div>
+  {message&&<div role="status" aria-live="polite" className="ls25-applicant-message">{message}</div>}
+  {profileCard}
+  <div className="ls25-applicant-actions">
+   <button type="button" disabled={busy} onClick={()=>void refresh()}>Check approval status</button>
+   <button type="button" disabled={busy} onClick={signOut}>Sign Out</button>
+  </div>
+  <p className="ls25-applicant-footer">No staff ID, attendance, tasks, reports or management privileges are available until approval.</p>
+ </section></StaffAuthShell>;
  return <div className={'ls25-shell'+(collapsed?' ls25-collapsed':'')}>
   {mobileNav&&<button className="ls25-screen-overlay" type="button" aria-label="Close staff navigation" onClick={()=>setMobileNav(false)}/>}
   <aside className={'ls25-sidebar'+(mobileNav?' ls25-sidebar-open':'')} aria-label="Staff dashboard navigation">
