@@ -25,11 +25,28 @@ async function staff(){
  if(!orgs?.length)throw new Error('Landshop staff membership is required.');
  return db;
 }
+type CatalogItem={slug:string;title:string;category:string;summary:string;readingMinutes:number;href:string;image:string};
+async function publishedCatalog():Promise<CatalogItem[]>{
+ try{
+  const response=await fetch('https://www.landshopnigeria.com/api/insights/catalog',{cache:'no-store',headers:{Accept:'application/json'},signal:AbortSignal.timeout(8000)});
+  if(!response.ok)return [];
+  const json=await response.json();
+  if(!Array.isArray(json.articles))return [];
+  return json.articles.filter((a:unknown):a is CatalogItem=>{
+   if(!a||typeof a!=='object')return false;
+   const x=a as Partial<CatalogItem>;
+   return typeof x.slug==='string'&&/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(x.slug)
+    &&typeof x.title==='string'&&x.title.length>0&&typeof x.href==='string'&&x.href==='/insights/'+x.slug;
+  }).slice(0,120);
+ }catch{return []}
+}
 async function approve(data:FormData){
  'use server';
  const db=await staff();
  const day=String(data.get('date')||''),slug=String(data.get('slug')||'').trim();
  if(!/^\d{4}-\d{2}-\d{2}$/.test(day)||!(/^[a-z0-9]+(-[a-z0-9]+)*$/.test(slug)))throw new Error('Choose a valid date and an existing published Insights slug.');
+ const published=await publishedCatalog();
+ if(!published.some(article=>article.slug===slug))throw new Error('Article is not in the currently published Landshop Insights catalogue. Approval denied.');
  const {error}=await db.rpc('landshop_approve_newsletter_campaign',{p_date:day,p_slug:slug});
  if(error)throw new Error(error.message);
  revalidatePath('/admin/newsletter');
@@ -45,7 +62,9 @@ async function cancel(data:FormData){
 export default async function NewsletterAdmin(){
  let db:Awaited<ReturnType<typeof staff>>|null=null;
  try{db=await staff()}catch{return <main style={{padding:40}}><h1>Landshop Newsletter</h1><p>Authorized staff sign-in is required.</p><Link href="/admin">Return to Command Center</Link></main>}
- const {data,error}=await db.rpc('landshop_staff_newsletter_campaigns');
+ const [{data,error},articles]=await Promise.all([db.rpc('landshop_staff_newsletter_campaigns'),publishedCatalog()]);
+ const approvedCount=(data||[]).filter((c:{status:string})=>c.status==='approved').length;
+ const cancelledCount=(data||[]).filter((c:{status:string})=>c.status==='cancelled').length;
  const day=lagosDay();
  const linkStyle={color:'#087857',fontWeight:650};
  return <main style={{fontFamily:'Arial, sans-serif',color:'#153e2b',maxWidth:1070,margin:'48px auto',padding:'0 24px 80px',lineHeight:1.65}}>
@@ -55,16 +74,36 @@ export default async function NewsletterAdmin(){
   <p>Approve one published article for a chosen date. Sending is separately controlled by production email credentials, the Broadcast stream, explicit consent and an emergency off-switch. Approval does not override delivery safeguards.</p>
   <section style={{background:'#f0f8f3',border:'1px solid #d0e6d7',borderRadius:17,padding:'24px 26px',margin:'27px 0'}}>
    <h2 style={{margin:'0 0 15px'}}>Approve an article digest</h2>
+   <div aria-label="Campaign overview" style={{display:'flex',gap:10,flexWrap:'wrap',marginBottom:20}}>
+    <span style={{background:'white',border:'1px solid #d1e7d5',borderRadius:9,padding:'9px 13px',fontSize:12}}>Approved campaigns: <strong>{approvedCount}</strong></span>
+    <span style={{background:'white',border:'1px solid #d1e7d5',borderRadius:9,padding:'9px 13px',fontSize:12}}>Cancelled: <strong>{cancelledCount}</strong></span>
+    <span style={{background:'white',border:'1px solid #d1e7d5',borderRadius:9,padding:'9px 13px',fontSize:12}}>Published articles: <strong>{articles.length}</strong></span>
+    <span style={{background:'white',border:'1px solid #d1e7d5',borderRadius:9,padding:'9px 13px',fontSize:12}}>Daily check: <strong>08:00 WAT</strong></span>
+   </div>
    <form action={approve} style={{display:'grid',gridTemplateColumns:'minmax(180px,.65fr) minmax(250px,1.5fr)',gap:15}}>
     <label style={{display:'grid',gap:6,fontSize:13,fontWeight:650}}>Delivery date (Lagos time)
      <input type="date" name="date" defaultValue={day} min={day} required style={{padding:13,borderRadius:9,border:'1px solid #b9d2c3',font: 'inherit'}}/>
     </label>
-    <label style={{display:'grid',gap:6,fontSize:13,fontWeight:650}}>Existing published Insights article slug
-     <input type="text" name="slug" pattern="[a-z0-9]+(-[a-z0-9]+)*" placeholder="e.g. property-due-diligence" maxLength={130} required style={{padding:13,borderRadius:9,border:'1px solid #b9d2c3',font:'inherit'}}/>
+    <label style={{display:'grid',gap:6,fontSize:13,fontWeight:650}}>Published Landshop Insights article
+     <select name="slug" required disabled={!articles.length} defaultValue="" style={{padding:13,borderRadius:9,border:'1px solid #b9d2c3',font:'inherit',background:'white',minWidth:0}}>
+      <option value="">{articles.length?'Select a published article':'Article catalogue currently unavailable'}</option>
+      {articles.map(a=><option key={a.slug} value={a.slug}>{a.title} · {a.category}</option>)}
+     </select>
     </label>
-    <p style={{gridColumn:'1/-1',fontSize:12,color:'#516f5e',margin:0}}>Find the slug in <Link href="https://www.landshopnigeria.com/insights" style={linkStyle}>published Landshop Insights</Link>. The dispatcher independently verifies the article exists in the approved codebase and on the live website.</p>
-    <button type="submit" style={{justifySelf:'start',gridColumn:'1/-1',border:0,padding:'14px 21px',background:'#218a64',color:'#fff',borderRadius:10,fontWeight:760,cursor:'pointer'}}>Approve digest for selected day</button>
+    <p style={{gridColumn:'1/-1',fontSize:12,color:'#516f5e',margin:0}}>Only currently published articles are selectable. The dispatcher re-verifies the article and consent before any authorized send. <Link href="https://www.landshopnigeria.com/insights" style={linkStyle}>View published Insights</Link>.</p>
+    <button type="submit" disabled={!articles.length} style={{justifySelf:'start',gridColumn:'1/-1',border:0,padding:'14px 21px',background:'#218a64',color:'#fff',borderRadius:10,fontWeight:760,cursor:articles.length?'pointer':'not-allowed',opacity:articles.length?1:.55}}>Approve digest for selected day</button>
    </form>
+  </section>
+  <section aria-label="Published article previews" style={{margin:'30px 0'}}>
+   <h2>Published article previews</h2>
+   <p style={{fontSize:13,color:'#607e6e'}}>Open an article to review it. Select a published article above to approve a campaign.</p>
+   <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(205px,1fr))',gap:13}}>
+    {articles.slice(0,6).map(a=><a key={a.slug} href={'https://www.landshopnigeria.com'+a.href} target="_blank" rel="noopener noreferrer" style={{textDecoration:'none',color:'#204a36',border:'1px solid #d9e8de',borderRadius:13,padding:16,background:'#f8fbf9'}}>
+     <span style={{fontSize:10,color:'#118060',fontWeight:800,letterSpacing:'.08em'}}>{a.category}</span>
+     <strong style={{display:'block',fontSize:15,lineHeight:1.35,margin:'7px 0'}}>{a.title}</strong>
+     <span style={{fontSize:11,color:'#577c67'}}>{a.readingMinutes} min read · Open article ↗</span>
+    </a>)}
+   </div>
   </section>
   <h2>Campaign approval register</h2>
   {error?<p role="alert">Campaign register is unavailable. Check staff permissions.</p>:null}
