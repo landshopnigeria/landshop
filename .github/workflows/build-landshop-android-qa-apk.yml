@@ -1,0 +1,101 @@
+name: Landshop Android Standalone QA APK (Not Store Release)
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'mobile/customer-app/**'
+      - '.github/workflows/build-landshop-android-qa-apk.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: landshop-android-qa-apk
+  cancel-in-progress: false
+jobs:
+  android-qa-apk:
+    name: Build standalone Android QA APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 100
+    defaults:
+      run:
+        working-directory: mobile/customer-app
+    env:
+      CI: '1'
+      EXPO_PUBLIC_NATIVE_AUTH_REDIRECT_READY: 'false'
+    steps:
+      - name: Check out Landshop source
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Configure Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Set up Python for brand artwork
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install app dependencies
+        run: npm install --no-audit --no-fund
+      - name: Derive QA configuration from the existing Supabase client
+        run: |
+          node - <<'NODE' >> "$GITHUB_ENV"
+          const e=require('./eas.json');
+          const p=e.build['android-internal'];
+          if(!p || p.env.EXPO_PUBLIC_SUPABASE_URL!=='https://iwkfagzkogzidrbbezds.supabase.co')
+            throw Error('Wrong backend project');
+          const key=p.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY||'';
+          if(!/^sb_publishable_[A-Za-z0-9_-]+$/.test(key))
+            throw Error('Missing client-safe publishable key; service/secret keys prohibited.');
+          if(p.env.EXPO_PUBLIC_NATIVE_AUTH_REDIRECT_READY!=='false')
+            throw Error('QA OAuth must remain disabled.');
+          console.log('EXPO_PUBLIC_SUPABASE_URL='+p.env.EXPO_PUBLIC_SUPABASE_URL);
+          console.log('EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY='+key);
+          NODE
+      - name: Generate approved Landshop icon, splash and Android artwork
+        run: |
+          python -m pip install 'Pillow==12.0.0'
+          npm run assets:prepare
+      - name: Run TypeScript and account-security tests
+        run: |
+          npm run typecheck
+          npm test
+      - name: Generate Android native Gradle project
+        run: npx expo prebuild --platform android --clean --no-install
+      - name: Use ephemeral Android DEBUG signing for internal QA only
+        run: |
+          set -euo pipefail
+          test -f android/app/build.gradle
+          if [ ! -s android/app/debug.keystore ]; then
+            keytool -genkeypair -v -keystore android/app/debug.keystore -alias androiddebugkey -keyalg RSA -keysize 2048 -validity 3650 -storepass android -keypass android -dname 'CN=Android Debug,O=Android,C=US'
+          fi
+          # This change exists only inside the ephemeral GitHub runner.
+          # A release-variant APK bundles JS and works without a Metro server,
+          # and .qa app ID avoids conflict with any future store app.\n          # DEBUG signing means it MUST NOT be uploaded to Google Play.
+          printf '\nandroid { buildTypes { release { signingConfig signingConfigs.debug; applicationIdSuffix ".qa"; versionNameSuffix "-qa" } } }\n' >> android/app/build.gradle
+      - name: Compile standalone Android APK with bundled JavaScript
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew :app:assembleRelease --no-daemon --max-workers=2
+      - name: Check APK and create integrity fingerprint
+        run: |
+          set -euo pipefail
+          APK=android/app/build/outputs/apk/release/app-release.apk
+          test -s "$APK"
+          sha256sum "$APK" > android/app/build/outputs/apk/release/app-release.apk.sha256
+          echo 'Build completed: INTERNAL QA ONLY, debug-signed. Not suitable for Google Play.'
+      - name: Upload internal QA package to GitHub Actions
+        uses: actions/upload-artifact@v4
+        with:
+          name: landshop-android-internal-qa-apk
+          path: |
+            mobile/customer-app/android/app/build/outputs/apk/release/app-release.apk
+            mobile/customer-app/android/app/build/outputs/apk/release/app-release.apk.sha256
+          if-no-files-found: error
+          retention-days: 7

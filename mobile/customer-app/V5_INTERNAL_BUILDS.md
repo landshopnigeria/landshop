@@ -15,13 +15,13 @@ This release setup **does not automatically publish** to Google Play or Apple Ap
 2. In GitHub repository **Settings → Secrets and variables → Actions**, set:
    - Secret `EXPO_TOKEN`: a limited-scope access token for that Expo project, stored as a GitHub Actions secret (not committed).
    - Variable `LANDSHOP_EAS_PROJECT_ID`: the existing EAS project UUID.
-3. In the Expo/EAS project under the **Preview** environment, configure `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY` with the publishable key of the existing Landshop Supabase project. This is a client-facing key, never a service-role/secret key. The configured project URL is `https://iwkfagzkogzidrbbezds.supabase.co`.
+3. The active **client-safe Supabase publishable key** and the verified Landshop project URL are now included in the EAS profile `env` entries. The key is designed to be bundled into public client apps, **not** a service-role or secret key. No additional EAS key entry is required for these profiles. Any future key rotation must update all build profiles and trigger new binary builds.
 4. Complete EAS signing credential setup. Android internal APK signing can use managed credentials. Real-device iOS internal builds require Apple Developer enrollment, registered devices, and provisioned credentials. This workflow cannot supply those credentials by itself.
 5. Leave native OAuth callback flag **OFF** until device testing and exact Supabase redirect allowlisting are complete.
 
 ## Start an authorized internal build
 
-Open the link above, select **Run workflow**, use branch `main`, choose exactly one internal profile, then run. The workflow validates the app identity, compiles the mobile code, creates official brand artwork, links the existing EAS project, checks its Preview configuration, and requests an internal build. Its logs contain the resulting EAS build reference.
+Open the link above, select **Run workflow**, use branch `main`, choose exactly one internal profile, then run. The workflow validates the app identity, compiles the mobile code, creates official brand artwork, links the existing EAS project, checks that the bundled publishable key belongs to Landshop's backend, and requests an internal build. Its logs contain the resulting EAS build reference.
 
 A successful GitHub Action only proves that EAS accepted and completed the build. Engineers must still download the actual APK/IPA, install it, and test on real devices before public release.
 
@@ -49,3 +49,7 @@ npx expo export --platform all
 This check does not install a native application or verify camera/OAuth/device behavior.
 
 **State:** source and build configuration only. No EAS project credentials are included in the repository. No internal APK/IPA or store submission is claimed until the actual workflow finishes with the authorized account.
+
+## V6 — Android QA without Expo credentials
+
+A separate [Standalone Android QA APK workflow](https://github.com/landshopnigeria/landshop/actions/workflows/build-landshop-android-qa-apk.yml) can generate a standalone debug-signed Android APK through GitHub-hosted Gradle without an Expo account. The app ID is suffixed with `.qa`, so it cannot replace a production store app, and native OAuth remains disabled. This is strictly a tester build, **never** a Play Store production APK. See [V6_ANDROID_QA.md](./V6_ANDROID_QA.md).

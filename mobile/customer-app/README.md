@@ -70,3 +70,9 @@ The application list continues to display owner-scoped statuses even if event-hi
 ## V5 — Owner-authorized internal native builds
 
 The approved Landshop logo now feeds generated app-icon/adaptive-icon/splash source assets, and the repo includes an opt-in GitHub Actions **internal** EAS build workflow. Android APK, iOS Simulator and provisioned iOS internal builds require the owner's connected Expo project ID and private EXPO_TOKEN; app-store submission is not part of the workflow. See [V5_INTERNAL_BUILDS.md](./V5_INTERNAL_BUILDS.md) for the exact configuration and QA acceptance steps. Native OAuth remains disabled until device-level checks prove the redirect workflow.
+
+## V6 — Client configuration and installable Android QA
+
+All build profiles now use the same active **publishable** Supabase API key and the existing Landshop project URL. This is intentionally a client-side key and is protected by the database's RLS policies; service-role/secret keys must never appear in a native bundle. GitHub's internal EAS workflow checks that the expected Landshop public key and client URL are set before building.
+
+For testers who cannot yet use Landshop's Expo account, a separate [Android QA APK build workflow](https://github.com/landshopnigeria/landshop/actions/workflows/build-landshop-android-qa-apk.yml) builds a standalone, debug-signed `.qa` application and provides a seven-day artifact on a **successful** workflow run. It is not a Play Store or production-signed build. See [V6_ANDROID_QA.md](./V6_ANDROID_QA.md) for artifact download, SHA-256 verification and safety requirements. iOS build and app-store signing still depend on Apple/EAS configuration and device acceptance tests.
