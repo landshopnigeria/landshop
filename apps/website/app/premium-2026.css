@@ -41,3 +41,25 @@
 @media(max-width:950px){.ls26-plan-hero,.ls26-two{grid-template-columns:1fr;gap:34px}.ls26-hero-photo{min-height:310px}.ls26-product-index,.ls-why-grid,.ls26-grid-three{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:620px){.ls26-container{width:min(100% - 32px,1240px)}.ls26-page{padding-bottom:60px}.ls26-crumb{padding:8px 0 25px;flex-wrap:wrap}.ls26-plan-hero{padding-bottom:35px}.ls26-plan-hero h1,.ls26-intro h1{font-size:44px}.ls26-hero-photo{min-height:270px;border-radius:20px;padding:24px}.ls26-photo-number{font-size:90px}.ls26-two{padding-top:55px}.ls26-product-index,.ls-why-grid,.ls26-grid-three{grid-template-columns:1fr}.ls26-intro{padding:35px 0}.ls26-hero-actions{align-items:stretch}.ls26-hero-actions a{flex:1}.ls26-brand-image{height:55px}.ls26-loan{padding:23px}.ls26-hero-photo strong{font-size:50px}}
 @media(prefers-reduced-motion:reduce){.ls26-button,.ls26-outline,.ls26-product-card,.ls-why-card{transition:none!important}}
+
+/* V26 supplementary estate / contact and form refinements */
+.ls26-collection-badge{display:inline-flex;border:1px solid #b7d8c9;background:#eff9f3;border-radius:100px;padding:5px 13px;color:#087a5a;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;margin:4px 0 8px}
+.ls26-offices{padding-top:48px;padding-bottom:48px}
+.ls26-offices h2{font-size:clamp(28px,3vw,47px);letter-spacing:-.045em}
+.ls26-offices .ls26-aside h3{font-size:22px;letter-spacing:-.03em;margin:0}
+.ls26-offices .ls26-aside p{line-height:1.7}
+.ls26-visit-form select,.ls26-visit-form textarea{display:block;width:100%;border:1px solid #c8dbd1;border-radius:13px;padding:14px;font:inherit;font-size:16px;color:#143b2c;background:white;margin-top:8px;resize:vertical}
+.ls26-visit-form input[type="checkbox"]{display:inline-block;width:auto;margin-right:8px;vertical-align:middle;accent-color:#008b6c}
+.ls26-visit-form button.ls26-button{border:0;cursor:pointer;margin-top:17px}
+.ls26-visit-form button.ls26-button:disabled{opacity:.55;cursor:wait}
+.ls26-visit-form label:has(input[type="checkbox"]){font-size:12px;line-height:1.6}
+.ls26-aside:has(.contact-enquiry-form){background:white}
+.ls26-aside .contact-enquiry-form{max-width:none}
+.ls26-estate-content strong{color:#0a795c}
+.v22-products .v22-product{min-width:0}
+.v22-products .v22-product-image{overflow:hidden}
+.v22-products .v22-product .v22-product-body h3{font-size:clamp(24px,2.4vw,34px)}
+.v22-section .v22-eyebrow{letter-spacing:.13em;font-weight:800}
+.ls26-projects-home{background:#f6f9f5}
+.ls26-projects-home .ls26-estate-card:hover .ls26-estate-visual{background:linear-gradient(135deg,#d3e8d9,#b1d4be)}
+@media(max-width:620px){.ls26-offices{padding-top:30px;padding-bottom:30px}.ls26-visit-form select,.ls26-visit-form textarea{font-size:16px}}
