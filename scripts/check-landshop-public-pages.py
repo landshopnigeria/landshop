@@ -32,9 +32,14 @@ PUBLIC_PAGES = [
     ("website", "/properties", "Property Marketplace"),
     ("website", "/applications", "Your property journey"),
     ("website", "/search", "Search Landshop"),
-    ("website", "/about", "Building wealth through real estate"),
+    ("website", "/about", "Landshop was founded in 2017"),
     ("website", "/contact", "Let\'s talk about your next move."),
-    ("website", "/insights", "Better property decisions start with better questions"),
+    ("website", "/services", "Guidance for every property decision."),
+    ("website", "/locations", "Find the location that suits your future."),
+    ("website", "/locations/lagos", "Explore property in Lagos."),
+    ("website", "/locations/abuja", "Explore property in Abuja (FCT)."),
+    ("website", "/partners", "Partnerships built around possibility."),
+    ("website", "/insights", "Insights for better property decisions."),
     ("website", "/company/team", "The work behind every decision"),
     ("website", "/thrift", "Build towards property goals, together"),
     ("website", "/services/property-acquisition", "From a property enquiry"),
@@ -122,8 +127,13 @@ def check(kind: str, route: str, expected: str | None):
         # A successful Next.js page must not show stock estate photo archives as live properties.
         if "Explore genuine photographs from Landshop estate archives" in visible:
             raise AssertionError("obsolete estate archive is still substituted for public property listings")
-        if "New properties will appear here after verification." not in visible and "View Property" not in visible:
-            raise AssertionError("property section must show real published cards or the verified inventory empty state")
+        # The approved V22 design uses an inventory-backed section, not the
+        # previous V16 empty-state wording. Require the actual property card
+        # or the explicit verified-inventory empty-state component.
+        if 'class="v22-feature"' not in html and 'class="v22-inventory-empty"' not in html:
+            raise AssertionError("V22 must render published property cards or its verified inventory empty state")
+        if "Explore property with clarity." not in unescape(visible):
+            raise AssertionError("approved V22 marketplace content is not visible")
         if 'data-landshop-hero="v16-separated-product-slides"' not in html:
             raise AssertionError("approved V16 distinct-slide homepage is missing")
         if 'data-active-product="DEVELOP"' not in html:
