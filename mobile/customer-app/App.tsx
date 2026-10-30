@@ -7,9 +7,11 @@ import type {Session} from '@supabase/supabase-js';
 import {supabase} from './src/supabase';
 import {parseInboundUrl} from './src/auth-links';
 import {BrandIcon} from './src/BrandIcon';
+import KycIntake from './src/KycIntake';
+import ApplicationsTracker from './src/ApplicationsTracker';
 import {finishNativeAuthentication,nativeAuthEnabled,nativeCallbackUrl,signInWithNativeGoogle,webCallbackUrl} from './src/native-auth';
 
-type Page='signin'|'signup'|'verify'|'reset-password'|'dashboard'|'referrals'|'kyc'|'profile';
+type Page='signin'|'signup'|'verify'|'reset-password'|'dashboard'|'referrals'|'kyc'|'applications'|'profile';
 type Summary={total_referrals:number;email_verified:number;kyc_verified:number;approved_applications:number};
 const green='#078a6b',ink='#123a32',orange='#e97721',muted='#688278';
 const portal='https://portal.landshopnigeria.com',app='https://app.landshopnigeria.com';
@@ -249,7 +251,7 @@ export default function App(){
     ['Invest in Property','home',()=>navigateWebsite('https://www.landshopnigeria.com/properties')],
     ['Refer & Grow','users',()=>switchPage('referrals')],
     ['Build Wealth','growth',()=>navigateWebsite(portal+'/applications/incubate-investment')],
-    ['Applications','file',()=>navigateWebsite(app+'/dashboard/applications')],
+    ['Applications','file',()=>switchPage('applications')],
     ['Referral Wallet','wallet',()=>switchPage('referrals')],
     ['Support','support',()=>navigateWebsite(portal+'/support')]
    ] as const).map(([title,icon,go])=><Pressable key={title} style={styles.quickCard} onPress={go}>
@@ -257,6 +259,7 @@ export default function App(){
    </Pressable>)}
   </View>
   <View style={styles.row}><View style={[styles.summaryCard,styles.half]}><Text style={styles.summaryTitle}>Applications</Text><Text style={styles.summaryNumber}>{applications}</Text></View><View style={[styles.summaryCard,styles.half]}><Text style={styles.summaryTitle}>Approved Wallet</Text><Text style={styles.summaryNumber}>{new Intl.NumberFormat('en-NG',{style:'currency',currency:'NGN',maximumFractionDigits:0}).format(wallet/100)}</Text></View></View>
+  <Action label="My applications and progress" onPress={()=>switchPage('applications')}/>
   <Action label="My referral link and QR" onPress={()=>switchPage('referrals')}/>
   <Action label="Identity verification" onPress={()=>switchPage('kyc')}/>
  </>;
@@ -267,14 +270,7 @@ export default function App(){
     <View style={styles.row}><View style={[styles.summaryCard,styles.half]}><Text style={styles.summaryTitle}>Registrations</Text><Text style={styles.summaryNumber}>{summary?.total_referrals||0}</Text></View><View style={[styles.summaryCard,styles.half]}><Text style={styles.summaryTitle}>KYC Approved</Text><Text style={styles.summaryNumber}>{summary?.kyc_verified||0}</Text></View></View>
     <Text style={{fontSize:11,color:muted,lineHeight:17}}>Rewards are recorded only after authorized financial approval. Invitations alone do not earn a commission.</Text>
    </>:<Text style={styles.message}>Your personal code is being prepared. Refresh your account to check again.</Text>}</>;
- const kycScreen=<><Text style={styles.overline}>ACCOUNT VERIFICATION</Text><Text style={styles.heading}>Verify Your <Text style={styles.accent}>Identity</Text></Text>
-   <Caption>Protect your account and complete Landshop's secure identity review.</Caption>
-   <View style={styles.summaryCard}><Text style={styles.summaryTitle}>Current verification status</Text><Text style={styles.summaryNumber}>{kyc.replaceAll('_',' ')}</Text></View>
-   {['Personal information','ID document upload','Selfie verification','Address confirmation','Landshop review'].map((label,i)=><View key={label} style={styles.kycStep}><Text style={styles.kycNumber}>{i+1}</Text><Text style={{color:ink,flex:1,fontWeight:'600'}}>{label}</Text><Text style={{color:muted}}>›</Text></View>)}
-   <Primary label="Continue KYC Securely" onPress={()=>navigateWebsite(app+'/dashboard/kyc')}/>
-   <Text style={{fontSize:11,color:muted,lineHeight:18,marginTop:12}}>The full document and selfie capture currently opens Landshop's authenticated web KYC. Native capture is not yet enabled.</Text>
- </>;
- const profileScreen=<><Text style={styles.overline}>MY ACCOUNT</Text><Text style={styles.heading}>Account & <Text style={styles.accent}>Security</Text></Text><Action label="Manage account profile" onPress={()=>navigateWebsite(app+'/dashboard/account')}/><Action label="My applications" onPress={()=>navigateWebsite(app+'/dashboard/applications')}/><Action label="Landshop website" onPress={()=>navigateWebsite('https://www.landshopnigeria.com')}/><Primary label="Sign Out" onPress={signOut}/></>;
+ const profileScreen=<><Text style={styles.overline}>MY ACCOUNT</Text><Text style={styles.heading}>Account & <Text style={styles.accent}>Security</Text></Text><Action label="Manage account profile" onPress={()=>navigateWebsite(app+'/dashboard/account')}/><Action label="My applications" onPress={()=>switchPage('applications')}/><Action label="Landshop website" onPress={()=>navigateWebsite('https://www.landshopnigeria.com')}/><Primary label="Sign Out" onPress={signOut}/></>;
  return <SafeAreaView style={styles.root}><StatusBar barStyle="dark-content"/>
  {loading?<View style={styles.loader}><ActivityIndicator color={green} size="large"/><Text style={{marginTop:12,color:muted}}>Opening Landshop securely…</Text></View>:
  auth?<ImageBackground source={{uri:page==='signup'?signupPhoto:signinPhoto}} resizeMode="cover" style={styles.background}>
@@ -287,10 +283,12 @@ export default function App(){
  </ImageBackground>:
  <View style={{flex:1,backgroundColor:'#f1f7f3'}}>
   <View style={styles.topbar}><Brand/><Text style={{color:green,fontWeight:'800',fontSize:12}}>MY LANDSHOP</Text></View>
-  <ScrollView contentContainerStyle={styles.screenPad} showsVerticalScrollIndicator={false}>
-   {page==='dashboard'?overview:page==='referrals'?refScreen:page==='kyc'?kycScreen:profileScreen}
-   {!!notice&&<Text style={styles.message}>{notice}</Text>}
-  </ScrollView>
+  {page==='kyc'?<KycIntake onClose={()=>switchPage('dashboard')}/>:
+   page==='applications'?<ApplicationsTracker onClose={()=>switchPage('dashboard')}/>:
+   <ScrollView contentContainerStyle={styles.screenPad} showsVerticalScrollIndicator={false}>
+    {page==='dashboard'?overview:page==='referrals'?refScreen:profileScreen}
+    {!!notice&&<Text style={styles.message}>{notice}</Text>}
+   </ScrollView>}
   <View style={styles.dock}>{([
    ['Home','dashboard','home'],
    ['Properties','properties','search'],

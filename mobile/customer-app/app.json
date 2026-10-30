@@ -15,7 +15,15 @@
       "edgeToEdgeEnabled": true
     },
     "plugins": [
-      "expo-secure-store"
+      "expo-secure-store",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Landshop uses selected photos only when you upload an identity document.",
+          "cameraPermission": "Landshop uses the camera to capture your KYC selfie for identity review.",
+          "microphonePermission": false
+        }
+      ]
     ],
     "extra": {
       "environment": "production"
