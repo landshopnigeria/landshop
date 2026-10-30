@@ -1,0 +1,14 @@
+import Link from 'next/link';
+import ContentShell from '../../components/ContentShell';
+export const metadata={title:'Terms & Conditions | Landshop Nigeria',description:'Information about Landshop website use, property listings, applications and related services.',alternates:{canonical:'/terms'}};
+export default function Terms(){return <ContentShell eyebrow="LEGAL" title="Terms & Conditions" intro="Important information before using Landshop’s property website and application services.">
+ <article className="v22-root v22-section"><div className="v22-container" style={{maxWidth:850}}>
+ <h2>Using the Landshop website.</h2>
+ <p>This website provides information about Landshop, property listings, services, articles and application pathways. Content is intended to support your evaluation of property and financial options; it is not a substitute for independent legal, surveying or financial advice.</p>
+ <h3>Properties and availability</h3><p>Only properly approved and published property records are treated as public listings. Property availability, asking prices, specifications, fees, development dates and associated terms may change. Obtain current written confirmation, appropriate independent due diligence and a signed agreement before making payment or accepting obligations.</p>
+ <h3>Products and finance</h3><p>Develop, Incubate and Grow represent different products and application journeys. Submitting a form does not guarantee approval, an investment return, loan eligibility or property allocation. Financing and investment terms must be reviewed in the current applicable documents.</p>
+ <h3>Website materials</h3><p>Unless otherwise stated, text, designs, trademarks and licensed images are provided for website use and may not be reproduced commercially without authorization. Material from archived Landshop decks may illustrate company history rather than current offers.</p>
+ <h3>Contact, feedback and newsletter</h3><p>You are responsible for providing accurate information and using forms lawfully. Newsletter subscription is voluntary; contact our team to change your preferences. We may remove inappropriate or unlawful public comments under the moderation process.</p>
+ <h3>Questions</h3><p>For a specific property or service agreement, refer to its executed documents and the appropriate professional advisers. For website enquiries, use <Link href="/contact">Contact Landshop</Link>.</p>
+ <p style={{fontSize:13,color:'#607d6a'}}>Effective 30 October 2026. These are general website terms; individual contracts govern particular property transactions and require their own review.</p>
+ </div></article></ContentShell>}
