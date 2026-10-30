@@ -8,6 +8,7 @@ DECLARE
   matches integer; target_user_id uuid;
   orgs integer; org_id uuid;
   other_owners integer; already_owner boolean;
+  valid_owner_application boolean;
 BEGIN
   IF requested IS NULL OR length(requested) NOT BETWEEN 6 AND 254 OR requested !~* '^[^@\s]+@[^@\s]+\.[^@\s]+$'
     THEN RAISE EXCEPTION 'Invalid pre-approved owner email'; END IF;
@@ -17,6 +18,27 @@ BEGIN
   IF matches<>1 THEN RAISE EXCEPTION 'Owner requires exactly one active, email-confirmed Supabase account; matches %',matches; END IF;
   SELECT count(*),(array_agg(id))[1] INTO orgs,org_id FROM public.organizations WHERE kind='landshop';
   IF orgs<>1 THEN RAISE EXCEPTION 'Expected exactly one parent Landshop organization, found %',orgs; END IF;
+  -- The independent GitHub allowlist is the authorizing control. A user-picked
+  -- role alone is NEVER sufficient; enforce staff-portal origin, a completed
+  -- profile, and private portrait submission before owner activation.
+  SELECT EXISTS(
+    SELECT 1 FROM auth.users u
+    JOIN public.landshop_staff_profiles p ON p.user_id=u.id
+    WHERE u.id=target_user_id
+      AND u.raw_user_meta_data->>'staff_signup'='true'
+      AND p.organization_id=org_id AND p.requested_role='owner'
+      AND p.kyc_state IN ('submitted','approved')
+      AND p.employment_state IN ('pending','active')
+      AND p.photo_path IS NOT NULL
+      AND EXISTS(
+        SELECT 1 FROM storage.objects s
+        WHERE s.bucket_id='landshop-staff-private'
+          AND s.name=p.photo_path
+      )
+  ) INTO valid_owner_application;
+  IF NOT valid_owner_application THEN
+    RAISE EXCEPTION 'Owner must register through Staff Sign Up, confirm email, complete owner profile and submit a private portrait before independent authorization';
+  END IF;
   SELECT count(*) INTO other_owners FROM public.organization_members m
     WHERE m.organization_id=org_id AND m.role='owner' AND m.status='active' AND m.user_id<>target_user_id;
   IF other_owners>0 THEN RAISE EXCEPTION 'Another active Landshop owner exists; refuse ownership takeover'; END IF;
@@ -30,7 +52,7 @@ BEGIN
     ON CONFLICT(organization_id,user_id) DO UPDATE SET role='owner',status='active';
   INSERT INTO public.audit_events(actor_id,event_type,metadata)
     VALUES(target_user_id,'landshop_owner_verified_bootstrap',
-      jsonb_build_object('org_id',org_id,'source','manual_github_workflow','verification','confirmed_email_and_allowlist','recorded_at',now()));
+      jsonb_build_object('org_id',org_id,'source','manual_github_workflow','verification','confirmed_email_allowlist_and_submitted_staff_identity','recorded_at',now()));
   RAISE NOTICE 'Verified owner activated with audit event';
 END;
 $landshop$;

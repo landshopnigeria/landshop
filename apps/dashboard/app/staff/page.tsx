@@ -13,6 +13,19 @@ export default async function Page(){
  const {data:{user},error}=await db.auth.getUser();if(error||!user)redirect('/staff/sign-in');
  // A registered email or requested role does not establish workforce access.
  // Resolve the authoritative backend work gate before retrieving any task data.
+ // A verified owner is authorized by an audited, active organization membership,
+ // never by the requested_role or editable signup metadata.
+ const {data:ownerMember,error:ownerMembershipError}=await db.from('organization_members')
+  .select('organization_id').eq('user_id',user.id).eq('role','owner').eq('status','active')
+  .limit(1).maybeSingle();
+ if(!ownerMembershipError&&ownerMember){
+  const [{data:landshopOrg},{data:verifiedManagement,error:managerError}]=await Promise.all([
+   db.from('organizations').select('id').eq('id',ownerMember.organization_id)
+    .eq('kind','landshop').maybeSingle(),
+   db.rpc('landshop_is_management',{p_user:user.id})
+  ]);
+  if(landshopOrg&&managerError==null&&verifiedManagement===true)redirect('/admin');
+ }
  const [{data:profile},{data:canWork,error:workError}]=await Promise.all([
   db.from('landshop_staff_profiles').select('*').eq('user_id',user.id).maybeSingle(),
   db.rpc('landshop_staff_can_work',{p_user:user.id})

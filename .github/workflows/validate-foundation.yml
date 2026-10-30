@@ -111,7 +111,7 @@ jobs:
               for expected in "Welcome" "Enter your work email" "Enter your password" "Show password" "Forgot password?"; do
                 grep -Fq "$expected" /tmp/landshop-staff-signin.html || { echo "::error::Staff sign-in missing: $expected"; exit 1; }
               done
-              for expected in "Become a" "Landshop Staff" "Choose a username" "Enter your age" "Requested staff role" "Create password" "Confirm password" "Show confirm password" "Terms and Conditions"; do
+              for expected in "Become a" "Landshop Staff" "Choose a username" "Enter your age" "Requested staff role" "Company Owner (Verification Required)" "Create password" "Confirm password" "Show confirm password" "Terms and Conditions"; do
                 grep -Fq "$expected" /tmp/landshop-staff-signup.html || { echo "::error::Staff sign-up missing: $expected"; exit 1; }
               done
               for forbidden in "Join the Landshop team" "Your photograph and work location are requested separately" "Sign Up as Staff"; do

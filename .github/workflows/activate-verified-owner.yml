@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
     inputs:
       owner_email:
-        description: Exact email used to register and confirm the Landshop owner account
+        description: Independently approved email registered and confirmed through Landshop Staff Sign Up
         type: string
         required: true
 permissions:
@@ -38,7 +38,7 @@ jobs:
               sys.exit('::error::Production database URL is missing or invalid.')
           print('Owner email matches the independently configured production allowlist.')
           PY
-      - name: Confirm account in Supabase and atomically record audited owner membership
+      - name: Verify staff-portal owner request and atomically record audited owner membership
         shell: bash
         env:
           DATABASE_URL: ${{ secrets.LANDSHOP_SUPABASE_DATABASE_URL }}
