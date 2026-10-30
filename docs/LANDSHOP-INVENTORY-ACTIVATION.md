@@ -14,12 +14,15 @@ The source says *from* and does not prove unit-specific availability or pricing 
 The production Supabase project contains a verified auth account but **zero active Landshop organization members**. The existing account has not been linked to an approved Landshop owner email; never grant it owner permissions merely because it is the only verified account.
 
 1. The actual Landshop owner registers/signs in through https://portal.landshopnigeria.com, using their authorized official email, and confirms that email.
-2. From the authorized **landshopnigeria** GitHub account, run the **Activate verified Landshop owner (manual, security-gated)** workflow at https://github.com/landshopnigeria/landshop/actions/workflows/activate-landshop-owner.yml.
-3. Supply that exact verified email and confirmation `ACTIVATE_VERIFIED_LANDSHOP_OWNER`. The `landshop-production` environment and database guard must approve the request.
-4. Sign back into the Landshop Command Center. Do not request multiple owner bootstraps. Use Landshop's standard audited member process for a separate independent reviewer.
+2. From the authorized **landshopnigeria** GitHub account, run the **Activate Verified Landshop Owner Account** workflow at https://github.com/landshopnigeria/landshop/actions/workflows/activate-verified-owner.yml.
+3. In the protected `landshop-production` GitHub environment first configure variable `LANDSHOP_OWNER_EMAIL` to the independently approved owner email, and secret `LANDSHOP_SUPABASE_DATABASE_URL` as the production PostgreSQL connection string. The workflow will reject an input email that differs from the approved variable. Supply the exact verified email when running the workflow; no owner account is guessed or automatically promoted.
+4. Sign back into the Landshop Command Center. Do not request multiple owner bootstraps.
+5. Invite a separate reviewer from https://app.landshopnigeria.com/admin/properties/team after they have registered and confirmed their email. This is a pending invitation, **not** instant staff access.
+6. The invited reviewer signs in at https://app.landshopnigeria.com/reviewer/accept, accepts the invitation, and opens https://app.landshopnigeria.com/admin/properties/readiness. The owner cannot approve their own evidence.
 
 ## Inventory and publishing
 - Staff estate registry: https://app.landshopnigeria.com/admin/properties
+- Private publication-readiness dashboard: https://app.landshopnigeria.com/admin/properties/readiness
 - Draft property records: same page, then select each property's details to edit actual asking price, estate, unit specifications, verified coordinates, features and videos.
 - Verified owner/developer photos and marketing/titles: upload through the private property evidence panel for review. Only separately reviewed public derivatives may appear in galleries.
 - Import real CSV: https://app.landshopnigeria.com/admin/properties/import
@@ -29,3 +32,6 @@ The production Supabase project contains a verified auth account but **zero acti
 Public homepage and marketplace automatically show the latest approved published records in three columns. Marketplace is paginated after 12 cards; no fake property cards or prices.
 
 **Do not claim the inventory is live until source-based unit availability, exact address/map, and publication authority have been confirmed.**
+
+## V23 review safety
+A seeded estate has no owner/creator assigned; whoever submits it to review must be a **different person** from the publishing reviewer. Price confirmations must be performed by someone who neither created nor edited the price; the final publisher must differ from the approved price confirmer and showcase approver. Publishing remains locked unless all marketing, title, location and genuine media evidence passes review. The production database contains no approved real property media yet.
