@@ -53,6 +53,11 @@ BEGIN
   INSERT INTO public.audit_events(actor_id,event_type,metadata)
     VALUES(target_user_id,'landshop_owner_verified_bootstrap',
       jsonb_build_object('org_id',org_id,'source','manual_github_workflow','verification','confirmed_email_allowlist_and_submitted_staff_identity','recorded_at',now()));
+  -- Assert the actual Command Center authorization gate before COMMIT.
+  -- Failure here rolls back BOTH owner membership and audit entry atomically.
+  IF NOT public.landshop_is_management(target_user_id) THEN
+    RAISE EXCEPTION 'Owner membership is not recognized by the Command Center security gate; activation rolled back';
+  END IF;
   RAISE NOTICE 'Verified owner activated with audit event';
 END;
 $landshop$;
