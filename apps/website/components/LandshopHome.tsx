@@ -59,7 +59,11 @@ export default function Homepage({featured}:{featured:FeaturedProperty[]}){
    <div className="hero-v16-inner ls-v23-hero-inner">
     <div className="hero-v16-content ls-v23-hero-content" key={current.name}>
      <span className="eyebrow hero-v16-eyebrow">{current.subtitle}</span>
-     <h1 className="hero-v16-title ls-v23-hero-title">{current.title}</h1>
+     <h1 className="hero-v16-title ls-v23-hero-title" aria-label={current.title}>
+      {slide===0?<><span>Everyone deserves</span><strong>affordable property.</strong></>:
+       slide===1?<><span>Plot Your Future.</span><strong>Save ₦5 million.</strong></>:
+       <><span>Where would</span><strong>you own next?</strong></>}
+     </h1>
      <p className="hero-v16-copy ls-v23-hero-description">{current.copy}</p>
      <div className="hero-v16-actions ls-v23-hero-actions">
       <Link className="primary" href={current.href}>{current.primary} <span aria-hidden="true">↗</span></Link>
