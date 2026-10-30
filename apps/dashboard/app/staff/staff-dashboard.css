@@ -147,3 +147,16 @@
 .ls25-account-active svg{flex-shrink:0}
 .ls25-account-active strong{display:block;font-size:14px}
 .ls25-account-active p{font-size:12px;line-height:1.5;margin:3px 0 0;color:#346b56}
+
+/* Verified Landshop owner: persistent Command Center access across screen sizes. */
+.ls25-owner-nav{background:#f17716!important;color:#fff!important;text-decoration:none;font-weight:800;box-shadow:0 5px 18px #0a301e30}
+.ls25-owner-nav:hover,.ls25-owner-nav:focus-visible{background:#f58a29!important}
+.ls25-owner-access{margin:0 0 17px;display:flex;gap:17px;align-items:center;flex-wrap:wrap;background:linear-gradient(110deg,#0c4d3a,#117654 68%,#218765);color:#fff;border:1px solid #67bd9870;border-radius:20px;padding:20px clamp(16px,2.5vw,28px);box-shadow:0 12px 30px #104c2b22}
+.ls25-owner-access-icon{display:grid;place-items:center;flex-shrink:0;width:58px;height:58px;border:1px solid #ffffff55;border-radius:15px;background:#ffffff16}
+.ls25-owner-access-copy{flex:1;min-width:210px}.ls25-owner-access-copy p{color:#fbb574;letter-spacing:.11em;font-weight:800;font-size:11px;margin:0 0 4px}
+.ls25-owner-access-copy h2{font-size:clamp(19px,2vw,25px);line-height:1.2;margin:0 0 6px;color:#fff}
+.ls25-owner-access-copy span{display:block;color:#e0f7e9;font-size:12px;line-height:1.6}
+.ls25-owner-access-cta{display:flex;gap:10px;align-items:center;justify-content:center;padding:13px 18px;border-radius:12px;background:#f27a17;text-decoration:none;color:#fff;font-weight:800;font-size:12px;min-height:46px;white-space:normal;text-align:center}
+.ls25-owner-access-cta:hover{background:#f59a39;color:#172c22}
+.ls25-owner-access-cta:focus-visible{outline:3px solid #ffba66;outline-offset:3px}
+@media(max-width:600px){.ls25-owner-access{padding:16px;gap:12px}.ls25-owner-access-icon{width:47px;height:47px}.ls25-owner-access-cta{width:100%}.ls25-owner-access-copy{min-width:0}}
