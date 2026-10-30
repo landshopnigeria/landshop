@@ -17,10 +17,11 @@ function browser(){
  if(!u||!k)throw Error('Secure employee database unavailable');
  return createBrowserClient(u,k,{cookieOptions:{domain:'.landshopnigeria.com',path:'/',sameSite:'lax',secure:true}});
 }
-export default function StaffWorkspace({userId,initialProfile,initialTasks,role,initialVerified,selfServiceAccess,metadata,userEmail}:{userId:string;initialProfile:Profile|null;initialTasks:Task[];role:string|null;initialVerified:boolean;selfServiceAccess:boolean;metadata:Record<string,unknown>;userEmail:string}){
+export default function StaffWorkspace({userId,initialProfile,initialTasks,role,initialVerified,selfServiceAccess,ownerAccess,metadata,userEmail}:{userId:string;initialProfile:Profile|null;initialTasks:Task[];role:string|null;initialVerified:boolean;selfServiceAccess:boolean;ownerAccess:boolean;metadata:Record<string,unknown>;userEmail:string}){
  const [profile,setProfile]=useState(initialProfile),[tasks,setTasks]=useState(initialTasks);
  const [approvedRole,setApprovedRole]=useState<string|null>(role);
  const [verifiedAccess,setVerifiedAccess]=useState(initialVerified);
+ const [ownerActive,setOwnerActive]=useState(ownerAccess);
  const [username,setUsername]=useState(typeof metadata.preferred_username==='string'?metadata.preferred_username:'');
  const [age,setAge]=useState(typeof metadata.age_at_registration==='number'?String(metadata.age_at_registration):'');
  const [gender,setGender]=useState(typeof metadata.gender==='string'?metadata.gender:'prefer_not_to_say');
@@ -33,9 +34,9 @@ export default function StaffWorkspace({userId,initialProfile,initialTasks,role,
  // Email-confirmed staff can access their personal dashboard immediately.
  // Tasks, attendance and management still require verified employee access.
  const verified=Boolean(verifiedAccess&&approvedRole&&profile?.employment_state==='active'&&profile?.kyc_state==='approved');
- const dashboardActive=verified||(selfServiceAccess&&Boolean(profile));
- const management=verified&&['owner','ceo','founder','admin','technology_officer','technology_consultant'].includes(approvedRole||'');
- const supervisor=verified&&(management||['hr_officer','head_finance','social_media_manager','customer_service_manager','department_manager','operations','hr','finance'].includes(approvedRole||''));
+ const dashboardActive=ownerActive||verified||(selfServiceAccess&&Boolean(profile));
+ const management=ownerActive||(verified&&['ceo','founder','admin','technology_officer','technology_consultant'].includes(approvedRole||''));
+ const supervisor=ownerActive||(verified&&(management||['hr_officer','head_finance','social_media_manager','customer_service_manager','department_manager','operations','hr','finance'].includes(approvedRole||'')));
  function notify(err:unknown){setMessage(err instanceof Error?err.message:'Unable to save changes')}
  async function refresh(){
   try{
@@ -53,6 +54,16 @@ export default function StaffWorkspace({userId,initialProfile,initialTasks,role,
     .eq('status','active').limit(1).maybeSingle():{data:null};
    setApprovedRole(membership?.role||null);
    setVerifiedAccess(Boolean(permitted&&membership?.role));
+   // Owner membership is separate from employee KYC and must be rechecked.
+   const {data:ownerMember}=await db.from('organization_members').select('organization_id')
+    .eq('user_id',userId).eq('status','active').eq('role','owner').limit(1).maybeSingle();
+   if(ownerMember){
+    const [{data:org},{data:manager,error:ownerCheckError}]=await Promise.all([
+     db.from('organizations').select('id').eq('id',ownerMember.organization_id).eq('kind','landshop').maybeSingle(),
+     db.rpc('landshop_is_management',{p_user:userId})
+    ]);
+    setOwnerActive(Boolean(org&&ownerCheckError==null&&manager===true));
+   }else setOwnerActive(false);
    if(!permitted||!membership?.role){
     setTasks([]);
     setAttendance([]);
@@ -128,7 +139,7 @@ export default function StaffWorkspace({userId,initialProfile,initialTasks,role,
  const go=(item:string)=>{setActiveTab(item);setMobileNav(false);setNotifyOpen(false)};
  const unviewed=tasks.filter(t=>!t.viewed_at&&t.status==='assigned').length;
  const filteredTasks=tasks.filter(t=>(t.title+' '+(t.details||'')).toLowerCase().includes(search.toLowerCase()));
- const roleLabel=(verified?(approvedRole||'staff'):'Staff account · '+(profile?.requested_role||wanted)+' requested').replaceAll('_',' ').replace(/\b\w/g,x=>x.toUpperCase());
+ const roleLabel=(ownerActive?'Company Owner':verified?(approvedRole||'staff'):'Staff account · '+(profile?.requested_role||wanted)+' requested').replaceAll('_',' ').replace(/\b\w/g,x=>x.toUpperCase());
  const kycLabel=(profile?.kyc_state||'not_started').replaceAll('_',' ');
  const todayAttendance=attendance.filter(a=>new Date(a.occurred_at).toLocaleDateString('en-CA',{timeZone:'Africa/Lagos'})===new Date().toLocaleDateString('en-CA',{timeZone:'Africa/Lagos'}));
  const lastClock=attendance[0];
@@ -222,7 +233,7 @@ export default function StaffWorkspace({userId,initialProfile,initialTasks,role,
    <div className="ls25-logo-row"><Link href="/staff" className="ls25-logo" aria-label="Landshop staff dashboard" onClick={()=>go('dashboard')}>
     <img src="/media/logo-transparent.png" alt="Landshop original logo: Develop, Incubate, Grow" onError={e=>{e.currentTarget.src='/media/logo.webp'}}/>
    </Link><button type="button" className="ls25-collapse-button" aria-label={collapsed?'Expand sidebar':'Collapse sidebar'} aria-expanded={!collapsed} onClick={()=>setCollapsed(x=>!x)}><StaffGlyph name="menu"/></button></div>
-   <nav className="ls25-nav">{nav.map(([id,label,icon])=><button key={id} className={'ls25-navitem'+(activeTab===id?' active':'')} type="button" title={label} aria-current={activeTab===id?'page':undefined} onClick={()=>go(id)}><StaffGlyph name={icon} size={22}/><span>{label}</span></button>)}</nav>
+   <nav className="ls25-nav" aria-label="Staff and owner navigation">{nav.map(([id,label,icon])=><button key={id} className={'ls25-navitem'+(activeTab===id?' active':'')} type="button" title={label} aria-current={activeTab===id?'page':undefined} onClick={()=>go(id)}><StaffGlyph name={icon} size={22}/><span>{label}</span></button>)}{ownerActive&&<Link href="/admin" className="ls25-navitem ls25-owner-nav" title="Open Global Command Center" onClick={()=>setMobileNav(false)}><StaffGlyph name="briefcase" size={22}/><span>Global Command Center</span></Link>}</nav>
    <div className="ls25-sidefooter">{supervisor&&<Link href="/staff/team" title="Manage team tasks"><StaffGlyph name="clipboard"/><span>Manage Team</span></Link>}{management&&<Link href="/admin" title="Global Command Center"><StaffGlyph name="briefcase"/><span>Command Center</span></Link>}
    <button type="button" title="Log Out" onClick={signOut}><StaffGlyph name="log-out"/><span>Log Out</span></button></div>
    <div aria-hidden="true" className="ls25-deco"/>
@@ -238,7 +249,8 @@ export default function StaffWorkspace({userId,initialProfile,initialTasks,role,
    </header>
    <main className="ls25-content">
     {message&&<div role="status" aria-live="polite" className="ls25-toast">{message}<button type="button" aria-label="Dismiss notice" onClick={()=>setMessage('')}>×</button></div>}
-    {!verified&&<div className="ls25-account-active" role="status"><StaffGlyph name="shield" size={22}/><div><strong>Staff dashboard activated automatically</strong><p>Email confirmation gives immediate dashboard access. Internal task execution, attendance, employee ID and management functions require separate company authorization.</p></div></div>}
+    {ownerActive&&<section className="ls25-owner-access" aria-labelledby="owner-command-title"><div className="ls25-owner-access-icon"><StaffGlyph name="briefcase" size={29}/></div><div className="ls25-owner-access-copy"><p>VERIFIED LANDSHOP OWNER</p><h2 id="owner-command-title">Your Global Command Center</h2><span>Manage properties, people, customers, applications, approvals, automation, operations and reports.</span></div><Link href="/admin" className="ls25-owner-access-cta">Open Global Command Center <span aria-hidden="true">↗</span></Link></section>}
+    {!verified&&!ownerActive&&<div className="ls25-account-active" role="status"><StaffGlyph name="shield" size={22}/><div><strong>Staff dashboard activated automatically</strong><p>Email confirmation gives immediate dashboard access. Internal task execution, attendance, employee ID and management functions require separate company authorization.</p></div></div>}
     {(activeTab==='dashboard'||activeTab==='overview')&&<div className="ls25-stats">
      <div className="ls25-stat"><span className="ls25-stat-icon green"><StaffGlyph name="user" size={27}/></span><div><small>Your Role</small><strong>{roleLabel}</strong></div></div>
      <div className="ls25-stat"><span className="ls25-stat-icon orange"><StaffGlyph name="shield" size={27}/></span><div><small>KYC Status</small><strong>{kycLabel}</strong><small>Employment: {profile?.employment_state||'Pending'}</small></div></div>
