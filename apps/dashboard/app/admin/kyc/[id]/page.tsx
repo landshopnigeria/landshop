@@ -20,7 +20,7 @@ export default async function KycDetail({params}:{params:Promise<{id:string}>}){
  const {data:members,error:memberError}=await db.from('organization_members')
   .select('organization_id,role').eq('user_id',user.id).eq('status','active');
  if(memberError||!members?.length)return <main>Access denied.</main>;
- const qualified=members.filter(m=>['owner','admin','operations','legal'].includes(m.role));
+ const qualified=members.filter(m=>['owner','ceo','founder','admin','technology_officer','technology_consultant'].includes(m.role));
  if(!qualified.length)return <main>Access denied.</main>;
  const {data:orgs,error:orgError}=await db.from('organizations')
   .select('id').eq('kind','landshop').in('id',qualified.map(m=>m.organization_id));

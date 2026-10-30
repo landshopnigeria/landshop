@@ -13,7 +13,7 @@ export default async function SevenCities(){
  const {data:{user},error:authError}=await db.auth.getUser();
  if(authError||!user)redirect('https://portal.landshopnigeria.com/');
  const {data:members}=await db.from('organization_members').select('organization_id,role').eq('user_id',user.id).eq('status','active');
- const admin=(members||[]).filter(x=>['owner','admin','operations','legal'].includes(x.role));
+ const admin=(members||[]).filter(x=>['owner','ceo','founder','admin','technology_officer','technology_consultant'].includes(x.role));
  if(!admin.length)return <main style={{padding:40}}>Landshop Operations or Legal access required.</main>;
  const {data:organizations}=await db.from('organizations').select('id').eq('kind','landshop').in('id',admin.map(x=>x.organization_id));
  if(!organizations?.length)return <main style={{padding:40}}>Access denied.</main>;

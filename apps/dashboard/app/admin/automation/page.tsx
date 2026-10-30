@@ -14,7 +14,7 @@ export default async function Page(){
  if(error||!user)redirect('https://portal.landshopnigeria.com/');
  const {data:members}=await db.from('organization_members').select('organization_id,role')
   .eq('user_id',user.id).eq('status','active');
- const qualified=(members||[]).filter(m=>['owner','admin','operations','legal'].includes(m.role));
+ const qualified=(members||[]).filter(m=>['owner','ceo','founder','admin','technology_officer','technology_consultant'].includes(m.role));
  if(!qualified.length)return <main>Landshop workflow administrator role required.</main>;
  const {data:orgs}=await db.from('organizations').select('id').eq('kind','landshop')
   .in('id',qualified.map(m=>m.organization_id));

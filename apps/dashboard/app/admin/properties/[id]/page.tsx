@@ -19,7 +19,7 @@ export default async function Page({params}:{params:Promise<{id:string}>}){
  const {data:members,error:merr}=await db.from('organization_members')
   .select('organization_id,role').eq('user_id',user.id).eq('status','active');
  if(merr||!members?.length)return <main>Access denied.</main>;
- const qualified=members.filter(m=>['owner','admin','operations','legal','sales'].includes(m.role));
+ const qualified=members.filter(m=>['owner','ceo','founder','admin','technology_officer','technology_consultant'].includes(m.role));
  if(!qualified.length)return <main>Access denied.</main>;
  const {data:orgs,error:orgError}=await db.from('organizations').select('id').eq('kind','landshop')
   .in('id',qualified.map(m=>m.organization_id));
@@ -38,9 +38,9 @@ export default async function Page({params}:{params:Promise<{id:string}>}){
  return <main style={{fontFamily:'Arial,sans-serif',padding:'clamp(20px,5vw,60px)',background:'#f1f8f5',minHeight:'100vh',color:'#073f34'}}>
   <a href="/admin/properties">← Property Management</a>
   <h1>{property.title}</h1><p>{property.property_type} · {property.status}</p>
-  <DraftBasicsEditor property={property} estates={estates||[]} canApprove={qualified.some(m=>['owner','admin','legal','operations'].includes(m.role))}/>
-  <ShowcaseEditor propertyId={id} propertyStatus={property.status} initial={(draft?.payload||published?.payload||{}) as Record<string,unknown>} approved={Boolean(published)} currentUserId={user.id} canApprove={qualified.some(m=>['owner','admin','legal','operations'].includes(m.role))} assets={assets||[]} initialMedia={media||[]}/>
+  <DraftBasicsEditor property={property} estates={estates||[]} canApprove={qualified.some(m=>['owner','ceo','founder','admin','technology_officer','technology_consultant'].includes(m.role))}/>
+  <ShowcaseEditor propertyId={id} propertyStatus={property.status} initial={(draft?.payload||published?.payload||{}) as Record<string,unknown>} approved={Boolean(published)} currentUserId={user.id} canApprove={qualified.some(m=>['owner','ceo','founder','admin','technology_officer','technology_consultant'].includes(m.role))} assets={assets||[]} initialMedia={media||[]}/>
   <PropertyAssets propertyId={id} propertyStatus={property.status} items={assets||[]}
-   allowReview={qualified.some(m=>['owner','admin','legal','operations'].includes(m.role))}/>
+   allowReview={qualified.some(m=>['owner','ceo','founder','admin','technology_officer','technology_consultant'].includes(m.role))}/>
  </main>;
 }

@@ -4,7 +4,7 @@ import InspectionReview from './InspectionReview';
 export const dynamic='force-dynamic';
 export const metadata={title:'Inspection Appointments | Landshop Command Center'};
 export default async function InspectionQueue({searchParams}:{searchParams:Promise<{status?:string}>}){
- const {db}=await requireLandshopStaff(['owner','admin','operations','legal']);
+ const {db}=await requireLandshopStaff(['owner','ceo','founder','admin','technology_officer','technology_consultant']);
  const requested=(await searchParams).status||'';
  const valid=['pending_confirmation','confirmed','rescheduled','completed','rejected','cancelled'];
  let query=db.from('property_inspection_requests').select('id,property_id,full_name,email,phone,preferred_date,preferred_time,inspection_type,attendees,status,created_at,staff_note,properties(title,slug)')

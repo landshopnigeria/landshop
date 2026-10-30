@@ -12,7 +12,7 @@ export default async function Review(){
  const {data:{user},error}=await db.auth.getUser();
  if(error||!user)redirect('https://portal.landshopnigeria.com/');
  const {data:members}=await db.from('organization_members').select('organization_id,role').eq('user_id',user.id).eq('status','active');
- const managers=(members||[]).filter(m=>['owner','admin','legal','operations'].includes(m.role));
+ const managers=(members||[]).filter(m=>['owner','ceo','founder','admin','technology_officer','technology_consultant'].includes(m.role));
  if(!managers.length)return <main>Access denied. Independent import reviewers only.</main>;
  const {data:orgs}=await db.from('organizations').select('id').eq('kind','landshop').in('id',managers.map(m=>m.organization_id));
  if(!orgs?.length)return <main>Access denied.</main>;

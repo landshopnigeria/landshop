@@ -20,7 +20,7 @@ export default async function Page(){
  const {data:members,error:membersError}=await db.from('organization_members')
   .select('organization_id,role').eq('user_id',user.id).eq('status','active');
  if(membersError||!members?.length)return <main style={{padding:40}}>Access denied.</main>;
- const allowed=members.filter(x=>['owner','admin','operations','sales','legal'].includes(x.role));
+ const allowed=members.filter(x=>['owner','ceo','founder','admin','technology_officer','technology_consultant'].includes(x.role));
  if(!allowed.length)return <main style={{padding:40}}>Property management requires Landshop staff access.</main>;
  const {data:organizations,error:orgError}=await db.from('organizations').select('id')
   .eq('kind','landshop').in('id',allowed.map(x=>x.organization_id));
@@ -35,8 +35,8 @@ export default async function Page(){
   <h1>Landshop Property Command Center</h1>
   <p style={{color:'#bc5d12',fontSize:13,fontWeight:700}}>Draft listings are staff-only and do not appear in the public marketplace until title, price, location, marketing authority and media have been reviewed.</p>
   <p>Staff-only inventory management. No customer or realtor self-publication.</p>
-  {estateError?<p role="alert">Estate catalog could not be loaded. Check authorization and permissions.</p>:<EstateManagement initial={estates||[]} canApprove={allowed.some(m=>['owner','admin','operations','legal'].includes(m.role))}/>}
+  {estateError?<p role="alert">Estate catalog could not be loaded. Check authorization and permissions.</p>:<EstateManagement initial={estates||[]} canApprove={allowed.some(m=>['owner','ceo','founder','admin','technology_officer','technology_consultant'].includes(m.role))}/>}
   {listingError?<p role="alert">Property data is unavailable; database migration and privileges must be verified.</p>:
-   <PropertyManagement initial={properties||[]} estates={estates||[]} currentUserId={user.id} canApprove={allowed.some(m=>['owner','admin','operations','legal'].includes(m.role))}/>}
+   <PropertyManagement initial={properties||[]} estates={estates||[]} currentUserId={user.id} canApprove={allowed.some(m=>['owner','ceo','founder','admin','technology_officer','technology_consultant'].includes(m.role))}/>}
  </main>;
 }

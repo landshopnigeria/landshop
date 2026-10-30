@@ -22,7 +22,7 @@ export default async function KycQueue(){
  const {data:members,error:memberError}=await db.from('organization_members')
   .select('organization_id,role,status').eq('user_id',user.id).eq('status','active');
  if(memberError)return <main>Reviewer permission verification failed.</main>;
- const allowed=(members||[]).filter(m=>['owner','admin','legal','operations'].includes(m.role));
+ const allowed=(members||[]).filter(m=>['owner','ceo','founder','admin','technology_officer','technology_consultant'].includes(m.role));
  if(!allowed.length)return <main style={{padding:40}}>Access denied. Landshop management authorization is required.</main>;
  const {data:orgs}=await db.from('organizations').select('id').eq('kind','landshop').in('id',allowed.map(m=>m.organization_id));
  if(!orgs?.length)return <main style={{padding:40}}>Access denied. No verified Landshop management membership.</main>;
