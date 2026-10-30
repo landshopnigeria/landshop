@@ -6,9 +6,11 @@ import {IconChip} from './SiteIcon';
 
 export type V22Property={id:string;href:string;title:string;location:string;propertyType:string;price:string;image?:string};
 const paths=[
- {name:'Develop',tag:'01 / PROPERTY ACQUISITION',intro:'Explore documented land and housing opportunities, including Prime and Luxury collections.',href:'/develop',photo:editorialImages.develop.src,icon:'building' as const},
- {name:'Incubate',tag:'02 / PROPERTY-LED INVESTMENT',intro:'Understand the opportunities, eligibility and risks before submitting your investment interest.',href:'/incubate',photo:editorialImages.incubate.src,icon:'chart' as const},
- {name:'Grow',tag:'03 / HOME FINANCING',intro:'Explore mortgage pathways and guided assessments to prepare for a homeownership decision.',href:'/grow',photo:editorialImages.grow.src,icon:'key' as const}
+ {name:'Develop',tag:'01 / ACQUIRE PROPERTY',intro:'Prefer outright property acquisition? Explore structured land and apartment ownership, including Prime and Luxury selections.',href:'/plans/develop',photo:editorialImages.develop.src,logo:'/brand/develop.svg',icon:'building' as const},
+ {name:'Incubate',tag:'02 / SHARED OWNERSHIP',intro:'Explore shared ownership with others and register to receive confirmed opportunities and participation terms.',href:'/plans/incubate',photo:editorialImages.incubate.src,logo:'/brand/incubate.svg',icon:'chart' as const},
+ {name:'Grow',tag:'03 / HOME FINANCING',intro:'Simplified mortgage pathways for completed and off-plan homes. Compare options and understand the full commitment.',href:'/plans/grow',photo:editorialImages.grow.src,logo:'/brand/grow.svg',icon:'key' as const},
+ {name:'DevPro',tag:'04 / ESTATE INFRASTRUCTURE',intro:'Enquire about financing for estate roads, drainage, fencing and other eligible development levies.',href:'/plans/devpro',photo:editorialImages.architecture.src,logo:'/brand/devpro.svg',icon:'building' as const},
+ {name:'EstatePro',tag:'05 / CONSTRUCTION FINANCE',intro:'Explore construction funding enquiries for eligible estate subscribers who are ready to build.',href:'/plans/estatepro',photo:editorialImages.residential.src,logo:'/brand/estatepro.svg',icon:'home' as const}
 ];
 const locations=['Lagos','Federal Capital Territory','Ogun','Oyo','Delta','Edo','Akwa Ibom','Anambra'];
 const guides=[
@@ -34,9 +36,9 @@ export default function V22HomeSections({featured}:{featured:V22Property[]}){
   {/* 2 / About: hero and existing property filter above this component stay intact. */}
   <section className="v22-section v22-about" aria-labelledby="v22-about-title"><div className="v22-container v22-two">
    <div className="v22-copy"><span className="v22-eyebrow">WHO WE ARE</span><h2 id="v22-about-title">About Us<span className="v22-accent">.</span></h2>
-    <p>Landshop was founded in 2017 by a team of experienced professionals sharing a commitment to make property ownership more accessible, understandable and achievable for Nigerians.</p>
-    <p>We connect people to property acquisition, documented investment enquiries and home financing guidance through clear, distinct product journeys.</p>
-    <div className="v22-statline"><span><b>03</b> Product pathways</span><span><b>07</b> Guided application forms</span></div>
+    <p>Landshop is a co-investment real estate brand focused on simplifying property acquisition and making ownership more accessible to Nigerians.</p>
+    <p>Through property acquisition, shared ownership interest, mortgage guidance and estate development support, we help people take clearer steps toward ownership.</p>
+    <div className="v22-statline" aria-label="Landshop company figures provided for approval"><span><b>359</b> Properties sold</span><span><b>245</b> Realtors</span><span><b>98%</b> Client satisfaction</span></div>
     <Link className="v22-btn" href="/about">Discover Landshop <span aria-hidden="true">↗</span></Link>
    </div><div className="v22-collage" aria-label="Landshop editorial image collection">
     <img src={editorialImages.architecture.src} alt={editorialImages.architecture.alt} loading="lazy"/>
@@ -45,10 +47,10 @@ export default function V22HomeSections({featured}:{featured:V22Property[]}){
    </div></div></section>
   {/* 3 / Three products */}
   <section className="v22-section v22-muted" aria-labelledby="v22-products-title"><div className="v22-container">
-   <div className="v22-heading"><div><span className="v22-eyebrow">OUR PRODUCTS</span><h2 id="v22-products-title">Property solutions for every stage of your journey.</h2></div><p>Explore the pathway that matches your property goal.</p></div>
+   <div className="v22-heading"><div><span className="v22-eyebrow">OUR PRODUCTS</span><h2 id="v22-products-title">Our Products. Different goals, clearer pathways.</h2></div><p>Explore the pathway that matches your property goal.</p></div>
    <div className="v22-products">{paths.map(item=><article className="v22-product" key={item.name}>
     <Link href={item.href} className="v22-product-image"><img src={item.photo} alt={'Editorial visual representing Landshop '+item.name} loading="lazy"/></Link>
-    <span className="v22-icon"><IconChip name={item.icon}/></span><div className="v22-product-body"><small>{item.tag}</small><h3>{item.name}</h3><p>{item.intro}</p><Link href={item.href} className="v22-text-link">Explore {item.name} <span aria-hidden="true">↗</span></Link></div>
+    <span className="v22-icon ls-new-brand-icon"><img src={item.logo} alt={item.name+' product mark'} loading="lazy"/></span><div className="v22-product-body"><small>{item.tag}</small><h3>{item.name}</h3><p>{item.intro}</p><Link href={item.href} className="v22-text-link">Explore {item.name} <span aria-hidden="true">↗</span></Link></div>
    </article>)}</div></div></section>
   {/* 4 / Verified inventory + property collections */}
   <section className="v22-section" id="featured-properties" aria-labelledby="v22-properties-title"><div className="v22-container">
@@ -57,8 +59,8 @@ export default function V22HomeSections({featured}:{featured:V22Property[]}){
      {p.image?<img src={p.image} alt={'Owner-approved photograph of '+p.title} loading="lazy"/>:<div className="v22-photo-pending">Original media awaiting approval</div>}
      <div className="v22-feature-info"><span>{p.propertyType} · {p.location}</span><h3>{p.title}</h3><b>{p.price}</b></div></Link>):
     <div className="v22-inventory-empty"><h3>Verified opportunities, not placeholder listings.</h3><p>Only approved, published properties appear here. Explore the marketplace for the latest available inventory.</p><Link href="/properties" className="v22-btn">Browse the marketplace ↗</Link></div>}
-   </div><div className="v22-collections"><Link href="/properties?type=house"><span>PRIME COLLECTION</span><strong>Considered homes for everyday living.</strong><em>Explore residential properties ↗</em></Link>
-    <Link href="/properties?type=land"><span>LAND OPPORTUNITIES</span><strong>Explore land with the right documentation.</strong><em>Discover available land ↗</em></Link></div>
+   </div><div className="v22-collections"><Link href="/collections/prime"><span>PRIME ESTATES</span><strong>Considered homes for everyday living.</strong><em>Explore residential properties ↗</em></Link>
+    <Link href="/collections/luxury"><span>LUXURY ESTATES</span><strong>Explore land with the right documentation.</strong><em>Explore Luxury Estates ↗</em></Link></div>
   </div></section>
   {/* 5 / Service-specific visuals */}
   <section className="v22-section v22-muted" aria-labelledby="v22-services-title"><div className="v22-container">
@@ -76,7 +78,11 @@ export default function V22HomeSections({featured}:{featured:V22Property[]}){
    <div className="v22-heading"><div><span className="v22-eyebrow">THE LANDSHOP METHOD</span><h2 id="v22-method-title">Property decisions deserve a better process.</h2></div></div>
    <div className="v22-steps">{[['01','Explore','Discover the property or product that suits your goal.'],['02','Verify','Review current information, documents, eligibility and risks.'],['03','Inspect','Arrange a confirmed property visit where appropriate.'],['04','Proceed','Start your secure application with clarity about the next steps.']].map(step=><div key={step[0]}><b>{step[0]}</b><h3>{step[1]}</h3><p>{step[2]}</p></div>)}</div>
   </div></section>
-  {/* 8 / Article spotlight carousel */}
+<section className="v22-section ls-why-section" aria-labelledby="ls-why-title"><div className="v22-container">
+ <div className="v22-heading"><div><span className="v22-eyebrow">WHY</span><h2 id="ls-why-title">Choose Us.</h2></div><p>Because your property journey deserves clarity, choice and ongoing support.</p></div>
+ <div className="ls-why-grid">{[['Trusted Brand','Property decisions backed by years of company experience.'],['Accessible Options','Different pathways for different ownership goals.'],['Experienced Support','A team ready to explain the steps that matter.'],['Quality of Choice','Prime and Luxury collections with approved details.'],['Flexible Planning','Understand the terms before you commit.'],['Growing Communities','Explore estates and opportunities suited to your plans.']].map(([heading,copy],index)=><article className="ls-why-card" key={heading}><span aria-hidden="true">{String(index+1).padStart(2,'0')}</span><h3>{heading}</h3><p>{copy}</p></article>)}</div>
+ </div></section>
+   {/* 8 / Article spotlight carousel */}
   <section className="v22-section v22-muted" aria-labelledby="v22-journal-title"><div className="v22-container">
    <div className="v22-heading"><div><span className="v22-eyebrow">INSIGHTS & GUIDES</span><h2 id="v22-journal-title">Better questions. Better property decisions.</h2></div><Link href="/insights" className="v22-text-link">Visit the journal ↗</Link></div>
    <div className="v22-editorial"><div className="v22-editorial-photo"><img src={activeGuide.image} alt={'Editorial photograph for '+activeGuide.title} loading="lazy"/></div><div className="v22-editorial-copy"><span className="v22-eyebrow">{activeGuide.tag}</span><h3>{activeGuide.title}</h3><p>Practical guidance to help you understand your next property decision.</p><Link className="v22-btn" href={activeGuide.href}>Read article ↗</Link><div className="v22-carousel-buttons"><button onClick={()=>setGuideIndex((guideIndex+guides.length-1)%guides.length)} type="button" aria-label="Previous article">←</button><span>{guideIndex+1} / {guides.length}</span><button onClick={()=>setGuideIndex((guideIndex+1)%guides.length)} type="button" aria-label="Next article">→</button></div></div></div>
