@@ -1,6 +1,5 @@
 
 import Link from 'next/link';
-import SiteFooter from './SiteFooter';
 import type {ReactNode} from 'react';
 type Props={eyebrow:string;title:string;intro:string;image?:string;imageAlt?:string;children:ReactNode};
 export default function ContentShell({eyebrow,title,intro,image,imageAlt,children}:Props){
@@ -13,6 +12,5 @@ export default function ContentShell({eyebrow,title,intro,image,imageAlt,childre
    {image&&<img src={image} alt={imageAlt||"Editorial photograph illustrating this page; not a verified property listing"} loading="eager"/>}
   </div></section>
   <div className="content-main">{children}</div>
-  <SiteFooter/>
  </div>
 }
