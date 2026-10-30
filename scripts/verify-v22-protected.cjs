@@ -23,7 +23,7 @@ const required=[
  'data-v23-design="cinematic-property-video-preview"',
  'data-landshop-hero="v16-separated-product-slides"',
  'className="glass-search ls-v23-property-filter"',
- ' '<V22HomeSections featured={featured}/>',
+ '<V22HomeSections featured={featured}/>',
  "['Buy','Sell','Rent','Shortlet']",
  'Your Property.',
  'Your Future.',
