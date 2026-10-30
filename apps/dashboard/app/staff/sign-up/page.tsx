@@ -2,7 +2,7 @@
 import StaffAuthShell,{StaffAuthLogo} from '../StaffAuthShell';
 import StaffPasswordField from '../StaffPasswordField';
 
-import {useState,type FormEvent} from 'react';
+import {useEffect,useState,type FormEvent} from 'react';
 import Link from 'next/link';
 import {createBrowserClient} from '@supabase/ssr';
 const roles=[
@@ -15,6 +15,12 @@ export default function StaffSignUp(){
  const [v,setV]=useState({email:'',username:'',age:'',gender:'',role:'',password:'',confirm:''});
  const [busy,setBusy]=useState(false),[msg,setMsg]=useState(''),[acknowledged,setAcknowledged]=useState(false);
  const [confirmationPending,setConfirmationPending]=useState(false),[resendCompleted,setResendCompleted]=useState(false),[pendingEmail,setPendingEmail]=useState('');
+ // A deep link only preselects a requested role; it never creates membership.
+ useEffect(()=>{
+  if(new URLSearchParams(window.location.search).get('role')==='owner'){
+   setV(current=>current.role?current:{...current,role:'owner'});
+  }
+ },[]);
  const update=(k:keyof typeof v,s:string)=>setV(p=>({...p,[k]:s}));
  async function resendConfirmation(){
   if(!confirmationPending||resendCompleted||busy)return;
@@ -55,7 +61,7 @@ export default function StaffSignUp(){
  }catch(e){setMsg(e instanceof Error?e.message:'Unable to register')}finally{setBusy(false)}
  }
 
- return <StaffAuthShell><section className="lsa-card signup" aria-labelledby="staff-register-title"><StaffAuthLogo/><h1 className="lsa-title" id="staff-register-title">Become a <span>Landshop Staff</span></h1>
+ return <StaffAuthShell><section className="lsa-card signup" aria-labelledby="staff-register-title"><StaffAuthLogo/><h1 className="lsa-title" id="staff-register-title">Become a <span>{v.role==='owner'?'Landshop Owner':'Landshop Staff'}</span></h1>
  <form onSubmit={submit}><div className="lsa-grid">
  <div className="lsa-field"><label htmlFor="su-email">Email</label><input id="su-email" required type="email" autoComplete="email" value={v.email} onChange={e=>update('email',e.target.value)} placeholder="you@company.com"/></div>
  <div className="lsa-field"><label htmlFor="su-username">Username</label><input id="su-username" required autoComplete="username" minLength={3} maxLength={30} value={v.username} onChange={e=>update('username',e.target.value)} placeholder="Choose a username"/></div>

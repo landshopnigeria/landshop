@@ -108,6 +108,8 @@ jobs:
               # Assert approved staff copy and controls in actual server-rendered HTML.
               curl -fsS --max-time 15 "http://127.0.0.1:39519/staff/sign-in" -o /tmp/landshop-staff-signin.html
               curl -fsS --max-time 15 "http://127.0.0.1:39519/staff/sign-up" -o /tmp/landshop-staff-signup.html
+              curl -fsS --max-time 15 "http://127.0.0.1:39519/staff/sign-up?role=owner" -o /tmp/landshop-owner-signup.html
+              grep -Fq "Company Owner (Verification Required)" /tmp/landshop-owner-signup.html || { echo "::error::Owner signup deep link does not render staff form"; exit 1; }
               for expected in "Welcome" "Enter your work email" "Enter your password" "Show password" "Forgot password?"; do
                 grep -Fq "$expected" /tmp/landshop-staff-signin.html || { echo "::error::Staff sign-in missing: $expected"; exit 1; }
               done

@@ -57,7 +57,19 @@ BEGIN
 END;
 $landshop$;
 COMMIT;
-SELECT CASE WHEN count(*)=1 THEN 'LANDSHOP_OWNER_ACTIVE' ELSE 'OWNER_NOT_ACTIVE' END AS verification
-FROM public.organization_members m JOIN public.organizations o ON o.id=m.organization_id JOIN auth.users u ON u.id=m.user_id
-WHERE o.kind='landshop' AND m.role='owner' AND m.status='active'
- AND u.email_confirmed_at IS NOT NULL AND lower(u.email)=lower(:'owner_email');
+-- Ensure psql returns a nonzero failure if membership is not recognized
+-- by the same authoritative management gate used by the Command Center.
+SELECT set_config('landshop.verify_owner_email', :'owner_email', false);
+DO $owner_verify$
+BEGIN
+ IF (SELECT count(*) FROM public.organization_members m
+     JOIN public.organizations o ON o.id=m.organization_id
+     JOIN auth.users u ON u.id=m.user_id
+     WHERE o.kind='landshop' AND m.role='owner' AND m.status='active'
+       AND u.email_confirmed_at IS NOT NULL
+       AND lower(u.email)=lower(current_setting('landshop.verify_owner_email'))
+       AND public.landshop_is_management(u.id))<>1
+ THEN RAISE EXCEPTION 'Owner activation was not recognized by the production management authorization gate'; END IF;
+END;
+$owner_verify$;
+SELECT 'LANDSHOP_OWNER_ACTIVE' AS verification;

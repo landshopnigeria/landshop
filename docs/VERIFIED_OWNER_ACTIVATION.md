@@ -1,10 +1,10 @@
 # Landshop owner activation — staff portal (production)
 
-The official owner signup begins at **https://app.landshopnigeria.com/staff/sign-up**. It is the same approved responsive glass Staff Sign Up page, with **Company Owner (Verification Required)** included in the staff role dropdown.
+The official owner signup deep link is **https://app.landshopnigeria.com/staff/sign-up?role=owner** (preselects Owner only; does not confer privileges). It uses the same approved form at https://app.landshopnigeria.com/staff/sign-up. It is the same approved responsive glass Staff Sign Up page, with **Company Owner (Verification Required)** included in the staff role dropdown.
 
 ## Owner registration through the staff portal
 
-1. The intended owner opens https://app.landshopnigeria.com/staff/sign-up, selects **Company Owner (Verification Required)**, completes all required fields, accepts the Terms and Conditions, and signs up.
+1. The intended owner opens https://app.landshopnigeria.com/staff/sign-up?role=owner, verifies **Company Owner (Verification Required)** is selected, completes all required fields, accepts the Terms and Conditions, and signs up.
 2. The owner confirms the email message. If necessary, the staff sign-up or sign-in page can resend the confirmation email.
 3. The owner lands at https://app.landshopnigeria.com/staff (not the customer portal), completes the staff-portal onboarding profile, and uploads an authentic personal portrait to private storage. The request remains **pending**; selecting Owner, confirming email, or uploading a portrait does not create any membership or privileged role.
 4. An authorized GitHub administrator independently verifies the intended owner's identity **outside the signup form** and configures their exact approved email as the `LANDSHOP_OWNER_EMAIL` **environment variable** under GitHub Settings → Environments → `landshop-production`. Require protected environment reviewers and restrict who can modify this value.
