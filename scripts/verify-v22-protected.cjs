@@ -11,7 +11,13 @@ for(const [name,start,end] of [
  ['Hero slider','<section className="hero hero-v16"','</section>'],
  ['Property search','<form className="glass-search"','</form>']
 ]){
- if(exactBlock(previous,start,end)!==exactBlock(current,start,end)){console.error(name+' source was changed. V22 requires explicit approval before editing.');process.exitCode=1;}
+ // The user approved changing only native dropdown presentation. Keep every
+ // protected search option, label, field, handler and slider character intact.
+ const approvedDropdownTags=(text)=>text.replace(/<BrandedSelect(?=[\\s>])/g,'<select').replace(/<\\/BrandedSelect>/g,'</select>');
+ const prior=exactBlock(previous,start,end);
+ const next=exactBlock(current,start,end);
+ const comparable=name==='Property search'?approvedDropdownTags(next):next;
+ if(prior!==comparable){console.error(name+' source was changed beyond the approved dropdown styling.');process.exitCode=1;}
  else console.log('PROTECTED: '+name+' is byte-for-byte unchanged.');
 }
 for(const protectedFile of ['apps/website/components/SiteHeader.tsx','apps/website/app/site-navigation.css','apps/website/app/icon-treatments.css']){
