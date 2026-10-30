@@ -10,6 +10,9 @@ async function authenticatedClient(){const {url,key}=settings();const cookieStor
  getAll(){return cookieStore.getAll()},setAll(changes){try{changes.forEach(({name,value,options})=>cookieStore.set(name,value,options));}catch{ /* A read-only request cannot refresh cookies. */ }}
 }});}
 export async function GET(request:NextRequest){
+ if(request.nextUrl.searchParams.get('session')==='1'){
+  try{const client=await authenticatedClient();const {data:{user}}=await client.auth.getUser();return json({ok:true,authenticated:!!user&&!user.is_anonymous});}catch{return json({ok:true,authenticated:false});}
+ }
  const slug=(request.nextUrl.searchParams.get('slug')||'').trim();
  if(!findGuide(slug))return json({ok:false,message:'Article not found'},404);
  try{
