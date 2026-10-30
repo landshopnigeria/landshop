@@ -99,7 +99,7 @@ export default function Portal(){
     <div className="authBenefitGlass" aria-label="Explore Landshop">
      <a href="https://www.landshopnigeria.com/properties"><span className="authBenefitIcon" aria-hidden="true">⌂</span><span><b>Invest in property</b><small>Verified opportunities</small></span></a>
      <button type="button" onClick={()=>changeMode('signup')}><span className="authBenefitIcon" aria-hidden="true">♧</span><span><b>Refer and grow</b><small>Your personal referral link</small></span></button>
-     <a href="https://portal.landshopnigeria.com/applications/incubate"><span className="authBenefitIcon" aria-hidden="true">↗</span><span><b>Build wealth</b><small>Develop · Incubate · Grow</small></span></a>
+     <a href="https://portal.landshopnigeria.com/applications/incubate-investment"><span className="authBenefitIcon" aria-hidden="true">↗</span><span><b>Build wealth</b><small>Develop · Incubate · Grow</small></span></a>
     </div>
    </div>
    <section className="authGlass" aria-label="Landshop customer account">
