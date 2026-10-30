@@ -19,10 +19,18 @@ const explore=[
  {label:'Grow',href:'/grow'},
  {label:'Our Services',href:'/services'},
  {label:'Our Locations',href:'/locations'},
+ {label:'Projects',href:'/projects'},
+ {label:'Prime Estates',href:'/collections/prime'},
+ {label:'Luxury Estates',href:'/collections/luxury'},
+ {label:'DevPro',href:'/plans/devpro'},
+ {label:'EstatePro',href:'/plans/estatepro'},
  {label:'Application Centre',href:'/applications'}
 ];
 const resources=[
  {label:'Insights & Articles',href:'/insights'},
+ {label:'Book Inspection',href:'/visit'},
+ {label:'Mortgage Calculator',href:'/mortgage-calculator'},
+ {label:'Future Locations',href:'/coming-soon'},
  {label:'Property Acquisition',href:'/services/property-acquisition'},
  {label:'Property Advisory',href:'/services/advisory'},
  {label:'Mortgage Guidance',href:'/services/mortgage'},
@@ -65,7 +73,7 @@ export default function SiteFooter(){
     <Link href="/" aria-label="Landshop home"><img className="ls24-footer-logo" src="/media/logo-transparent.png" width={184} height={94} alt="Landshop — Develop, Incubate, Grow"/></Link>
     <p className="ls24-footer-brand-copy">Building wealth through real estate. Clearer pathways to ownership, investment enquiries and home financing.</p>
     <p className="ls24-contact-line"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 7 9-7"/></svg><a href="mailto:care@landshopnigeria.com">care@landshopnigeria.com</a></p>
-    <p className="ls24-contact-line"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 4h4l2 5-2.5 2c1.5 3 3.5 5 6.5 6.5L17 15l4 2v4c-9 1-18-8-17-17z" strokeLinejoin="round"/></svg><a href="tel:+2349169973359">+234 916 997 3359</a></p>
+    <p className="ls24-contact-line"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 4h4l2 5-2.5 2c1.5 3 3.5 5 6.5 6.5L17 15l4 2v4c-9 1-18-8-17-17z" strokeLinejoin="round"/></svg><a href="tel:+23418880063">+234 1 888 0063</a></p>
     <p className="ls24-contact-line"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg><span>Lagos, Nigeria</span></p>
    </div>
    <FooterLinks label="Company" items={company}/>
