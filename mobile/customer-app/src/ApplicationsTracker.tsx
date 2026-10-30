@@ -84,6 +84,7 @@ const styles=StyleSheet.create({
  link:{color:green,fontSize:12,fontWeight:'800',marginBottom:16},eyebrow:{color:green,letterSpacing:1.5,fontSize:10,fontWeight:'800'},
  title:{fontSize:31,fontWeight:'800',color:ink,marginVertical:8},description:{color:muted,fontSize:12,lineHeight:20,marginVertical:7},
  refresh:{flexDirection:'row',alignItems:'center',gap:9,backgroundColor:'#e8f5ee',alignSelf:'flex-start',paddingHorizontal:13,paddingVertical:11,borderRadius:12,marginVertical:16},
+ cardTitle:{fontSize:17,fontWeight:'800',color:ink,marginBottom:8},
  card:{backgroundColor:'#fff',borderRadius:17,borderColor:'#d8e8dc',borderWidth:1,padding:16,marginVertical:8},
  headRow:{flexDirection:'row',justifyContent:'space-between',alignItems:'flex-start',gap:8},
  kind:{fontSize:16,fontWeight:'800',color:ink},date:{fontSize:11,color:muted,marginTop:5},
