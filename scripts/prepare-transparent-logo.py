@@ -5,6 +5,7 @@ Uses the checked-in original WebP only. No AI, repainting or alternative artwork
 Run from any working directory. The deployment pipeline installs Pillow first.
 """
 from pathlib import Path
+from hashlib import sha256
 from PIL import Image
 
 root=Path(__file__).resolve().parents[1]
@@ -45,5 +46,11 @@ def convert(app: str) -> None:
     assert result.mode=='RGBA' and result.getextrema()[3][0]==0, f'Transparency missing: {target}'
     print(f'{app}: created {target.relative_to(root)} ({image.width}x{image.height})')
 
-for app_name in ('website','portal','dashboard'):
+# Standing Landshop identity rule: every application must use the same original asset.
+apps=('website','portal','dashboard')
+digests={name:sha256((root/'apps'/name/'public/media/logo.webp').read_bytes()).hexdigest() for name in apps}
+if len(set(digests.values()))!=1:
+    raise SystemExit('Landshop brand integrity check failed: website, portal and dashboard originals differ')
+print('Official original Landshop logo SHA-256 verified identical across all apps')
+for app_name in apps:
     convert(app_name)
