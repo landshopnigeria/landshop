@@ -36,6 +36,9 @@ PUBLIC_PAGES = [
     ("website", "/contact", "Contact Us"),
     ("website", "/insights", "Insights for better property decisions."),
     ("website", "/company/team", "The work behind every decision"),
+    ("website", "/testimonials", "Stories behind the property journey."),
+    ("website", "/terms", "Terms & Conditions"),
+    ("website", "/privacy", "Privacy Policy"),
     ("website", "/thrift", "Build towards property goals, together"),
     ("website", "/services/property-acquisition", "From a property enquiry"),
     ("website", "/services/advisory", "Independent questions deserve clear answers"),
@@ -113,6 +116,20 @@ def check(kind: str, route: str, expected: str | None):
             raise AssertionError("approved transparent logo PNG is not mounted in the shared header")
         if 'class="ls-utility-bar"' not in html:
             raise AssertionError("shared desktop/mobile utility navigation is missing")
+        if html.count('class="ls24-global-footer"') != 1:
+            raise AssertionError("V24 approved footer must appear exactly once on every public route")
+        if html.count('class="ls24-newsletter-section"') != 1:
+            raise AssertionError("V24 newsletter must appear exactly once immediately above the global footer")
+        if 'class="ls24-footer-main"' not in html:
+            raise AssertionError("approved V24 five-column footer is missing")
+        if 'class="ls24-carousel-shell"' not in html:
+            raise AssertionError("automatic mixed testimonial and article carousel is missing")
+        if 'class="ls24-footer-bottom"' not in html:
+            raise AssertionError("V24 green legal and social lower bar is missing")
+        if 'Stay updated with property news and insights.' not in html:
+            raise AssertionError("one-line V24 newsletter is missing")
+        if 'name="email"' not in html or '/terms' not in html or '/privacy' not in html:
+            raise AssertionError("newsletter and legal controls must remain available across every page")
     parser = VisibleHTML()
     parser.feed(html)
     visible = " ".join(" ".join(parser.words).split())
