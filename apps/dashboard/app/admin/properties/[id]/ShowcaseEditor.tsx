@@ -1,4 +1,6 @@
 'use client';
+import BrandedSelect from '../../../../components/BrandedSelect';
+
 import {useState} from 'react';
 import {createBrowserClient} from '@supabase/ssr';
 import './showcase-editor.css';
@@ -134,8 +136,8 @@ export default function ShowcaseEditor({propertyId,propertyStatus,initial,approv
   </div>
   {canApprove&&<div className="ls-editor-block ls-editor-review"><h3>03 / Independent content approval</h3><label className="ls-editor-checkbox"><input type="checkbox" checked={pinVerified} onChange={e=>setPinVerified(e.target.checked)}/> I have checked that the exact street address matches the latitude/longitude map marker. Leave unchecked to hide the map.</label><button className="ls-editor-action" disabled={busy||!['review','published'].includes(propertyStatus)} onClick={approveProfile}>Approve latest submitted details</button><p className="ls-editor-note">The staff member who last saved the draft cannot approve their own changes. Property must be in Review or Published status.</p></div>}
   <div className="ls-editor-block"><h3>04 / Original photography &amp; floor plans</h3><p>Upload an optimized marketing copy from an independently verified owner photograph, or a legitimate public floor plan. No identity documents, deeds or private surveys.</p>
-   <div className="ls-editor-fields"><label>Media category<select value={kind} onChange={e=>setKind(e.target.value as 'photo'|'floorplan')}><option value="photo">Property photo</option><option value="floorplan">Public floor plan / layout</option></select></label>
-   {kind==='photo'&&<label>Verified original photo<select value={source} onChange={e=>setSource(e.target.value)}><option value="">Select verified original</option>{verified.map(a=><option key={a.id} value={a.id}>Verified photo · {a.id.slice(0,8)}</option>)}</select></label>}
+   <div className="ls-editor-fields"><label>Media category<BrandedSelect value={kind} onChange={e=>setKind(e.target.value as 'photo'|'floorplan')}><option value="photo">Property photo</option><option value="floorplan">Public floor plan / layout</option></BrandedSelect></label>
+   {kind==='photo'&&<label>Verified original photo<BrandedSelect value={source} onChange={e=>setSource(e.target.value)}><option value="">Select verified original</option>{verified.map(a=><option key={a.id} value={a.id}>Verified photo · {a.id.slice(0,8)}</option>)}</BrandedSelect></label>}
    <label>Caption<input value={mediaTitle} onChange={e=>setMediaTitle(e.target.value)} maxLength={140} placeholder="Front exterior / Ground floor layout"/></label>
    <label>File<input type="file" accept={kind==='photo'?'image/jpeg,image/png,image/webp':'image/jpeg,image/png,image/webp,application/pdf'} onChange={e=>setFile(e.target.files?.[0]||null)}/></label>
    </div><button className="ls-editor-action" disabled={busy||!file||kind==='photo'&&!source} onClick={upload}>Upload for independent media review</button>
