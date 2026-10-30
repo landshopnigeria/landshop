@@ -1,4 +1,6 @@
 'use client';
+import BrandedSelect from '../../../components/BrandedSelect';
+
 import {useState,type FormEvent} from 'react';
 import {createBrowserClient} from '@supabase/ssr';
 type Person={staff_id:string;username:string;role:string};
@@ -28,7 +30,7 @@ export default function SupervisorTasks({people,tasks:initial}:{people:Person[];
  return <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(min(100%,340px),1fr))',gap:19}}>
  <section style={{background:'white',padding:26,borderRadius:18,border:'1px solid #dbe9de'}}><h2>Assign timed work</h2><p style={{fontSize:13,color:'#607869'}}>The task is server-timestamped and the assigned employee will automatically record their first view when opening it.</p>
  <form onSubmit={assign} style={{display:'grid',gap:13}}>
-  <label>Verified employee<select required style={field} value={staff} onChange={e=>setStaff(e.target.value)}><option value="">Select team member</option>{people.map(x=><option key={x.staff_id} value={x.staff_id}>{x.username} · {x.role.replaceAll('_',' ')}</option>)}</select></label>
+  <label>Verified employee<BrandedSelect required style={field} value={staff} onChange={e=>setStaff(e.target.value)}><option value="">Select team member</option>{people.map(x=><option key={x.staff_id} value={x.staff_id}>{x.username} · {x.role.replaceAll('_',' ')}</option>)}</BrandedSelect></label>
   <label>Task<input required minLength={5} maxLength={180} style={field} value={title} onChange={e=>setTitle(e.target.value)}/></label>
   <label>Instructions and expected result<textarea rows={4} style={field} value={desc} onChange={e=>setDesc(e.target.value)}/></label>
   <div style={{display:'grid',gridTemplateColumns:'repeat(2,minmax(0,1fr))',gap:9}}>
@@ -38,7 +40,7 @@ export default function SupervisorTasks({people,tasks:initial}:{people:Person[];
   <button disabled={busy||!staff} style={btn}>Assign task</button>
  </form></section>
  <section style={{background:'white',padding:26,borderRadius:18,border:'1px solid #dbe9de'}}><h2>Review completed assignments</h2><p style={{fontSize:13,color:'#607869'}}>Review only tasks your role authorized you to assign. A staff member cannot score their own submissions.</p>
- <label>Submitted tasks<select style={field} value={chosen} onChange={e=>setChosen(e.target.value)}><option value="">Select submitted work</option>{tasks.filter(x=>x.status==='submitted').map(x=><option key={x.id} value={x.id}>{x.title} · {people.find(p=>p.staff_id===x.assignee_id)?.username||'Staff'}</option>)}</select></label>
+ <label>Submitted tasks<BrandedSelect style={field} value={chosen} onChange={e=>setChosen(e.target.value)}><option value="">Select submitted work</option>{tasks.filter(x=>x.status==='submitted').map(x=><option key={x.id} value={x.id}>{x.title} · {people.find(p=>p.staff_id===x.assignee_id)?.username||'Staff'}</option>)}</BrandedSelect></label>
  {tasks.find(x=>x.id===chosen)&&<p style={{fontSize:12,color:'#476b55',padding:12,background:'#f2faf4'}}>Report: {tasks.find(x=>x.id===chosen)?.assignee_report||'Not supplied'}</p>}
  <label>Quality score<input type="number" min={0} max={100} style={field} value={score} onChange={e=>setScore(e.target.value)}/></label>
  <label>Documented feedback<textarea rows={4} minLength={20} maxLength={2000} style={field} value={feedback} onChange={e=>setFeedback(e.target.value)}/></label>
