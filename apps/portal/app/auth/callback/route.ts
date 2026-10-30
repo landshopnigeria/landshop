@@ -5,6 +5,7 @@ export async function GET(request:NextRequest) {
  const code=request.nextUrl.searchParams.get('code');
  const tokenHash=request.nextUrl.searchParams.get('token_hash');
  const type=request.nextUrl.searchParams.get('type');
+ const staffFlow=request.nextUrl.searchParams.get('flow')==='staff';
  const origin='https://portal.landshopnigeria.com';
  if(!code && !tokenHash)return NextResponse.redirect(new URL('/?error=missing_code',origin));
  // Keep the response object that receives authentication cookies.
@@ -31,7 +32,7 @@ export async function GET(request:NextRequest) {
  else{
   // Metadata controls UX routing only, never permissions.
   const {data:{user}}=await supabase.auth.getUser();
-  if(user?.user_metadata?.staff_signup===true)
+  if(staffFlow||user?.user_metadata?.staff_signup===true)
     response.headers.set('Location','https://app.landshopnigeria.com/staff');
  }
  return response;

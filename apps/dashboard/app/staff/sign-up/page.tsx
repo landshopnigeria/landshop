@@ -25,7 +25,7 @@ export default function StaffSignUp(){
   if(!url||!key)throw Error('Authentication service unavailable');
   const db=createBrowserClient(url,key,{cookieOptions:{domain:'.landshopnigeria.com',secure:true,sameSite:'lax',path:'/'}});
   const {error}=await db.auth.signUp({email:v.email.trim().toLowerCase(),password:v.password,options:{
-   emailRedirectTo:'https://portal.landshopnigeria.com/auth/callback',
+   emailRedirectTo:'https://app.landshopnigeria.com/auth/callback',
    data:{staff_signup:true,preferred_username:v.username.toLowerCase(),age_at_registration:+v.age,gender:v.gender,requested_role:v.role}
   }});
   if(error)throw error;

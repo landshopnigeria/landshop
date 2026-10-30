@@ -1,11 +1,24 @@
 'use client';
 import BrandedSelect from '../components/BrandedSelect';
-import {useState} from 'react';
+import {useEffect,useState} from 'react';
 import {browserSupabase} from '../lib/supabase-browser';
 import './auth-enterprise.css';
 type Mode='signin'|'signup';
 export default function Portal(){
  const [mode,setMode]=useState<Mode>('signin');
+ // Some Supabase email templates redirect to the configured site URL.
+ // Detect an established staff session and forward to staff onboarding immediately.
+ useEffect(()=>{
+  let live=true;
+  const auth=browserSupabase();
+  const route=(user:{user_metadata?:{staff_signup?:boolean}}|null|undefined)=>{
+   if(live&&user?.user_metadata?.staff_signup===true)
+    window.location.replace('https://app.landshopnigeria.com/staff');
+  };
+  auth.auth.getUser().then(({data})=>route(data.user)).catch(()=>{});
+  const {data:{subscription}}=auth.auth.onAuthStateChange((_event,session)=>route(session?.user));
+  return ()=>{live=false;subscription.unsubscribe()};
+ },[]);
  const [first,setFirst]=useState(''),[middle,setMiddle]=useState(''),[last,setLast]=useState('');
  const [username,setUsername]=useState(''),[email,setEmail]=useState(''),[phone,setPhone]=useState('');
  const [age,setAge]=useState(''),[gender,setGender]=useState(''),[password,setPassword]=useState(''),[confirm,setConfirm]=useState('');
@@ -36,7 +49,7 @@ export default function Portal(){
     const returnTo=new URLSearchParams(window.location.search).get('returnTo');
     let destination='https://app.landshopnigeria.com/dashboard';
     if(returnTo){try{const url=new URL(returnTo);if(url.protocol==='https:'&&url.hostname==='www.landshopnigeria.com'&&url.pathname.startsWith('/insights/'))destination=url.toString();}catch{}}
-    window.location.assign(destination);
+    window.location.assign(data.user.user_metadata?.staff_signup===true?'https://app.landshopnigeria.com/staff':destination);
    }
   }catch(e){setMessage(e instanceof Error?e.message:'Unable to complete request.')}
   finally{setBusy(false)}
