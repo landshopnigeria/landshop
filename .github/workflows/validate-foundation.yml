@@ -135,7 +135,7 @@ jobs:
               grep -Fq 'const dashboardActive=ownerActive||verified' apps/dashboard/app/staff/StaffWorkspace.tsx || { echo "::error::Owner dashboard incorrectly blocked by employee KYC"; exit 1; }
               grep -Fq 'ls25-owner-nav' apps/dashboard/app/staff/StaffWorkspace.tsx || { echo "::error::Owner Command Center navigation missing"; exit 1; }
               grep -Fq 'ls25-owner-access-cta' apps/dashboard/app/staff/StaffWorkspace.tsx || { echo "::error::Owner Command Center call to action missing"; exit 1; }
-              grep -Fq 'member.role===\x27owner\x27||(!ownerOnly' apps/dashboard/lib/admin-access.ts || { echo "::error::Global owner access across Command Center modules missing"; exit 1; }
+              grep -Fq "member.role==='owner'||(!ownerOnly" apps/dashboard/lib/admin-access.ts || { echo "::error::Global owner access across Command Center modules missing"; exit 1; }
               grep -Fq 'landshop_is_management' apps/dashboard/lib/admin-access.ts || { echo "::error::Owner authorization still requires live management RPC"; exit 1; }
               grep -Fq 'command-staff-back' apps/dashboard/app/admin/page.tsx || { echo "::error::Return to Staff Dashboard missing"; exit 1; }
               echo "Verified owner full Command Center and two-way staff navigation checks passed"
