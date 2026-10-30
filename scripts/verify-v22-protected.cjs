@@ -45,7 +45,7 @@ const oldHome=execFileSync('git',['show','origin/'+base+':apps/website/component
 const heroBlock=(src)=>src.slice(src.indexOf('<section className="hero hero-v16'),src.indexOf('<V22HomeSections featured={featured}/>')).trim();
 if(heroBlock(oldHome)!==heroBlock(home)){console.error('The protected V23 homepage slider or property filter changed.');failures++}
 if(!layout.includes('<SiteHeader/>{children}<SiteFooter/>')){console.error('Global SiteHeader/SiteFooter layout missing.');failures++}
-for(const marker of ['<NewsletterSignup/>','<FooterCarousel slides={slidesFromSources()}/>','ls24-global-footer','/testimonials','Privacy Policy','Terms & Conditions']){
+for(const marker of ['<NewsletterSignup/>','<FooterCarousel slides={slidesFromSources()}/>','ls24-global-footer','/testimonials','Privacy Policy','Terms &amp; Conditions']){
  if(!foot.includes(marker)){console.error('V24 footer content missing: '+marker);failures++}
 }
 for(const marker of ['.ls24-glass-area','.ls24-newsletter-glass','.ls24-footer-bottom','.ls24-carousel-shell',"landshop-footer-cris6882.svg"]){
