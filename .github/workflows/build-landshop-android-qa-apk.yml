@@ -76,8 +76,8 @@ jobs:
           fi
           # This change exists only inside the ephemeral GitHub runner.
           # A release-variant APK bundles JS and works without a Metro server,
-          # but DEBUG signing means it MUST NOT be uploaded to Google Play.
-          printf '\nandroid { buildTypes { release { signingConfig signingConfigs.debug } } }\n' >> android/app/build.gradle
+          # and .qa app ID avoids conflict with any future store app.\n          # DEBUG signing means it MUST NOT be uploaded to Google Play.
+          printf '\nandroid { buildTypes { release { signingConfig signingConfigs.debug; applicationIdSuffix ".qa"; versionNameSuffix "-qa" } } }\n' >> android/app/build.gradle
       - name: Compile standalone Android APK with bundled JavaScript
         run: |
           cd android
