@@ -50,7 +50,7 @@ export default function App(){
   const {data:{subscription}}=supabase.auth.onAuthStateChange((_event,s)=>{
    if(!mounted)return;setSession(s);if(s)setPage('dashboard');else if(page!=='signup'&&page!=='verify')setPage('signin');
   });
-  const incoming=(url:string|null)=>{
+  const incoming=(url:string|null|undefined)=>{
    if(!url)return;
    const match=/(?:\?|&)ref=(LANDSHOP[0-9]{2,12})/i.exec(url);
    if(match){setReferral(match[1].toUpperCase());setPage('signup');setStep(1);}
@@ -210,7 +210,7 @@ export default function App(){
 }
 const styles=StyleSheet.create({
  root:{flex:1,backgroundColor:'#f5f9f6'},loader:{flex:1,alignItems:'center',justifyContent:'center'},
- background:{flex:1,justifyContent:'center'},backgroundTint:{...StyleSheet.absoluteFillObject,backgroundColor:'rgba(232,241,236,.55)'},
+ background:{flex:1,justifyContent:'center'},backgroundTint:{...StyleSheet.absoluteFill,backgroundColor:'rgba(232,241,236,.55)'},
  authCenter:{flexGrow:1,justifyContent:'center',alignItems:'center',paddingHorizontal:16,paddingVertical:20},
  formCard:{width:'100%',alignSelf:'center',backgroundColor:'rgba(255,255,255,.93)',borderColor:'rgba(255,255,255,.98)',borderWidth:1,borderRadius:25,paddingHorizontal:22,paddingTop:16,paddingBottom:22,shadowColor:'#06372a',shadowOpacity:.18,shadowRadius:24,elevation:12},
  tabs:{flexDirection:'row',alignSelf:'center',backgroundColor:'#e4eee9',borderRadius:12,padding:3,marginBottom:14,marginTop:2,width:245},
