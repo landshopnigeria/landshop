@@ -149,7 +149,7 @@ export default function StaffWorkspace({userId,initialProfile,initialTasks,role,
    <small><StaffGlyph name="pin" size={16}/> {profile?.employment_state==='active'?'Landshop employee':'Location not provided'}</small></div>
   </div>
   <div className="ls25-profile-bottom"><div><span>Staff ID</span><strong>{profile?.staff_number||'—'}</strong></div><div><span>KYC Status</span><b className="ls25-pill">{kycLabel}</b></div></div>
-  {!profile&&<form onSubmit={onboard} className="ls25-mini-form"><h3>Complete your staff registration</h3>
+  {!profile&&<form onSubmit={onboard} className="ls25-mini-form"><h3>{wanted==='owner'?'Complete your owner registration':'Complete your staff registration'}</h3>
    <label>Username<input required minLength={3} value={username} onChange={e=>setUsername(e.target.value)}/></label>
    <div className="ls25-dual"><label>Age at registration<input required min={18} max={120} type="number" value={age} onChange={e=>setAge(e.target.value)}/></label>
    <label>Gender<BrandedSelect value={gender} onChange={e=>setGender(e.target.value)}><option value="prefer_not_to_say">Prefer not to say</option><option value="female">Female</option><option value="male">Male</option><option value="non_binary">Non-binary</option></BrandedSelect></label></div>
@@ -198,8 +198,9 @@ export default function StaffWorkspace({userId,initialProfile,initialTasks,role,
  // show only onboarding and approval status—not the employee command dashboard.
  if(!verified)return <StaffAuthShell><section className="ls25-applicant" aria-labelledby="staff-onboarding-title">
   <div className="ls25-applicant-heading"><p>LANDSHOP PEOPLE & MANAGEMENT</p>
-   <h1 id="staff-onboarding-title">Staff <span>registration</span></h1>
-   <p>{!profile?'Complete your registration to request staff access.':
+   <h1 id="staff-onboarding-title">{(profile?.requested_role||wanted)==='owner'?'Owner':'Staff'} <span>registration</span></h1>
+   <p>{!profile?'Complete your registration to request '+(wanted==='owner'?'company ownership':'staff access')+'.':
+      profile.kyc_state==='submitted'&&profile.requested_role==='owner'?'Your owner identity request is submitted. Independent company authorization is required before Command Center access.':
       profile.kyc_state==='submitted'?'Your portrait was submitted. Management verification is pending.':
       profile.kyc_state==='rejected'?'Your identity review needs attention. Submit a new portrait for reassessment.':
       profile.employment_state==='suspended'?'Your staff access is currently suspended. Contact management.':
