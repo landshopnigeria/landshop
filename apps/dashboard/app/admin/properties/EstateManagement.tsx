@@ -1,4 +1,6 @@
 'use client';
+import BrandedSelect from '../../../components/BrandedSelect';
+
 import {useState,type FormEvent} from 'react';
 import {createBrowserClient} from '@supabase/ssr';
 type Estate={id:string;name:string;state:string|null;city:string|null;lga:string|null;area:string|null;status:string;source_note?:string|null;created_by?:string|null};
@@ -36,7 +38,7 @@ export default function EstateManagement({initial,canApprove}:{initial:Estate[];
    <h3 style={{margin:0}}>Add an estate draft</h3>
    <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(200px,1fr))',gap:12}}>
     <label>Estate name<input required minLength={4} maxLength={180} value={name} onChange={e=>setName(e.target.value)} style={field}/></label>
-    <label>Nigerian state / FCT<select value={state} onChange={e=>setState(e.target.value)} style={field}>{states.map(s=><option key={s}>{s}</option>)}</select></label>
+    <label>Nigerian state / FCT<BrandedSelect value={state} onChange={e=>setState(e.target.value)} style={field}>{states.map(s=><option key={s}>{s}</option>)}</BrandedSelect></label>
     <label>City / Town<input required value={city} maxLength={100} onChange={e=>setCity(e.target.value)} style={field}/></label>
     <label>LGA<input value={lga} maxLength={100} onChange={e=>setLga(e.target.value)} style={field}/></label>
     <label>Area / District<input value={area} maxLength={120} onChange={e=>setArea(e.target.value)} style={field}/></label>
@@ -45,8 +47,8 @@ export default function EstateManagement({initial,canApprove}:{initial:Estate[];
   {canApprove&&<form onSubmit={transition} style={{display:'grid',gap:12,borderTop:'1px solid #e1eee5',paddingTop:20}}>
    <h3 style={{margin:0}}>Independent estate review</h3>
    <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(220px,1fr))',gap:12}}>
-    <label>Estate<select required value={selected} style={field} onChange={e=>setSelected(e.target.value)}><option value="">Choose estate</option>{estates.map(e=><option value={e.id} key={e.id}>{e.name} — {e.state} ({e.status})</option>)}</select></label>
-    <label>Decision<select style={field} value={status} onChange={e=>setStatus(e.target.value)}><option value="review">Send draft to review</option><option value="published">Approve estate location</option><option value="archived">Archive published estate</option></select></label>
+    <label>Estate<BrandedSelect required value={selected} style={field} onChange={e=>setSelected(e.target.value)}><option value="">Choose estate</option>{estates.map(e=><option value={e.id} key={e.id}>{e.name} — {e.state} ({e.status})</option>)}</BrandedSelect></label>
+    <label>Decision<BrandedSelect style={field} value={status} onChange={e=>setStatus(e.target.value)}><option value="review">Send draft to review</option><option value="published">Approve estate location</option><option value="archived">Archive published estate</option></BrandedSelect></label>
    </div>
    <label>Documented reason<textarea required minLength={20} maxLength={1000} rows={3} style={{...field,resize:'vertical'}} value={reason} onChange={e=>setReason(e.target.value)} placeholder="Confirm estate identity, correct state/city, and authority to market this development"/></label>
    <button disabled={busy||!selected||reason.trim().length<20} style={{justifySelf:'start',padding:'12px 19px',border:0,borderRadius:10,color:'white',background:'#f26b10',fontWeight:800}}>Record estate review</button>
