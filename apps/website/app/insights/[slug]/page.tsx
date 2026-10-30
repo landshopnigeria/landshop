@@ -2,6 +2,7 @@ import Link from 'next/link';
 import {notFound} from 'next/navigation';
 import ContentShell from '../../../components/ContentShell';
 import ContactForm from '../../contact/ContactForm';
+import V22ArticleComments from '../../../components/V22ArticleComments';
 import {guides,findGuide} from '../../../lib/guides';
 export function generateStaticParams(){return guides.map(g=>({slug:g.slug}));}
 export async function generateMetadata({params}:{params:Promise<{slug:string}>}){
@@ -22,10 +23,7 @@ export default async function GuidePage({params}:{params:Promise<{slug:string}>}
    {g.sections.map(section=><section key={section.heading}><h2>{section.heading}</h2><p>{section.paragraph}</p>{section.points&&<ul>{section.points.map(point=><li key={point}>{point}</li>)}</ul>}</section>)}
    <aside className="v22-article-disclaimer"><strong>Information note:</strong> This article provides general educational guidance. Verify individual property records, applicable laws, financial terms and lender or investment arrangements against current authoritative documentation. Seek independent professional advice where appropriate.</aside>
   </article>
-  <section className="v22-article-comments" aria-labelledby="v22-comment-title"><span className="v22-eyebrow">CONVERSATION</span><h2 id="v22-comment-title">Join the discussion.</h2><p>Comments are available only to authenticated users and will be subject to moderation. Sign in to access your Landshop account.</p>
-   <Link className="v22-btn" href="https://portal.landshopnigeria.com">Sign in or sign up to comment ↗</Link>
-   <small>Comment submission will become available after the secure portal identity and moderation service are connected.</small>
-  </section>
+  <V22ArticleComments slug={slug}/>
   {related.length>0&&<section className="v22-article-related"><h2>Related reading</h2>{related.map(r=><Link key={r.slug} href={'/insights/'+r.slug}>{r.title} <span>↗</span></Link>)}</section>}
  </div>
  <aside className="v22-article-sidebar" aria-label="Article sidebars">
