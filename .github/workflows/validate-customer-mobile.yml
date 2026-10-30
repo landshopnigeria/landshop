@@ -1,0 +1,38 @@
+name: Validate Landshop Customer Native App
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'mobile/customer-app/**'
+      - '.github/workflows/validate-customer-mobile.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'mobile/customer-app/**'
+      - '.github/workflows/validate-customer-mobile.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  typecheck:
+    name: Expo customer app dependencies and TypeScript
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: mobile/customer-app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install native app dependencies
+        run: npm install --no-audit --no-fund
+      - name: Verify TypeScript types
+        run: npm run typecheck
+      - name: Confirm no native secret keys in source
+        run: |
+          if grep -rE 'service_role|sb_secret_' src App.tsx; then
+            echo '::error::Sensitive Supabase service key reference is prohibited in the mobile app.'
+            exit 1
+          fi
