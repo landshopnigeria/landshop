@@ -9,10 +9,11 @@ export const metadata = {
   description: 'Contact Landshop in Lekki, Lagos for property, investment, mortgage and customer-care enquiries.'
 };
 
-const phone = '+2349169973359';
+const phone = '+23418880063';
+const whatsapp = '2348188866772';
 const email = 'care@landshopnigeria.com';
-const office = "3rd Floor, King's Deck, Alternative Route, off Chevron Drive, Lekki, Lagos, Nigeria";
-const googleMaps = 'https://maps.app.goo.gl/GLiNo6LfYWhWvJV1A';
+const office = "Landshop Limited, Suite 1, 3rd Floor, King’s Deck, Alternative Route, Chevron Drive, Lekki-Epe Expressway, Lagos";
+const googleMaps = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(office);
 const directions = 'https://www.google.com/maps/dir/?' + new URLSearchParams({api: '1', destination: office}).toString();
 const mapEmbed = 'https://www.google.com/maps?q=' + encodeURIComponent('Landshop HQ, ' + office) + '&output=embed&z=16';
 const businessSchema = {
@@ -26,7 +27,7 @@ const businessSchema = {
   hasMap: googleMaps,
   address: {
     '@type': 'PostalAddress',
-    streetAddress: "3rd Floor, King's Deck, Alternative Route, off Chevron Drive",
+    streetAddress: "Suite 1, 3rd Floor, King's Deck, Alternative Route, Chevron Drive, Lekki-Epe Expressway",
     addressLocality: 'Lekki',
     addressRegion: 'Lagos',
     addressCountry: 'NG'
@@ -59,9 +60,10 @@ export default function Contact() {
                 <span className="lc-v24-icon" aria-hidden="true"><SiteIcon name="phone" size={23}/></span>
                 <div className="lc-v24-detail-copy">
                   <span className="lc-v24-label">Phone number</span>
-                  <a href={'tel:' + phone}>+234 916 997 3359</a>
+                  <a href={'tel:' + phone}>+234 1 888 0063</a>
                 </div>
               </div>
+              <div className="lc-v24-detail"><span className="lc-v24-icon" aria-hidden="true"><SiteIcon name="phone" size={23}/></span><div className="lc-v24-detail-copy"><span className="lc-v24-label">WhatsApp only</span><a href={'https://wa.me/'+whatsapp} target="_blank" rel="noopener noreferrer">+234 818 886 6772</a></div></div>
               <div className="lc-v24-detail lc-v24-detail--accent">
                 <span className="lc-v24-icon" aria-hidden="true"><SiteIcon name="mail" size={23}/></span>
                 <div className="lc-v24-detail-copy">
@@ -83,6 +85,7 @@ export default function Contact() {
       </section>
     </div>
 
+    <section className="ls26-offices ls26-container" aria-labelledby="branches-title"><span className="ls26-eyebrow">OUR OFFICES</span><h2 id="branches-title">Visit Landshop.</h2><div className="ls26-grid-three"><article className="ls26-aside"><h3>Headquarters · Lagos</h3><p>{office}</p></article><article className="ls26-aside"><h3>Uyo Office</h3><p>Landshop Limited, No. 4 Ibanga Street, Off Oron Road, Uyo, Akwa Ibom State.</p></article><article className="ls26-aside"><h3>Warri Office</h3><p>Landshop Limited, First Floor, 60 Airport Road, opposite Delta State Revenue House, beside Ecobank Nigeria Limited, Warri, Delta State.</p></article><article className="ls26-aside"><h3>Benin Office</h3><p>Landshop Limited, beside House 4, Iriri Road, before ADP Junction, off Airport Road, Benin City, Edo State.</p></article></div></section>
     <section className="lc-office-map" aria-label="Landshop office map">
       <div className="lc-map-intro">
         <div><p>{office}</p></div>
