@@ -39,10 +39,10 @@ Enable only after the following have been manually verified by an authorized Sup
 
 ## Present limitations and release gate
 
-- KYC documents and the full product application workflow currently open the protected Landshop **web** experiences; separate website authentication may be required. Native and web cookies are not assumed to be shared.
+- Individual KYC document upload and read-only application tracking are now native. Completing certain product application drafts, specialist company/realtor KYC, and account management still opens the protected **web** experience and may require separate web authentication. Native and web cookies are not assumed to be shared.
 - Google login opens the existing website until the flag above is enabled. The in-app implementation is ready for controlled test, not yet production-proven.
 - Deep links received from untrusted websites cannot be used as an arbitrary redirect or session; the backend verifies PKCE codes, token hashes and referral attribution.
-- A successful `npm run typecheck` or GitHub workflow is **not equivalent to device testing**. Expo build signing, approved credentials, QR appearance, biometric/storage review, Android/iOS accessibility and full KYC/document capture remain required before store release.
+- A successful `npm run typecheck` or GitHub workflow is **not equivalent to device testing**. Expo build signing, approved credentials, QR appearance, biometric/storage review, Android/iOS accessibility and real camera/upload acceptance remain required before store release.
 
 ## Native KYC & application tracking (V3)
 
@@ -60,3 +60,9 @@ Application tracking reads the signed-in customer's existing `applications` and 
 - Test the application timeline with a user who has no applications, multiple applications, and draft/submitted records with/without activity events. Verify account isolation.
 - Test on physical Android and iOS devices, tablets and small screens, accessibility font scaling, screen readers, foreground/background transitions, and unstable network connections. A successful TypeScript build does not establish these results.
 - Obtain app-store privacy approvals and provide a deletion/retention policy for identity files before distribution. The private bucket limits access but is **not proof of regulatory compliance**.
+
+## V4 — Build preparation and hardening
+
+Android APK, iOS simulator, iOS internal QA, and future production build profiles are described in [V4_RELEASE_CHECKLIST.md](./V4_RELEASE_CHECKLIST.md). The native client validates the actual size and signature of the selected upload before reading it into memory, rejects PDF selfie submissions, and builds owner-specific private storage paths. The CI suite tests document types, size limits, signature mismatches, path traversal rejection, and authentication links. These are source checks, **not** device tests or server-side malware screening.
+
+The application list continues to display owner-scoped statuses even if event-history retrieval fails; unknown product kinds never redirect to another product's draft. All store binaries, actual device builds and platform sign-in validation remain pending authorization and EAS project configuration.
