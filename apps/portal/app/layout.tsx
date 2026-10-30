@@ -1,3 +1,4 @@
+import '../../../packages/shared/BrandedSelect.css';
 import type { Metadata } from 'next';
 import './globals.css';
 export const metadata:Metadata={title:'Landshop Portal',description:'Secure Landshop account registration, verification and sign-in'};
