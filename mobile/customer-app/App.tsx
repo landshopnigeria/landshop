@@ -18,7 +18,7 @@ const pattern=/^LANDSHOP[0-9]{2,12}$/;
 function navigateWebsite(url:string){Linking.openURL(url).catch(()=>{});}
 function Brand(){return <Pressable onPress={()=>navigateWebsite('https://www.landshopnigeria.com')} accessibilityLabel="Landshop homepage"><Image source={{uri:logo}} resizeMode="contain" style={{width:155,height:63,alignSelf:'center'}}/></Pressable>}
 function Primary({label,onPress,loading=false}:{label:string;onPress:()=>void;loading?:boolean}){
- return <Pressable disabled={loading} onPress={onPress} accessibilityRole="button" style={{marginTop:8,opacity:loading?.65:1}}>
+ return <Pressable disabled={loading} onPress={onPress} accessibilityRole="button" style={{marginTop:8,opacity:loading ? 0.65 : 1}}>
   <LinearGradient colors={['#072e2b','#039e75']} start={{x:0,y:0}} end={{x:1,y:0}} style={styles.primary}>{loading?<ActivityIndicator color="white"/>:<Text style={styles.primaryText}>{label}</Text>}</LinearGradient>
  </Pressable>;
 }
@@ -183,7 +183,7 @@ export default function App(){
  const kycScreen=<><Text style={styles.overline}>ACCOUNT VERIFICATION</Text><Text style={styles.heading}>Verify Your <Text style={styles.accent}>Identity</Text></Text>
    <Caption>Protect your account and complete Landshop's secure identity review.</Caption>
    <View style={styles.summaryCard}><Text style={styles.summaryTitle}>Current verification status</Text><Text style={styles.summaryNumber}>{kyc.replaceAll('_',' ')}</Text></View>
-   {['Personal information','ID document upload','Selfie verification','Address confirmation','Landshop review'].map((label,i)=><View key={label} style={styles.kycStep}><Text style={styles.kycNumber}>{i+1}</Text><Text style={{color:ink,flex:1,fontWeight:'650'}}>{label}</Text><Text style={{color:muted}}>›</Text></View>)}
+   {['Personal information','ID document upload','Selfie verification','Address confirmation','Landshop review'].map((label,i)=><View key={label} style={styles.kycStep}><Text style={styles.kycNumber}>{i+1}</Text><Text style={{color:ink,flex:1,fontWeight:'600'}}>{label}</Text><Text style={{color:muted}}>›</Text></View>)}
    <Primary label="Continue KYC Securely" onPress={()=>navigateWebsite(app+'/dashboard/kyc')}/>
    <Text style={{fontSize:11,color:muted,lineHeight:18,marginTop:12}}>The full document and selfie capture currently opens Landshop's authenticated web KYC. Native capture is not yet enabled.</Text>
  </>;
@@ -216,7 +216,7 @@ const styles=StyleSheet.create({
  tabs:{flexDirection:'row',alignSelf:'center',backgroundColor:'#e4eee9',borderRadius:12,padding:3,marginBottom:14,marginTop:2,width:245},
  tab:{flex:1,padding:11,alignItems:'center',borderRadius:10},tabActive:{backgroundColor:'white',borderBottomWidth:2,borderBottomColor:green},
  tabText:{color:'#718c80',fontWeight:'700',fontSize:13},tabTextActive:{color:green},
- heading:{fontSize:26,fontWeight:'850',color:ink,textAlign:'center',letterSpacing:-.7,lineHeight:34,marginBottom:2},
+ heading:{fontSize:26,fontWeight:'800',color:ink,textAlign:'center',letterSpacing:-.7,lineHeight:34,marginBottom:2},
  accent:{color:green,textDecorationLine:'underline',textDecorationColor:orange},caption:{fontSize:12,color:muted,textAlign:'center',lineHeight:19,marginBottom:16,marginTop:4},
  fieldLabel:{color:'#456e5e',fontSize:11,fontWeight:'700',marginBottom:6},
  field:{borderColor:'#ceded4',borderWidth:1,backgroundColor:'#fff',borderRadius:11,height:47,paddingHorizontal:12,justifyContent:'center',fontSize:13,color:ink},
@@ -239,11 +239,11 @@ const styles=StyleSheet.create({
  kycBadge:{padding:14,backgroundColor:'#fff',borderColor:'#d9ebe0',borderWidth:1,borderRadius:13,flexDirection:'row',alignItems:'center',justifyContent:'space-between',marginBottom:15},
  quickGrid:{flexDirection:'row',flexWrap:'wrap',gap:9,marginBottom:18},
  quickCard:{width:'31%',minWidth:100,flexGrow:1,minHeight:105,borderRadius:14,backgroundColor:'#fff',borderColor:'#e3efe7',borderWidth:1,padding:13,justifyContent:'space-between'},
- quickText:{fontSize:11,fontWeight:'750',color:ink},quickIcon:{fontSize:23,color:green},
+ quickText:{fontSize:11,fontWeight:'700',color:ink},quickIcon:{fontSize:23,color:green},
  summaryCard:{backgroundColor:'#fff',borderRadius:15,padding:17,borderColor:'#e1eee5',borderWidth:1,marginBottom:14},
- summaryTitle:{fontSize:11,color:muted,fontWeight:'700',marginBottom:7},summaryNumber:{fontSize:21,color:green,fontWeight:'850'},
+ summaryTitle:{fontSize:11,color:muted,fontWeight:'700',marginBottom:7},summaryNumber:{fontSize:21,color:green,fontWeight:'800'},
  action:{backgroundColor:'#fff',paddingVertical:15,paddingHorizontal:17,borderWidth:1,borderColor:'#e0ece4',borderRadius:11,marginVertical:5,flexDirection:'row',justifyContent:'space-between',alignItems:'center'},
- actionText:{fontSize:13,color:ink,fontWeight:'750'},
+ actionText:{fontSize:13,color:ink,fontWeight:'700'},
  dock:{flexDirection:'row',justifyContent:'space-around',alignItems:'center',height:68,backgroundColor:'#fff',borderTopWidth:1,borderTopColor:'#e0eae2'},
  dockItem:{flex:1,alignItems:'center',justifyContent:'center',gap:2},
  linkText:{color:muted,fontSize:11,marginVertical:8},kycStep:{flexDirection:'row',alignItems:'center',gap:13,padding:15,borderColor:'#e2eee6',borderWidth:1,backgroundColor:'white',borderRadius:12,marginVertical:5},
