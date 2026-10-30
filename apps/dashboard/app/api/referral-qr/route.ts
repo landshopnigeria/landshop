@@ -29,7 +29,8 @@ export async function GET(request:NextRequest){
    'Content-Type':'image/png','Cache-Control':'private, no-store',
    'Content-Disposition':(download?'attachment':'inline')+'; filename="Landshop-'+data.code+'-Referral-QR.png"'
   });
-  for(const cookie of response.cookies.getAll())headers.append('Set-Cookie',cookie.name+'='+cookie.value+'; Path=/; Secure; SameSite=Lax');
-  return new Response(bytes,{status:200,headers});
+  const imageResponse=new NextResponse(bytes,{status:200,headers});
+  for(const cookie of response.cookies.getAll())imageResponse.cookies.set(cookie);
+  return imageResponse;
  }catch{return NextResponse.json({error:'QR generation is temporarily unavailable. Copy your referral link instead.'},{status:503})}
 }
