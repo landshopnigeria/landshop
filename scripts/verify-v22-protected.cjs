@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-/* V23 protected release gate.
- * User approved global V24 footer/newsletter replacement. Header and
- * V23 property slider/filter must stay byte-for-byte unchanged.
+/* V26 protection gate.
+ * Preserve V24 header/footer and V23 filter structure. Explicitly permit
+ * the owner-requested Projects menu and three updated hero messages.
  */
 const {readFileSync}=require('node:fs');
 const {execFileSync}=require('node:child_process');
@@ -14,8 +14,13 @@ for(const p of [
 ]){
  const prior=execFileSync('git',['show','origin/'+base+':'+p],{encoding:'utf8'});
  const current=readFileSync(p,'utf8');
- if(prior!==current){console.error('PROTECTED HEADER CHANGED: '+p);failures++;}
- else console.log('PRESERVED UNCHANGED: '+p);
+ const approvedHeader=(content)=>content
+  .replace(/ \{label:'Projects',eyebrow:[\s\S]*?(?=\n \{label:'Careers',eyebrow:|\n \{label:'Company',eyebrow:)/, '')
+  .replace(/ \{label:'Careers',eyebrow:[\s\S]*?(?=\n \{label:'Company',eyebrow:)/, '')
+  .replace(/\n{2,}(?= \{label:'Company',eyebrow:)/g,'\n');
+ const matches=p.endsWith('/SiteHeader.tsx')?approvedHeader(prior)===approvedHeader(current):prior===current;
+ if(!matches){console.error('PROTECTED HEADER CHANGE OUTSIDE APPROVED PROJECTS MENU: '+p);failures++;}
+ else console.log('PRESERVED: '+p);
 }
 const home=readFileSync('apps/website/components/LandshopHome.tsx','utf8');
 const style=readFileSync('apps/website/app/v23-video-preview.css','utf8');
@@ -25,12 +30,12 @@ const required=[
  'className="glass-search ls-v23-property-filter"',
  '<V22HomeSections featured={featured}/>',
  "['Buy','Sell','Rent','Shortlet']",
- 'Your Property.',
- 'Your Future.',
- 'Invest in Knowledge.',
- 'Incubate Possibility.',
- 'A Clearer Path',
- 'to Homeownership.',
+ 'Everyone deserves affordable property.',
+ 'Plot Your Future. Save ₦5 million.',
+ 'Where would you own next?',
+ 'Explore Famous Gardens',
+ 'Book Inspection',
+ 'Speak With Consultant',
  ...['query','state','city','area','type','min','max','bedrooms','bathrooms','minsize','availability','collection'].map(x=>'name="'+x+'"')
 ];
 for(const marker of required){if(!home.includes(marker)){console.error('V23 preview element missing: '+marker);failures++;}}
@@ -41,10 +46,18 @@ for(const marker of ['.ls-v23-hero','.ls-v23-filter-holder','.ls-v23-form-grid',
 const layout=readFileSync('apps/website/app/layout.tsx','utf8');
 const foot=readFileSync('apps/website/components/SiteFooter.tsx','utf8');
 const footerCss=readFileSync('apps/website/app/v24-global-footer.css','utf8');
-const oldHome=execFileSync('git',['show','origin/'+base+':apps/website/components/LandshopHome.tsx'],{encoding:'utf8'});
-const heroBlock=(src)=>src.slice(src.indexOf('<section className="hero hero-v16'),src.indexOf('<V22HomeSections featured={featured}/>')).trim();
-if(heroBlock(oldHome)!==heroBlock(home)){console.error('The protected V23 homepage slider or property filter changed.');failures++}
+// Approved copy changes are intentionally not byte-equal to the V23 hero.
+// Filter names, carousel hooks, hero layout and the V22 sections remain protected above.
+if((home.match(/subtitle:/g)||[]).length!==3){console.error('Homepage must retain exactly three approved slides.');failures++;}
+if(!home.includes('<V22HomeSections featured={featured}/>')){console.error('Homepage content sections missing.');failures++;}
 if(!layout.includes('<SiteHeader/>{children}<SiteFooter/>')){console.error('Global SiteHeader/SiteFooter layout missing.');failures++}
+const priorFooter=execFileSync('git',['show','origin/'+base+':apps/website/components/SiteFooter.tsx'],{encoding:'utf8'});
+if(foot!==priorFooter){console.error('Global footer must remain byte-for-byte identical to main.');failures++}
+for(const p of ['apps/website/app/properties/[id]/page.tsx','apps/website/app/properties/[id]/property-details.css','apps/website/app/insights/[slug]/page.tsx']){
+ const prior=execFileSync('git',['show','origin/'+base+':'+p],{encoding:'utf8'});
+ const current=readFileSync(p,'utf8');
+ if(prior!==current){console.error('PROTECTED PROPERTY/ARTICLE DETAIL CHANGED: '+p);failures++}
+}
 for(const marker of ['<NewsletterSignup/>','<FooterCarousel slides={slidesFromSources()}/>','ls24-global-footer','/testimonials','Privacy Policy','Terms &amp; Conditions']){
  if(!foot.includes(marker)){console.error('V24 footer content missing: '+marker);failures++}
 }
@@ -57,4 +70,4 @@ for(const source of ['apps/website/components/ContentShell.tsx','apps/website/co
 }
 
 if(failures)process.exitCode=1;
-else console.log('PASS: approved V23 hero/filter unchanged and V24 global footer installed with current header protected.');
+else console.log('PASS: approved Projects/Careers additions, protected global header/footer, property detail and article templates.');
