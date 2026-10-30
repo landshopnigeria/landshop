@@ -141,3 +141,9 @@
 .ls25-applicant-actions button:disabled{opacity:.6;cursor:not-allowed}
 .ls25-applicant-footer{text-align:center;font-size:11px;color:#668074;margin:0}
 @media(max-width:500px){.ls25-applicant{padding:16px;border-radius:19px;gap:12px}.ls25-applicant-actions button{min-width:0;flex:1}.ls25-applicant #staff-profile{padding:17px 13px}}
+
+/* Personal staff dashboard is activated immediately after email confirmation. */
+.ls25-account-active{display:flex;align-items:flex-start;gap:12px;background:#e8f8f0;border:1px solid #b9e4ca;border-radius:15px;padding:14px 17px;color:#155b42;margin:0 0 15px}
+.ls25-account-active svg{flex-shrink:0}
+.ls25-account-active strong{display:block;font-size:14px}
+.ls25-account-active p{font-size:12px;line-height:1.5;margin:3px 0 0;color:#346b56}
