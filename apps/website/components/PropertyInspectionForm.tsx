@@ -1,4 +1,6 @@
 'use client';
+import BrandedSelect from 'BrandedSelect';
+
 import {useState,type FormEvent} from 'react';
 import SiteIcon from './SiteIcon';
 type State='idle'|'sending'|'success'|'error';
@@ -32,8 +34,8 @@ export default function PropertyInspectionForm({propertyId,title}:{propertyId:st
    <label>WhatsApp number<label className="ld-same"><input type="checkbox" checked={same} onChange={e=>setSame(e.target.checked)}/> Same as phone</label>{!same&&<input name="whatsapp" type="tel" maxLength={30} placeholder="WhatsApp contact"/>}</label>
    <label>Property<input value={title} readOnly aria-label="Selected property"/></label>
    <label>Preferred inspection date *<input type="date" min={day} name="date" required/></label>
-   <label>Preferred time (WAT) *<select name="time" required defaultValue=""><option value="" disabled>Choose a preferred time</option>{hours.map(h=><option key={h} value={h}>{h} WAT</option>)}</select></label>
-   <label>Inspection type *<select name="inspection_type" defaultValue="physical" required><option value="physical">Physical site inspection</option><option value="virtual">Virtual inspection (subject to availability)</option></select></label>
+   <label>Preferred time (WAT) *<BrandedSelect name="time" required defaultValue=""><option value="" disabled>Choose a preferred time</option>{hours.map(h=><option key={h} value={h}>{h} WAT</option>)}</BrandedSelect></label>
+   <label>Inspection type *<BrandedSelect name="inspection_type" defaultValue="physical" required><option value="physical">Physical site inspection</option><option value="virtual">Virtual inspection (subject to availability)</option></BrandedSelect></label>
    <label>Attendees (optional)<input type="number" name="attendees" min={1} max={20} defaultValue={1}/></label>
    <label className="ld-inspection-wide">Additional requests<textarea name="message" maxLength={1200} rows={3} placeholder="Access requirements, preferred estate contact or questions"/></label>
   </div>
