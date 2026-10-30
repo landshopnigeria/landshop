@@ -1,4 +1,6 @@
 'use client';
+import BrandedSelect from '../../../../components/BrandedSelect';
+
 import {useState,type FormEvent} from 'react';
 import {createBrowserClient} from '@supabase/ssr';
 export default function InviteReviewer(){
@@ -17,9 +19,9 @@ export default function InviteReviewer(){
  }
  return <form onSubmit={submit} style={{display:'grid',gap:16,background:'#fff',border:'1px solid #d7e9dc',padding:27,borderRadius:18,maxWidth:800}}>
   <label style={{display:'grid',gap:7}}>Registered reviewer email <input type="email" required maxLength={254} value={email} onChange={e=>setEmail(e.target.value)} placeholder="reviewer@company.ng" style={{padding:13,border:'1px solid #c5decc',borderRadius:11}}/></label>
-  <label style={{display:'grid',gap:7}}>Review role <select value={role} onChange={e=>setRole(e.target.value)} style={{padding:13,border:'1px solid #c5decc',borderRadius:11}}>
+  <label style={{display:'grid',gap:7}}>Review role <BrandedSelect value={role} onChange={e=>setRole(e.target.value)} style={{padding:13,border:'1px solid #c5decc',borderRadius:11}}>
     <option value="legal">Legal reviewer</option><option value="operations">Operations reviewer</option><option value="admin">Administrator</option>
-  </select></label>
+  </BrandedSelect></label>
   <label style={{display:'grid',gap:7}}>Justification and appointment authorization<textarea rows={4} required minLength={20} maxLength={1000} value={reason} onChange={e=>setReason(e.target.value)} placeholder="Why this separately verified person should review property title, current price, owner authority and public listing approval…" style={{padding:13,border:'1px solid #c5decc',borderRadius:11}}/></label>
   <button type="submit" disabled={busy||reason.trim().length<20} style={{border:0,borderRadius:11,padding:15,background:'#2ba47a',color:'#fff',fontWeight:800,cursor:'pointer'}}>{busy?'Checking verified identity…':'Invite authorized reviewer'}</button>
   {msg&&<p role={good?'status':'alert'} style={{color:good?'#0c845f':'#ad3e28',background:good?'#e9f8ee':'#fff0e9',borderRadius:11,padding:14,fontSize:13,lineHeight:1.65}}>{msg}</p>}
