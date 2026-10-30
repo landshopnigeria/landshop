@@ -1,4 +1,6 @@
+import {v22Guides} from './v22-guides';
 export type Guide={
+ tags?:string[];
  slug:string;category:string;title:string;summary:string;image:string;readingMinutes:number;
  sections:{heading:string;paragraph:string;points?:string[]}[];
 };
@@ -22,5 +24,6 @@ export const guides:Guide[]=[
   {heading:'Compare what you see with the documents',paragraph:'Record material differences between brochures, plans, plot descriptions, current progress and on-site conditions. Ask for written clarifications and verification of all outstanding commitments.'},
   {heading:'Before the final decision',paragraph:'Review the findings alongside title evidence, the proposed agreement and any professional reports. An inspection supports due diligence but does not substitute for legal verification.'}
  ]}
+,...v22Guides
 ];
 export function findGuide(slug:string){return guides.find(g=>g.slug===slug)}
