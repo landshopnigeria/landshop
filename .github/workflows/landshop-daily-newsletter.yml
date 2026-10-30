@@ -1,5 +1,10 @@
 name: Landshop Daily Newsletter (Approval-Gated)
 on:
+  pull_request:
+    paths:
+      - '.github/workflows/landshop-daily-newsletter.yml'
+      - 'scripts/landshop-daily-newsletter.mjs'
+      - 'apps/dashboard/app/admin/newsletter/**'
   # 07:00 UTC = 08:00 WAT (Africa/Lagos), no daylight saving.
   schedule:
     - cron: '0 7 * * *'
@@ -19,9 +24,10 @@ concurrency:
   cancel-in-progress: false
 jobs:
   review_and_dispatch:
-    if: github.ref == 'refs/heads/main'
+    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    environment: landshop-production
+    # No production environment secrets are exposed to pull-request tests.
+    environment: ${{ github.event_name == 'pull_request' && 'landshop-newsletter-ci' || 'landshop-production' }}
     timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
@@ -42,7 +48,7 @@ jobs:
           LANDSHOP_POSTMARK_BROADCAST_STREAM: ${{ vars.LANDSHOP_POSTMARK_BROADCAST_STREAM || 'broadcast' }}
           LANDSHOP_NEWSLETTER_FROM: ${{ vars.LANDSHOP_NEWSLETTER_FROM }}
           LANDSHOP_NEWSLETTER_MAX_RECIPIENTS: ${{ vars.LANDSHOP_NEWSLETTER_MAX_RECIPIENTS || '2000' }}
-          REQUESTED_MODE: ${{ inputs.mode || 'send' }}
+          REQUESTED_MODE: ${{ github.event_name == 'pull_request' && 'preview' || inputs.mode || 'send' }}
         run: |
           set -euo pipefail
           if [ "$REQUESTED_MODE" = "send" ];then
