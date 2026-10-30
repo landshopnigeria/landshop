@@ -73,6 +73,15 @@ jobs:
           packager: npm
       - name: Link existing authorized EAS project (never create new)
         run: eas init --id "$EAS_PROJECT_ID" --non-interactive
+      - name: Verify connected EAS project has a publishable Supabase key
+        run: |
+          set -euo pipefail
+          # This emits no environment values into CI logs. Configure in the
+          # Expo project Preview environment, not as a GitHub hardcoded key.
+          if ! eas env:list preview --format short | grep -q 'EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY'; then
+            echo "::error::Configure EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY in EAS project Preview environment."
+            exit 1
+          fi
       - name: Produce internal build, no store upload
         run: |
           set -euo pipefail
