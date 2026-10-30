@@ -73,15 +73,23 @@ jobs:
           packager: npm
       - name: Link existing authorized EAS project (never create new)
         run: eas init --id "$EAS_PROJECT_ID" --non-interactive
-      - name: Verify connected EAS project has a publishable Supabase key
+      - name: Verify EAS ownership and approved public client configuration
         run: |
           set -euo pipefail
-          # This emits no environment values into CI logs. Configure in the
-          # Expo project Preview environment, not as a GitHub hardcoded key.
-          if ! eas env:list preview --format short | grep -q 'EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY'; then
-            echo "::error::Configure EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY in EAS project Preview environment."
-            exit 1
-          fi
+          eas project:info > /dev/null
+          node - <<'NODE'
+          const fs=require('fs');
+          const config=JSON.parse(fs.readFileSync('eas.json','utf8'));
+          for(const [name,profile] of Object.entries(config.build)){
+            const env=profile.env||{};
+            if(env.EXPO_PUBLIC_SUPABASE_URL!=='https://iwkfagzkogzidrbbezds.supabase.co')
+              throw Error('Unexpected Supabase project in '+name);
+            if(!/^sb_publishable_[A-Za-z0-9_-]+$/.test(env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY||''))
+              throw Error('Active client-safe Supabase publishable key required in '+name);
+            if(env.EXPO_PUBLIC_NATIVE_AUTH_REDIRECT_READY!=='false')
+              throw Error('Unverified native OAuth must remain disabled in '+name);
+          }
+          NODE
       - name: Produce internal build, no store upload
         run: |
           set -euo pipefail
