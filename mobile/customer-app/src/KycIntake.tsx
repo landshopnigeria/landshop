@@ -68,7 +68,6 @@ export default function KycIntake({onClose}:{onClose:()=>void}){
   finally{setLoading(false)}
  },[]);
  useEffect(()=>{void retrieve()},[retrieve]);
- const editable=!submission||submission.status==='draft';
  const info=()=>({fullName:name.trim(),phone:phone.trim(),address:address.trim(),state:state.trim(),city:city.trim(),verificationConsent:consent});
  function validateDetails(){
   if([name,phone,address,state,city].some(s=>s.trim().length<2))throw Error('Complete your legal name, phone and residential address, state and city.');
@@ -161,6 +160,14 @@ export default function KycIntake({onClose}:{onClose:()=>void}){
   finally{setBusy(false)}
  }
  if(loading)return <View style={styles.center}><ActivityIndicator color={green}/><Text style={styles.muted}>Loading your secure KYC records…</Text></View>;
+ if(submission?.kind && submission.kind!=='individual')return <View style={styles.page}>
+  <Pressable onPress={onClose}><Text style={styles.link}>← Customer dashboard</Text></Pressable>
+  <Text style={styles.title}>Secure <Text style={{color:green}}>KYC</Text></Text>
+  <View style={styles.panel}><Text style={styles.head}>Continue your {submission.kind} verification</Text>
+   <Text style={styles.muted}>This native document flow currently supports individual customers only. To preserve your existing business, realtor or staff application, continue it through Landshop's secure web KYC process.</Text>
+   <Button title="Continue Secure Web KYC" action={()=>{void Linking.openURL('https://app.landshopnigeria.com/dashboard/kyc')}}/>
+  </View>
+ </View>;
  return <ScrollView contentContainerStyle={styles.page} keyboardShouldPersistTaps="handled">
   <Pressable onPress={onClose} style={styles.back}><Text style={styles.link}>← Customer dashboard</Text></Pressable>
   <Text style={styles.eyebrow}>LANDSHOP · IDENTITY VERIFICATION</Text>
