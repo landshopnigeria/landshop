@@ -1,0 +1,52 @@
+/* LANDSHOP V23 video-reference experience.
+   Scoped exclusively to the approved homepage hero and expanded filter.
+   Existing global header, its CSS and global footer remain untouched. */
+.ls-v23-hero{position:relative;min-height:clamp(570px,55vw,695px)!important;background:#123e31!important;color:#fff!important;overflow:hidden;isolation:isolate}
+.ls-v23-hero .ls-v23-hero-media{z-index:-3}
+.ls-v23-hero .hero-v16-image{background-size:cover;background-position:center center!important;filter:saturate(.98) contrast(1.045);transition:opacity .9s ease}
+.ls-v23-hero .ls-v23-hero-wash{z-index:-2;background:linear-gradient(93deg,rgba(3,35,28,.94) 0%,rgba(4,37,31,.75) 31%,rgba(13,44,40,.2) 72%,rgba(11,39,33,.25)),linear-gradient(0deg,rgba(5,25,22,.38),transparent 45%)!important}
+.ls-v23-hero .ls-v23-hero-inner{width:min(1230px,calc(100% - 90px));max-width:1230px;margin-inline:auto;padding:94px 0 125px!important;gap:40px;display:flex;flex-direction:column;align-items:stretch;justify-content:space-between}
+.ls-v23-hero .ls-v23-hero-content{max-width:745px;animation:v23-hero-enter .45s ease both}
+.ls-v23-hero .hero-v16-eyebrow{color:#b7eecb!important;letter-spacing:.15em;font-size:13px;font-weight:780;background:rgba(10,50,43,.64);border-left:4px solid #2ba47a;padding:10px 16px;display:inline-flex;gap:5px;align-items:center;margin:0 0 18px}
+.ls-v23-hero .hero-v16-eyebrow span{color:#e5fff1;margin:0 6px}
+.ls-v23-hero .ls-v23-hero-title{font-size:clamp(49px,5.75vw,87px)!important;line-height:1.03!important;font-weight:790!important;letter-spacing:-.06em!important;margin:0 0 23px!important;max-width:780px!important;color:#fff!important;text-wrap:balance;text-shadow:0 3px 30px rgba(0,0,0,.13)}
+.ls-v23-hero .ls-v23-hero-title span,.ls-v23-hero .ls-v23-hero-title strong{display:block;font-size:inherit!important;font-weight:inherit!important;color:#fff!important;letter-spacing:inherit!important;line-height:inherit!important;margin:0!important}
+.ls-v23-hero .ls-v23-hero-title strong{color:#e6f7e9!important}
+.ls-v23-hero .ls-v23-hero-description{font-size:clamp(16px,1.55vw,19px)!important;color:#effff3!important;max-width:535px!important;line-height:1.6!important;margin:0 0 28px!important}
+.ls-v23-hero .ls-v23-hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:0}
+.ls-v23-hero .ls-v23-hero-actions a{min-height:51px;padding:14px 22px;font-size:14px;line-height:1.4;transition:transform .28s,background .28s,box-shadow .28s}
+.ls-v23-hero .ls-v23-hero-actions a:hover{transform:translateY(-3px)}
+.ls-v23-hero .ls-v23-hero-actions .primary{background:#2ba47a;color:#fff}
+.ls-v23-hero .ls-v23-hero-actions .hero-v16-secondary{background:rgba(255,255,255,.09)!important;border:1px solid rgba(229,255,240,.58)!important;color:white!important;backdrop-filter:blur(12px)}
+.ls-v23-hero .ls-v23-hero-controls{display:flex;align-items:center;gap:17px;padding:0;min-height:46px}
+.ls-v23-hero .hero-v16-progress-label{font-size:21px;color:#fff}
+.ls-v23-hero .hero-v16-progress-label small{font-size:12px;font-weight:450;color:#deeee6;margin-left:6px}
+.ls-v23-hero .hero-v16-indicators{gap:12px}
+.ls-v23-hero .hero-v16-indicators button{width:8px;min-width:8px;min-height:8px;height:8px;padding:0;border:0;border-radius:15px;background:rgba(255,255,255,.55);transition:width .25s,background .25s}
+.ls-v23-hero .hero-v16-indicators button.selected{width:29px;min-width:29px;background:#6cdba5;box-shadow:none}
+.ls-v23-hero .hero-v16-indicators .ls-v23-control-dot{display:none}
+.ls-v23-hero .hero-v16-arrows{margin-left:auto;gap:11px}
+.ls-v23-hero .hero-v16-arrows button{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.5);color:#fff;width:47px;height:47px;font-size:24px;backdrop-filter:blur(8px)}
+.ls-v23-hero .hero-v16-arrows button:hover{background:#2ba47a;border-color:#2ba47a;color:white;transform:translateY(-2px)}
+.ls-v23-filter-holder{position:relative;z-index:15;width:min(1250px,calc(100% - 44px));margin:-120px auto 0}
+.ls-v23-filter-holder .ls-v23-property-filter{display:block;margin:0!important;width:100%;padding:25px clamp(19px,2vw,31px)!important;border:1px solid rgba(255,255,255,.85);border-radius:21px;background:linear-gradient(145deg,rgba(242,250,247,.965),rgba(230,244,239,.95));backdrop-filter:blur(23px);-webkit-backdrop-filter:blur(23px);box-shadow:0 29px 68px rgba(13,58,43,.19)}
+.ls-v23-filter-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;padding:0 0 19px;margin-bottom:19px;border-bottom:1px solid #d3e8dd}
+.ls-v23-filter-intro{display:flex;gap:11px;align-items:center;font-size:14px;font-weight:760;color:#36554b}
+.ls-v23-filter-indicator{display:inline-block;width:8px;height:8px;border-radius:100%;background:#ef684a}
+.ls-v23-filter-holder .ls-v23-search-tabs{display:flex;gap:7px;flex-wrap:nowrap;overflow:visible;margin:0;padding:0}
+.ls-v23-filter-holder .ls-v23-search-tabs button{min-width:75px;min-height:44px;background:white;border:1px solid #d8e7e0;border-radius:10px;padding:10px 16px;color:#244b3b;font-size:13px;font-weight:760;transition:transform .22s,background .22s,color .22s}
+.ls-v23-filter-holder .ls-v23-search-tabs button.active,.ls-v23-filter-holder .ls-v23-search-tabs button:hover{background:#208864;color:#fff;border-color:#208864;transform:translateY(-1px)}
+.ls-v23-form-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:16px 13px}
+.ls-v23-form-grid label{display:flex;flex-direction:column;gap:8px;min-width:0;color:#536c61;font-size:11px;font-weight:740;line-height:1.35}
+.ls-v23-form-grid input,.ls-v23-form-grid select{background:rgba(255,255,255,.87);border:1px solid #cbdfd5;border-radius:10px;min-height:47px;width:100%;min-width:0;padding:0 12px;color:#1d4132;font-size:12px;font-weight:500;box-shadow:0 2px 4px rgba(26,85,67,.035);outline:0;transition:border .2s,box-shadow .2s}
+.ls-v23-form-grid input:focus-visible,.ls-v23-form-grid select:focus-visible{border-color:#279d71;box-shadow:0 0 0 3px rgba(54,164,114,.2)}
+.ls-v23-search-bottom{display:flex;justify-content:space-between;align-items:center;gap:20px;padding-top:19px}
+.ls-v23-search-bottom>span{font-size:11px;color:#718e82;line-height:1.55}
+.ls-v23-search-bottom .primary{display:inline-flex;align-items:center;gap:10px;min-height:48px;padding:10px 23px;border-radius:10px;white-space:nowrap;transition:transform .25s,box-shadow .25s}
+.ls-v23-search-bottom .primary:hover{transform:translateY(-2px);box-shadow:0 10px 25px rgba(8,109,71,.18)}
+.ls-v23-sell-panel{padding:15px 0}
+@keyframes v23-hero-enter{from{opacity:.65;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:1100px){.ls-v23-form-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.ls-v23-hero{min-height:650px!important}.ls-v23-filter-holder{margin-top:-108px}.ls-v23-hero .ls-v23-hero-inner{padding-top:85px!important;padding-bottom:145px!important}}
+@media(max-width:700px){.ls-v23-hero{min-height:620px!important}.ls-v23-hero .ls-v23-hero-inner{width:calc(100% - 38px);min-height:620px;padding:95px 0 184px!important}.ls-v23-hero .ls-v23-hero-title{font-size:clamp(40px,10.5vw,65px)!important}.ls-v23-hero .ls-v23-hero-description{font-size:14px!important}.ls-v23-hero .ls-v23-hero-actions a{font-size:12px;padding:12px 16px}.ls-v23-hero .ls-v23-hero-controls{margin-top:auto}.ls-v23-filter-holder{width:calc(100% - 22px);margin-top:-163px}.ls-v23-filter-holder .ls-v23-property-filter{padding:18px 15px!important}.ls-v23-filter-head{align-items:start;gap:12px}.ls-v23-filter-holder .ls-v23-search-tabs{width:100%}.ls-v23-filter-holder .ls-v23-search-tabs button{flex:1;min-width:0;font-size:12px;padding:10px 4px}.ls-v23-form-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.ls-v23-form-grid label{font-size:10px}.ls-v23-form-grid input,.ls-v23-form-grid select{padding:0 9px;font-size:11px;min-height:44px}.ls-v23-search-bottom{align-items:stretch;flex-direction:column}.ls-v23-search-bottom .primary{width:100%;justify-content:center}}
+@media(max-width:390px){.ls-v23-form-grid{grid-template-columns:1fr}.ls-v23-hero .ls-v23-hero-title{font-size:42px!important}.ls-v23-hero .ls-v23-hero-controls{margin-bottom:8px}}
+@media(prefers-reduced-motion:reduce){.ls-v23-hero *,.ls-v23-filter-holder *{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
