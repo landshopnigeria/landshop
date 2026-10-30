@@ -45,7 +45,7 @@ export default function StaffWorkspace({userId,initialProfile,initialTasks,role,
    const latest=(p||null) as Profile|null;
    setProfile(latest);
    const permitted=workError==null&&allowed===true&&latest?.kyc_state==='approved'&&latest?.employment_state==='active';
-   const {data:membership}=permitted?await db.from('organization_members').select('role')
+   const {data:membership}=permitted&&latest?await db.from('organization_members').select('role')
     .eq('organization_id',latest.organization_id).eq('user_id',userId)
     .eq('status','active').limit(1).maybeSingle():{data:null};
    setApprovedRole(membership?.role||null);

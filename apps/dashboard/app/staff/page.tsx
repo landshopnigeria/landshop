@@ -18,7 +18,7 @@ export default async function Page(){
   db.rpc('landshop_staff_can_work',{p_user:user.id})
  ]);
  const authorized=workError==null&&canWork===true&&profile?.kyc_state==='approved'&&profile?.employment_state==='active';
- const {data:member}=authorized?await db.from('organization_members').select('role')
+ const {data:member}=authorized&&profile?await db.from('organization_members').select('role')
   .eq('user_id',user.id).eq('organization_id',profile.organization_id)
   .eq('status','active').limit(1).maybeSingle():{data:null};
  const verified=Boolean(authorized&&member?.role);
