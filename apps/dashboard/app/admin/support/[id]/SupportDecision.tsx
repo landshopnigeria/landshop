@@ -1,4 +1,6 @@
 'use client';
+import BrandedSelect from '../../../../components/BrandedSelect';
+
 import {useState} from 'react';
 import {createBrowserClient} from '@supabase/ssr';
 export default function SupportDecision({ticketId,currentStatus,currentPriority}:{ticketId:string;currentStatus:string;currentPriority:string}){
@@ -17,8 +19,8 @@ export default function SupportDecision({ticketId,currentStatus,currentPriority}
  }
  return <form onSubmit={submit} style={{padding:22,borderRadius:15,border:'1px solid #d4e8db',background:'white',display:'grid',gap:16}}>
   <h2 style={{margin:0}}>Operator Decision</h2>
-  <label>Status<select value={status} onChange={e=>setStatus(e.target.value)} style={{display:'block',width:'100%',padding:13,marginTop:6}}>{['open','in_progress','awaiting_customer','resolved','closed'].map(x=><option key={x} value={x}>{x.replaceAll('_',' ')}</option>)}</select></label>
-  <label>Priority<select value={priority} onChange={e=>setPriority(e.target.value)} style={{display:'block',width:'100%',padding:13,marginTop:6}}>{['low','normal','high','urgent'].map(x=><option key={x}>{x}</option>)}</select></label>
+  <label>Status<BrandedSelect value={status} onChange={e=>setStatus(e.target.value)} style={{display:'block',width:'100%',padding:13,marginTop:6}}>{['open','in_progress','awaiting_customer','resolved','closed'].map(x=><option key={x} value={x}>{x.replaceAll('_',' ')}</option>)}</BrandedSelect></label>
+  <label>Priority<BrandedSelect value={priority} onChange={e=>setPriority(e.target.value)} style={{display:'block',width:'100%',padding:13,marginTop:6}}>{['low','normal','high','urgent'].map(x=><option key={x}>{x}</option>)}</BrandedSelect></label>
   <label>Internal case note<textarea required minLength={10} maxLength={2000} rows={4} value={note} onChange={e=>setNote(e.target.value)} placeholder="Describe the action taken and why" style={{display:'block',width:'100%',padding:13,marginTop:6}}/></label>
   <button disabled={busy} type="submit" style={{background:'#078369',color:'white',border:0,borderRadius:11,padding:13}}>{busy?'Saving…':'Save Status & Audit Event'}</button><p role="status" aria-live="polite">{message}</p>
  </form>;
