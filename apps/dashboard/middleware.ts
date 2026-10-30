@@ -19,7 +19,13 @@ export async function middleware(request: NextRequest) {
    }
   }
  });
- await supabase.auth.getUser(); // refresh & validate; page-level authorization stays mandatory
+ const {data:{user},error}=await supabase.auth.getUser();
+ if(request.nextUrl.pathname==='/admin'||request.nextUrl.pathname.startsWith('/admin/')){
+  if(error||!user)return NextResponse.redirect(new URL('/staff/sign-in',request.url));
+  const {data:manager,error:accessError}=await supabase.rpc('landshop_is_management',{p_user:user.id});
+  if(accessError||manager!==true)return NextResponse.redirect(new URL('/staff',request.url));
+  response.headers.set('Cache-Control','private, no-store');
+ }
  return response;
 }
 
