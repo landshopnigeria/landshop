@@ -32,6 +32,10 @@ export default async function Admin(){
  if(membershipError||!members?.length)return <main className="command-denied">Landshop Global Command Center — staff account required. <Link href="/dashboard">Customer Dashboard</Link></main>;
  const allowed=members.filter(m=>['owner','ceo','founder','admin','technology_officer','technology_consultant'].includes(m.role));
  if(!allowed.length)return <main className="command-denied">Your account is not authorized for management access.</main>;
+ // Align the top-level command center with the verified management gate
+ // already used in RLS and privileged staff review procedures.
+ const {data:verifiedManager,error:managementCheckError}=await db.rpc('landshop_is_management',{p_user:user.id});
+ if(managementCheckError||verifiedManager!==true)return <main className="command-denied">Verified management approval is required for Command Center access.</main>;
  const {data:orgs}=await db.from('organizations').select('id').eq('kind','landshop').in('id',allowed.map(m=>m.organization_id));
  if(!orgs?.length)return <main className="command-denied">No active Landshop management assignment found.</main>;
  const [properties,apps,kyc,imports,staff,allocations,tickets,enquiries,referrals,workflows,published]=await Promise.all([

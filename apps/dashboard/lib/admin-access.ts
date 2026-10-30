@@ -15,8 +15,12 @@ export async function requireLandshopStaff(roles:string[]){
  if(membershipError||!members?.length)redirect('/dashboard');
  const managementRoles=['owner','ceo','founder','admin','technology_officer','technology_consultant'];
  const ownerOnly=roles.length===1&&roles[0]==='owner';
- const eligible=members.filter(member=>managementRoles.includes(member.role)&&(!ownerOnly||member.role==='owner'));
+ // Explicit page roles and a live database verification are both required.
+ // A requested title or an active membership alone cannot confer command access.
+ const eligible=members.filter(member=>managementRoles.includes(member.role)&&roles.includes(member.role)&&(!ownerOnly||member.role==='owner'));
  if(!eligible.length)redirect('/dashboard');
+ const {data:verifiedManager,error:verificationError}=await db.rpc('landshop_is_management',{p_user:user.id});
+ if(verificationError||verifiedManager!==true)redirect('/dashboard');
  const {data:organizations,error:orgError}=await db.from('organizations').select('id').eq('kind','landshop')
    .in('id',eligible.map(member=>member.organization_id));
  if(orgError||!organizations?.length)redirect('/dashboard');
