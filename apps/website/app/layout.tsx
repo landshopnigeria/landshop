@@ -1,3 +1,4 @@
+import '../../../packages/shared/BrandedSelect.css';
 import type {Metadata} from 'next';
 import './globals.css';
 import './content-pages.css';
