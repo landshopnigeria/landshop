@@ -1,3 +1,4 @@
+import BrandedSelect from '../components/BrandedSelect';
 
 'use client';
 import {useState} from 'react';
@@ -67,7 +68,7 @@ export default function Portal(){
      {field('Email address',<input required type="email" autoComplete="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="you@example.com" maxLength={254}/>)}
      {mode==='signup'&&<div className="fields2">
       {field('Age',<input required min={18} max={120} type="number" value={age} onChange={e=>setAge(e.target.value)} placeholder="18+"/>)}
-      {field('Gender (optional)',<select value={gender} onChange={e=>setGender(e.target.value)}><option value="">Select if you wish</option><option value="female">Female</option><option value="male">Male</option><option value="prefer-not-to-say">Prefer not to say</option></select>)}
+      {field('Gender (optional)',<BrandedSelect value={gender} onChange={e=>setGender(e.target.value)}><option value="">Select if you wish</option><option value="female">Female</option><option value="male">Male</option><option value="prefer-not-to-say">Prefer not to say</option></BrandedSelect>)}
      </div>}
      <div className="fields2" style={mode==='signin'?{gridTemplateColumns:'1fr'}:{}}>
       {field('Password',<div className="authPw"><input required type={visible?'text':'password'} minLength={mode==='signup'?12:1} autoComplete={mode==='signup'?'new-password':'current-password'} value={password} onChange={e=>setPassword(e.target.value)} placeholder="Enter password"/><button type="button" onClick={()=>setVisible(x=>!x)} aria-label={visible?'Hide password':'Show password'}>{visible?'Hide':'Show'}</button></div>)}
