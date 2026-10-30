@@ -17,7 +17,7 @@ function browser(){
  if(!u||!k)throw Error('Secure employee database unavailable');
  return createBrowserClient(u,k,{cookieOptions:{domain:'.landshopnigeria.com',path:'/',sameSite:'lax',secure:true}});
 }
-export default function StaffWorkspace({userId,initialProfile,initialTasks,role,initialVerified,metadata,userEmail}:{userId:string;initialProfile:Profile|null;initialTasks:Task[];role:string|null;initialVerified:boolean;metadata:Record<string,unknown>;userEmail:string}){
+export default function StaffWorkspace({userId,initialProfile,initialTasks,role,initialVerified,selfServiceAccess,metadata,userEmail}:{userId:string;initialProfile:Profile|null;initialTasks:Task[];role:string|null;initialVerified:boolean;selfServiceAccess:boolean;metadata:Record<string,unknown>;userEmail:string}){
  const [profile,setProfile]=useState(initialProfile),[tasks,setTasks]=useState(initialTasks);
  const [approvedRole,setApprovedRole]=useState<string|null>(role);
  const [verifiedAccess,setVerifiedAccess]=useState(initialVerified);
@@ -30,7 +30,10 @@ export default function StaffWorkspace({userId,initialProfile,initialTasks,role,
  const [activeTab,setActiveTab]=useState('dashboard'),[collapsed,setCollapsed]=useState(false),[mobileNav,setMobileNav]=useState(false),[search,setSearch]=useState(''),[notifyOpen,setNotifyOpen]=useState(false),[profileOpen,setProfileOpen]=useState(false);
  const [scoreSet,setScoreSet]=useState<Record<string,Report|null>>({day:null,week:null,month:null,year:null});
  const [daily,setDaily]=useState(''),[blockers,setBlockers]=useState(''),[selected,setSelected]=useState(''),[taskNote,setTaskNote]=useState(''),[opened,setOpened]=useState('');
+ // Email-confirmed staff can access their personal dashboard immediately.
+ // Tasks, attendance and management still require verified employee access.
  const verified=Boolean(verifiedAccess&&approvedRole&&profile?.employment_state==='active'&&profile?.kyc_state==='approved');
+ const dashboardActive=verified||(selfServiceAccess&&Boolean(profile));
  const management=verified&&['owner','ceo','founder','admin','technology_officer','technology_consultant'].includes(approvedRole||'');
  const supervisor=verified&&(management||['hr_officer','head_finance','social_media_manager','customer_service_manager','department_manager','operations','hr','finance'].includes(approvedRole||''));
  function notify(err:unknown){setMessage(err instanceof Error?err.message:'Unable to save changes')}
@@ -77,7 +80,7 @@ export default function StaffWorkspace({userId,initialProfile,initialTasks,role,
  async function onboard(e:FormEvent<HTMLFormElement>){
   e.preventDefault();setBusy(true);setMessage('');
   try{const {error}=await browser().rpc('landshop_staff_onboard',{p_username:username.trim().toLowerCase(),p_age:Number(age),p_gender:gender,p_requested_role:wanted});
-   if(error)throw Error(error.message);setMessage('Employee registration recorded. Upload your portrait for KYC review. Requested job titles do not grant special access.');await refresh();
+   if(error)throw Error(error.message);window.location.assign('/staff');
   }catch(e){notify(e)}finally{setBusy(false)}
  }
  async function upload(f:File|null){
@@ -90,7 +93,7 @@ export default function StaffWorkspace({userId,initialProfile,initialTasks,role,
    if(upError)throw Error(upError.message);
    const {error}=await db.rpc('landshop_staff_submit_photo',{p_path:path});
    if(error)throw Error(error.message);
-   setMessage('Your photograph was uploaded privately for manual identity verification. This does not automatically approve your staff ID.');
+   setMessage('Your photograph was uploaded privately. Dashboard access remains active; restricted work privileges require separate verification.');
    await refresh();
   }catch(e){notify(e)}finally{setBusy(false)}
  }
@@ -125,7 +128,7 @@ export default function StaffWorkspace({userId,initialProfile,initialTasks,role,
  const go=(item:string)=>{setActiveTab(item);setMobileNav(false);setNotifyOpen(false)};
  const unviewed=tasks.filter(t=>!t.viewed_at&&t.status==='assigned').length;
  const filteredTasks=tasks.filter(t=>(t.title+' '+(t.details||'')).toLowerCase().includes(search.toLowerCase()));
- const roleLabel=(verified?(approvedRole||'staff'):'Requested: '+(profile?.requested_role||wanted)).replaceAll('_',' ').replace(/\b\w/g,x=>x.toUpperCase());
+ const roleLabel=(verified?(approvedRole||'staff'):'Staff account · '+(profile?.requested_role||wanted)+' requested').replaceAll('_',' ').replace(/\b\w/g,x=>x.toUpperCase());
  const kycLabel=(profile?.kyc_state||'not_started').replaceAll('_',' ');
  const todayAttendance=attendance.filter(a=>new Date(a.occurred_at).toLocaleDateString('en-CA',{timeZone:'Africa/Lagos'})===new Date().toLocaleDateString('en-CA',{timeZone:'Africa/Lagos'}));
  const lastClock=attendance[0];
@@ -154,7 +157,7 @@ export default function StaffWorkspace({userId,initialProfile,initialTasks,role,
    <div className="ls25-dual"><label>Age at registration<input required min={18} max={120} type="number" value={age} onChange={e=>setAge(e.target.value)}/></label>
    <label>Gender<BrandedSelect value={gender} onChange={e=>setGender(e.target.value)}><option value="prefer_not_to_say">Prefer not to say</option><option value="female">Female</option><option value="male">Male</option><option value="non_binary">Non-binary</option></BrandedSelect></label></div>
    <label>Requested role<input readOnly value={wanted.replaceAll('_',' ')}/></label><button className="ls25-action" disabled={busy}>Finish staff registration</button></form>}
-  {profile&&profile.kyc_state!=='approved'&&<div className="ls25-kyc"><p>Your original portrait is private and must be manually verified by management before staff ID issuance.</p>
+  {profile&&profile.kyc_state!=='approved'&&<div className="ls25-kyc"><p>Your staff dashboard is already active. A private portrait is only required for restricted employee work and an official staff ID.</p>
    <label className="ls25-upload">Upload or replace staff portrait<input type="file" accept="image/jpeg,image/png,image/webp" disabled={busy} onChange={e=>void upload(e.target.files?.[0]||null)}/></label></div>}
   {verified&&profile?.staff_number&&<div className="ls25-staff-id"><div className="ls25-id-heading"><img src="/media/logo-transparent.png" alt="Landshop original logo" onError={e=>{e.currentTarget.src='/media/logo.webp'}}/> <strong>Employee ID</strong></div><p>{profile.staff_number}</p><small>{profile.username} · {roleLabel}</small><button type="button" className="ls25-text-link" onClick={()=>window.print()}>Print employee ID <span>↗</span></button></div>}
  </section>;
@@ -196,7 +199,7 @@ export default function StaffWorkspace({userId,initialProfile,initialTasks,role,
  const menuName:Record<string,string>={dashboard:'Staff Dashboard',overview:'Work Overview',profile:'My Profile',attendance:'Attendance',tasks:'Assigned Tasks',daily:'Daily Routine',performance:'My Performance'};
  // Until both identity verification and an active Landshop membership are present,
  // show only onboarding and approval status—not the employee command dashboard.
- if(!verified)return <StaffAuthShell><section className="ls25-applicant" aria-labelledby="staff-onboarding-title">
+ if(!dashboardActive)return <StaffAuthShell><section className="ls25-applicant" aria-labelledby="staff-onboarding-title">
   <div className="ls25-applicant-heading"><p>LANDSHOP PEOPLE & MANAGEMENT</p>
    <h1 id="staff-onboarding-title">{(profile?.requested_role||wanted)==='owner'?'Owner':'Staff'} <span>registration</span></h1>
    <p>{!profile?'Complete your registration to request '+(wanted==='owner'?'company ownership':'staff access')+'.':
@@ -235,10 +238,11 @@ export default function StaffWorkspace({userId,initialProfile,initialTasks,role,
    </header>
    <main className="ls25-content">
     {message&&<div role="status" aria-live="polite" className="ls25-toast">{message}<button type="button" aria-label="Dismiss notice" onClick={()=>setMessage('')}>×</button></div>}
+    {!verified&&<div className="ls25-account-active" role="status"><StaffGlyph name="shield" size={22}/><div><strong>Staff dashboard activated automatically</strong><p>Email confirmation gives immediate dashboard access. Internal task execution, attendance, employee ID and management functions require separate company authorization.</p></div></div>}
     {(activeTab==='dashboard'||activeTab==='overview')&&<div className="ls25-stats">
      <div className="ls25-stat"><span className="ls25-stat-icon green"><StaffGlyph name="user" size={27}/></span><div><small>Your Role</small><strong>{roleLabel}</strong></div></div>
      <div className="ls25-stat"><span className="ls25-stat-icon orange"><StaffGlyph name="shield" size={27}/></span><div><small>KYC Status</small><strong>{kycLabel}</strong><small>Employment: {profile?.employment_state||'Pending'}</small></div></div>
-     <div className="ls25-stat"><span className="ls25-stat-icon blue"><StaffGlyph name="briefcase" size={27}/></span><div><small>Employment Status</small><strong>{profile?.employment_state||'Pending'}</strong></div></div>
+     <div className="ls25-stat"><span className="ls25-stat-icon blue"><StaffGlyph name="briefcase" size={27}/></span><div><small>Dashboard Access</small><strong>{dashboardActive?'Active':'Unavailable'}</strong><small>Employment: {profile?.employment_state||'Not assigned'}</small></div></div>
      <div className="ls25-stat"><span className="ls25-stat-icon purple"><StaffGlyph name="clipboard" size={27}/></span><div><small>Assigned Tasks</small><strong>{tasks.length}</strong><small>Tasks assigned</small></div></div>
      <div className="ls25-stat"><span className="ls25-stat-icon green"><StaffGlyph name="clock" size={27}/></span><div><small>Attendance Status</small><strong>{lastClock?.action==='clock_in'?'Clocked in':'Not clocked in'}</strong><small>{new Date().toLocaleDateString('en-NG',{timeZone:'Africa/Lagos',dateStyle:'medium'})}</small></div></div>
     </div>}
