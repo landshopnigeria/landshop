@@ -1,0 +1,10 @@
+import Link from 'next/link';
+export const metadata={title:'Staff Registration Terms and Conditions | Landshop'};
+export default function StaffTerms(){return <main style={{minHeight:'100svh',background:'#eef8f2',color:'#143e32',padding:'clamp(22px,5vw,70px)',fontFamily:'Helvetica Neue, Arial,sans-serif'}}><article style={{maxWidth:780,margin:'0 auto',borderRadius:24,background:'#ffffffd9',border:'1px solid #d3e9db',padding:'clamp(24px,5vw,48px)'}}>
+<Link href="/staff/sign-up" style={{color:'#168963'}}>← Staff Sign Up</Link><h1>Staff Registration Terms and Conditions</h1>
+<p>Registration is a request to be considered for Landshop workforce access. Creating an account or selecting a position does not establish employment, approve a staff role, or grant administrative permissions.</p>
+<h2>Account and identity</h2><p>Provide accurate registration information and keep your credentials confidential. Email confirmation, identity verification, and explicit management approval are required for workforce privileges.</p>
+<h2>Data and workplace activities</h2><p>Please read the <Link href="/staff/privacy" style={{color:'#168963'}}>Staff Data and Location Privacy Notice</Link> for details about identity documents, attendance, location permissions, task records and data access. Location is requested only at individual clock events when permission is granted; no background monitoring is initiated by registration.</p>
+<h2>Authorized use</h2><p>Workforce accounts must only be used for authorized Landshop activities. Employee responsibilities and account privileges depend on approved roles and can be changed or withdrawn by management.</p>
+<h2>Questions</h2><p>For employment terms, corrections and questions, contact management through the <a href="https://www.landshopnigeria.com/contact" style={{color:'#168963'}}>Landshop contact page</a>. This registration notice does not replace an employment contract or applicable legal requirements.</p>
+</article></main>}

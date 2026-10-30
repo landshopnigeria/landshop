@@ -1,0 +1,7 @@
+'use client';
+import {useState} from 'react';
+type Props={id:string;label:string;value:string;onChange:(value:string)=>void;placeholder:string;autoComplete:'current-password'|'new-password';minLength?:number};
+export default function StaffPasswordField({id,label,value,onChange,placeholder,autoComplete,minLength}:Props){
+const [visible,setVisible]=useState(false);
+return <div className="lsa-field"><label htmlFor={id}>{label}</label><div className="lsa-password-wrap"><input id={id} required type={visible?'text':'password'} value={value} minLength={minLength} autoComplete={autoComplete} placeholder={placeholder} onChange={e=>onChange(e.target.value)}/><button type="button" className="lsa-eye" aria-pressed={visible} aria-label={visible?'Hide '+label.toLowerCase():'Show '+label.toLowerCase()} onClick={()=>setVisible(v=>!v)}>{visible?<svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.6 10.65a2 2 0 0 0 2.75 2.75"/><path d="M9.9 5.1a10.8 10.8 0 0 1 2.1-.2c4.2 0 7.8 2.4 10 7.1a12.6 12.6 0 0 1-3.3 4"/><path d="M6.1 6.1A12.3 12.3 0 0 0 2 12c2.2 4.7 5.8 7.1 10 7.1a10.5 10.5 0 0 0 4.4-1"/></svg>:<svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>}</button></div></div>
+}
