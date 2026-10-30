@@ -8,7 +8,9 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "typecheck": "tsc --noEmit",
-    "test:links": "node --experimental-strip-types --test src/auth-links.test.mjs"
+    "test:links": "node --experimental-strip-types --test src/auth-links.test.mjs",
+    "test:kyc": "node --experimental-strip-types --test src/kyc-file.test.mjs",
+    "test": "npm run test:links && npm run test:kyc"
   },
   "dependencies": {
     "@supabase/supabase-js": "2.78.0",

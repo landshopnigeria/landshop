@@ -21,8 +21,9 @@ function human(value:string){return value.replaceAll('_',' ').replace(/\b\w/g,c=
 export default function ApplicationsTracker({onClose}:{onClose:()=>void}){
  const [loading,setLoading]=useState(true),[error,setError]=useState('');
  const [apps,setApps]=useState<Application[]>([]),[events,setEvents]=useState<ApplicationEvent[]>([]);
+ const [eventNotice,setEventNotice]=useState('');
  const load=useCallback(async()=>{
-  setLoading(true);setError('');
+  setLoading(true);setError('');setEventNotice('');
   try{
    const {data:{user},error:authError}=await supabase.auth.getUser();
    if(authError||!user)throw Error('Sign in to access your own application history.');
@@ -36,8 +37,12 @@ export default function ApplicationsTracker({onClose}:{onClose:()=>void}){
     const activity=await supabase.from('application_events')
      .select('id,application_id,action,created_at').in('application_id',items.map(x=>x.id))
      .order('created_at',{ascending:false}).limit(100);
-    if(activity.error)throw activity.error;
-    setEvents(activity.data||[]);
+    if(activity.error){
+     // The canonical application status is still valuable if the timeline
+     // endpoint is temporarily unavailable. Never fabricate milestones.
+     setEvents([]);
+     setEventNotice('Some activity events could not be loaded. Your application statuses remain available.');
+    }else setEvents(activity.data||[]);
    }else setEvents([]);
   }catch(e){setError(e instanceof Error?e.message:'Your applications are unavailable.');}
   finally{setLoading(false)}
@@ -49,6 +54,7 @@ export default function ApplicationsTracker({onClose}:{onClose:()=>void}){
   <Text style={styles.title}>My <Text style={{color:green}}>Applications</Text></Text>
   <Text style={styles.description}>Track your genuine application records. Landshop staff review submissions; draft applications can be resumed.</Text>
   <Pressable accessibilityRole="button" onPress={()=>{void load()}} style={styles.refresh}><BrandIcon name="file" size={20}/><Text style={{color:green,fontWeight:'800',fontSize:12}}>Refresh applications</Text></Pressable>
+  {!!eventNotice&&<Text accessibilityRole="alert" style={styles.error}>{eventNotice}</Text>}
   {loading?<ActivityIndicator color={green} style={{marginTop:30}}/>:error?<Text accessibilityRole="alert" style={styles.error}>{error}</Text>:
    !apps.length?<View style={styles.card}><Text style={styles.cardTitle}>No applications yet</Text>
     <Text style={styles.description}>Start a Develop, Incubate or Grow application to see your progress here.</Text>
@@ -71,7 +77,7 @@ export default function ApplicationsTracker({onClose}:{onClose:()=>void}){
        <Text style={styles.date}>{new Date(event.created_at).toLocaleDateString('en-NG',{day:'numeric',month:'short',year:'numeric'})}</Text>
       </View></View>):
       <Text style={styles.date}>No recorded events yet. Your application status is shown above.</Text>}
-     {editable?<Pressable accessibilityRole="button" style={styles.action} onPress={()=>{void Linking.openURL(portal+'/applications/'+(paths[item.kind]||'develop-house'))}}>
+     {editable&&paths[item.kind]?<Pressable accessibilityRole="button" style={styles.action} onPress={()=>{void Linking.openURL(portal+'/applications/'+paths[item.kind])}}>
       <Text style={{color:'#fff',fontWeight:'800'}}>Resume Draft on Secure Portal</Text><BrandIcon name="arrow" size={18} color="#fff"/></Pressable>:
       <Text style={styles.review}>This application remains subject to Landshop's review and approval procedures.</Text>}
     </View>

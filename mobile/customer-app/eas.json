@@ -1,0 +1,40 @@
+{
+  "cli": {
+    "appVersionSource": "local"
+  },
+  "build": {
+    "android-internal": {
+      "distribution": "internal",
+      "channel": "qa",
+      "android": {
+        "buildType": "apk"
+      },
+      "env": {
+        "EXPO_PUBLIC_NATIVE_AUTH_REDIRECT_READY": "false"
+      }
+    },
+    "ios-simulator": {
+      "distribution": "internal",
+      "channel": "qa",
+      "ios": {
+        "simulator": true
+      },
+      "env": {
+        "EXPO_PUBLIC_NATIVE_AUTH_REDIRECT_READY": "false"
+      }
+    },
+    "ios-internal": {
+      "distribution": "internal",
+      "channel": "qa",
+      "env": {
+        "EXPO_PUBLIC_NATIVE_AUTH_REDIRECT_READY": "false"
+      }
+    },
+    "production": {
+      "channel": "production",
+      "env": {
+        "EXPO_PUBLIC_NATIVE_AUTH_REDIRECT_READY": "false"
+      }
+    }
+  }
+}

@@ -11,26 +11,12 @@ type DocType='portrait'|'government_id'|'utility_bill';
 type KycDraft={id:string;status:string;kind:string;metadata:Record<string,unknown>|null};
 type ExistingDoc={document_type:string;object_path:string};
 const green='#078a6b',ink='#143a30',muted='#587568';
-const LIMIT=10*1024*1024;
-const allowed=['image/jpeg','image/png','image/webp','application/pdf'] as const;
-type AllowedMime=(typeof allowed)[number];
+import {KYC_MIME,hasExpectedSignature,kycObjectKey,validateKycFile,type KycMime} from './kyc-file';
 const docs:{type:DocType;label:string}[]=[
  {type:'portrait',label:'Current selfie / portrait'},
  {type:'government_id',label:'Government-issued identification'},
  {type:'utility_bill',label:'Recent utility bill / proof of address'}
 ];
-const extensions:Record<AllowedMime,string>={'image/jpeg':'jpg','image/png':'png','image/webp':'webp','application/pdf':'pdf'};
-function signatureOK(bytes:Uint8Array,mime:AllowedMime):boolean{
- if(bytes.length<12)return false;
- if(mime==='image/jpeg')return bytes[0]===255&&bytes[1]===216&&bytes[2]===255;
- if(mime==='image/png')return [137,80,78,71,13,10,26,10].every((n,i)=>bytes[i]===n);
- if(mime==='application/pdf')return [37,80,68,70,45].every((n,i)=>bytes[i]===n);
- return [82,73,70,70].every((n,i)=>bytes[i]===n)&&[87,69,66,80].every((n,i)=>bytes[i+8]===n);
-}
-export function validateKycFile(mime:string,size:number):asserts mime is AllowedMime{
- if(!allowed.some(t=>t===mime))throw Error('Use a JPG, PNG, WebP or PDF document.');
- if(!Number.isFinite(size)||size<=0||size>LIMIT)throw Error('Each file must be between 1 byte and 10 MB.');
-}
 function Button({title,action,disabled=false}:{title:string;action:()=>void;disabled?:boolean}){
  return <Pressable accessibilityRole="button" disabled={disabled} onPress={action} style={[styles.btn,disabled&&{opacity:.45}]}><Text style={styles.btnText}>{title}</Text></Pressable>
 }
@@ -112,20 +98,22 @@ export default function KycIntake({onClose}:{onClose:()=>void}){
     if(result.canceled||!result.assets?.length)return;
     const asset=result.assets[0];uri=asset.uri;mime=asset.mimeType||'image/jpeg';size=asset.fileSize;
    }else{
-    const result=await DocumentPicker.getDocumentAsync({type:[...allowed],copyToCacheDirectory:true,multiple:false});
+    const result=await DocumentPicker.getDocumentAsync({type:[...KYC_MIME],copyToCacheDirectory:true,multiple:false});
     if(result.canceled||!result.assets?.length)return;
     const asset=result.assets[0];uri=asset.uri;mime=asset.mimeType||'';size=asset.size;
    }
    const file=new File(uri);
-   const fileSize=size??file.size;
-   validateKycFile(mime,fileSize);
+   // Validate actual on-device file size before reading up to 10MB into memory.
+   // Picker-reported size is only advisory and could be inaccurate.
+   validateKycFile(type,mime,file.size);
+   if(size!==undefined)validateKycFile(type,mime,size);
    const bytes=await file.bytes();
-   validateKycFile(mime,bytes.byteLength);
-   if(!signatureOK(bytes,mime))throw Error('File content does not match its declared type.');
+   validateKycFile(type,mime,bytes.byteLength);
+   if(!hasExpectedSignature(bytes,mime))throw Error('File content does not match its declared type.');
    const submissionId=await draft();
    const {data:{user},error:authError}=await supabase.auth.getUser();
    if(authError||!user)throw Error('Sign in again to upload documents.');
-   const objectPath=user.id+'/'+submissionId+'/'+type+'-'+Crypto.randomUUID()+'.'+extensions[mime];
+   const objectPath=kycObjectKey(user.id,submissionId,type,Crypto.randomUUID(),mime as KycMime);
    const content=bytes.slice().buffer;
    const uploaded=await supabase.storage.from('landshop-kyc').upload(objectPath,content,{contentType:mime,upsert:false,cacheControl:'0'});
    if(uploaded.error)throw Error('Secure upload failed. Please check your connection and retry.');
