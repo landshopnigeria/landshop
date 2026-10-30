@@ -270,21 +270,48 @@ jobs:
       - name: Verify all three domains serve the newly published Next.js applications
         env:
           RELEASE_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+        shell: bash
         run: |
           set -euo pipefail
           urls=(https://landshopnigeria.com https://portal.landshopnigeria.com https://app.landshopnigeria.com)
           apps=(website portal dashboard)
+          # Passenger restarts after an upload are asynchronous. A single
+          # immediate health probe can still see the old process (V23 incident
+          # #40993298298). Require exact SHA for EACH app, with bounded retries.
           for i in 0 1 2; do
             url="${urls[$i]}/api/release-health"
-            result=$(curl --fail-with-body -sS -L --max-time 40 -H 'Cache-Control: no-cache' "$url")
-            ACTUAL="$result" SERVICE="landshop-${apps[$i]}" SHA="$RELEASE_SHA" python3 - <<'PY'
-          import json,os
-          body=json.loads(os.environ['ACTUAL'])
-          assert body.get('service')==os.environ['SERVICE'], 'Wrong app or static fallback is serving the domain'
-          assert body.get('commit')==os.environ['SHA'], 'Domain is serving an older release'
-          assert body.get('status')=='serving-nextjs', 'Next.js startup health was not confirmed'
+            expected_service="landshop-${apps[$i]}"
+            ready=0
+            for attempt in $(seq 1 15); do
+              result="$(curl --retry 1 --retry-delay 1 --silent --show-error --location --max-time 15 \
+                -H 'Cache-Control: no-cache, no-store' \
+                -H 'Pragma: no-cache' \
+                -H 'Accept: application/json' \
+                "${url}?release_check=${RELEASE_SHA}&attempt=${attempt}" || true)"
+              if ACTUAL="$result" SERVICE="$expected_service" SHA="$RELEASE_SHA" python3 - <<'PY'
+          import json, os, sys
+          try:
+              body=json.loads(os.environ["ACTUAL"])
+          except (json.JSONDecodeError, KeyError):
+              sys.exit(1)
+          sys.exit(0 if (
+              body.get("service")==os.environ["SERVICE"] and
+              body.get("commit")==os.environ["SHA"] and
+              body.get("status")=="serving-nextjs"
+          ) else 1)
           PY
-            echo "Confirmed exact Next.js release for ${urls[$i]}"
+              then
+                echo "VERIFIED: ${urls[$i]} serves ${RELEASE_SHA} as ${expected_service} on attempt ${attempt}"
+                ready=1
+                break
+              fi
+              echo "Readiness attempt ${attempt}/15: ${urls[$i]} has not yet served the required release SHA."
+              if [ "$attempt" -lt 15 ];then sleep 8;fi
+            done
+            if [ "$ready" -ne 1 ];then
+              echo "::error::${urls[$i]} did not serve the exact release ${RELEASE_SHA} within the bounded Passenger readiness period. Automatic rollback required."
+              exit 1
+            fi
           done
       - name: Assert real public UI, forms, product routes and navigation (not only health JSON)
         shell: bash
