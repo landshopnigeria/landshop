@@ -151,7 +151,12 @@ export default function App(){
  }
  async function signOut(){await supabase.auth.signOut({scope:'local'});recoveryInProgress.current=false;setSession(null);setPage('signin');setPassword('');setCode('');setSummary(null);}
  async function google(){
-  if(!nativeAuthEnabled){navigateWebsite(portal+(page==='signup'?'?mode=signup':''));return;}
+  if(!nativeAuthEnabled){
+   const params=new URLSearchParams();
+   if(page==='signup'){params.set('mode','signup');if(pattern.test(referral))params.set('ref',referral);}
+   navigateWebsite(portal+(params.toString()?'?'+params.toString():''));
+   return;
+  }
   setBusy(true);setNotice('');
   try{
    const authUrl=await signInWithNativeGoogle(page==='signup'?referral:'');
