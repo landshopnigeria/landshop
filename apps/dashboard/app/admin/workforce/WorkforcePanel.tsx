@@ -1,4 +1,6 @@
 'use client';
+import BrandedSelect from '../../../components/BrandedSelect';
+
 import {useEffect,useState,type FormEvent} from 'react';
 import {createBrowserClient} from '@supabase/ssr';
 type Member={user_id:string;username:string;requested_role:string;employment_state:string;kyc_state:string;photo_path:string|null;staff_number:string|null;review_note:string|null};
@@ -52,18 +54,18 @@ export default function WorkforcePanel({people,taskRows,dailyRows,actorRole}:{pe
   <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(min(100%,360px),1fr))',gap:18}}>
   <section className="wcard"><h2>Staff identity & access review</h2>
   <p className="subtle">Every role starts as a request. Photo and employee status require an independent management decision. Only the owner can approve Command Center roles.</p>
-  <label>Choose registered staff<select value={selected} onChange={e=>{setSelected(e.target.value);setRole(staff.find(x=>x.user_id===e.target.value)?.requested_role||'staff')}} style={field}><option value="">Choose applicant</option>{staff.map(s=><option value={s.user_id} key={s.user_id}>{s.username} · {s.kyc_state} / {s.employment_state}</option>)}</select></label>
+  <label>Choose registered staff<BrandedSelect value={selected} onChange={e=>{setSelected(e.target.value);setRole(staff.find(x=>x.user_id===e.target.value)?.requested_role||'staff')}} style={field}><option value="">Choose applicant</option>{staff.map(s=><option value={s.user_id} key={s.user_id}>{s.username} · {s.kyc_state} / {s.employment_state}</option>)}</BrandedSelect></label>
   {chosen&&<div style={{display:'grid',gap:8,marginTop:15}}>
    <strong>{chosen.username}</strong><small>Requested: {chosen.requested_role.replaceAll('_',' ')}</small><small>Current ID: {chosen.staff_number||'Not assigned'}</small>
    {photo[chosen.user_id]?<img src={photo[chosen.user_id]} width={125} height={155} alt="Privately submitted staff KYC portrait" style={{borderRadius:12,objectFit:'cover'}}/>:<p className="subtle">No accessible original portrait for verification.</p>}
-   <label>Approved role<select value={role} style={field} onChange={e=>setRole(e.target.value)}>{managerRoles.map(r=><option key={r} value={r}>{r.replaceAll('_',' ')}</option>)}</select></label>
+   <label>Approved role<BrandedSelect value={role} style={field} onChange={e=>setRole(e.target.value)}>{managerRoles.map(r=><option key={r} value={r}>{r.replaceAll('_',' ')}</option>)}</BrandedSelect></label>
    <label>Reason and identity-verification evidence<textarea style={field} rows={3} minLength={20} maxLength={1000} value={reason} onChange={e=>setReason(e.target.value)} placeholder="Describe the reviewed face photo, employment authorization, and assigned department"/></label>
    <div className="actions"><button disabled={busy||reason.trim().length<20||!photo[chosen.user_id]} style={btn} onClick={()=>review(true)}>Approve identity + role</button><button disabled={busy||reason.trim().length<20} style={{...btn,background:'#b96b22'}} onClick={()=>review(false)}>Reject KYC</button><button disabled={busy||reason.trim().length<20} style={{...btn,background:'#9a3737'}} onClick={revoke}>Suspend access</button></div>
   </div>}
   </section>
   <section className="wcard"><h2>Manager-assigned task</h2><p className="subtle">Provide the exact estimated time, deadline, delay allowance and expected outcome. The employee receives a timestamped assignment.</p>
    <form onSubmit={assign} style={{display:'grid',gap:12}}>
-    <label>Assignee<select required style={field} value={assignee} onChange={e=>setAssignee(e.target.value)}><option value="">Choose active staff</option>{active.map(p=><option key={p.user_id} value={p.user_id}>{p.username}</option>)}</select></label>
+    <label>Assignee<BrandedSelect required style={field} value={assignee} onChange={e=>setAssignee(e.target.value)}><option value="">Choose active staff</option>{active.map(p=><option key={p.user_id} value={p.user_id}>{p.username}</option>)}</BrandedSelect></label>
     <label>Task title<input required minLength={5} maxLength={180} style={field} value={taskTitle} onChange={e=>setTaskTitle(e.target.value)}/></label>
     <label>Instructions / deliverables<textarea style={field} rows={4} value={details} onChange={e=>setDetails(e.target.value)} placeholder="Expected evidence, task goals, dependencies"/></label>
     <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(135px,1fr))',gap:10}}>
@@ -74,7 +76,7 @@ export default function WorkforcePanel({people,taskRows,dailyRows,actorRole}:{pe
     <button disabled={busy||!assignee} style={btn}>Assign timed task</button>
    </form>
   </section>
-  <section className="wcard"><h2>Manager task scorecard</h2><label>Submitted work<select style={field} value={reviewTask} onChange={e=>setReviewTask(e.target.value)}><option value="">Select submitted task</option>{tasks.filter(x=>x.status==='submitted').map(t=><option key={t.id} value={t.id}>{t.title} · {staff.find(p=>p.user_id===t.assignee_id)?.username||t.assignee_id.slice(0,8)}</option>)}</select></label>
+  <section className="wcard"><h2>Manager task scorecard</h2><label>Submitted work<BrandedSelect style={field} value={reviewTask} onChange={e=>setReviewTask(e.target.value)}><option value="">Select submitted task</option>{tasks.filter(x=>x.status==='submitted').map(t=><option key={t.id} value={t.id}>{t.title} · {staff.find(p=>p.user_id===t.assignee_id)?.username||t.assignee_id.slice(0,8)}</option>)}</BrandedSelect></label>
    {tasks.find(x=>x.id===reviewTask)&&<p className="subtle">Staff report: {tasks.find(x=>x.id===reviewTask)?.assignee_report||'Not recorded'}</p>}
    <label>Quality score (0–100)<input type="number" min={0} max={100} style={field} value={score} onChange={e=>setScore(e.target.value)}/></label>
    <label>Evidence and feedback<textarea rows={4} style={field} value={feedback} onChange={e=>setFeedback(e.target.value)} placeholder="Document acceptance criteria, actual result, delay context, blockers and any scoring rationale"/></label>
@@ -112,7 +114,7 @@ export default function WorkforcePanel({people,taskRows,dailyRows,actorRole}:{pe
    {!dailyRows.length&&<p className="subtle">No daily work reports have been submitted.</p>}
    </div>
   </section>
-  <section className="wcard"><h2>Attendance oversight</h2><div className="actions"><select style={{...field,maxWidth:340}} value={historyStaff} onChange={e=>{setHistoryStaff(e.target.value);setHistory([])}}><option value="">Choose staff</option>{staff.map(x=><option key={x.user_id} value={x.user_id}>{x.username}</option>)}</select><button disabled={!historyStaff} style={btn} onClick={()=>attendance(historyStaff)}>View GPS history</button></div>
+  <section className="wcard"><h2>Attendance oversight</h2><div className="actions"><BrandedSelect style={{...field,maxWidth:340}} value={historyStaff} onChange={e=>{setHistoryStaff(e.target.value);setHistory([])}}><option value="">Choose staff</option>{staff.map(x=><option key={x.user_id} value={x.user_id}>{x.username}</option>)}</BrandedSelect><button disabled={!historyStaff} style={btn} onClick={()=>attendance(historyStaff)}>View GPS history</button></div>
    {history.map(h=><p key={h.id} style={{fontSize:12,borderBottom:'1px solid #ecf1ed',padding:8}}><strong>{h.action==='clock_in'?'Clock IN':'Clock OUT'}</strong> · {new Date(h.occurred_at).toLocaleString('en-NG',{timeZone:'Africa/Lagos'})} WAT · {h.place} · GPS ±{h.accuracy_m}m · <a style={{color:'#087a58'}} target="_blank" rel="noopener noreferrer" href={'https://www.google.com/maps/search/?api=1&query='+h.latitude+','+h.longitude}>Map pin ↗</a></p>)}
    <p className="subtle">Location is captured only at explicit clock events. Location history is sensitive employee information; management access is audited and subject to applicable privacy policies.</p>
   </section>
