@@ -5,7 +5,7 @@ export type Listing={
  estates?:{name:string;state:string|null;city:string|null;lga:string|null;area:string|null}|null
 };
 export const NIGERIA_STATES=['Abia','Adamawa','Akwa Ibom','Anambra','Bauchi','Bayelsa','Benue','Borno','Cross River','Delta','Ebonyi','Edo','Ekiti','Enugu','Federal Capital Territory','Gombe','Imo','Jigawa','Kaduna','Kano','Katsina','Kebbi','Kogi','Kwara','Lagos','Nasarawa','Niger','Ogun','Ondo','Osun','Oyo','Plateau','Rivers','Sokoto','Taraba','Yobe','Zamfara'] as const;
-export type Params={purpose?:string;type?:string;state?:string;city?:string;lga?:string;area?:string;min?:string;max?:string;bedrooms?:string;query?:string;sort?:string;page?:string;view?:string};
+export type Params={purpose?:string;type?:string;state?:string;city?:string;lga?:string;area?:string;min?:string;max?:string;bedrooms?:string;bathrooms?:string;minsize?:string;availability?:string;collection?:string;query?:string;sort?:string;page?:string;view?:string};
 export const PAGE_SIZE=12;
 export function propertyHref(property:{id:string;slug?:string|null}){return '/properties/'+encodeURIComponent(property.slug||property.id)}
 export function propertyPrice(p:{amount_kobo:number|null|undefined;price_is_starting_at?:boolean|null}){return (p.price_is_starting_at&&p.amount_kobo!=null?'From ':'')+money(p.amount_kobo)}
@@ -19,20 +19,28 @@ export function cleanFilters(p:Params){
  const view=p.view==='list'?'list':'grid';
  const positive=(raw?:string)=>{const n=Number(raw);return raw&&Number.isSafeInteger(n)&&n>0&&n<=1000000000000?n:0};
  const bedrooms=Number.isInteger(Number(p.bedrooms))&&Number(p.bedrooms)>=1&&Number(p.bedrooms)<=10?Number(p.bedrooms):0;
- return {purpose,type:['land','house','apartment','commercial','shortlet'].includes(type)?type:'',state:NIGERIA_STATES.includes(state as typeof NIGERIA_STATES[number])?state:'',city,lga,area,query,sort,view,bedrooms,min:positive(p.min),max:positive(p.max),page:Math.max(1,Math.min(100000,Number.isSafeInteger(Number(p.page))?Number(p.page):1))};
+ const bathrooms=Number.isInteger(Number(p.bathrooms))&&Number(p.bathrooms)>=1&&Number(p.bathrooms)<=10?Number(p.bathrooms):0;
+ const minsize=Number.isSafeInteger(Number(p.minsize))&&Number(p.minsize)>=1&&Number(p.minsize)<=100000000?Number(p.minsize):0;
+ const availability=['available','off_plan','completed'].includes(p.availability||'')?p.availability!:'';
+ const collection=['Prime','Luxury'].includes(p.collection||'')?p.collection!:'';
+ return {purpose,type:['land','house','apartment','commercial','shortlet'].includes(type)?type:'',state:NIGERIA_STATES.includes(state as typeof NIGERIA_STATES[number])?state:'',city,lga,area,query,sort,view,bedrooms,bathrooms,minsize,availability,collection,min:positive(p.min),max:positive(p.max),page:Math.max(1,Math.min(100000,Number.isSafeInteger(Number(p.page))?Number(p.page):1))};
 }
 export type Filters=ReturnType<typeof cleanFilters>;
 export function marketHref(filters:Filters,changes:Record<string,string|number|null>={}){const q=new URLSearchParams();for(const [key,value] of Object.entries({...filters,...changes})){if(value!==null&&value!==''&&value!==0&&!(key==='page'&&value===1)&&!(key==='purpose'&&value==='Buy')&&!(key==='sort'&&value==='newest')&&!(key==='view'&&value==='grid'))q.set(key,String(value))}return '/properties'+(q.size?'?'+q.toString():'')}
 function safeLike(value:string){return value.replace(/[%_,\\]/g,'').trim()}
 export async function listPublished(filters:Filters){
  const db=publicDb();if(!db)return {rows:[] as Listing[],count:0,error:'Property service is not configured'};
+ // A Prime/Luxury collection is recorded in the historical deck but not yet
+ // verified against the current estate/property database schema. Do not
+ // silently pretend that this requested category is an active listing filter.
+ if(filters.collection)return {rows:[] as Listing[],count:0,error:'The selected collection has not been verified for active published listings. Clear this filter or contact Landshop for current Prime/Luxury availability.'};
  let estateIds:string[]|null=null;
  if(filters.state||filters.city||filters.lga||filters.area){
   let estateQuery=db.from('estates').select('id').eq('status','published').limit(500);
   if(filters.state)estateQuery=estateQuery.eq('state',filters.state);
-  if(filters.city)estateQuery=estateQuery.ilike('city','%'+safeLike(filters.city)+'%');
+  if(filters.city){const q=safeLike(filters.city);estateQuery=estateQuery.or('city.ilike.%'+q+'%,lga.ilike.%'+q+'%')}
   if(filters.lga)estateQuery=estateQuery.ilike('lga','%'+safeLike(filters.lga)+'%');
-  if(filters.area)estateQuery=estateQuery.ilike('area','%'+safeLike(filters.area)+'%');
+  if(filters.area){const q=safeLike(filters.area);estateQuery=estateQuery.or('area.ilike.%'+q+'%,name.ilike.%'+q+'%')}
   const {data,error}=await estateQuery;
   if(error)return {rows:[] as Listing[],count:0,error:'Location lookup is temporarily unavailable'};
   estateIds=(data||[]).map(v=>v.id);
@@ -47,6 +55,9 @@ export async function listPublished(filters:Filters){
  if(filters.type)propertyQuery=propertyQuery.eq('property_type',filters.type);
  if(filters.query)propertyQuery=propertyQuery.ilike('title','%'+safeLike(filters.query)+'%');
  if(filters.bedrooms)propertyQuery=propertyQuery.gte('bedrooms',filters.bedrooms);
+ if(filters.bathrooms)propertyQuery=propertyQuery.gte('bathrooms',filters.bathrooms);
+ if(filters.minsize){if(filters.type==='land')propertyQuery=propertyQuery.gte('land_area_sqm',filters.minsize);else if(filters.type)propertyQuery=propertyQuery.gte('floor_area_sqm',filters.minsize);else propertyQuery=propertyQuery.or('floor_area_sqm.gte.'+filters.minsize+',land_area_sqm.gte.'+filters.minsize)}
+ if(filters.availability)propertyQuery=propertyQuery.eq('availability',filters.availability);
  if(filters.min)propertyQuery=propertyQuery.gte('amount_kobo',filters.min*100);
  if(filters.max)propertyQuery=propertyQuery.lte('amount_kobo',filters.max*100);
  if(filters.sort==='price_asc')propertyQuery=propertyQuery.order('amount_kobo',{ascending:true,nullsFirst:false}).order('id',{ascending:true});

@@ -17,7 +17,7 @@ from urllib.request import Request, urlopen
 EXPECTED=os.environ.get("LANDSHOP_EXPECTED_SHA", "").strip()
 HOSTS=("landshopnigeria.com","www.landshopnigeria.com")
 PAGES=(
-    ("/","v16-separated-product-slides",".hero-v16-title"),
+    ("/","cinematic-property-video-preview",".ls-v23-hero"),
     ("/develop","data-product-journey",".lp-pathway-card"),
     ("/incubate","data-product-journey",".lp-pathway-card"),
     ("/grow","data-product-journey",".lp-pathway-card"),
