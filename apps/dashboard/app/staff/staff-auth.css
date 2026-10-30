@@ -25,3 +25,8 @@
 @media(max-width:340px){.lsa-grid{grid-template-columns:1fr}.lsa-field.full{grid-column:auto}}
 @media(max-height:740px) and (min-width:691px){.lsa-top-strip{height:28px}.lsa-nav-inner{height:56px}.lsa-footer-inner{min-height:38px}.lsa-card.signup{padding-top:10px;padding-bottom:12px}.lsa-card.signup .lsa-form-logo img{height:57px;width:128px}.lsa-card.signup .lsa-title{margin-bottom:10px;font-size:28px}.lsa-card.signup .lsa-grid{gap:8px 15px}.lsa-card.signup .lsa-field input,.lsa-card.signup .lsa-field select{height:39px}.lsa-card.signup .lsa-eye{height:34px;top:2px}.lsa-card.signup .lsa-terms{margin:9px 0 10px}.lsa-card.signup .lsa-submit{height:40px}.lsa-card.signup .lsa-links{margin-top:8px}.lsa-main{padding:6px 14px}}
 @media(prefers-reduced-motion:reduce){.lsa-root *{transition:none!important}}
+
+/* Confirmation recovery is shown only when the user needs it. */
+.lsa-resend{display:block;margin:10px auto 0;padding:8px 12px;border:0;background:transparent;color:var(--gd);text-decoration:underline;text-underline-offset:3px;font-size:12px;font-weight:700;cursor:pointer}
+.lsa-resend:hover:not(:disabled){color:var(--deep)}
+.lsa-resend:disabled{opacity:.65;cursor:default;text-decoration:none}

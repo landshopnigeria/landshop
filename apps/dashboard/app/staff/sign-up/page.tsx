@@ -14,7 +14,24 @@ const roles=[
 export default function StaffSignUp(){
  const [v,setV]=useState({email:'',username:'',age:'',gender:'',role:'',password:'',confirm:''});
  const [busy,setBusy]=useState(false),[msg,setMsg]=useState(''),[acknowledged,setAcknowledged]=useState(false);
+ const [confirmationPending,setConfirmationPending]=useState(false),[resendCompleted,setResendCompleted]=useState(false);
  const update=(k:keyof typeof v,s:string)=>setV(p=>({...p,[k]:s}));
+ async function resendConfirmation(){
+  if(!confirmationPending||resendCompleted||busy)return;
+  setBusy(true);
+  try{
+   const url=process.env.NEXT_PUBLIC_SUPABASE_URL,key=process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+   if(!url||!key)throw Error('Email service unavailable');
+   const db=createBrowserClient(url,key,{cookieOptions:{domain:'.landshopnigeria.com',secure:true,sameSite:'lax',path:'/'}});
+   const {error}=await db.auth.resend({type:'signup',email:v.email.trim().toLowerCase(),
+    options:{emailRedirectTo:'https://app.landshopnigeria.com/auth/callback'}});
+   if(error)throw error;
+   setResendCompleted(true);
+   setMsg('If this address has an eligible unconfirmed account, another confirmation email will be sent. Check your inbox and spam folder.');
+  }catch{
+   setMsg('Unable to resend the confirmation email. Please check the address or try again later.');
+  }finally{setBusy(false)}
+ }
  async function submit(e:FormEvent<HTMLFormElement>){
  e.preventDefault();setBusy(true);setMsg('');
  try{
@@ -31,6 +48,8 @@ export default function StaffSignUp(){
    data:{staff_signup:true,preferred_username:v.username.toLowerCase(),age_at_registration:+v.age,gender:v.gender,requested_role:v.role}
   }});
   if(error)throw error;
+  setConfirmationPending(true);
+  setResendCompleted(false);
   setMsg('Check your email to confirm your account. Your requested staff role remains subject to identity verification and management approval.');
  }catch(e){setMsg(e instanceof Error?e.message:'Unable to register')}finally{setBusy(false)}
  }
@@ -47,6 +66,7 @@ export default function StaffSignUp(){
  </div><div className="lsa-terms"><input type="checkbox" id="su-terms" required checked={acknowledged} onChange={e=>setAcknowledged(e.target.checked)}/><label htmlFor="su-terms">I have read the <a href="/staff/terms" target="_blank" rel="noopener noreferrer">Terms and Conditions</a></label></div>
  <button type="submit" className="lsa-submit" disabled={busy}>{busy?'Submitting…':'Sign Up'}</button>
  {msg&&<p role="status" className="lsa-message">{msg}</p>}
+ {confirmationPending&&<button className="lsa-resend" type="button" disabled={busy||resendCompleted} onClick={resendConfirmation}>{resendCompleted?'Confirmation requested':'Resend confirmation email'}</button>}
  <div className="lsa-links">Already have an account? <a href="/staff/sign-in">Sign In</a></div>
  </form></section></StaffAuthShell>;
 }
