@@ -1,4 +1,6 @@
 'use client';
+import BrandedSelect from '../../../../components/BrandedSelect';
+
 import {useState} from 'react';
 import {createBrowserClient} from '@supabase/ssr';
 type Asset={id:string;kind:string;status:string;object_path:string;uploaded_by:string};
@@ -64,10 +66,10 @@ export default function PropertyAssets({propertyId,propertyStatus,items,allowRev
    <h2>Upload original property evidence</h2>
    <p>Upload owner/developer photographs, land title, marketing authority or a property video. Never use AI-generated pictures as evidence of a listed property.</p>
    <div style={{display:'flex',flexWrap:'wrap',gap:15}}>
-    <select value={kind} onChange={e=>setKind(e.target.value as Kind)} aria-label="Evidence type">
+    <BrandedSelect value={kind} onChange={e=>setKind(e.target.value as Kind)} aria-label="Evidence type">
      <option value="property_image">Original property image</option><option value="title_document">Title document</option>
      <option value="marketing_authority">Marketing authority</option><option value="video">Property video</option>
-    </select>
+    </BrandedSelect>
     <input aria-label="Select file" type="file" accept=".jpg,.jpeg,.png,.webp,.pdf,.mp4" onChange={e=>setFile(e.target.files?.[0]||null)}/>
     <button disabled={busy||!file} onClick={upload}>Upload Privately</button>
    </div>
