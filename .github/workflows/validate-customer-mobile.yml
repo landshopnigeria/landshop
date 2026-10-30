@@ -61,6 +61,13 @@ jobs:
           for(const profile of ['android-internal','ios-simulator','ios-internal']){
             if(builds[profile].environment!=='preview')throw Error('Internal EAS builds must use Preview');
             if(builds[profile].env.EXPO_PUBLIC_SUPABASE_URL!=='https://iwkfagzkogzidrbbezds.supabase.co')throw Error('Incorrect Supabase project');
+            if(!/^sb_publishable_[A-Za-z0-9_-]+$/.test(builds[profile].env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY||''))
+              throw Error('Missing modern client-safe Supabase key in '+profile);
+          }
+          if(!/^sb_publishable_[A-Za-z0-9_-]+$/.test(builds.production.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY||''))
+            throw Error('Production must use an approved publishable key');
+          if(new Set(Object.values(builds).map(p=>p.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY)).size!==1)
+            throw Error('Landshop profiles must not silently switch Supabase identities');
           }
           const flow=fs.readFileSync('../../.github/workflows/build-landshop-native-internal.yml','utf8');
           if(!flow.includes('workflow_dispatch:')||flow.includes('    push:')||flow.includes('    pull_request:'))throw Error('Internal EAS builds must be manually initiated');
