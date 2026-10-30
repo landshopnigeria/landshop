@@ -8,9 +8,9 @@ import {editorialImages} from '../lib/editorial-imagery';
 import SiteIcon from './SiteIcon';
 export type FeaturedProperty={id:string,href:string,title:string,location:string,propertyType:string,price:string,image?:string};
 const slides=[
- {name:'DEVELOP',title:'Develop.',tagline:'Own Your Future.',copy:'Discover land and homes with confidence. Explore verified property opportunities, transparent guidance and a clearer path to ownership.',image:editorialImages.develop.src,action:'Develop',href:'/develop',alt:editorialImages.develop.alt},
- {name:'INCUBATE',title:'Incubate.',tagline:'Invest in Possibilities.',copy:'Explore property-linked investment opportunities with documented terms, eligibility requirements and a responsible investment review.',image:editorialImages.incubate.src,action:'Invest Now',href:'https://portal.landshopnigeria.com/applications/incubate-investment',alt:editorialImages.incubate.alt},
- {name:'GROW',title:'Grow.',tagline:'Make Homeownership Possible.',copy:'Explore Beta Mortgage and Mortgage Xtra, calculate your potential affordability, and take the next step with informed financial guidance.',image:editorialImages.grow.src,action:'Know Your Earnings',href:'https://portal.landshopnigeria.com/calculator',alt:editorialImages.grow.alt}
+ {name:'DEVELOP',title:'Develop.',tagline:'Own Your Future.',copy:'Discover land and homes with confidence. Explore verified property opportunities, transparent guidance and a clearer path to ownership.',image:'/media/deck-building.webp',action:'Develop',href:'/develop',alt:editorialImages.develop.alt},
+ {name:'INCUBATE',title:'Incubate.',tagline:'Invest in Possibilities.',copy:'Explore property-linked investment opportunities with documented terms, eligibility requirements and a responsible investment review.',image:'/media/deck-investment.webp',action:'Invest Now',href:'https://portal.landshopnigeria.com/applications/incubate-investment',alt:editorialImages.incubate.alt},
+ {name:'GROW',title:'Grow.',tagline:'Make Homeownership Possible.',copy:'Explore Beta Mortgage and Mortgage Xtra, calculate your potential affordability, and take the next step with informed financial guidance.',image:'/media/deck-mortgage.webp',action:'Know Your Earnings',href:'https://portal.landshopnigeria.com/calculator',alt:editorialImages.grow.alt}
 ] as const;
 const products=[
  {title:'Develop',sub:'Own your future',description:'Discover land and housing opportunities, Prime and Luxury selections.',img:editorialImages.develop.src,href:'/develop'},
