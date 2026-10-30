@@ -28,5 +28,11 @@ export async function GET(request:NextRequest) {
  }else{return NextResponse.redirect(new URL('/?error=invalid_callback',origin))}
  if(error)return NextResponse.redirect(new URL('/?error=auth_callback',origin));
  if(type==='recovery')response.headers.set('Location',origin+'/update-password');
+ else{
+  // Metadata controls UX routing only, never permissions.
+  const {data:{user}}=await supabase.auth.getUser();
+  if(user?.user_metadata?.staff_signup===true)
+    response.headers.set('Location','https://app.landshopnigeria.com/staff');
+ }
  return response;
 }
