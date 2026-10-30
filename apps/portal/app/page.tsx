@@ -137,7 +137,7 @@ export default function Portal(){
         <Field label="Password"><div className="authPw"><input type={showPassword?'text':'password'} required minLength={12} autoComplete="new-password" value={password} placeholder="Minimum 12 characters" onChange={e=>setPassword(e.target.value)}/><button type="button" onClick={()=>setShowPassword(v=>!v)}>{showPassword?'Hide':'Show'}</button></div></Field>
         <Field label="Confirm password"><input type={showPassword?'text':'password'} required minLength={12} autoComplete="new-password" value={confirm} placeholder="Confirm password" onChange={e=>setConfirm(e.target.value)}/></Field>
        </div>
-       <label className="authInline"><input type="checkbox" checked={accepted} required onChange={e=>setAccepted(e.target.checked)}/> I agree to Landshop's Terms and Privacy notice.</label>
+       <label className="authInline"><input type="checkbox" checked={accepted} required onChange={e=>setAccepted(e.target.checked)}/> I agree to Landshop's <a href="https://www.landshopnigeria.com/terms" target="_blank" rel="noopener noreferrer">Terms of Service</a> and <a href="https://www.landshopnigeria.com/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>.</label>
       </>}
       {mode==='signin'&&<>
        <Field label="Email address"><input type="email" required autoComplete="email" placeholder="you@example.com" value={email} onChange={e=>setEmail(e.target.value)}/></Field>
