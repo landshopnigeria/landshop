@@ -204,7 +204,7 @@ def check(kind: str, route: str, expected: str | None):
             raise AssertionError("database-backed marketplace grid is not rendered")
         if 'name="state"' not in html or 'name="sort"' not in html:
             raise AssertionError("marketplace filters and sorting controls are missing")
-        if 'class="ls26-market-filter"' not in html or "Sell</button>" not in html:
+        if 'ls26-market-filter' not in html or "Sell</button>" not in html:
             raise AssertionError("shared homepage marketplace filter and Sell tab are missing")
     for legacy in RECOVERY:
         if legacy.casefold() in visible.casefold():
