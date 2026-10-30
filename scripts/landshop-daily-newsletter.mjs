@@ -7,7 +7,8 @@ import {createClient} from '@supabase/supabase-js';
 const isSend=process.argv.includes('--send');
 const isSelfTest=process.argv.includes('--self-test');
 const site='https://www.landshopnigeria.com';
-const date=new Intl.DateTimeFormat('en-CA',{timeZone:'Africa/Lagos',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
+const parts=Object.fromEntries(new Intl.DateTimeFormat('en-US',{timeZone:'Africa/Lagos',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date()).map(p=>[p.type,p.value]));
+const date=parts.year+'-'+parts.month+'-'+parts.day;
 const safe=(v)=>String(v||'').replace(/[&<>"']/g,x=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[x]));
 function findArticle(slug){
   if(!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(slug))return null;
