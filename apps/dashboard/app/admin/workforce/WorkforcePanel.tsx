@@ -4,12 +4,13 @@ import {createBrowserClient} from '@supabase/ssr';
 type Member={user_id:string;username:string;requested_role:string;employment_state:string;kyc_state:string;photo_path:string|null;staff_number:string|null;review_note:string|null};
 type Task={id:string;assignee_id:string;assigned_by:string;title:string;status:string;due_at:string;planned_minutes:number|null;delay_allowance_minutes:number;score:number|null;assignee_report:string|null;review_comment:string|null};
 type History={id:string;action:string;occurred_at:string;place:string;latitude:number;longitude:number;accuracy_m:number};
+type Daily={id:string;staff_id:string;report_date:string;summary:string;blockers:string|null;updated_at:string};
 type Rank={staff_id:string;username:string;staff_number:string|null;tasks_scored:number;score_percent:number|null;rank_position:number;recommendation:string};
 const field={width:'100%',padding:'12px 13px',border:'1px solid #d2e5d9',borderRadius:10,background:'#fff',color:'#184c35',fontSize:13};
 const btn={padding:'12px 17px',border:0,borderRadius:10,background:'#2ba47a',color:'#fff',fontWeight:800,cursor:'pointer'};
 const titles=['ceo','founder','admin','executive','operations','finance','head_finance','hr','hr_officer','technology_officer','technology_consultant','social_media_manager','customer_service_manager','department_manager','sales','legal','surveyor','marketing','staff','security','youth_corps','intern'];
 function db(){const u=process.env.NEXT_PUBLIC_SUPABASE_URL,k=process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;if(!u||!k)throw Error('Secure database missing');return createBrowserClient(u,k,{cookieOptions:{domain:'.landshopnigeria.com',path:'/',secure:true,sameSite:'lax'}})}
-export default function WorkforcePanel({people,taskRows,actorRole}:{people:Member[];taskRows:Task[];actorRole:string}){
+export default function WorkforcePanel({people,taskRows,dailyRows,actorRole}:{people:Member[];taskRows:Task[];dailyRows:Daily[];actorRole:string}){
  const [staff,setStaff]=useState(people),[tasks,setTasks]=useState(taskRows),[selected,setSelected]=useState(''),[role,setRole]=useState('staff'),[reason,setReason]=useState(''),[busy,setBusy]=useState(false),[msg,setMsg]=useState('');
  const [photo,setPhoto]=useState<Record<string,string>>({});
  const [assignee,setAssignee]=useState(''),[taskTitle,setTaskTitle]=useState(''),[details,setDetails]=useState(''),[minutes,setMinutes]=useState('120'),[delay,setDelay]=useState('0'),[due,setDue]=useState('');
@@ -99,6 +100,17 @@ export default function WorkforcePanel({people,taskRows,actorRole}:{people:Membe
   <div className="actions"><label>Year <input type="number" style={{...field,width:140}} value={year} min={2020} max={2100} onChange={e=>setYear(+e.target.value)}/></label><button onClick={getRank} style={btn}>Load annual ranking</button></div>
   <div style={{overflowX:'auto'}}><table style={{width:'100%',borderCollapse:'collapse',marginTop:15,fontSize:13}}><thead><tr>{['Rank','Staff','Tasks scored','Weighted score','Review status'].map(x=><th style={{textAlign:'left',padding:10,borderBottom:'1px solid #ddd'}} key={x}>{x}</th>)}</tr></thead><tbody>{rank.map(x=><tr key={x.staff_id}>{[x.rank_position,x.username,x.tasks_scored,x.score_percent==null?'—':x.score_percent+'%',x.recommendation.replaceAll('_',' ')].map((a,i)=><td key={i} style={{padding:10,borderBottom:'1px solid #e7eee9'}}>{a}</td>)}</tr>)}</tbody></table></div>
   <p className="subtle">Below 70% prompts supportive management review; 100% may recommend a promotion assessment. No salary deduction or promotion is automated.</p>
+  </section>
+  <section className="wcard"><h2>Daily work journal</h2><p className="subtle">Every employee's daily written update and reported dependencies. These reports supplement independently verified work-time logs rather than automatically changing performance scores.</p>
+   <div style={{maxHeight:420,overflowY:'auto',display:'grid',gap:12}}>
+   {dailyRows.map(r=><article key={r.id} style={{border:'1px solid #e2eee6',borderRadius:11,padding:14}}>
+    <strong style={{fontSize:13}}>{people.find(x=>x.user_id===r.staff_id)?.username||r.staff_id.slice(0,8)} · {r.report_date}</strong>
+    <p style={{fontSize:13,lineHeight:1.65}}>{r.summary}</p>
+    {r.blockers&&<p style={{fontSize:12,color:'#9e6319'}}>Blockers: {r.blockers}</p>}
+    <small>Updated: {new Date(r.updated_at).toLocaleString('en-NG',{timeZone:'Africa/Lagos'})} WAT</small>
+   </article>)}
+   {!dailyRows.length&&<p className="subtle">No daily work reports have been submitted.</p>}
+   </div>
   </section>
   <section className="wcard"><h2>Attendance oversight</h2><div className="actions"><select style={{...field,maxWidth:340}} value={historyStaff} onChange={e=>{setHistoryStaff(e.target.value);setHistory([])}}><option value="">Choose staff</option>{staff.map(x=><option key={x.user_id} value={x.user_id}>{x.username}</option>)}</select><button disabled={!historyStaff} style={btn} onClick={()=>attendance(historyStaff)}>View GPS history</button></div>
    {history.map(h=><p key={h.id} style={{fontSize:12,borderBottom:'1px solid #ecf1ed',padding:8}}><strong>{h.action==='clock_in'?'Clock IN':'Clock OUT'}</strong> · {new Date(h.occurred_at).toLocaleString('en-NG',{timeZone:'Africa/Lagos'})} WAT · {h.place} · GPS ±{h.accuracy_m}m · <a style={{color:'#087a58'}} target="_blank" rel="noopener noreferrer" href={'https://www.google.com/maps/search/?api=1&query='+h.latitude+','+h.longitude}>Map pin ↗</a></p>)}
