@@ -1,6 +1,6 @@
 import {createClient} from '@supabase/supabase-js';
 export type Listing={
- id:string;title:string;slug:string|null;property_type:string;amount_kobo:number|null;price_is_starting_at:boolean;status:string;estate_id:string|null;
+ id:string;title:string;slug:string|null;property_type:string;collection_type?:'Prime'|'Luxury'|null;amount_kobo:number|null;price_is_starting_at:boolean;status:string;estate_id:string|null;
  sale_mode:'Buy'|'Rent'|'Shortlet'|null;bedrooms:number|null;bathrooms:number|null;floor_area_sqm:number|null;land_area_sqm:number|null;availability:string|null;
  estates?:{name:string;state:string|null;city:string|null;lga:string|null;area:string|null}|null
 };
@@ -33,7 +33,8 @@ export async function listPublished(filters:Filters){
  // A Prime/Luxury collection is recorded in the historical deck but not yet
  // verified against the current estate/property database schema. Do not
  // silently pretend that this requested category is an active listing filter.
- if(filters.collection)return {rows:[] as Listing[],count:0,error:'The selected collection has not been verified for active published listings. Clear this filter or contact Landshop for current Prime/Luxury availability.'};
+ // A Prime/Luxury classification is published only after a verified staff review.
+ // Existing drafts with no verified collection remain absent from public results.
  let estateIds:string[]|null=null;
  if(filters.state||filters.city||filters.lga||filters.area){
   let estateQuery=db.from('estates').select('id').eq('status','published').limit(500);
@@ -53,6 +54,7 @@ export async function listPublished(filters:Filters){
  if(filters.purpose==='Buy')propertyQuery=propertyQuery.or('sale_mode.eq.Buy,sale_mode.is.null').neq('property_type','shortlet');
  else propertyQuery=propertyQuery.eq('sale_mode',filters.purpose);
  if(filters.type)propertyQuery=propertyQuery.eq('property_type',filters.type);
+ if(filters.collection)propertyQuery=propertyQuery.eq('collection_type',filters.collection).not('collection_verified_at','is',null);
  if(filters.query)propertyQuery=propertyQuery.ilike('title','%'+safeLike(filters.query)+'%');
  if(filters.bedrooms)propertyQuery=propertyQuery.gte('bedrooms',filters.bedrooms);
  if(filters.bathrooms)propertyQuery=propertyQuery.gte('bathrooms',filters.bathrooms);
