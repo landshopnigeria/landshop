@@ -33,7 +33,7 @@ PUBLIC_PAGES = [
     ("website", "/applications", "Your property journey"),
     ("website", "/search", "Search Landshop"),
     ("website", "/about", "About Us."),
-    ("website", "/contact", "Let\'s talk about your next move."),
+    ("website", "/contact", "Contact Us"),
     ("website", "/insights", "Insights for better property decisions."),
     ("website", "/company/team", "The work behind every decision"),
     ("website", "/thrift", "Build towards property goals, together"),
@@ -143,8 +143,10 @@ def check(kind: str, route: str, expected: str | None):
         if "portal.landshopnigeria.com/applications/" not in html:
             raise AssertionError("secure guided product forms are not linked")
     if kind == "website" and route == "/contact":
-        if 'class="lc-hero-photo"' not in html or 'class="contact-enquiry-form"' not in html:
-            raise AssertionError("premium customer care image or secure enquiry form is missing")
+        if 'class="lc-v24-photo"' not in html or 'class="contact-enquiry-form"' not in html:
+            raise AssertionError("approved Landshop reception image or secure enquiry form is missing")
+        if 'class="lc-v24-info-inner"' not in html or 'class="lc-v24-details"' not in html or 'class="lc-v24-form"' not in html:
+            raise AssertionError("Contact Us details and the full-width enquiry form must be visible")
         if 'class="lc-map-landscape"' not in html or 'www.google.com/maps' not in html:
             raise AssertionError("Landshop Google Maps landscape embed must be present before the footer")
         if 'maps.app.goo.gl/GLiNo6LfYWhWvJV1A' not in html:
