@@ -85,7 +85,7 @@ export default function Contact() {
 
     <section className="lc-office-map" aria-label="Landshop office map">
       <div className="lc-map-intro">
-        <div><span className="lc-kicker">FIND LANDSHOP ON GOOGLE MAPS</span><h2>Visit our Lekki office.</h2><p>{office}</p></div>
+        <div><p>{office}</p></div>
         <div className="lc-map-actions">
           <a href={googleMaps} target="_blank" rel="noopener noreferrer"><SiteIcon name="pin" size={20}/> Open Google Maps</a>
           <a className="lc-map-directions" href={directions} target="_blank" rel="noopener noreferrer"><SiteIcon name="compass" size={20}/> Get directions</a>
