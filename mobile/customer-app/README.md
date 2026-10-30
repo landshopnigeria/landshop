@@ -1,26 +1,45 @@
-# Landshop Customer Mobile — Native Foundation
+# Landshop Customer Mobile — Native App (development)
 
-React Native / Expo SDK 58 customer application source. Separate from the live Next.js website and portal so it cannot modify existing production website routes, subscriptions, employees, or customer records.
+This is the isolated React Native / Expo customer application source using the **existing Landshop Supabase project**. It does not replace the live website or portal and does not create new staff identities.
 
-## Supported in this initial native source
-- Existing Supabase Auth sign-in/sign-out, two-step sign-up, email verification information and password recovery.
-- LANDSHOPnn referral invitation capture, the signed-in member's own code, QR, copy, and native Share.
-- Customer overview with actual application count, KYC status, and approved referral wallet values.
-- Secure link to the existing Landshop web KYC, properties and applications. These linked flows are not yet implemented as native screens.
-- Green/black gradient CTA, approved building/staff imagery and centred card layouts.
+## Implemented source
 
-## Run
-1. `cd mobile/customer-app`.
-2. Copy `.env.example` to `.env` and supply the **existing Supabase publishable key only** (never a service-role key).
-3. `npm install` and `npx expo install --fix` to resolve the Expo 58 compatibility matrix and generate a lockfile before release.
-4. `npm run typecheck` then `npm run start`.
-5. Link this Expo project to an authorized EAS account. Configure iOS/Android signing and verified deep links before producing app-store binaries.
+- Landshop-branded, mobile-centred two-step customer registration and password sign-in.
+- Existing Supabase confirmation email and password recovery.
+- **Native Google OAuth and direct email return** through a strict `landshop://auth/callback` URI handler, with PKCE code exchange or Supabase token-hash verification.
+- Native recovery password screen after a verified recovery callback.
+- Signed-in dashboard: applications, KYC status, verified referral code and shareable QR.
+- Referrals remain server-attributed; mobile app cannot grant itself commissions or rewrite wallet balances.
+- An invitation can be opened with `landshop://invite?ref=LANDSHOP01`. Other domains and arbitrary redirects are discarded.
+- Until native redirects are approved, browser-based confirmation, recovery and Google flows use the existing customer portal. The app has **no automatic website-cookie import**.
 
-## Before public native release
-- Configure the `landshop://` and verified HTTPS redirect allowlists in the existing Supabase project. Avoid opening unaudited OAuth URLs until PKCE callback handling and mobile session return are validated.
-- Add first-party native KYC document capture / storage and account recovery.
-- Complete Android and iOS simulator testing (small screens, tablets, offline/unstable connections, font scaling, keyboard).
-- Add app icons/splash from licensed Landshop source artwork and EAS build profiles, plus privacy/consent review.
-- The "Continue with Google" control opens the existing secure web portal; it does **not** silently transfer web cookies to the mobile app.
+## Local developer setup
 
-This is native source groundwork, not an uploaded, store-approved application.
+1. `cd mobile/customer-app`
+2. Copy `.env.example` to `.env`. Enter only Landshop's **Supabase publishable key**, never a secret or service-role key.
+3. `npm install` to install pinned dependencies.
+4. `npm run typecheck` and `npm run test:links`.
+5. Use a development build for native auth and external callback testing. Expo Go and app-store binaries are not considered verified.
+
+## Native redirect activation (not yet enabled)
+
+Native OAuth is intentionally **off by default**:
+
+```ini
+EXPO_PUBLIC_NATIVE_AUTH_REDIRECT_READY=false
+```
+
+Enable only after the following have been manually verified by an authorized Supabase/Android/iOS operator:
+
+- In the **existing** Landshop Supabase Auth URL Configuration, add both exact allowed redirects `landshop://auth/callback` (signup and Google) and `landshop://auth/callback?type=recovery` (password reset). Do not enable native auth until both have been tested.
+- Confirm Supabase Google sign-in provider and the official Google Cloud authorized callback.
+- Install a signed native development build and test `landshop://auth/callback?code=...` and `landshop://auth/callback?type=recovery&code=...` on real Android and iOS hardware using disposable test accounts. Never reuse a consumed code or paste access tokens in logs.
+- Confirm a confirmation-email callback, a Google sign-in callback, and password recovery all return to the correct native screen.
+- Then set `EXPO_PUBLIC_NATIVE_AUTH_REDIRECT_READY=true` for the appropriate signed build. Changing an Expo environment variable does not retroactively change an installed binary.
+
+## Present limitations and release gate
+
+- KYC documents and the full product application workflow currently open the protected Landshop **web** experiences; separate website authentication may be required. Native and web cookies are not assumed to be shared.
+- Google login opens the existing website until the flag above is enabled. The in-app implementation is ready for controlled test, not yet production-proven.
+- Deep links received from untrusted websites cannot be used as an arbitrary redirect or session; the backend verifies PKCE codes, token hashes and referral attribution.
+- A successful `npm run typecheck` or GitHub workflow is **not equivalent to device testing**. Expo build signing, approved credentials, QR appearance, biometric/storage review, Android/iOS accessibility and full KYC/document capture remain required before store release.

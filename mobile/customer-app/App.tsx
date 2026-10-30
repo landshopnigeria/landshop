@@ -1,12 +1,15 @@
-import React,{useEffect,useMemo,useState} from 'react';
+import React,{useEffect,useMemo,useRef,useState} from 'react';
 import {ActivityIndicator,Image,ImageBackground,KeyboardAvoidingView,Linking,Platform,Pressable,SafeAreaView,ScrollView,Share,StatusBar,StyleSheet,Text,TextInput,View,useWindowDimensions} from 'react-native';
 import {LinearGradient} from 'expo-linear-gradient';
 import * as Clipboard from 'expo-clipboard';
 import QRCode from 'react-native-qrcode-svg';
 import type {Session} from '@supabase/supabase-js';
 import {supabase} from './src/supabase';
+import {parseInboundUrl} from './src/auth-links';
+import {BrandIcon} from './src/BrandIcon';
+import {finishNativeAuthentication,nativeAuthEnabled,nativeCallbackUrl,signInWithNativeGoogle,webCallbackUrl} from './src/native-auth';
 
-type Page='signin'|'signup'|'verify'|'dashboard'|'referrals'|'kyc'|'profile';
+type Page='signin'|'signup'|'verify'|'reset-password'|'dashboard'|'referrals'|'kyc'|'profile';
 type Summary={total_referrals:number;email_verified:number;kyc_verified:number;approved_applications:number};
 const green='#078a6b',ink='#123a32',orange='#e97721',muted='#688278';
 const portal='https://portal.landshopnigeria.com',app='https://app.landshopnigeria.com';
@@ -32,12 +35,14 @@ function Field({title,value,onChange,placeholder,secure=false,keyboardType='defa
   keyboardType={keyboardType} autoCapitalize={autoCapitalize}
   autoCorrect={false} textContentType={secure?'password':undefined}/></View>;
 }
-function Action({label,onPress}:{label:string;onPress:()=>void}){return <Pressable onPress={onPress} style={styles.action}><Text style={styles.actionText}>{label}</Text><Text style={{color:green,fontSize:22}}>›</Text></Pressable>}
+function Action({label,onPress}:{label:string;onPress:()=>void}){return <Pressable onPress={onPress} style={styles.action}><Text style={styles.actionText}>{label}</Text><BrandIcon name="arrow" size={19} color={green}/></Pressable>}
 function Caption({children}:{children:React.ReactNode}){return <Text style={styles.caption}>{children}</Text>}
 export default function App(){
  const [session,setSession]=useState<Session|null>(null),[loading,setLoading]=useState(true),[busy,setBusy]=useState(false);
  const [page,setPage]=useState<Page>('signin'),[step,setStep]=useState<1|2>(1),[notice,setNotice]=useState('');
  const [email,setEmail]=useState(''),[password,setPassword]=useState(''),[confirm,setConfirm]=useState('');
+ const [newPassword,setNewPassword]=useState(''),[newPasswordConfirm,setNewPasswordConfirm]=useState('');
+ const processingLinks=useRef(new Set<string>()),recoveryInProgress=useRef(false);
  const [first,setFirst]=useState(''),[last,setLast]=useState(''),[phone,setPhone]=useState(''),[username,setUsername]=useState(''),[age,setAge]=useState(''),[gender,setGender]=useState(''),[accepted,setAccepted]=useState(false);
  const [referral,setReferral]=useState(''),[code,setCode]=useState(''),[kyc,setKyc]=useState('not_started');
  const [wallet,setWallet]=useState(0),[applications,setApplications]=useState(0),[summary,setSummary]=useState<Summary|null>(null);
@@ -46,18 +51,47 @@ export default function App(){
  const invite=useMemo(()=>code?portal+'/?mode=signup&ref='+encodeURIComponent(code):'', [code]);
  useEffect(()=>{
   let mounted=true;
-  supabase.auth.getSession().then(({data})=>{if(mounted){setSession(data.session);setPage(data.session?'dashboard':'signin');setLoading(false);}}).catch(()=>{if(mounted)setLoading(false)});
-  const {data:{subscription}}=supabase.auth.onAuthStateChange((_event,s)=>{
-   if(!mounted)return;setSession(s);if(s)setPage('dashboard');else if(page!=='signup'&&page!=='verify')setPage('signin');
+  supabase.auth.getSession().then(({data})=>{
+   if(mounted){setSession(data.session);setPage(current=>data.session&&current==='signin'?'dashboard':current);setLoading(false);}
+  }).catch(()=>{if(mounted)setLoading(false)});
+  const {data:{subscription}}=supabase.auth.onAuthStateChange((event,s)=>{
+   if(!mounted)return;
+   setSession(s);
+   if(event==='PASSWORD_RECOVERY'){recoveryInProgress.current=true;setPage('reset-password');}
+   else if(s){setPage(current=>recoveryInProgress.current?'reset-password':current==='verify'?'verify':'dashboard');}
+   else setPage(current=>['signup','verify','reset-password'].includes(current)?current:'signin');
   });
-  const incoming=(url:string|null|undefined)=>{
-   if(!url)return;
-   const match=/(?:\?|&)ref=(LANDSHOP[0-9]{2,12})/i.exec(url);
-   if(match){setReferral(match[1].toUpperCase());setPage('signup');setStep(1);}
+  const incoming=async(raw:string|null|undefined)=>{
+   if(!mounted)return;
+   const link=parseInboundUrl(raw);
+   if(link.kind==='invitation'){
+    const {data}=await supabase.auth.getSession();
+    if(!mounted)return;
+    if(data.session){setNotice('Referral invitations are for new registrations. Your existing Landshop account is unchanged.');setPage('dashboard');return;}
+    setReferral(link.referral);setPage('signup');setStep(1);return;
+   }
+   if(link.kind==='auth-error'){setNotice(link.message);setPage('signin');return;}
+   if(link.kind!=='auth-code'&&link.kind!=='auth-token')return;
+   const identifier=link.kind==='auth-code'?'code:'+link.code:'token:'+link.tokenHash;
+   if(processingLinks.current.has(identifier))return;
+   processingLinks.current.add(identifier);
+   if((link.kind==='auth-code'&&link.recovery)||(link.kind==='auth-token'&&link.otpType==='recovery'))recoveryInProgress.current=true;
+   setBusy(true);setNotice('');
+   try{
+    const recovery=await finishNativeAuthentication(link);
+    if(!mounted)return;
+    if(recovery){setPage('reset-password');setNotice('Set a new password for your Landshop account.');}
+    else{setPage('dashboard');setNotice('Your Landshop account is verified.');}
+   }catch(err){
+    if(!mounted)return;
+    processingLinks.current.delete(identifier);recoveryInProgress.current=false;
+    setNotice(err instanceof Error?err.message:'The authentication link could not be verified.');
+    setPage('signin');
+   }finally{if(mounted)setBusy(false)}
   };
   Linking.getInitialURL().then(incoming).catch(()=>{});
-  const link=Linking.addEventListener('url',e=>incoming(e.url));
-  return ()=>{mounted=false;subscription.unsubscribe();link.remove()};
+  const listener=Linking.addEventListener('url',e=>{void incoming(e.url)});
+  return()=>{mounted=false;subscription.unsubscribe();listener.remove()};
  },[]);
  useEffect(()=>{
   if(!session?.user)return;
@@ -93,37 +127,74 @@ export default function App(){
   if(!accepted){setNotice('Please accept the Terms and Privacy Policy.');return;}
   setBusy(true);setNotice('');
   try{
-   const {error}=await supabase.auth.signUp({email:email.trim().toLowerCase(),password,options:{
-    emailRedirectTo:portal+'/auth/callback',
+   const {data,error}=await supabase.auth.signUp({email:email.trim().toLowerCase(),password,options:{
+    emailRedirectTo:nativeAuthEnabled?nativeCallbackUrl:webCallbackUrl,
     data:{full_name:(first.trim()+' '+last.trim()),phone:phone.trim(),username:username.trim().toLowerCase(),age:Number(age),gender,
      ...(pattern.test(referral)?{referral_code:referral}:{})}
    }});
    if(error)throw error;
-   setPassword('');setConfirm('');setPage('verify');
+   setPassword('');setConfirm('');setPage(data.session?'dashboard':'verify');
   }catch(e){setNotice(e instanceof Error?e.message:'Unable to create your account.');}
   finally{setBusy(false);}
  }
  async function forgotPassword(){
   if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){setNotice('Enter your email to request a secure reset link.');return;}
   setBusy(true);try{
-   const {error}=await supabase.auth.resetPasswordForEmail(email,{redirectTo:portal+'/auth/callback?type=recovery'});
+   const {error}=await supabase.auth.resetPasswordForEmail(email,{redirectTo:nativeAuthEnabled?nativeCallbackUrl+'?type=recovery':portal+'/auth/callback?type=recovery'});
    if(error)throw error;setNotice('If this email is registered, a password reset link has been requested.');
   }catch{setNotice('Unable to request a reset link. Please try again.');}finally{setBusy(false);}
  }
  async function resend(){
   setBusy(true);try{
-   const {error}=await supabase.auth.resend({type:'signup',email:email.trim().toLowerCase(),options:{emailRedirectTo:portal+'/auth/callback'}});
+   const {error}=await supabase.auth.resend({type:'signup',email:email.trim().toLowerCase(),options:{emailRedirectTo:nativeAuthEnabled?nativeCallbackUrl:webCallbackUrl}});
    if(error)throw error;setNotice('A new confirmation email has been requested.');
   }catch{setNotice('Unable to resend verification email.');}finally{setBusy(false);}
  }
- async function signOut(){await supabase.auth.signOut({scope:'local'});setSession(null);setPage('signin');setPassword('');setCode('');setSummary(null);}
+ async function signOut(){await supabase.auth.signOut({scope:'local'});recoveryInProgress.current=false;setSession(null);setPage('signin');setPassword('');setCode('');setSummary(null);}
+ async function google(){
+  if(!nativeAuthEnabled){
+   const params=new URLSearchParams();
+   if(page==='signup'){params.set('mode','signup');if(pattern.test(referral))params.set('ref',referral);}
+   navigateWebsite(portal+(params.toString()?'?'+params.toString():''));
+   return;
+  }
+  setBusy(true);setNotice('');
+  try{
+   const authUrl=await signInWithNativeGoogle(page==='signup'?referral:'');
+   if(!authUrl){setNotice('Google sign-in did not return a callback.');return;}
+   if(authUrl.startsWith('landshop:'))await handleGoogleUrl(authUrl);
+   else setNotice(authUrl);
+  }catch(err){setNotice(err instanceof Error?err.message:'Unable to complete Google sign-in.');}
+  finally{setBusy(false)}
+ }
+ async function handleGoogleUrl(url:string){
+  const link=parseInboundUrl(url);
+  if(link.kind!=='auth-code'&&link.kind!=='auth-token')return;
+  const key=link.kind==='auth-code'?'code:'+link.code:'token:'+link.tokenHash;
+  if(processingLinks.current.has(key))return;
+  processingLinks.current.add(key);
+  try{const recovery=await finishNativeAuthentication(link);setPage(recovery?'reset-password':'dashboard');}
+  catch(err){processingLinks.current.delete(key);setNotice(err instanceof Error?err.message:'Google sign-in could not be completed.');}
+ }
+ async function updateRecoveredPassword(){
+  if(newPassword.length<12||newPassword!==newPasswordConfirm){setNotice('Choose at least 12 characters and confirm the new password.');return;}
+  if(!recoveryInProgress.current){setNotice('Open a valid recovery email link to reset your password.');return;}
+  setBusy(true);setNotice('');
+  try{
+   const {error}=await supabase.auth.updateUser({password:newPassword});
+   if(error)throw error;
+   recoveryInProgress.current=false;setNewPassword('');setNewPasswordConfirm('');
+   setPage('dashboard');setNotice('Your Landshop password has been updated.');
+  }catch(err){setNotice(err instanceof Error?err.message:'Password update was unsuccessful.');}
+  finally{setBusy(false)}
+ }
  async function copy(){if(!invite)return;await Clipboard.setStringAsync(invite);setNotice('Referral link copied.');}
  async function share(){if(!invite)return;await Share.share({message:'Join Landshop Nigeria: '+invite,url:invite,title:'Landshop Referral'});}
  const header=<Brand/>;
- const auth=page==='signin'||page==='signup'||page==='verify';
+ const auth=page==='signin'||page==='signup'||page==='verify'||page==='reset-password';
  const authForm=<View style={[styles.formCard,{maxWidth:large?520:480}]}>
   {header}
-  {page!=='verify'&&<View style={styles.tabs}><Pressable accessibilityRole="button" onPress={()=>switchPage('signin')} style={[styles.tab,page==='signin'&&styles.tabActive]}><Text style={[styles.tabText,page==='signin'&&styles.tabTextActive]}>Sign In</Text></Pressable><Pressable accessibilityRole="button" onPress={()=>{switchPage('signup');setStep(1)}} style={[styles.tab,page==='signup'&&styles.tabActive]}><Text style={[styles.tabText,page==='signup'&&styles.tabTextActive]}>Sign Up</Text></Pressable></View>}
+  {page!=='verify'&&page!=='reset-password'&&<View style={styles.tabs}><Pressable accessibilityRole="button" onPress={()=>switchPage('signin')} style={[styles.tab,page==='signin'&&styles.tabActive]}><Text style={[styles.tabText,page==='signin'&&styles.tabTextActive]}>Sign In</Text></Pressable><Pressable accessibilityRole="button" onPress={()=>{switchPage('signup');setStep(1)}} style={[styles.tab,page==='signup'&&styles.tabActive]}><Text style={[styles.tabText,page==='signup'&&styles.tabTextActive]}>Sign Up</Text></Pressable></View>}
   {page==='signin'&&<><Text style={styles.heading}>Welcome <Text style={styles.accent}>Back</Text></Text>
    <Caption>Sign in to your Landshop Nigeria account</Caption>
    <Field title="Email address" value={email} onChange={setEmail} placeholder="you@example.com" keyboardType="email-address"/>
@@ -131,7 +202,7 @@ export default function App(){
    <Pressable onPress={forgotPassword} style={{alignSelf:'flex-end',paddingVertical:5}}><Text style={styles.inlineLink}>Forgot password?</Text></Pressable>
    <Primary label="Sign In →" loading={busy} onPress={signIn}/>
    <Text style={styles.footerPrompt}>Don't have an account? <Text style={styles.inlineLink} onPress={()=>{switchPage('signup');setStep(1)}}>Sign Up</Text></Text>
-   <Pressable style={styles.google} onPress={()=>navigateWebsite(portal)}><Text style={styles.googleText}>Continue with Google on Portal</Text></Pressable>
+   <Pressable style={styles.google} disabled={busy} onPress={google}><Text style={styles.googleText}>{nativeAuthEnabled?'Continue with Google':'Continue with Google on Website'}</Text></Pressable>
   </>}
   {page==='signup'&&<><Text style={styles.stepText}>STEP {step} OF 2</Text><View style={styles.stepBar}><View style={styles.progressActive}/><View style={[styles.progressActive,{backgroundColor:step===2?green:'#e0e8e3'}]}/></View>
    <Text style={styles.heading}>Create Your <Text style={styles.accent}>Account</Text></Text>
@@ -152,22 +223,38 @@ export default function App(){
     <Pressable onPress={()=>{setStep(1);setNotice('')}}><Text style={styles.inlineLink}>← Previous step</Text></Pressable>
     <Primary label="Create Account →" loading={busy} onPress={signUp}/></>}
    <Text style={styles.footerPrompt}>Already have an account? <Text style={styles.inlineLink} onPress={()=>switchPage('signin')}>Sign In</Text></Text>
-   <Pressable style={styles.google} onPress={()=>navigateWebsite(portal+'/?mode=signup')}><Text style={styles.googleText}>Continue with Google on Portal</Text></Pressable>
+   <Pressable style={styles.google} disabled={busy} onPress={google}><Text style={styles.googleText}>{nativeAuthEnabled?'Continue with Google':'Continue with Google on Website'}</Text></Pressable>
   </>}
   {page==='verify'&&<><Text style={styles.verifyIcon}>✉</Text><Text style={styles.heading}>Verify Your <Text style={styles.accent}>Email</Text></Text>
-   <Caption>We sent a confirmation link to {email}. Check your email to activate your account.</Caption>
+   <Caption>We sent a confirmation link to {email}. {nativeAuthEnabled?'Open it to return securely to this app.':'Open it to confirm your account, then sign in here.'}</Caption>
    <Primary label="Open Email App" onPress={()=>navigateWebsite('mailto:')}/>
    <Pressable style={styles.google} onPress={resend} disabled={busy}><Text style={styles.googleText}>Resend Email</Text></Pressable>
    <Pressable style={{marginTop:15,alignSelf:'center'}} onPress={()=>switchPage('signin')}><Text style={styles.inlineLink}>Back to Sign In</Text></Pressable>
+  </>}
+  {page==='reset-password'&&<><Text style={styles.verifyIcon}>✓</Text>
+   <Text style={styles.heading}>Set New <Text style={styles.accent}>Password</Text></Text>
+   <Caption>Create a new password for your verified Landshop account.</Caption>
+   <Field title="New password" value={newPassword} onChange={setNewPassword} placeholder="Minimum 12 characters" secure/>
+   <Field title="Confirm new password" value={newPasswordConfirm} onChange={setNewPasswordConfirm} placeholder="Repeat your new password" secure/>
+   <Primary label="Update Password" loading={busy} onPress={updateRecoveredPassword}/>
   </>}
   {!!notice&&<Text accessibilityRole="alert" style={styles.message}>{notice}</Text>}
  </View>;
  const overview=<><Text style={styles.overline}>LANDSHOP CUSTOMER ACCOUNT</Text>
   <Text style={[styles.heading,{textAlign:'left',fontSize:31,marginBottom:7}]}>Welcome to <Text style={styles.accent}>Landshop</Text></Text>
   <Text style={{fontSize:13,color:muted,marginBottom:20}}>{session?.user.email}</Text>
-  <Pressable onPress={()=>switchPage('kyc')} style={styles.kycBadge}><Text style={{color:green,fontWeight:'700'}}>✓  KYC: {kyc.replaceAll('_',' ')}</Text><Text style={{color:green,fontSize:20}}>›</Text></Pressable>
+  <Pressable onPress={()=>switchPage('kyc')} style={styles.kycBadge}><BrandIcon name="shield" size={20}/><Text style={{color:green,fontWeight:'700',flex:1}}>KYC: {kyc.replaceAll('_',' ')}</Text><BrandIcon name="arrow" size={19}/></Pressable>
   <View style={styles.quickGrid}>
-   {[['Invest in Property',()=>navigateWebsite('https://www.landshopnigeria.com/properties')],['Refer & Grow',()=>switchPage('referrals')],['Build Wealth',()=>navigateWebsite(portal+'/applications/incubate-investment')],['Applications',()=>navigateWebsite(app+'/dashboard/applications')],['Referral Wallet',()=>switchPage('referrals')],['Support',()=>navigateWebsite(portal+'/support')]].map(([title,go])=><Pressable key={String(title)} style={styles.quickCard} onPress={go as ()=>void}><Text style={styles.quickIcon}>⌂</Text><Text style={styles.quickText}>{String(title)}</Text></Pressable>)}
+   {([
+    ['Invest in Property','home',()=>navigateWebsite('https://www.landshopnigeria.com/properties')],
+    ['Refer & Grow','users',()=>switchPage('referrals')],
+    ['Build Wealth','growth',()=>navigateWebsite(portal+'/applications/incubate-investment')],
+    ['Applications','file',()=>navigateWebsite(app+'/dashboard/applications')],
+    ['Referral Wallet','wallet',()=>switchPage('referrals')],
+    ['Support','support',()=>navigateWebsite(portal+'/support')]
+   ] as const).map(([title,icon,go])=><Pressable key={title} style={styles.quickCard} onPress={go}>
+    <BrandIcon name={icon} size={26}/><Text style={styles.quickText}>{title}</Text>
+   </Pressable>)}
   </View>
   <View style={styles.row}><View style={[styles.summaryCard,styles.half]}><Text style={styles.summaryTitle}>Applications</Text><Text style={styles.summaryNumber}>{applications}</Text></View><View style={[styles.summaryCard,styles.half]}><Text style={styles.summaryTitle}>Approved Wallet</Text><Text style={styles.summaryNumber}>{new Intl.NumberFormat('en-NG',{style:'currency',currency:'NGN',maximumFractionDigits:0}).format(wallet/100)}</Text></View></View>
   <Action label="My referral link and QR" onPress={()=>switchPage('referrals')}/>
@@ -204,7 +291,16 @@ export default function App(){
    {page==='dashboard'?overview:page==='referrals'?refScreen:page==='kyc'?kycScreen:profileScreen}
    {!!notice&&<Text style={styles.message}>{notice}</Text>}
   </ScrollView>
-  <View style={styles.dock}>{[['Home','dashboard'],['Properties','properties'],['Refer','referrals'],['KYC','kyc'],['Account','profile']].map(([label,target])=><Pressable key={label} onPress={()=>target==='properties'?navigateWebsite('https://www.landshopnigeria.com/properties'):switchPage(target as Page)} style={styles.dockItem}><Text style={{fontSize:19,color:page===target?green:muted}}>{label==='Home'?'⌂':label==='Refer'?'↗':label==='KYC'?'✓':label==='Account'?'◉':'⌕'}</Text><Text style={{fontSize:10,color:page===target?green:muted,fontWeight:'700'}}>{label}</Text></Pressable>)}</View>
+  <View style={styles.dock}>{([
+   ['Home','dashboard','home'],
+   ['Properties','properties','search'],
+   ['Refer','referrals','users'],
+   ['KYC','kyc','shield'],
+   ['Account','profile','account']
+  ] as const).map(([label,target,icon])=><Pressable key={label} onPress={()=>target==='properties'?navigateWebsite('https://www.landshopnigeria.com/properties'):switchPage(target)} style={styles.dockItem}>
+   <BrandIcon name={icon} size={22} color={page===target?green:muted}/>
+   <Text style={{fontSize:10,color:page===target?green:muted,fontWeight:'700'}}>{label}</Text>
+  </Pressable>)}</View>
  </View>}
  </SafeAreaView>;
 }
