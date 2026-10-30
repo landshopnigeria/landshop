@@ -108,7 +108,7 @@ export default function KycIntake({onClose}:{onClose:()=>void}){
     if(type!=='portrait')throw Error('Camera capture is reserved for the portrait.');
     const permission=await ImagePicker.requestCameraPermissionsAsync();
     if(!permission.granted)throw Error('Camera permission is needed to capture your selfie.');
-    const result=await ImagePicker.launchCameraAsync({mediaTypes:['images'],cameraType:'front',quality:0.85,exif:false});
+    const result=await ImagePicker.launchCameraAsync({mediaTypes:['images'],cameraType:ImagePicker.CameraType.front,quality:0.85,exif:false});
     if(result.canceled||!result.assets?.length)return;
     const asset=result.assets[0];uri=asset.uri;mime=asset.mimeType||'image/jpeg';size=asset.fileSize;
    }else{
