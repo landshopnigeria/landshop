@@ -29,14 +29,16 @@ export default async function Dashboard(){
   cookies:{getAll(){return store.getAll()},setAll(changes){try{changes.forEach(({name,value,options})=>store.set(name,value,options))}catch{}}}});
  const {data:{user},error}=await db.auth.getUser();
  if(error||!user)redirect('https://portal.landshopnigeria.com/');
- const [profileRes,appsRes,codeRes,summaryRes,walletRes,ticketsRes,propertyRes]=await Promise.all([
+ const [profileRes,appsRes,codeRes,summaryRes,walletRes,ticketsRes,propertyRes,referralActivityRes,rewardHistoryRes]=await Promise.all([
   db.from('profiles').select('full_name,kyc_status').eq('id',user.id).maybeSingle(),
   db.from('applications').select('id,kind,status,created_at',{count:'exact'}).eq('applicant_id',user.id).order('created_at',{ascending:false}).limit(4),
   db.from('referral_codes').select('code').eq('user_id',user.id).maybeSingle(),
   db.rpc('landshop_referral_summary'),
   db.from('referral_wallets').select('available_kobo,pending_kobo,lifetime_earned_kobo').eq('user_id',user.id).maybeSingle(),
   db.from('support_tickets').select('id,status',{count:'exact'}).eq('requester_id',user.id).limit(1),
-  db.from('properties').select('id,title,slug,amount_kobo').eq('status','published').order('created_at',{ascending:false}).limit(1)
+  db.from('properties').select('id,title,slug,amount_kobo').eq('status','published').order('created_at',{ascending:false}).limit(1),
+  db.rpc('landshop_referral_activity',{p_limit:15}),
+  db.from('referral_reward_events').select('id,created_at,description,status,direction,amount_kobo').eq('user_id',user.id).order('created_at',{ascending:false}).limit(12)
  ]);
  const profile=profileRes.data;
  const firstname=(profile?.full_name||user.user_metadata?.full_name||user.email?.split('@')[0]||'Member').split(' ')[0];
@@ -63,7 +65,7 @@ export default async function Dashboard(){
      {[
       ['Invest in Property','https://www.landshopnigeria.com/properties','home'],
       ['Refer & Grow','#referrals','users'],
-      ['Build Wealth','https://portal.landshopnigeria.com/applications/incubate','chart'],
+      ['Build Wealth','https://portal.landshopnigeria.com/applications/incubate-investment','chart'],
       ['My Applications','/dashboard/applications','file'],
       ['Referral Wallet','#referrals','wallet'],
       ['Support','https://portal.landshopnigeria.com/support','support']
@@ -75,7 +77,7 @@ export default async function Dashboard(){
      <div className="cd-summary-card"><span>Referral Wallet</span><strong>{walletRes.error?'—':formatNaira(wallet?.available_kobo||0)}</strong><small>{wallet?.pending_kobo?formatNaira(wallet.pending_kobo)+' pending':'No approved referral payouts yet'}</small></div>
      <Link href="https://portal.landshopnigeria.com/support" className="cd-summary-card"><span>Support Cases</span><strong>{ticketsRes.error?'—':ticketsRes.count||0}</strong><small>Follow up on enquiries</small></Link>
     </section>
-    <ReferralToolkit code={code} summary={summary}/>
+    <ReferralToolkit code={code} summary={summary} activity={referralActivityRes.data||[]} rewards={rewardHistoryRes.data||[]}/>
     <div className="cd-bottom-grid">
      <section className="cd-panel"><div className="cd-section-head"><h2>My Applications</h2><Link href="/dashboard/applications">View all →</Link></div>
       {applications.length?<div className="cd-activity-list">{applications.map(a=><div key={a.id}><strong>{a.kind.replaceAll('_',' ')}</strong><span>{a.status.replaceAll('_',' ')} · {new Date(a.created_at).toLocaleDateString('en-NG')}</span></div>)}</div>:<div className="cd-empty"><p>No applications yet. Start exploring Landshop opportunities.</p><a href="https://portal.landshopnigeria.com/applications">Start an application →</a></div>}

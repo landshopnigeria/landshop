@@ -2,7 +2,9 @@
 import {useState} from 'react';
 
 type ReferralSummary={total_referrals:number;email_verified:number;kyc_verified:number;approved_applications:number};
-export default function ReferralToolkit({code,summary}:{code:string|null;summary:ReferralSummary|null}){
+type ReferralActivity={joined_at:string;milestone:string;email_verified:boolean;kyc_approved:boolean;application_approved:boolean};
+type RewardEvent={id:string;created_at:string;description:string|null;status:string;direction:string;amount_kobo:number};
+export default function ReferralToolkit({code,summary,activity=[],rewards=[]}:{code:string|null;summary:ReferralSummary|null;activity?:ReferralActivity[];rewards?:RewardEvent[]}){
  const [feedback,setFeedback]=useState('');
  const invitation=code?'https://portal.landshopnigeria.com/?mode=signup&ref='+encodeURIComponent(code):'';
  const qrUrl=invitation?'/api/referral-qr':'';
@@ -52,6 +54,24 @@ export default function ReferralToolkit({code,summary}:{code:string|null;summary
    <div><strong>{counts.email_verified}</strong><span>Email verified</span></div>
    <div><strong>{counts.kyc_verified}</strong><span>KYC approved</span></div>
    <div><strong>{counts.approved_applications}</strong><span>Approved applications</span></div>
+  </div>
+  <div className="cd-ref-tracking">
+    <section aria-labelledby="cd-ref-activity-title">
+     <h3 id="cd-ref-activity-title">Recent Referral Activity</h3>
+     {activity.length?<ol className="cd-ref-activity-list">{activity.map((item,index)=><li key={item.joined_at+'-'+index}>
+      <span className="cd-ref-milestone"><span className="cd-ref-check" aria-hidden="true">✓</span><strong>{item.milestone}</strong></span>
+      <time dateTime={item.joined_at}>{new Date(item.joined_at).toLocaleDateString('en-NG',{day:'numeric',month:'short',year:'numeric'})}</time>
+     </li>)}</ol>:<p className="cd-ref-empty">No referrals yet. Share your personal link or QR code to invite new customers.</p>}
+     <p className="cd-ref-fine">Milestones only. Names, emails and identity documents of referred people remain private.</p>
+    </section>
+    <section aria-labelledby="cd-ref-rewards-title">
+     <h3 id="cd-ref-rewards-title">Referral Reward History</h3>
+     {rewards.length?<ol className="cd-ref-activity-list">{rewards.map(item=><li key={item.id}>
+      <span><strong>{item.description||'Referral reward'}</strong><small className="cd-reward-status">{item.status} · {item.direction}</small></span>
+      <strong className="cd-reward-amount">{new Intl.NumberFormat('en-NG',{style:'currency',currency:'NGN',maximumFractionDigits:0}).format(item.amount_kobo/100)}</strong>
+     </li>)}</ol>:<p className="cd-ref-empty">No reward transactions recorded yet.</p>}
+     <p className="cd-ref-fine">Reward amounts appear here only when recorded by Landshop's authorized finance process.</p>
+    </section>
   </div>
   <p className="cd-ref-fine">Referral rewards require Landshop’s verified eligibility rules and approved financial transactions. Sharing or sign-up alone does not create an earnings balance.</p>
  </section>;
