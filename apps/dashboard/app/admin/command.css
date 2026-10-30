@@ -5,3 +5,8 @@
 @media(max-width:1150px){.command-stats{grid-template-columns:repeat(3,minmax(0,1fr))}.command-quote{display:none}}
 @media(max-width:900px){.command-shell{grid-template-columns:1fr}.command-stats{grid-template-columns:repeat(3,minmax(0,1fr))}.command-side{height:auto}.command-brand{display:none}}
 @media(max-width:650px){.command-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.command-panels{grid-template-columns:1fr}.command-content{padding:11px}.command-banner{padding:20px}.command-providers{grid-template-columns:1fr 1fr 1fr}.command-top{padding:10px}}
+
+/* Return from the Global Command Center to the owner's personal dashboard. */
+.command-side .command-staff-back{display:inline-flex;align-items:center;margin-top:12px;padding:10px 12px;border-radius:10px;background:#f47c16;color:#fff;text-decoration:none;font-size:12px;font-weight:800;line-height:1.35}
+.command-side .command-staff-back:hover{background:#ff9b35;color:#173b2b}
+.command-side .command-staff-back:focus-visible,.command-top a:focus-visible{outline:3px solid #f7ac58;outline-offset:3px}
