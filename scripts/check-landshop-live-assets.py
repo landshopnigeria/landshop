@@ -82,6 +82,7 @@ def check(host,path,marker,css_class):
     if not parser.css or not parser.js:
         raise AssertionError(f"{host}{path} lacks Next.js stylesheet or JavaScript references")
     found=False
+    footer_css_found=False
     css_ok=0
     for relative in parser.css[:10]:
         asset=urljoin(f"https://{host}",relative)
@@ -89,10 +90,23 @@ def check(host,path,marker,css_class):
         if status!=200 or "css" not in get_header(ch,"Content-Type").lower():
             raise AssertionError(f"CSS resource not available: {asset}")
         css_ok+=1
-        if css_class in content.decode("utf-8","replace"):
+        css_text=content.decode("utf-8","replace")
+        if css_class in css_text:
             found=True
+        if ".ls24-glass-area" in css_text and "landshop-footer-cris6882.svg" in css_text:
+            footer_css_found=True
     if not found:
         raise AssertionError(f"New CSS selector {css_class} absent from live stylesheets on {host}{path}")
+    if not footer_css_found:
+        raise AssertionError("V24 global glass-footer CSS or approved photo background absent from compiled styles")
+    if 'class="ls24-global-footer"' not in html or 'class="ls24-newsletter-section"' not in html:
+        raise AssertionError("approved global newsletter/footer not rendered with the page")
+    if path=="/":
+        photo_status,photo_headers,photo_bytes,_=request(f"https://{host}/media/landshop-footer-cris6882.svg")
+        photo_type=get_header(photo_headers,"Content-Type").lower()
+        if photo_status!=200 or "svg" not in photo_type or len(photo_bytes)<6000 or b"data:image/webp;base64," not in photo_bytes:
+            raise AssertionError("user-approved photo background missing from website assets")
+
     for relative in parser.js[:2]:
         asset=urljoin(f"https://{host}",relative)
         js_status,jh,_,_=request(asset)
