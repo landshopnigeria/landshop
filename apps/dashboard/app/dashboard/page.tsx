@@ -1,58 +1,92 @@
-
 import {redirect} from 'next/navigation';
 import {createServerClient} from '@supabase/ssr';
 import {cookies} from 'next/headers';
 import Link from 'next/link';
+import ReferralToolkit from './ReferralToolkit';
 import './customer.css';
+
 export const dynamic='force-dynamic';
 export const metadata={title:'My Landshop | Customer Dashboard'};
-const nav=[
- ['Overview','/dashboard','⌂'],['My Applications','/dashboard/applications','▣'],['KYC & Documents','/dashboard/kyc','◈'],
- ['Properties','https://www.landshopnigeria.com/properties','▦'],['Mortgage Calculator','https://portal.landshopnigeria.com/calculator','▤'],
- ['Product Forms','https://portal.landshopnigeria.com/applications','♧'],['Profile & Security','/dashboard/account','◉'],['Customer Support','https://portal.landshopnigeria.com/support','☏']
-];
+function Icon({name}:{name:string}){
+ const common={width:23,height:23,viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:1.8,strokeLinecap:'round' as const,strokeLinejoin:'round' as const,'aria-hidden':true as const};
+ switch(name){
+ case 'home':return <svg {...common}><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1Z"/></svg>;
+ case 'users':return <svg {...common}><circle cx="9" cy="8" r="3"/><path d="M3 20v-2a6 6 0 0 1 12 0v2M17 6a3 3 0 0 1 0 6m1 3a5 5 0 0 1 3 5"/></svg>;
+ case 'chart':return <svg {...common}><path d="M4 20V9m6 11V4m6 16v-8m4 8V7"/></svg>;
+ case 'file':return <svg {...common}><path d="M7 3h8l4 4v14H5V3h2Zm7 0v5h5M8 13h8m-8 4h8"/></svg>;
+ case 'wallet':return <svg {...common}><rect x="3" y="6" width="18" height="15" rx="2"/><path d="M3 9V5a2 2 0 0 1 2-2h13m-1 10h4m-5 0h1"/></svg>;
+ case 'support':return <svg {...common}><path d="M4 14v-3a8 8 0 0 1 16 0v3M4 14H2v5h4v-6H4Zm16 0h2v5h-4v-6h2ZM19 20a5 5 0 0 1-5 2h-2"/></svg>;
+ case 'check':return <svg {...common}><path d="M12 22s9-4 9-11V5l-9-3-9 3v6c0 7 9 11 9 11Z"/><path d="m8 12 3 3 5-6"/></svg>;
+ default:return <svg {...common}><circle cx="11" cy="11" r="7"/><path d="m16 16 5 5"/></svg>
+ }
+}
+const links=[['Overview','/dashboard','home'],['Applications','/dashboard/applications','file'],['KYC','/dashboard/kyc','check'],['Properties','https://www.landshopnigeria.com/properties','search'],['Wallet','#referrals','wallet'],['Profile','/dashboard/account','users']];
 export default async function Dashboard(){
  const url=process.env.NEXT_PUBLIC_SUPABASE_URL,key=process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
- if(!url||!key)return <main><h1>Landshop</h1><p>Dashboard configuration is incomplete.</p></main>;
+ if(!url||!key)return <main><h1>Landshop</h1><p>Customer account configuration is incomplete.</p></main>;
  const store=await cookies();
- const db=createServerClient(url,key,{cookieOptions:{domain:'.landshopnigeria.com',path:'/',sameSite:'lax',secure:true},cookies:{getAll(){return store.getAll()},setAll(changes){try{changes.forEach(({name,value,options})=>store.set(name,value,options))}catch{}}}});
+ const db=createServerClient(url,key,{cookieOptions:{domain:'.landshopnigeria.com',path:'/',sameSite:'lax',secure:true},
+  cookies:{getAll(){return store.getAll()},setAll(changes){try{changes.forEach(({name,value,options})=>store.set(name,value,options))}catch{}}}});
  const {data:{user},error}=await db.auth.getUser();
  if(error||!user)redirect('https://portal.landshopnigeria.com/');
- const [profileResult,appsResult,refResult,ticketResult]=await Promise.all([
-  db.from('profiles').select('kyc_status,full_name').eq('id',user.id).maybeSingle(),
-  db.from('applications').select('id,kind,status,created_at',{count:'exact'}).eq('applicant_id',user.id).order('created_at',{ascending:false}).limit(5),
+ const [profileRes,appsRes,codeRes,summaryRes,walletRes,ticketsRes,propertyRes]=await Promise.all([
+  db.from('profiles').select('full_name,kyc_status').eq('id',user.id).maybeSingle(),
+  db.from('applications').select('id,kind,status,created_at',{count:'exact'}).eq('applicant_id',user.id).order('created_at',{ascending:false}).limit(4),
   db.from('referral_codes').select('code').eq('user_id',user.id).maybeSingle(),
-  db.from('support_tickets').select('id,subject,status,created_at',{count:'exact'}).eq('requester_id',user.id).order('created_at',{ascending:false}).limit(4)
+  db.rpc('landshop_referral_summary'),
+  db.from('referral_wallets').select('available_kobo,pending_kobo,lifetime_earned_kobo').eq('user_id',user.id).maybeSingle(),
+  db.from('support_tickets').select('id,status',{count:'exact'}).eq('requester_id',user.id).limit(1),
+  db.from('properties').select('id,title,slug,amount_kobo').eq('status','published').order('created_at',{ascending:false}).limit(1)
  ]);
- const profile=profileResult.data,applications=appsResult.data||[],tickets=ticketResult.data||[];
- const kyc=profile?.kyc_status||'not started',approved=kyc==='approved',name=profile?.full_name?.trim().split(' ')[0]||user.email?.split('@')[0]||'Landshop member';
- const code=refResult.data?.code||null;
- return <div className="dc-shell">
-  <aside className="dc-side"><div className="dc-side-brand"><Link href="/dashboard"><img src="/media/logo.webp" alt="Landshop" width={124} height={52}/></Link></div><nav aria-label="Customer dashboard">{nav.map(([label,url,icon])=><Link key={url} href={url} className={url==='/dashboard'?'active':''}><span aria-hidden="true">{icon}</span>{label}</Link>)}</nav><div className="dc-side-note"><strong>Own. Grow. Earn.</strong><p>Property opportunities with Landshop.</p><a href="https://www.landshopnigeria.com/properties">Explore Properties ↗</a></div></aside>
-  <div className="dc-main"><header className="dc-top"><div className="dc-top-search">⌕ &nbsp; Search approved properties, applications and resources</div><div><Link href="https://www.landshopnigeria.com/properties">Browse Properties ↗</Link><span style={{margin:'0 12px',color:'#c2d9cf'}}>│</span><strong>{name}</strong></div></header>
-   <main className="dc-page">
-    <section className="dc-hero"><div><small>WELCOME TO LANDSHOP</small><h1>Welcome back,<br/>{name} 👋</h1><p>Your property journey continues here. View applications, complete identity verification and explore documented opportunities.</p><div className="dc-actions"><a className="dc-cta" href="https://www.landshopnigeria.com/properties">Browse Properties ↗</a><a className="dc-cta secondary" href="https://portal.landshopnigeria.com/applications">New Application ↗</a></div></div></section>
-    <section className="dc-kpis" aria-label="Your account overview">
-     <div className="dc-tile"><span className="dc-tile-icon">▣</span><small>My Applications</small><strong>{appsResult.error?'—':appsResult.count||0}</strong><p>Submitted or saved application records</p></div>
-     <div className="dc-tile"><span className="dc-tile-icon">◈</span><small>Identity Verification</small><strong style={{fontSize:22,textTransform:'capitalize'}}>{kyc.replaceAll('_',' ')}</strong><p>Actual KYC status</p></div>
-     <div className="dc-tile"><span className="dc-tile-icon">♧</span><small>Referral Code</small><strong style={{fontSize:20}}>{code||'Not issued'}</strong><p>Referral earnings require approved transaction records</p></div>
-     <div className="dc-tile"><span className="dc-tile-icon">☏</span><small>Support Tickets</small><strong>{ticketResult.error?'—':ticketResult.count||0}</strong><p>Cases submitted under your account</p></div>
+ const profile=profileRes.data;
+ const firstname=(profile?.full_name||user.user_metadata?.full_name||user.email?.split('@')[0]||'Member').split(' ')[0];
+ const kyc=profile?.kyc_status||'not_started',approved=kyc==='approved',applications=appsRes.data||[];
+ const code=codeRes.data?.code||null,summary=Array.isArray(summaryRes.data)?summaryRes.data[0]||null:null;
+ const wallet=walletRes.data,property=propertyRes.data?.[0]||null;
+ const hour=Number(new Intl.DateTimeFormat('en-GB',{timeZone:'Africa/Lagos',hour:'2-digit',hour12:false}).format(new Date()));
+ const greeting=hour<12?'Good morning':hour<17?'Good afternoon':'Good evening';
+ const formatNaira=(kobo:number)=>new Intl.NumberFormat('en-NG',{style:'currency',currency:'NGN',maximumFractionDigits:0}).format(kobo/100);
+ return <div className="dc-shell cd-v25">
+  <aside className="dc-side cd-sidebar">
+   <a className="dc-side-brand" href="https://www.landshopnigeria.com" aria-label="Landshop homepage"><img src="/media/logo.webp" alt="Landshop" width={128} height={60}/></a>
+   <nav aria-label="Customer dashboard">{links.map(([label,to,icon])=><Link key={label} href={to} className={label==='Overview'?'active':''}><Icon name={icon}/><span>{label}</span></Link>)}</nav>
+   <div className="cd-side-help"><strong>Landshop Support</strong><p>Questions about your property journey?</p><a href="https://portal.landshopnigeria.com/support">Contact our team →</a></div>
+  </aside>
+  <div className="dc-main">
+   <header className="cd-topbar"><a href="https://www.landshopnigeria.com" className="cd-mobile-logo" aria-label="Landshop homepage"><img src="/media/logo.webp" alt="Landshop" width={98} height={43}/></a><span>My Landshop</span><div><Link href="/dashboard/account" aria-label="Account and profile" className="cd-avatar">{firstname.slice(0,1).toUpperCase()}</Link></div></header>
+   <main className="cd-main">
+    <section className="cd-welcome">
+     <div className="cd-hello"><small>LANDSHOP CUSTOMER DASHBOARD</small><h1>{greeting},<br/><em>{firstname}</em></h1><p>Build your real estate future with Landshop.</p></div>
+     <Link href="/dashboard/kyc" className={'cd-verified '+(approved?'approved':'pending')}><Icon name="check"/><span>{approved?'KYC Verified':'Complete KYC'}</span><span aria-hidden="true">›</span></Link>
     </section>
-    <div className="dc-grid">
-     <section className="dc-panel"><div className="dc-head"><h2>My Properties & Applications</h2><Link href="/dashboard/applications">View all →</Link></div>{applications.length?<div className="dc-list">{applications.map(a=><div className="dc-list-item" key={a.id}><div><strong>{a.kind.replaceAll('_',' ')}</strong><small>Ref: {a.id.slice(0,8).toUpperCase()} · {new Date(a.created_at).toLocaleDateString('en-NG')}</small></div><span className={'dc-status '+(a.status==='approved'?'':'pending')}>{a.status}</span></div>)}</div>:<div className="dc-empty">No customer property applications are recorded yet. Ownership and investment balances will only appear after documented transactions are connected to your account.<p><a className="dc-cta" href="https://portal.landshopnigeria.com/applications">Start an application ↗</a></p></div>}</section>
-     <section className="dc-panel"><h2>Wallet & Account</h2><div className="dc-security"><strong>Wallet services are not active</strong><p>Landshop has not enabled a verified payment wallet or settlement provider. No balance, deposit or withdrawal is displayed.</p></div><h2 style={{marginTop:22}}>KYC & Identity</h2><span className={'dc-status '+(approved?'':'pending')}>{approved?'Verified':'Not yet approved'}</span><p>{approved?'Your account is marked approved by the Landshop review process.':'Complete the documented identity review to unlock protected features.'}</p><Link href="/dashboard/kyc" className="dc-cta">View KYC Details ↗</Link></section>
+    <section className="cd-actions" aria-label="Quick customer actions">
+     {[
+      ['Invest in Property','https://www.landshopnigeria.com/properties','home'],
+      ['Refer & Grow','#referrals','users'],
+      ['Build Wealth','https://portal.landshopnigeria.com/applications/incubate','chart'],
+      ['My Applications','/dashboard/applications','file'],
+      ['Referral Wallet','#referrals','wallet'],
+      ['Support','https://portal.landshopnigeria.com/support','support']
+     ].map(([label,to,icon])=><Link href={to} key={label} className="cd-action"><span className="cd-action-icon"><Icon name={icon}/></span><strong>{label}</strong><span className="cd-action-chevron" aria-hidden="true">›</span></Link>)}
+    </section>
+    <section className="cd-summary" aria-label="Customer account snapshot">
+     <Link href="/dashboard/applications" className="cd-summary-card"><span>My Applications</span><strong>{appsRes.error?'—':appsRes.count||0}</strong><small>Track current submissions</small></Link>
+     <Link href="/dashboard/kyc" className="cd-summary-card"><span>Identity Status</span><strong className="cd-status-label">{kyc.replaceAll('_',' ')}</strong><small>Review your verification</small></Link>
+     <div className="cd-summary-card"><span>Referral Wallet</span><strong>{walletRes.error?'—':formatNaira(wallet?.available_kobo||0)}</strong><small>{wallet?.pending_kobo?formatNaira(wallet.pending_kobo)+' pending':'No approved referral payouts yet'}</small></div>
+     <Link href="https://portal.landshopnigeria.com/support" className="cd-summary-card"><span>Support Cases</span><strong>{ticketsRes.error?'—':ticketsRes.count||0}</strong><small>Follow up on enquiries</small></Link>
+    </section>
+    <ReferralToolkit code={code} summary={summary}/>
+    <div className="cd-bottom-grid">
+     <section className="cd-panel"><div className="cd-section-head"><h2>My Applications</h2><Link href="/dashboard/applications">View all →</Link></div>
+      {applications.length?<div className="cd-activity-list">{applications.map(a=><div key={a.id}><strong>{a.kind.replaceAll('_',' ')}</strong><span>{a.status.replaceAll('_',' ')} · {new Date(a.created_at).toLocaleDateString('en-NG')}</span></div>)}</div>:<div className="cd-empty"><p>No applications yet. Start exploring Landshop opportunities.</p><a href="https://portal.landshopnigeria.com/applications">Start an application →</a></div>}
+     </section>
+     <section className="cd-panel cd-feature"><div className="cd-section-head"><h2>Featured Property</h2><a href="https://www.landshopnigeria.com/properties">View all →</a></div>
+      {property?<a href={'https://www.landshopnigeria.com/properties/'+encodeURIComponent(property.slug||property.id)} className="cd-feature-property"><img src="/media/brand-develop-house.webp" alt="Landshop property illustration" loading="lazy"/><strong>{property.title}</strong>{typeof property.amount_kobo==='number'&&<span>{formatNaira(property.amount_kobo)}</span>}</a>:<div className="cd-empty"><p>Explore Landshop’s published real estate opportunities and ask for the latest verified documentation.</p><a href="https://www.landshopnigeria.com/properties">Browse properties →</a></div>}
+     </section>
     </div>
-    <div className="dc-grid">
-     <section className="dc-panel"><div className="dc-head"><h2>Investment Performance</h2><Link href="https://www.landshopnigeria.com/incubate">Explore Incubate →</Link></div><div className="dc-empty">No verified investment ledger is connected. Investment values, returns and performance charts are displayed only when approved financial records are available.</div><div className="dc-stat-strip" style={{marginTop:15}}><span>Property-linked investment enquiries</span><span>No fictional returns</span></div></section>
-     <section className="dc-panel"><h2>Referral Programme</h2><p>Your referral identity is protected. Any rewards must be calculated from approved eligible business records.</p><div className="dc-security"><strong>{code||'No referral code assigned yet'}</strong><p>{code?'You may share your issued referral code with interested applicants.':'A referral code appears after it has been issued to your verified account.'}</p></div></section>
-    </div>
-    <div className="dc-grid">
-     <section className="dc-panel"><div className="dc-head"><h2>Documents & Mortgage</h2><Link href="/dashboard/kyc">Manage documents →</Link></div><p>Identity documents remain in private access-controlled storage. Current verification is <strong>{kyc.replaceAll('_',' ')}</strong>.</p><div className="dc-support"><a href="https://portal.landshopnigeria.com/calculator">Calculate mortgage →</a><a href="https://portal.landshopnigeria.com/applications/beta-mortgage">Beta Mortgage →</a><a href="https://portal.landshopnigeria.com/applications/mortgage-xtra">Mortgage Xtra →</a></div></section>
-     <section className="dc-panel"><div className="dc-head"><h2>Recent Support & Notifications</h2><a href="https://portal.landshopnigeria.com/support">View tickets →</a></div>{tickets.length?<div className="dc-list">{tickets.map(t=><div key={t.id} className="dc-list-item"><strong>{t.subject}</strong><span className="dc-status">{t.status}</span></div>)}</div>:<p>No support cases have been opened in this account. Notification delivery requires configured providers.</p>}</section>
-    </div>
-    <section className="dc-bottom"><div><small>MORE OPPORTUNITIES AWAIT</small><h2>Discover exceptional property opportunities across Nigeria.</h2><p>Choose a verified property, request current documentation and start a guided application.</p></div><a className="dc-cta secondary" href="https://www.landshopnigeria.com/properties">Browse Published Properties ↗</a></section>
-    <footer className="dc-foot"><span>© {new Date().getFullYear()} Landshop. All rights reserved.</span><a href="https://www.landshopnigeria.com/contact">Contact support</a></footer>
+    <footer className="cd-footer"><span>© {new Date().getFullYear()} Landshop Nigeria</span><a href="https://www.landshopnigeria.com/contact">Contact</a></footer>
    </main>
+   <nav className="cd-mobile-dock" aria-label="Mobile customer navigation">{links.filter(x=>['Overview','Properties','Applications','Wallet','Profile'].includes(x[0])).map(([label,to,icon])=><Link href={to} key={label} className={label==='Overview'?'current':''}><Icon name={icon}/><small>{label==='Overview'?'Home':label}</small></Link>)}</nav>
   </div>
  </div>;
 }

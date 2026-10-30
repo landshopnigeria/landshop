@@ -35,6 +35,13 @@ export async function GET(request:NextRequest) {
  else{
   // Metadata controls UX routing only, never permissions.
   const {data:{user}}=await supabase.auth.getUser();
+  // A Google OAuth invite can arrive via the callback URL. Attribution is
+  // one-time, server-validated and never grants rewards or privileges.
+  const invite=(request.nextUrl.searchParams.get('ref')||'').trim().toUpperCase();
+  if(user?.email_confirmed_at && /^LANDSHOP[0-9]{2,12}$/.test(invite) &&
+      user.user_metadata?.staff_signup!==true) {
+    await supabase.rpc('landshop_claim_signup_referral',{p_code:invite});
+  }
   if(staffFlow||user?.user_metadata?.staff_signup===true)
     response.headers.set('Location','https://app.landshopnigeria.com/staff');
  }
