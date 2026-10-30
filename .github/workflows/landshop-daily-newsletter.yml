@@ -41,12 +41,12 @@ jobs:
       - name: Check today's campaign and deliver only when authorized
         env:
           GITHUB_REF: ${{ github.ref }}
-          LANDSHOP_NEWSLETTER_LIVE_ENABLED: ${{ vars.LANDSHOP_NEWSLETTER_LIVE_ENABLED || 'false' }}
+          LANDSHOP_NEWSLETTER_LIVE_ENABLED: ${{ github.event_name == 'pull_request' && 'false' || vars.LANDSHOP_NEWSLETTER_LIVE_ENABLED || 'false' }}
           LANDSHOP_SUPABASE_URL: ${{ vars.LANDSHOP_SUPABASE_URL || 'https://iwkfagzkogzidrbbezds.supabase.co' }}
-          LANDSHOP_SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.LANDSHOP_SUPABASE_SERVICE_ROLE_KEY }}
-          LANDSHOP_POSTMARK_BROADCAST_TOKEN: ${{ secrets.LANDSHOP_POSTMARK_BROADCAST_TOKEN }}
+          LANDSHOP_SUPABASE_SERVICE_ROLE_KEY: ${{ github.event_name == 'pull_request' && '' || secrets.LANDSHOP_SUPABASE_SERVICE_ROLE_KEY }}
+          LANDSHOP_POSTMARK_BROADCAST_TOKEN: ${{ github.event_name == 'pull_request' && '' || secrets.LANDSHOP_POSTMARK_BROADCAST_TOKEN }}
           LANDSHOP_POSTMARK_BROADCAST_STREAM: ${{ vars.LANDSHOP_POSTMARK_BROADCAST_STREAM || 'broadcast' }}
-          LANDSHOP_NEWSLETTER_FROM: ${{ vars.LANDSHOP_NEWSLETTER_FROM }}
+          LANDSHOP_NEWSLETTER_FROM: ${{ github.event_name == 'pull_request' && '' || vars.LANDSHOP_NEWSLETTER_FROM }}
           LANDSHOP_NEWSLETTER_MAX_RECIPIENTS: ${{ vars.LANDSHOP_NEWSLETTER_MAX_RECIPIENTS || '2000' }}
           REQUESTED_MODE: ${{ github.event_name == 'pull_request' && 'preview' || inputs.mode || 'send' }}
         run: |
