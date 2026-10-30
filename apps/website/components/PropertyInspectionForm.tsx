@@ -1,5 +1,5 @@
 'use client';
-import BrandedSelect from 'BrandedSelect';
+import BrandedSelect from './BrandedSelect';
 
 import {useState,type FormEvent} from 'react';
 import SiteIcon from './SiteIcon';
