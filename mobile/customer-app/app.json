@@ -1,0 +1,24 @@
+{
+  "expo": {
+    "name": "Landshop Nigeria",
+    "slug": "landshop-customer",
+    "scheme": "landshop",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.landshopnigeria.customer"
+    },
+    "android": {
+      "package": "com.landshopnigeria.customer",
+      "edgeToEdgeEnabled": true
+    },
+    "plugins": [
+      "expo-secure-store"
+    ],
+    "extra": {
+      "environment": "production"
+    }
+  }
+}
