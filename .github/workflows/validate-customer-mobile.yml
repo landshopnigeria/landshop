@@ -30,6 +30,8 @@ jobs:
         run: npm install --no-audit --no-fund
       - name: Verify TypeScript types
         run: npm run typecheck
+      - name: Test strict customer invitation and authentication deep links
+        run: npm run test:links
       - name: Confirm no native secret keys in source
         run: |
           if grep -rE 'service_role|sb_secret_' src App.tsx; then
