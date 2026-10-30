@@ -1,4 +1,6 @@
 'use client';
+import BrandedSelect from '../../../../components/BrandedSelect';
+
 import { useState } from 'react';
 import { createBrowserClient } from '@supabase/ssr';
 
@@ -56,7 +58,7 @@ export default function ApplicationWizard(){
    </div>
    {step===0&&<section style={{display:'grid',gap:14}}>
     <label>What would you like to apply for?
-    <select style={fieldStyle} value={String(data.product)} onChange={e=>set('product',e.target.value)}>
+    <BrandedSelect style={fieldStyle} value={String(data.product)} onChange={e=>set('product',e.target.value)}>
      <option value="develop_land">Develop — Land</option>
      <option value="develop_house">Develop — House</option>
      <option value="beta_mortgage">Grow — Beta Mortgage</option>
@@ -64,7 +66,7 @@ export default function ApplicationWizard(){
      <option value="incubate">Incubate — Investment</option>
      <option value="thrift">Thrift — Cooperative</option>
      <option value="inspection">Property inspection</option>
-    </select></label>
+    </BrandedSelect></label>
     <p>Applications are subject to product availability, current lender terms, eligibility and KYC approval.</p>
    </section>}
    {step===1&&<section style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(230px,1fr))',gap:15}}>

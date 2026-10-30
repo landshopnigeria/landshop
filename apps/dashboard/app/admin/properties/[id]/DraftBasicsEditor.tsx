@@ -1,4 +1,6 @@
 'use client';
+import BrandedSelect from '../../../../components/BrandedSelect';
+
 import {useState,type FormEvent} from 'react';
 import {createBrowserClient} from '@supabase/ssr';
 type Estate={id:string;name:string;state:string|null;city:string|null;status:string};
@@ -44,9 +46,9 @@ export default function DraftBasicsEditor({property,estates,canApprove}:{propert
   <form onSubmit={save} style={{display:'grid',gap:14}}>
    <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(200px,1fr))',gap:13}}>
    <label>Property title<input style={style} minLength={5} maxLength={180} required value={f.title} onChange={e=>change('title',e.target.value)}/></label>
-   <label>Property type<select style={style} value={f.type} onChange={e=>change('type',e.target.value)}>{['land','house','apartment','commercial','shortlet'].map(t=><option key={t}>{t}</option>)}</select></label>
-   <label>Estate and state<select style={style} required value={f.estate} onChange={e=>change('estate',e.target.value)}><option value="">Choose estate</option>{estates.map(x=><option key={x.id} value={x.id}>{x.name} — {x.state} ({x.status})</option>)}</select></label>
-   <label>Sale purpose<select style={style} value={f.mode} onChange={e=>change('mode',e.target.value)}>{['Buy','Rent','Shortlet'].map(t=><option key={t}>{t}</option>)}</select></label>
+   <label>Property type<BrandedSelect style={style} value={f.type} onChange={e=>change('type',e.target.value)}>{['land','house','apartment','commercial','shortlet'].map(t=><option key={t}>{t}</option>)}</BrandedSelect></label>
+   <label>Estate and state<BrandedSelect style={style} required value={f.estate} onChange={e=>change('estate',e.target.value)}><option value="">Choose estate</option>{estates.map(x=><option key={x.id} value={x.id}>{x.name} — {x.state} ({x.status})</option>)}</BrandedSelect></label>
+   <label>Sale purpose<BrandedSelect style={style} value={f.mode} onChange={e=>change('mode',e.target.value)}>{['Buy','Rent','Shortlet'].map(t=><option key={t}>{t}</option>)}</BrandedSelect></label>
    <label>Current asking price (₦)<input style={style} required min={1} type="number" step="1" value={f.price} onChange={e=>change('price',e.target.value)}/></label>
    <label style={{display:'flex',alignItems:'center',gap:10,fontSize:13,fontWeight:750}}><input type="checkbox" checked={isStarting} onChange={e=>setIsStarting(e.target.checked)} style={{accentColor:'#2ba47a',width:20,height:20}}/> This is a “From” starting price</label>
    <label>Bedrooms<input style={style} min={0} max={100} type="number" value={f.bedrooms} onChange={e=>change('bedrooms',e.target.value)}/></label>

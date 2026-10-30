@@ -1,4 +1,6 @@
 'use client';
+import BrandedSelect from '../../../../components/BrandedSelect';
+
 import {useState} from 'react';
 
 export default function DecisionForm({submissionId,status}:{submissionId:string;status:string}){
@@ -25,9 +27,9 @@ export default function DecisionForm({submissionId,status}:{submissionId:string;
   <h2>Record a KYC decision</h2>
   <p>Review all documents and verify the applicant's identity manually. This action updates customer status and writes an audit record.</p>
   <label>Decision
-   <select disabled={!allowed||busy} value={decision} onChange={e=>{setDecision(e.target.value as 'approved'|'rejected');setAttested(false)}} style={{display:'block',padding:12,width:'100%'}}>
+   <BrandedSelect disabled={!allowed||busy} value={decision} onChange={e=>{setDecision(e.target.value as 'approved'|'rejected');setAttested(false)}} style={{display:'block',padding:12,width:'100%'}}>
     <option value="rejected">Reject application</option><option value="approved">Approve identity verification</option>
-   </select>
+   </BrandedSelect>
   </label>
   <label>Decision reason and verification notes
    <textarea value={reason} onChange={e=>setReason(e.target.value)} disabled={!allowed||busy}

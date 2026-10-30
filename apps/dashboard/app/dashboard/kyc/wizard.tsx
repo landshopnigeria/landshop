@@ -1,4 +1,6 @@
 'use client';
+import BrandedSelect from '../../../components/BrandedSelect';
+
 import {useState} from 'react';
 import {createBrowserClient} from '@supabase/ssr';
 
@@ -106,10 +108,10 @@ export default function KycWizard({userId,existing}:{userId:string;existing:Exis
     {[0,1,2,3].map(n=><div key={n} style={{height:6,borderRadius:4,background:n<=step?'#00896c':'#e4ede8'}}/>)}
    </div>
    {step===0&&<label style={{display:'grid',gap:9}}>Which account are you verifying?
-    <select value={kind} onChange={e=>setKind(e.target.value as Kind)} style={inputStyle}>
+    <BrandedSelect value={kind} onChange={e=>setKind(e.target.value as Kind)} style={inputStyle}>
      <option value="individual">Individual customer</option><option value="realtor">Realtor</option>
      <option value="company">Registered company or cooperative</option><option value="employee">Landshop staff</option>
-    </select>
+    </BrandedSelect>
     <p>Choosing staff or company does not grant administrative privileges or organization membership.</p>
    </label>}
    {step===1&&<div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(225px,1fr))',gap:15}}>

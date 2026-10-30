@@ -1,4 +1,6 @@
 'use client';
+import BrandedSelect from '../../components/BrandedSelect';
+
 import {useEffect,useState,type FormEvent} from 'react';
 import Link from 'next/link';
 import {createBrowserClient} from '@supabase/ssr';
@@ -92,7 +94,7 @@ export default function StaffWorkspace({userId,initialProfile,initialTasks,role,
  {!profile?<section className="ls-work-card" style={{maxWidth:750}}><h2>Complete your staff registration</h2><p className="ls-work-small">Your email is confirmed. The requested title is reviewed separately; this form cannot grant management access.</p><form onSubmit={onboard} style={{display:'grid',gap:12}}>
   <label>Username<input required value={username} onChange={e=>setUsername(e.target.value)} style={inputStyle}/></label>
   <label>Age at registration<input required type="number" min={18} max={120} value={age} onChange={e=>setAge(e.target.value)} style={inputStyle}/></label>
-  <label>Gender<select value={gender} onChange={e=>setGender(e.target.value)} style={inputStyle}><option value="prefer_not_to_say">Prefer not to say</option><option value="female">Female</option><option value="male">Male</option><option value="non_binary">Non-binary</option></select></label>
+  <label>Gender<BrandedSelect value={gender} onChange={e=>setGender(e.target.value)} style={inputStyle}><option value="prefer_not_to_say">Prefer not to say</option><option value="female">Female</option><option value="male">Male</option><option value="non_binary">Non-binary</option></BrandedSelect></label>
   <label>Requested role<input required readOnly value={wanted.replaceAll('_',' ')} style={inputStyle}/></label>
   <button type="submit" disabled={busy} style={buttonStyle}>Create my staff profile</button></form>
  </section>:<>
@@ -114,7 +116,7 @@ export default function StaffWorkspace({userId,initialProfile,initialTasks,role,
   </div>)}
   {!attendance.length&&<p className="ls-work-small">No attendance records for this staff account yet.</p>}
  </section>
- <section className="ls-work-card"><h2>My performance</h2><label className="ls-work-small">Reporting period <select style={inputStyle} value={period} onChange={e=>setPeriod(e.target.value)}><option value="day">Today</option><option value="week">This week</option><option value="month">This month</option><option value="year">This year</option></select></label>
+ <section className="ls-work-card"><h2>My performance</h2><label className="ls-work-small">Reporting period <BrandedSelect style={inputStyle} value={period} onChange={e=>setPeriod(e.target.value)}><option value="day">Today</option><option value="week">This week</option><option value="month">This month</option><option value="year">This year</option></BrandedSelect></label>
   <p style={{fontSize:42,fontWeight:900,margin:'20px 0 2px',color:'#267f5a'}}>{report?.score_percent==null?'—':report.score_percent+'%'}</p>
   <p className="ls-work-small">Weighted quality score on independently reviewed tasks</p>
   <p>Assigned: <strong>{report?.assigned_tasks??0}</strong> · Scored: <strong>{report?.reviewed_tasks??0}</strong></p>

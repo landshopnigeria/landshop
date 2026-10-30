@@ -1,4 +1,6 @@
 'use client';
+import BrandedSelect from '../../components/BrandedSelect';
+
 import {useEffect,useState} from 'react';
 import Link from 'next/link';
 import type {CSSProperties} from 'react';
@@ -42,7 +44,7 @@ export default function SupportPortal(){
    <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(min(100%,355px),1fr))',gap:20}}>
     <form onSubmit={submit} style={{background:'white',borderRadius:20,border:'1px solid #d8e9de',padding:25,display:'grid',gap:15}}>
      <h2 style={{margin:'0 0 7px'}}>Open a Support Ticket</h2>
-     <label>Request category<select style={inputStyle} value={category} onChange={e=>setCategory(e.target.value)}>{types.map(x=><option key={x} value={x}>{x[0].toUpperCase()+x.slice(1)}</option>)}</select></label>
+     <label>Request category<BrandedSelect style={inputStyle} value={category} onChange={e=>setCategory(e.target.value)}>{types.map(x=><option key={x} value={x}>{x[0].toUpperCase()+x.slice(1)}</option>)}</BrandedSelect></label>
      <label>Subject<input style={inputStyle} required minLength={5} maxLength={180} placeholder="e.g., Clarification about my Develop Land application" value={subject} onChange={e=>setSubject(e.target.value)}/></label>
      <label>Tell us what happened<textarea style={inputStyle} required minLength={20} maxLength={5000} rows={6} placeholder="Explain your request and provide your application reference if available" value={description} onChange={e=>setDescription(e.target.value)}/></label>
      <button disabled={busy||signedIn!==true} type="submit" style={{padding:15,background:'#087e61',border:0,color:'#fff',borderRadius:12,fontWeight:800}}>{busy?'Submitting…':'Submit Support Request →'}</button>

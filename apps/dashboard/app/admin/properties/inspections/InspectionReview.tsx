@@ -1,4 +1,6 @@
 'use client';
+import BrandedSelect from '../../../../components/BrandedSelect';
+
 import {useState,type FormEvent} from 'react';
 import {createBrowserClient} from '@supabase/ssr';
 const choices=['confirmed','rescheduled','completed','rejected','cancelled'];
@@ -22,9 +24,9 @@ export default function InspectionReview({requestId,currentStatus}:{requestId:st
  return <form onSubmit={submit} style={{marginTop:20,padding:18,background:'#f3faf5',borderRadius:12,border:'1px solid #d5e9dc'}}>
   <div style={{display:'flex',flexWrap:'wrap',alignItems:'end',gap:12}}>
    <label style={{display:'grid',gap:6,flex:'1 1 180px',fontSize:12}}>Decision
-    <select value={status} onChange={e=>setStatus(e.target.value)} style={{padding:12,borderRadius:9,border:'1px solid #c9ddce'}}>{choices.filter(x=>currentStatus!=='pending_confirmation'||x!=='completed').map(s=><option key={s} value={s}>{s.replaceAll('_',' ')}</option>)}</select>
+    <BrandedSelect value={status} onChange={e=>setStatus(e.target.value)} style={{padding:12,borderRadius:9,border:'1px solid #c9ddce'}}>{choices.filter(x=>currentStatus!=='pending_confirmation'||x!=='completed').map(s=><option key={s} value={s}>{s.replaceAll('_',' ')}</option>)}</BrandedSelect>
    </label>
-   {status==='rescheduled'&&<><label style={{display:'grid',gap:6,fontSize:12}}>New preferred date<input type="date" required value={date} onChange={e=>setDate(e.target.value)} style={{padding:11,border:'1px solid #c9ddce',borderRadius:9}}/></label><label style={{display:'grid',gap:6,fontSize:12}}>New time (WAT)<select value={time} required onChange={e=>setTime(e.target.value)} style={{padding:11,border:'1px solid #c9ddce',borderRadius:9}}><option value="">Choose time</option>{['08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00'].map(t=><option key={t}>{t}</option>)}</select></label></>}
+   {status==='rescheduled'&&<><label style={{display:'grid',gap:6,fontSize:12}}>New preferred date<input type="date" required value={date} onChange={e=>setDate(e.target.value)} style={{padding:11,border:'1px solid #c9ddce',borderRadius:9}}/></label><label style={{display:'grid',gap:6,fontSize:12}}>New time (WAT)<BrandedSelect value={time} required onChange={e=>setTime(e.target.value)} style={{padding:11,border:'1px solid #c9ddce',borderRadius:9}}><option value="">Choose time</option>{['08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00'].map(t=><option key={t}>{t}</option>)}</BrandedSelect></label></>}
   </div>
   <label style={{display:'grid',gap:6,fontSize:12,marginTop:13}}>Staff decision note<textarea required rows={3} minLength={15} maxLength={1000} value={note} onChange={e=>setNote(e.target.value)} style={{padding:12,borderRadius:9,border:'1px solid #c9ddce'}} placeholder="Reason for confirmation, reschedule, rejection, cancellation or completion"/></label>
   <button type="submit" disabled={busy||note.trim().length<15} style={{background:'#2ba47a',color:'#fff',border:0,borderRadius:9,padding:'12px 19px',fontWeight:800,marginTop:13,cursor:'pointer'}}>{busy?'Recording…':'Record decision'}</button>

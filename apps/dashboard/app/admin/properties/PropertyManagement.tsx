@@ -1,4 +1,6 @@
 'use client';
+import BrandedSelect from '../../../components/BrandedSelect';
+
 import {useState} from 'react';
 import Link from 'next/link';
 import {createBrowserClient} from '@supabase/ssr';
@@ -52,12 +54,12 @@ export default function PropertyManagement({initial,estates,currentUserId,canApp
   <section style={{padding:26,background:'white',borderRadius:20,border:'1px solid #dbe8df'}}>
    <h2>Create a draft property</h2><form onSubmit={create} style={{display:'flex',flexWrap:'wrap',gap:12}}>
     <input style={{...field,flex:'1 1 250px'}} value={title} onChange={e=>setTitle(e.target.value)} minLength={5} maxLength={180} required placeholder="Property title" aria-label="Property title"/>
-    <select style={field} value={type} onChange={e=>setType(e.target.value)} aria-label="Property type">
+    <BrandedSelect style={field} value={type} onChange={e=>setType(e.target.value)} aria-label="Property type">
      {['land','house','apartment','commercial','shortlet'].map(x=><option value={x} key={x}>{x}</option>)}
-    </select>
-    <select style={{...field,flex:'1 1 225px'}} required value={estate} onChange={e=>setEstate(e.target.value)} aria-label="Estate for this property">
+    </BrandedSelect>
+    <BrandedSelect style={{...field,flex:'1 1 225px'}} required value={estate} onChange={e=>setEstate(e.target.value)} aria-label="Estate for this property">
      <option value="">Choose a registered estate</option>{estates.map(e=><option value={e.id} key={e.id}>{e.name} — {e.state||'Location pending'} ({e.status})</option>)}
-    </select>
+    </BrandedSelect>
     <input style={field} type="number" min={1} step={1} value={price} onChange={e=>setPrice(e.target.value)} placeholder="Price (₦)" aria-label="Price in naira"/>
     <button disabled={busy||!estate||!price.trim()} style={{padding:'13px 24px',background:'#087f62',color:'white',border:0,borderRadius:12}}>Create Draft</button>
    </form>
@@ -65,12 +67,12 @@ export default function PropertyManagement({initial,estates,currentUserId,canApp
   {canApprove&&<section style={{padding:26,background:'white',borderRadius:20,border:'1px solid #dbe8df'}}>
    <h2>Publication approval</h2>
    <form onSubmit={transition} style={{display:'grid',gap:12,maxWidth:700}}>
-    <label>Property to review <select style={field} required value={selection} onChange={e=>setSelection(e.target.value)}>
+    <label>Property to review <BrandedSelect style={field} required value={selection} onChange={e=>setSelection(e.target.value)}>
      <option value="">Select property</option>{items.map(x=><option value={x.id} key={x.id}>{x.title} — {x.status}</option>)}
-    </select></label>
-    <label>Action <select style={field} value={nextStatus} onChange={e=>setNextStatus(e.target.value)}>
+    </BrandedSelect></label>
+    <label>Action <BrandedSelect style={field} value={nextStatus} onChange={e=>setNextStatus(e.target.value)}>
      <option value="review">Send draft to review</option><option value="published">Publish reviewed property</option><option value="archived">Archive published property</option>
-    </select></label>
+    </BrandedSelect></label>
     <label>Reason and evidence <textarea minLength={15} maxLength={1000} required style={{...field,width:'100%',minHeight:95}} value={reason} onChange={e=>setReason(e.target.value)} placeholder="Describe the checks and approval basis"/></label>
     <button disabled={busy||!selection||reason.trim().length<15} style={{background:'#087f62',color:'white',border:0,borderRadius:12,padding:14}}>Record Decision</button>
     <button type="button" onClick={archiveProperty} disabled={busy||!selection||reason.trim().length<20} style={{background:'#9b4242',color:'#fff',border:0,borderRadius:12,padding:14}}>Withdraw / Archive Property (audited)</button>
