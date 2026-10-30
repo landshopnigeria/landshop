@@ -66,3 +66,7 @@ Application tracking reads the signed-in customer's existing `applications` and 
 Android APK, iOS simulator, iOS internal QA, and future production build profiles are described in [V4_RELEASE_CHECKLIST.md](./V4_RELEASE_CHECKLIST.md). The native client validates the actual size and signature of the selected upload before reading it into memory, rejects PDF selfie submissions, and builds owner-specific private storage paths. The CI suite tests document types, size limits, signature mismatches, path traversal rejection, and authentication links. These are source checks, **not** device tests or server-side malware screening.
 
 The application list continues to display owner-scoped statuses even if event-history retrieval fails; unknown product kinds never redirect to another product's draft. All store binaries, actual device builds and platform sign-in validation remain pending authorization and EAS project configuration.
+
+## V5 — Owner-authorized internal native builds
+
+The approved Landshop logo now feeds generated app-icon/adaptive-icon/splash source assets, and the repo includes an opt-in GitHub Actions **internal** EAS build workflow. Android APK, iOS Simulator and provisioned iOS internal builds require the owner's connected Expo project ID and private EXPO_TOKEN; app-store submission is not part of the workflow. See [V5_INTERNAL_BUILDS.md](./V5_INTERNAL_BUILDS.md) for the exact configuration and QA acceptance steps. Native OAuth remains disabled until device-level checks prove the redirect workflow.

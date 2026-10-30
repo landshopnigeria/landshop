@@ -26,8 +26,15 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
       - name: Install native app dependencies
         run: npm install --no-audit --no-fund
+      - name: Prepare native branding from approved Landshop logo
+        run: |
+          python -m pip install "Pillow==12.0.0"
+          npm run assets:prepare
       - name: Verify TypeScript types
         run: npm run typecheck
       - name: Test strict authentication links and KYC upload constraints
@@ -40,12 +47,24 @@ jobs:
           const eas=JSON.parse(fs.readFileSync('eas.json','utf8'));
           const builds=eas.build;
           if(!app.expo.ios.bundleIdentifier||!app.expo.android.package)throw Error('Missing native bundle IDs');
+          if(!app.expo.icon||!app.expo.android.adaptiveIcon?.foregroundImage)throw Error('Official app icon paths required');
+          for(const image of ['icon.png','adaptive-icon.png','splash-icon.png']){
+            const file='assets/'+image;
+            if(!fs.existsSync(file))throw Error('Missing approved logo-derived native artwork: '+file);
+          }
           for(const profile of ['android-internal','ios-simulator','ios-internal','production']){
             if(!builds[profile])throw Error('Missing '+profile);
             if(builds[profile].env.EXPO_PUBLIC_NATIVE_AUTH_REDIRECT_READY!=='false')throw Error('Native OAuth must remain disabled until device verification');
           }
           if(builds['android-internal'].android.buildType!=='apk'||builds['ios-simulator'].ios.simulator!==true)throw Error('Invalid internal QA build config');
           if(builds.production.autoSubmit===true)throw Error('App store auto-submission is prohibited');
+          for(const profile of ['android-internal','ios-simulator','ios-internal']){
+            if(builds[profile].environment!=='preview')throw Error('Internal EAS builds must use Preview');
+            if(builds[profile].env.EXPO_PUBLIC_SUPABASE_URL!=='https://iwkfagzkogzidrbbezds.supabase.co')throw Error('Incorrect Supabase project');
+          }
+          const flow=fs.readFileSync('../../.github/workflows/build-landshop-native-internal.yml','utf8');
+          if(!flow.includes('workflow_dispatch:')||flow.includes('    push:')||flow.includes('    pull_request:'))throw Error('Internal EAS builds must be manually initiated');
+          if(flow.includes('eas submit')||flow.includes('--auto-submit'))throw Error('Unexpected store submission in internal CI');
           NODE
       - name: Verify Metro bundles Android and iOS JavaScript
         run: npx expo export --platform all --output-dir "$RUNNER_TEMP/landshop-mobile-bundle"

@@ -8,11 +8,16 @@
     "userInterfaceStyle": "light",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.landshopnigeria.customer"
+      "bundleIdentifier": "com.landshopnigeria.customer",
+      "icon": "./assets/icon.png"
     },
     "android": {
       "package": "com.landshopnigeria.customer",
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FFFFFF"
+      }
     },
     "plugins": [
       "expo-secure-store",
@@ -23,10 +28,20 @@
           "cameraPermission": "Landshop uses the camera to capture your KYC selfie for identity review.",
           "microphonePermission": false
         }
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 220,
+          "backgroundColor": "#FFFFFF",
+          "resizeMode": "contain"
+        }
       ]
     ],
     "extra": {
       "environment": "production"
-    }
+    },
+    "icon": "./assets/icon.png"
   }
 }
