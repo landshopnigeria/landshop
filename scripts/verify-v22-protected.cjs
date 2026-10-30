@@ -14,7 +14,9 @@ for(const p of [
 ]){
  const prior=execFileSync('git',['show','origin/'+base+':'+p],{encoding:'utf8'});
  const current=readFileSync(p,'utf8');
- const approvedHeader=(content)=>content.replace(/ \{label:'Projects',eyebrow:'LANDSHOP PROJECTS',[\s\S]*?\n \{label:'Company',eyebrow:/, " {label:'Company',eyebrow:");
+ const approvedHeader=(content)=>content
+  .replace(/ \{label:'Projects',eyebrow:[\s\S]*?(?=\n \{label:'Careers',eyebrow:|\n \{label:'Company',eyebrow:)/, '')
+  .replace(/ \{label:'Careers',eyebrow:[\s\S]*?(?=\n \{label:'Company',eyebrow:)/, '');
  const matches=p.endsWith('/SiteHeader.tsx')?approvedHeader(prior)===approvedHeader(current):prior===current;
  if(!matches){console.error('PROTECTED HEADER CHANGE OUTSIDE APPROVED PROJECTS MENU: '+p);failures++;}
  else console.log('PRESERVED: '+p);
@@ -48,6 +50,13 @@ const footerCss=readFileSync('apps/website/app/v24-global-footer.css','utf8');
 if((home.match(/subtitle:/g)||[]).length!==3){console.error('Homepage must retain exactly three approved slides.');failures++;}
 if(!home.includes('<V22HomeSections featured={featured}/>')){console.error('Homepage content sections missing.');failures++;}
 if(!layout.includes('<SiteHeader/>{children}<SiteFooter/>')){console.error('Global SiteHeader/SiteFooter layout missing.');failures++}
+const priorFooter=execFileSync('git',['show','origin/'+base+':apps/website/components/SiteFooter.tsx'],{encoding:'utf8'});
+if(foot!==priorFooter){console.error('Global footer must remain byte-for-byte identical to main.');failures++}
+for(const p of ['apps/website/app/properties/[id]/page.tsx','apps/website/app/properties/[id]/property-details.css','apps/website/app/insights/[slug]/page.tsx']){
+ const prior=execFileSync('git',['show','origin/'+base+':'+p],{encoding:'utf8'});
+ const current=readFileSync(p,'utf8');
+ if(prior!==current){console.error('PROTECTED PROPERTY/ARTICLE DETAIL CHANGED: '+p);failures++}
+}
 for(const marker of ['<NewsletterSignup/>','<FooterCarousel slides={slidesFromSources()}/>','ls24-global-footer','/testimonials','Privacy Policy','Terms &amp; Conditions']){
  if(!foot.includes(marker)){console.error('V24 footer content missing: '+marker);failures++}
 }
@@ -60,4 +69,4 @@ for(const source of ['apps/website/components/ContentShell.tsx','apps/website/co
 }
 
 if(failures)process.exitCode=1;
-else console.log('PASS: approved V26 copy/Projects nav, protected hero/filter structure, and global V24 footer.');
+else console.log('PASS: approved Projects/Careers additions, protected global header/footer, property detail and article templates.');
