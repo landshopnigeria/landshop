@@ -20,6 +20,9 @@ BEGIN
   SELECT count(*) INTO other_owners FROM public.organization_members m
     WHERE m.organization_id=org_id AND m.role='owner' AND m.status='active' AND m.user_id<>target_user_id;
   IF other_owners>0 THEN RAISE EXCEPTION 'Another active Landshop owner exists; refuse ownership takeover'; END IF;
+  IF EXISTS(SELECT 1 FROM public.organization_members m WHERE m.organization_id=org_id AND m.user_id=target_user_id AND m.status IN ('suspended','revoked')) THEN
+    RAISE EXCEPTION 'Previously suspended or revoked membership requires manual security review';
+  END IF;
   SELECT exists(SELECT 1 FROM public.organization_members m WHERE m.organization_id=org_id AND m.user_id=target_user_id AND m.role='owner' AND m.status='active') INTO already_owner;
   IF already_owner THEN RAISE NOTICE 'Matching owner already active'; RETURN; END IF;
   INSERT INTO public.organization_members(organization_id,user_id,role,status)

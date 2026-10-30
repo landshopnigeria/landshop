@@ -19,8 +19,6 @@ export default async function Readiness(){
   db.from('property_showcase_drafts').select('property_id,edited_by').limit(250)
  ]);
  const bad=[p,e,profiles,assets,media,edits].some(x=>x.error);
- const estateMap=new Map((e.data||[]) as Estate[]).values();
- void estateMap;
  const estates=new Map(((e.data||[]) as Estate[]).map(x=>[x.id,x]));
  const showcases=new Map(((profiles.data||[]) as unknown as Profile[]).map(x=>[x.property_id,x]));
  const draftMap=new Map(((edits.data||[]) as {property_id:string;edited_by:string}[]).map(x=>[x.property_id,x.edited_by]));
