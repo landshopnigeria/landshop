@@ -18,7 +18,10 @@ export async function GET(request:NextRequest) {
    cookieOptions:{domain:'.landshopnigeria.com',path:'/',sameSite:'lax',secure:true},
    cookies:{
      getAll(){return request.cookies.getAll()},
-     setAll(changes){changes.forEach(({name,value,options})=>response.cookies.set(name,value,options))}
+     setAll(changes){changes.forEach(({name,value,options})=>{
+     request.cookies.set(name,value);
+     response.cookies.set(name,value,options);
+   })}
    }
  });
  let error:null|unknown=null;
