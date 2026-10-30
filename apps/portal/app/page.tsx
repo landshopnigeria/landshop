@@ -33,7 +33,10 @@ export default function Portal(){
     const {data,error}=await db.auth.signInWithPassword({email:email.trim(),password});
     if(error)throw error;
     if(!data.user)throw Error('Authentication could not be verified.');
-    window.location.assign('https://app.landshopnigeria.com/dashboard');
+    const returnTo=new URLSearchParams(window.location.search).get('returnTo');
+    let destination='https://app.landshopnigeria.com/dashboard';
+    if(returnTo){try{const url=new URL(returnTo);if(url.protocol==='https:'&&url.hostname==='www.landshopnigeria.com'&&url.pathname.startsWith('/insights/'))destination=url.toString();}catch{}}
+    window.location.assign(destination);
    }
   }catch(e){setMessage(e instanceof Error?e.message:'Unable to complete request.')}
   finally{setBusy(false)}

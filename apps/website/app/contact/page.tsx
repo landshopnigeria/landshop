@@ -46,8 +46,30 @@ export default function Contact(){return <main className="lc-premium"><script ty
    <div className="lc-inspection"><SiteIcon name="calendar" size={30}/><h3>Book a property inspection</h3><p>Choose an inspection application and request a preferred date. Bookings require staff confirmation.</p><Link href="https://portal.landshopnigeria.com/applications/develop-inspection">Start an inspection request <SiteIcon name="external" size={18}/></Link></div>
   </aside>
  </section>
- <section className="lc-visit"><div><span className="lc-kicker">VISIT BY APPOINTMENT</span><h2>Meet the Landshop team.</h2><p>Visit our King’s Deck office at Alternative Route, off Chevron Drive, Lekki, Lagos. Appointments must be confirmed in advance.</p><Link href="/contact?topic=Customer%20Support#enquiry">Request an office appointment <SiteIcon name="external" size={18}/></Link></div><div className="lc-visit-card"><IconChip name="pin"/><strong>Landshop Nigeria</strong><span>King’s Deck · Chevron Drive · Lekki, Lagos</span><small>Visits by confirmed appointment</small></div></section>
- <section className="lc-office-map" aria-label="Landshop office map">
+<section className="v22-root v22-section v22-muted v22-contact-extra" aria-label="Landshop product support"><div className="v22-container">
+ <span className="v22-eyebrow">CHOOSE THE RIGHT SUPPORT</span><h2>Three products. The right conversation.</h2>
+ <div className="v22-products">
+  <article className="v22-action-panel"><IconChip name="building"/><h3>Develop</h3><p>Questions about properties, available units, documentation and acquisition applications.</p><Link href="/contact?topic=Develop#enquiry" className="v22-text-link">Ask about Develop ↗</Link></article>
+  <article className="v22-action-panel"><IconChip name="chart"/><h3>Incubate</h3><p>Documented property-linked investment enquiries and application requirements.</p><Link href="/contact?topic=Incubate#enquiry" className="v22-text-link">Ask about Incubate ↗</Link></article>
+  <article className="v22-action-panel"><IconChip name="key"/><h3>Grow</h3><p>Mortgage eligibility guidance, repayment illustrations and financing applications.</p><Link href="/contact?topic=Grow#enquiry" className="v22-text-link">Ask about Grow ↗</Link></article>
+ </div></div></section>
+ <section className="v22-root v22-section v22-contact-extra"><div className="v22-container v22-two"><div>
+  <span className="v22-eyebrow">PROPERTY INSPECTIONS</span><h2>See the property. Ask better questions.</h2><p>Request a preferred inspection date through the approved Landshop portal. Your visit will be scheduled only after a staff member confirms availability.</p>
+  <Link className="v22-btn" href="https://portal.landshopnigeria.com/applications/develop-inspection">Request an inspection ↗</Link>
+ </div><img className="v22-cover-photo" src="https://images.pexels.com/photos/30688593/pexels-photo-30688593.jpeg?auto=compress&cs=tinysrgb&w=1100" loading="lazy" alt="Illustrative Nigerian professional consultation, not an actual property inspection"/></div></section>
+  <section className="lc-visit"><div><span className="lc-kicker">VISIT BY APPOINTMENT</span><h2>Meet the Landshop team.</h2><p>Visit our King’s Deck office at Alternative Route, off Chevron Drive, Lekki, Lagos. Appointments must be confirmed in advance.</p><Link href="/contact?topic=Customer%20Support#enquiry">Request an office appointment <SiteIcon name="external" size={18}/></Link></div><div className="lc-visit-card"><IconChip name="pin"/><strong>Landshop Nigeria</strong><span>King’s Deck · Chevron Drive · Lekki, Lagos</span><small>Visits by confirmed appointment</small></div></section>
+<section className="v22-root v22-section v22-muted v22-contact-extra"><div className="v22-container">
+ <span className="v22-eyebrow">FREQUENT QUESTIONS</span><h2>Answers before your next step.</h2>
+ <div className="v22-faq"><details><summary>Can I request an inspection before applying?</summary><p>Yes. Submit an inspection request for the property you are interested in. A member of the Landshop team must confirm the appointment.</p></details>
+ <details><summary>Where can I check my application?</summary><p>Use your secure Landshop customer portal to view any application status that is available to your account.</p></details>
+ <details><summary>How do I verify a property's price or availability?</summary><p>Use the current published listing and request written confirmation. Historical promotional material does not establish current sale terms.</p></details>
+ <details><summary>How do I speak to the relevant department?</summary><p>Choose Develop, Incubate, Grow or Customer & Realtor Support in the enquiry form and describe your request.</p></details></div>
+ </div></section>
+ <section className="v22-root v22-section v22-contact-extra"><div className="v22-container v22-two">
+ <div><span className="v22-eyebrow">CLIENT EXPERIENCES</span><h2>Service matters at every stage.</h2><p>Customers featured in Landshop's historic product deck describe the importance of follow-up, clear communication and support throughout the property journey.</p><Link href="/about" className="v22-text-link">More about Landshop ↗</Link></div>
+ <blockquote className="v22-quote"><span className="v22-quote-mark">“</span><p>Landshop is authentic and experienced. And your customer service is 100%. From social media to follow up calls.</p><strong>Emmanuel Sanusi</strong><small>Ikotun, Lagos · excerpt from the original Landshop deck</small></blockquote>
+ </div></section>
+  <section className="lc-office-map" aria-label="Landshop office map">
   <div className="lc-map-intro"><div><span className="lc-kicker">FIND LANDSHOP ON GOOGLE MAPS</span><h2>Visit our Lekki office.</h2><p>{office}</p></div><div className="lc-map-actions"><a href={googleMaps} target="_blank" rel="noopener noreferrer"><SiteIcon name="pin" size={20}/> Open Google Maps</a><a className="lc-map-directions" href={directions} target="_blank" rel="noopener noreferrer"><SiteIcon name="compass" size={20}/> Get directions</a></div></div>
   <div className="lc-map-landscape"><iframe src={mapEmbed} title="Google Maps — Landshop HQ, King's Deck, Chevron Drive, Lekki, Lagos" loading="lazy" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen/></div>
   <p className="lc-map-note">Google Maps directions open in a separate tab. Please confirm your appointment before visiting.</p>

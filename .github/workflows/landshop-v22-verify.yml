@@ -1,0 +1,29 @@
+name: Landshop V22 website validation
+on:
+  pull_request:
+    paths:
+      - 'apps/website/**'
+      - '.github/workflows/landshop-v22-verify.yml'
+      - 'scripts/verify-v22-protected.cjs'
+  workflow_dispatch:
+jobs:
+  website-build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: ''
+      - name: Check protected header, hero and search
+        run: node scripts/verify-v22-protected.cjs
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund --no-package-lock
+      - name: Build public website
+        run: npm run build -w @landshop/website
+        env:
+          NEXT_TELEMETRY_DISABLED: '1'

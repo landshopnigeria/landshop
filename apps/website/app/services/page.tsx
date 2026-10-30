@@ -1,0 +1,18 @@
+import ContentShell from '../../components/ContentShell';
+import Link from 'next/link';
+import {editorialImages} from '../../lib/editorial-imagery';
+import {IconChip} from '../../components/SiteIcon';
+export const metadata={title:'Landshop Services | Property Advisory, Acquisition & Financing',description:'Explore the approved Landshop property acquisition, advisory, financing and inspection service pathways.'};
+const offerings=[
+ {title:'Property Acquisition',slug:'property-acquisition',image:editorialImages.develop.src,alt:editorialImages.develop.alt,icon:'home' as const,description:'Navigate land and home purchase decisions with clearer information about availability, documentation and inspection.'},
+ {title:'Property Advisory',slug:'advisory',image:editorialImages.team.src,alt:editorialImages.team.alt,icon:'compass' as const,description:'Speak with a team about property goals, due diligence and the information to review before committing.'},
+ {title:'Mortgage Guidance',slug:'mortgage',image:editorialImages.grow.src,alt:editorialImages.grow.alt,icon:'calculator' as const,description:'Understand home financing options, affordability considerations and lender application requirements.'},
+ {title:'Construction Credit',slug:'construction-credit',image:editorialImages.architecture.src,alt:editorialImages.architecture.alt,icon:'building' as const,description:'Explore development levy and construction finance enquiries; any active funding terms require confirmation.'},
+ {title:'Cooperative Property Solutions',slug:'cooperatives',image:editorialImages.residential.src,alt:editorialImages.residential.alt,icon:'users' as const,description:'Explore structured group and cooperative real estate enquiries inspired by Landshop’s original Thrift service.'},
+ {title:'Property Inspections',slug:'inspection',image:editorialImages.develop.src,alt:editorialImages.develop.alt,icon:'calendar' as const,description:'Request a property visit and receive confirmation from the Landshop team before attending.'}
+];
+export default function Services(){return <ContentShell eyebrow="SERVICES" title="Guidance for every property decision." intro="Explore Landshop service pathways, with relevant information, current requirements and real enquiry and application links." image={editorialImages.team.src} imageAlt={editorialImages.team.alt}>
+ <div className="v22-root"><section className="v22-section"><div className="v22-container"><span className="v22-eyebrow">EXPLORE SERVICES</span><h2>Find the right support for your next move.</h2>
+ <div className="v22-service-grid">{offerings.map(s=><article className="v22-service" key={s.slug}><Link href={'/services/'+s.slug}><img src={s.image} alt={s.alt} loading="lazy"/></Link><div className="v22-service-body"><span className="v22-icon"><IconChip name={s.icon}/></span><h3>{s.title}</h3><p>{s.description}</p><Link className="v22-text-link" href={'/services/'+s.slug}>Explore service ↗</Link></div></article>)}</div></div></section>
+ <section className="v22-section v22-muted"><div className="v22-container v22-two"><div><span className="v22-eyebrow">OUR APPROACH</span><h2>Understand it. Verify it. Move forward.</h2><p>We connect you with the correct property or financial application process. Any pricing, loan or investment terms require written confirmation and independent review.</p></div><div className="v22-action-panel"><h3>Need a personal conversation?</h3><p>Tell us the property, service or goal you are considering and we will guide you to the correct team.</p><Link href="/contact" className="v22-btn">Contact the team ↗</Link></div></div></section></div>
+ </ContentShell>}

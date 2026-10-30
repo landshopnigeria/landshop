@@ -9,7 +9,7 @@ const links=[
  ['Dashboard','/admin','⌂'],['Property Management','/admin/properties','▦'],['Leads & Applications','/admin/applications','▣'],
  ['CRM Application Queue','/admin/applications','↗'],['Mortgage Reviews','/admin/applications','◉'],
  ['Property Import','/admin/properties/import/advanced','⇧'],['Import Approval','/admin/properties/import/review','✓'],
- ['Workflow Automation','/admin/automation','⌘'],['Website Enquiries','/admin/enquiries','✉'],['Customer Support','/admin/support','☏'],
+ ['Workflow Automation','/admin/automation','⌘'],['Website Enquiries','/admin/enquiries','✉'],['Article Comments','/admin/comments','☷'],['Customer Support','/admin/support','☏'],
  ['Referral Records','/admin/reports','♧'],['Staff & Roles','/admin/staff','♙'],
  ['KYC & Compliance','/admin/kyc','◈'],['Survey & Allocation','/admin/seven-cities','⌖'],
  ['Reports & Analytics','/admin/reports','▥']];

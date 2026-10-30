@@ -243,6 +243,9 @@ jobs:
           ssh_args=(-p "$SSH_PORT" -o BatchMode=yes -o StrictHostKeyChecking=yes -o ConnectTimeout=20)
           roots=("$WEBSITE_ROOT" "$PORTAL_ROOT" "$DASHBOARD_ROOT")
           apps=(website portal dashboard)
+          # Backups were verified in the previous step. Mark the point at which
+          # production is about to change so rollback only runs after upload begins.
+          ssh "${ssh_args[@]}" "$target" "touch \"\$HOME/landshop-deployment-backups/release-$GITHUB_RUN_ID/.upload-started\""
           for i in 0 1 2;do
             root="${roots[$i]}";app="${apps[$i]}"
             remote_path=$(printf '%q' "$root")
@@ -291,3 +294,45 @@ jobs:
         env:
           LANDSHOP_EXPECTED_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
         run: python3 scripts/check-landshop-live-assets.py
+
+      - name: Automatically restore previous application snapshots if release verification fails
+        if: ${{ failure() }}
+        shell: bash
+        env:
+          SSH_PORT: ${{ vars.LANDSHOP_SSH_PORT || secrets.LANDSHOP_SSH_PORT || secrets.NAMECHEAP_SSH_PORT || '21098' }}
+          SSH_HOST: ${{ secrets.LANDSHOP_SSH_HOST || secrets.NAMECHEAP_SSH_HOST || vars.LANDSHOP_SSH_HOST }}
+          SSH_USER: ${{ secrets.LANDSHOP_SSH_USER || secrets.NAMECHEAP_SSH_USER || vars.LANDSHOP_SSH_USER }}
+          WEBSITE_ROOT: ${{ secrets.LANDSHOP_WEBSITE_APPROOT || vars.LANDSHOP_WEBSITE_APPROOT || '/home/maleghif/landshop-website' }}
+          PORTAL_ROOT: ${{ secrets.LANDSHOP_PORTAL_APPROOT || vars.LANDSHOP_PORTAL_APPROOT || '/home/maleghif/landshop-portal' }}
+          DASHBOARD_ROOT: ${{ secrets.LANDSHOP_DASHBOARD_APPROOT || vars.LANDSHOP_DASHBOARD_APPROOT || '/home/maleghif/landshop-app' }}
+        run: |
+          set -euo pipefail
+          if [ ! -s "$HOME/.ssh/id_ed25519" ] || [ -z "${SSH_HOST:-}" ] || [ -z "${SSH_USER:-}" ];then
+            echo "No authenticated upload took place; no remote rollback is necessary."
+            exit 0
+          fi
+          ssh -p "$SSH_PORT" -o BatchMode=yes -o StrictHostKeyChecking=yes "$SSH_USER@$SSH_HOST" bash -s -- \
+            "$WEBSITE_ROOT" "$PORTAL_ROOT" "$DASHBOARD_ROOT" "$GITHUB_RUN_ID" <<'REMOTE'
+          set -eu
+          web="$1";portal="$2";dashboard="$3";release_id="$4"
+          case "$release_id" in *[!0-9]*|'') exit 1;; esac
+          backup="$HOME/landshop-deployment-backups/release-$release_id"
+          if [ ! -f "$backup/.upload-started" ];then
+            echo "Upload never started; existing production assets were not replaced."
+            exit 0
+          fi
+          for app in website portal dashboard;do
+            case "$app" in website)root="$web";;portal)root="$portal";;dashboard)root="$dashboard";;esac
+            archive="$backup/$app-pre-release.tar.gz"
+            test -s "$archive" || { echo "ERROR: Missing prior release snapshot for $app";exit 1; }
+            case "$root" in /home/*) ;; *) echo "Unsafe rollback root";exit 1;; esac
+            # Remove ONLY generated Next.js output; preserve .env, uploads and customer data.
+            if test -d "$root/apps/$app/.next";then rm -rf -- "$root/apps/$app/.next";fi
+            tar -xzf "$archive" -C "$root"
+            test -s "$root/server.js"
+            mkdir -p "$root/tmp"
+            touch "$root/tmp/restart.txt"
+            echo "Restored previous $app deployment from release $release_id"
+          done
+          REMOTE
+          echo "::warning::Landshop release verification failed; previous snapshots restored and Passenger restarts requested."
