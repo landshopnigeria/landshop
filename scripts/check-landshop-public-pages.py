@@ -46,7 +46,7 @@ PUBLIC_PAGES = [
     ("website", "/services/construction-credit", "Plan your development financing"),
     ("website", "/grow/beta-mortgage", "Explore a structured route"),
     ("website", "/grow/mortgage-xtra", "Plan a financing journey"),
-    ("portal", "/", "One Account."),
+    ("portal", "/", "Welcome Back"),
     ("portal", "/applications", None),
     ("portal", "/applications/develop-land", None),
     ("portal", "/applications/develop-house", None),
@@ -135,6 +135,13 @@ def check(kind: str, route: str, expected: str | None):
     visible = " ".join(" ".join(parser.words).split())
     if expected and expected.casefold() not in unescape(visible).casefold():
         raise AssertionError(f"expected visible page heading missing: {expected}")
+    if kind == "portal" and route == "/":
+        if 'class="authGlass"' not in html or 'class="authForm"' not in html:
+            raise AssertionError("approved glass sign-in and sign-up controls are missing")
+        if 'class="authBenefitGlass"' not in html:
+            raise AssertionError("approved invest, refer and grow banner is missing")
+        if 'One Account.' in visible:
+            raise AssertionError("removed portal promotional heading has reappeared")
     if kind in ("website", "www") and route == "/":
         # A successful Next.js page must not show stock estate photo archives as live properties.
         if "Explore genuine photographs from Landshop estate archives" in visible:
