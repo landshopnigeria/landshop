@@ -1,6 +1,6 @@
 import {createClient} from '@supabase/supabase-js';
 export type Listing={
- id:string;title:string;slug:string|null;property_type:string;collection_type?:'Prime'|'Luxury'|null;amount_kobo:number|null;price_is_starting_at:boolean;status:string;estate_id:string|null;
+ id:string;title:string;slug:string|null;property_type:string;collection_type?:'Prime'|'Luxury'|null;collection_verified_at?:string|null;amount_kobo:number|null;price_is_starting_at:boolean;status:string;estate_id:string|null;
  sale_mode:'Buy'|'Rent'|'Shortlet'|null;bedrooms:number|null;bathrooms:number|null;floor_area_sqm:number|null;land_area_sqm:number|null;availability:string|null;
  estates?:{name:string;state:string|null;city:string|null;lga:string|null;area:string|null}|null
 };
@@ -48,7 +48,7 @@ export async function listPublished(filters:Filters){
   if(!estateIds.length)return {rows:[] as Listing[],count:0,error:null};
  }
  let propertyQuery=db.from('properties')
-  .select('id,title,slug,estate_id,property_type,amount_kobo,price_is_starting_at,status,sale_mode,bedrooms,bathrooms,floor_area_sqm,land_area_sqm,availability,estates(name,state,city,lga,area)',{count:'exact'})
+  .select('id,title,slug,estate_id,property_type,collection_type,collection_verified_at,amount_kobo,price_is_starting_at,status,sale_mode,bedrooms,bathrooms,floor_area_sqm,land_area_sqm,availability,estates(name,state,city,lga,area)',{count:'exact'})
   .eq('status','published');
  if(estateIds)propertyQuery=propertyQuery.in('estate_id',estateIds);
  if(filters.purpose==='Buy')propertyQuery=propertyQuery.or('sale_mode.eq.Buy,sale_mode.is.null').neq('property_type','shortlet');
