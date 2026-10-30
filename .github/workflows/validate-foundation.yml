@@ -86,7 +86,8 @@ jobs:
                 /applications/mortgage-xtra /applications/develop-inspection \
                 /applications/mortgage-xtra-inspection /calculator)
             else
-              routes=(/ /dashboard /dashboard/account /dashboard/kyc)
+              routes=(/ /dashboard /dashboard/account /dashboard/kyc \
+                /staff/sign-in /staff/sign-up /staff/terms /staff/privacy)
             fi
             for route in "${routes[@]}";do
               code=$(curl -sS --max-time 10 -o /dev/null -w '%{http_code}' \
@@ -103,6 +104,24 @@ jobs:
               fi
               echo "SSR/route smoke passed: $app $route"
             done
+            if [ "$app" = "dashboard" ]; then
+              # Assert approved staff copy and controls in actual server-rendered HTML.
+              curl -fsS --max-time 15 "http://127.0.0.1:39519/staff/sign-in" -o /tmp/landshop-staff-signin.html
+              curl -fsS --max-time 15 "http://127.0.0.1:39519/staff/sign-up" -o /tmp/landshop-staff-signup.html
+              for expected in "Welcome" "Enter your work email" "Enter your password" "Show password" "Forgot password?"; do
+                grep -Fq "$expected" /tmp/landshop-staff-signin.html || { echo "::error::Staff sign-in missing: $expected"; exit 1; }
+              done
+              for expected in "Become a" "Landshop Staff" "Choose a username" "Enter your age" "Requested staff role" "Create password" "Confirm password" "Show confirm password" "Terms and Conditions"; do
+                grep -Fq "$expected" /tmp/landshop-staff-signup.html || { echo "::error::Staff sign-up missing: $expected"; exit 1; }
+              done
+              for forbidden in "Join the Landshop team" "Your photograph and work location are requested separately" "Sign Up as Staff"; do
+                if grep -Fq "$forbidden" /tmp/landshop-staff-signup.html; then echo "::error::Removed staff copy has returned: $forbidden"; exit 1; fi
+              done
+              if grep -Fq "Sign in to your work dashboard. Only authorized" /tmp/landshop-staff-signin.html; then
+                echo "::error::Removed sign-in paragraph has returned"; exit 1
+              fi
+              echo "Approved staff sign-in and sign-up UI regression smoke passed"
+            fi
             kill "$pid" || true
             wait "$pid" || true
             echo "Standalone runtime startup and route smoke verified for $app"
