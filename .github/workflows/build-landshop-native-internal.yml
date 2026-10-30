@@ -51,11 +51,14 @@ jobs:
             throw Error('Unexpected Android/iOS app identity; refusing to build');
           }
           NODE
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
       - name: Install native dependencies
         run: npm install --no-audit --no-fund
       - name: Prepare approved Landshop logo assets
         run: |
-          python3 -m pip install --user "Pillow==12.0.0"
+          python -m pip install "Pillow==12.0.0"
           npm run assets:prepare
       - name: Validate source and configured artwork
         run: |
