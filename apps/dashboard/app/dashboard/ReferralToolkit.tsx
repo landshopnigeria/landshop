@@ -5,7 +5,7 @@ type ReferralSummary={total_referrals:number;email_verified:number;kyc_verified:
 export default function ReferralToolkit({code,summary}:{code:string|null;summary:ReferralSummary|null}){
  const [feedback,setFeedback]=useState('');
  const invitation=code?'https://portal.landshopnigeria.com/?mode=signup&ref='+encodeURIComponent(code):'';
- const qrUrl=invitation?'https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=16&data='+encodeURIComponent(invitation):'';
+ const qrUrl=invitation?'/api/referral-qr':'';
  const counts={total_referrals:Number(summary?.total_referrals||0),email_verified:Number(summary?.email_verified||0),kyc_verified:Number(summary?.kyc_verified||0),approved_applications:Number(summary?.approved_applications||0)};
  const copy=async(s:string,what:string)=>{
   try{await navigator.clipboard.writeText(s);setFeedback(what+' copied')}catch{setFeedback('Use your browser’s copy command to share this link.')}
@@ -44,7 +44,7 @@ export default function ReferralToolkit({code,summary}:{code:string|null;summary
    <div className="cd-qr-panel">
     <div className="cd-qr-image"><img src={qrUrl} loading="lazy" alt={'Scannable QR code for your Landshop referral link '+invitation} width={190} height={190}/></div>
     <strong>Scan to Register</strong><p>Visitors can scan this QR code to open your personal sign-up link.</p>
-    <a href={qrUrl} target="_blank" rel="noopener noreferrer">Open / Save QR code</a>
+    <a href={qrUrl+'?download=1'} download={'Landshop-'+code+'-Referral-QR.png'}>Download QR code</a>
    </div>
   </div>
   <div className="cd-ref-stats" aria-label="Referral performance">
