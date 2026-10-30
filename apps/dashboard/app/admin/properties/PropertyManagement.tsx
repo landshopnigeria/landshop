@@ -37,6 +37,17 @@ export default function PropertyManagement({initial,estates,currentUserId,canApp
    setReason('');setMessage('Decision saved with audit history.');
   }catch(e){setMessage(e instanceof Error?e.message:'Unable to process decision')}finally{setBusy(false)}
  }
+ async function archiveProperty(){
+  if(!canApprove||busy||!selection)return;
+  setBusy(true);setMessage('');
+  try{
+   if(reason.trim().length<20)throw Error('Provide at least 20 characters explaining the archive or withdrawal');
+   const {error}=await db().rpc('landshop_management_archive_property',{p_id:selection,p_reason:reason.trim()});
+   if(error)throw Error(error.message);
+   setItems(items=>items.map(x=>x.id===selection?{...x,status:'archived'}:x));
+   setReason('');setMessage('Property archived and removed from all public marketplace results. The audit and original evidence remain available.');
+  }catch(e){setMessage(e instanceof Error?e.message:'Archive failed')}finally{setBusy(false)}
+ }
  return <div style={{display:'grid',gap:28}}>
   <section style={{padding:26,background:'white',borderRadius:20,border:'1px solid #dbe8df'}}>
    <h2>Create a draft property</h2><form onSubmit={create} style={{display:'flex',flexWrap:'wrap',gap:12}}>
@@ -62,6 +73,8 @@ export default function PropertyManagement({initial,estates,currentUserId,canApp
     </select></label>
     <label>Reason and evidence <textarea minLength={15} maxLength={1000} required style={{...field,width:'100%',minHeight:95}} value={reason} onChange={e=>setReason(e.target.value)} placeholder="Describe the checks and approval basis"/></label>
     <button disabled={busy||!selection||reason.trim().length<15} style={{background:'#087f62',color:'white',border:0,borderRadius:12,padding:14}}>Record Decision</button>
+    <button type="button" onClick={archiveProperty} disabled={busy||!selection||reason.trim().length<20} style={{background:'#9b4242',color:'#fff',border:0,borderRadius:12,padding:14}}>Withdraw / Archive Property (audited)</button>
+    <p style={{fontSize:12,color:'#647a6d'}}>Archive acts as a controlled deletion from the public website. It preserves title evidence, approval logs, enquiries and financial audit records. Permanent deletion requires a separate authorized retention/legal process.</p>
    </form>
   </section>}
   <section style={{padding:26,background:'white',borderRadius:20,border:'1px solid #dbe8df'}}>
