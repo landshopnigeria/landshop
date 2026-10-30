@@ -4,7 +4,7 @@ import BrandedSelect from '../../../../components/BrandedSelect';
 import {useState,type FormEvent} from 'react';
 import {createBrowserClient} from '@supabase/ssr';
 type Estate={id:string;name:string;state:string|null;city:string|null;status:string};
-type RecordData={id:string;title:string;property_type:string;status:string;estate_id:string|null;amount_kobo:number|null;sale_mode:string|null;bedrooms:number|null;bathrooms:number|null;land_area_sqm:number|null;floor_area_sqm:number|null;source_url:string|null;source_price_note:string|null;price_last_confirmed_at:string|null;price_is_starting_at:boolean};
+type RecordData={id:string;title:string;property_type:string;status:string;estate_id:string|null;amount_kobo:number|null;sale_mode:string|null;bedrooms:number|null;bathrooms:number|null;land_area_sqm:number|null;floor_area_sqm:number|null;source_url:string|null;source_price_note:string|null;price_last_confirmed_at:string|null;price_is_starting_at:boolean;collection_type?:string|null;collection_source?:string|null;collection_verified_at?:string|null};
 function client(){const u=process.env.NEXT_PUBLIC_SUPABASE_URL,k=process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;if(!u||!k)throw Error('Database unavailable');return createBrowserClient(u,k,{cookieOptions:{domain:'.landshopnigeria.com',path:'/',secure:true,sameSite:'lax'}})}
 const style={border:'1px solid #cfe0d4',borderRadius:10,padding:'12px 13px',background:'#fff',minWidth:0,width:'100%',color:'#174432',fontSize:14};
 export default function DraftBasicsEditor({property,estates,canApprove}:{property:RecordData;estates:Estate[];canApprove:boolean}){
@@ -12,6 +12,9 @@ export default function DraftBasicsEditor({property,estates,canApprove}:{propert
  bedrooms:property.bedrooms==null?'':String(property.bedrooms),bathrooms:property.bathrooms==null?'':String(property.bathrooms),
  land:property.land_area_sqm==null?'':String(property.land_area_sqm),floor:property.floor_area_sqm==null?'':String(property.floor_area_sqm)});
  const [isStarting,setIsStarting]=useState(Boolean(property.price_is_starting_at));
+ const [collection,setCollection]=useState(property.collection_type||'');
+ const [collectionSource,setCollectionSource]=useState(property.collection_source||'');
+ const [collectionVerified,setCollectionVerified]=useState(Boolean(property.collection_verified_at));
  const [note,setNote]=useState(''),[busy,setBusy]=useState(false),[message,setMessage]=useState(''),[confirmed,setConfirmed]=useState(Boolean(property.price_last_confirmed_at));
  const change=(key:keyof typeof f,value:string)=>setF(x=>({...x,[key]:value}));
  async function save(e:FormEvent<HTMLFormElement>){
@@ -38,6 +41,21 @@ export default function DraftBasicsEditor({property,estates,canApprove}:{propert
    setConfirmed(true);setNote('');setMessage('Independent price confirmation and audit record saved. Current for 30 days, subject to actual availability.');
   }catch(e){setMessage(e instanceof Error?e.message:'Price could not be confirmed')}finally{setBusy(false)}
  }
+ async function verifyCollection(e:FormEvent<HTMLFormElement>){
+  e.preventDefault();setBusy(true);setMessage('');
+  try{
+   if(!canApprove)throw Error('Property verification privileges are required');
+   if(property.status!=='draft')throw Error('Collections can only be changed on draft properties');
+   if(!['Prime','Luxury'].includes(collection))throw Error('Choose Prime or Luxury');
+   if(collectionSource.trim().length<24)throw Error('Include the current developer-approved classification source and date');
+   const {error}=await client().rpc('landshop_verify_property_collection',{
+    p_property:property.id,p_collection:collection,p_source:collectionSource.trim()
+   });
+   if(error)throw Error(error.message||'Collection could not be verified');
+   setCollectionVerified(true);setMessage('Prime/Luxury classification saved with staff reviewer and written source. It will appear in search only after the listing is independently approved and published.');
+  }catch(e){setMessage(e instanceof Error?e.message:'Could not verify collection');}
+  finally{setBusy(false)}
+ }
  return <section style={{background:'white',padding:'clamp(20px,3vw,30px)',border:'1px solid #d8e9de',borderRadius:18,margin:'22px 0'}}>
   <small style={{color:'#de741f',fontWeight:800,letterSpacing:1}}>PROPERTY INVENTORY / SOURCE CONTROL</small><h2 style={{fontSize:25}}>Property identity, estate &amp; asking price</h2>
   <p style={{fontSize:13,color:'#68816f',lineHeight:1.7}}>The source-backed starting price is not a confirmed live offer. Confirm the unit, availability, exact location, price and genuine media with the owner/developer before approval.</p>
@@ -59,6 +77,24 @@ export default function DraftBasicsEditor({property,estates,canApprove}:{propert
    <button disabled={busy||property.status!=='draft'} style={{justifySelf:'start',padding:'13px 20px',color:'white',background:'#2ba47a',border:0,borderRadius:11,fontWeight:800}}>{busy?'Saving…':'Save verified draft details'}</button>
    {property.status!=='draft'&&<small>Properties under review/published cannot be edited here; use a new authorization cycle to change pricing.</small>}
   </form>
+  <div style={{borderTop:'1px solid #d9e9df',marginTop:24,paddingTop:22}}>
+   <strong style={{color:'#174432'}}>Prime / Luxury — Current collection classification</strong>
+   <p style={{fontSize:12,lineHeight:1.6,color:'#607b6e'}}>The original product deck is historical. A current source (estate/developer schedule or approved instruction) and authorized reviewer are required before classification may enter public search.</p>
+   <p style={{color:collectionVerified?'#08765c':'#9d642d',fontWeight:760,fontSize:12}}>{collectionVerified?'Classification verified for this draft':'Not yet verified for live property search'}</p>
+   {canApprove&&property.status==='draft'&&<form onSubmit={verifyCollection} style={{display:'grid',gap:12,marginTop:13}}>
+    <label>Verified collection
+     <BrandedSelect style={style} value={collection} onChange={e=>{setCollection(e.target.value);setCollectionVerified(false)}}>
+      <option value="">Not yet verified</option><option value="Prime">Prime</option><option value="Luxury">Luxury</option>
+     </BrandedSelect>
+    </label>
+    <label>Verification evidence, current source and date
+     <textarea value={collectionSource} onChange={e=>{setCollectionSource(e.target.value);setCollectionVerified(false)}} rows={3} minLength={24} maxLength={1000} style={{...style,resize:'vertical'}} placeholder="Current owner/developer confirmation, document/date, exact estate and classification..." />
+    </label>
+    <button type="submit" disabled={busy||!collection||collectionSource.trim().length<24} style={{justifySelf:'start',background:'#2ba47a',color:'white',padding:'12px 19px',border:0,borderRadius:10,fontWeight:800}}>
+     {busy?'Saving…':'Verify collection and source'}
+    </button>
+   </form>}
+  </div>
   {canApprove&&property.status!=='published'&&<form onSubmit={confirm} style={{marginTop:24,paddingTop:21,borderTop:'1px solid #e3eee6',display:'grid',gap:11}}>
    <strong>Independent current-price confirmation</strong><p style={{fontSize:12,color:'#6c846f'}}>A second authorized reviewer must independently confirm the latest price. Confirmation expires after 30 days.</p>
    <textarea value={note} onChange={e=>setNote(e.target.value)} rows={3} minLength={20} maxLength={1000} placeholder="Source and date: Landshop owner/developer-approved price schedule, contact person and unit availability" style={{...style,resize:'vertical'}}/>
