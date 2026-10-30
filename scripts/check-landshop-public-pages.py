@@ -23,12 +23,23 @@ SITES = {
 # Each expected heading must exist in visible server-rendered text, not only
 # buried in Next.js hydration payloads or metadata.
 PUBLIC_PAGES = [
-    ("website", "/", "Your Property."),
-    ("www", "/", "Your Property."),
+    ("website", "/", "Everyone deserves affordable property."),
+    ("www", "/", "Everyone deserves affordable property."),
     ("website", "/develop", "Own Your Future"),
     ("www", "/develop", "Own Your Future"),
     ("website", "/incubate", "Invest in Possibilities."),
     ("website", "/grow", "Make Homeownership Possible."),
+    ("website", "/plans/grow", "Grow into homeownership."),
+    ("website", "/plans/develop", "A place for the plans you are making."),
+    ("website", "/plans/incubate", "Explore a shared route into property."),
+    ("website", "/plans/devpro", "Support the development of your estate."),
+    ("website", "/plans/estatepro", "Move your building plans forward."),
+    ("website", "/projects", "Explore the places behind Landshop."),
+    ("website", "/projects/famous-gardens", "A home for the future you are planning."),
+    ("website", "/collections/prime", "Prime Estates."),
+    ("website", "/collections/luxury", "Luxury Estates."),
+    ("website", "/visit", "Come with questions."),
+    ("website", "/careers", "Build meaningful work."),
     ("website", "/properties", "Property Marketplace"),
     ("website", "/applications", "Your property journey"),
     ("website", "/search", "Search Landshop"),
@@ -157,13 +168,19 @@ def check(kind: str, route: str, expected: str | None):
                 raise AssertionError("V23 advanced glass search missing "+field)
         if 'class="ls-v23-filter-holder"' not in html:
             raise AssertionError("V23 glass search placement is missing")
+        if 'class="ls26-location-track"' not in html:
+            raise AssertionError("V5 three-card location carousel is missing")
+        if "ls26-faded-eyebrow" not in html:
+            raise AssertionError("V5 bold faded section subtitles are missing")
+        if "Projects" not in visible or "Careers" not in visible:
+            raise AssertionError("requested Projects/Careers header links are missing")
         if 'data-landshop-hero="v16-separated-product-slides"' not in html:
             raise AssertionError("approved V16 distinct-slide homepage is missing")
-        if 'data-active-product="DEVELOP"' not in html:
-            raise AssertionError("initial Develop slide is not rendered separately")
+        if 'data-active-product="LANDSHOP"' not in html:
+            raise AssertionError("initial Landshop slide is not rendered separately")
         if "Develop. Incubate. Grow." in unescape(visible):
             raise AssertionError("obsolete combined three-product hero remains visible")
-        for label in ("Show DEVELOP slide","Show INCUBATE slide","Show GROW slide",
+        for label in ("Show LANDSHOP slide","Show FAMOUS GARDENS slide","Show FUTURE LOCATIONS slide",
                       "Previous slide","Next slide","Buy</button>","Sell</button>",
                       "Rent</button>","Shortlet</button>"):
             if label not in html:
@@ -180,15 +197,15 @@ def check(kind: str, route: str, expected: str | None):
             raise AssertionError("Contact Us details and the full-width enquiry form must be visible")
         if 'class="lc-map-landscape"' not in html or 'www.google.com/maps' not in html:
             raise AssertionError("Landshop Google Maps landscape embed must be present before the footer")
-        if 'maps.app.goo.gl/GLiNo6LfYWhWvJV1A' not in html:
-            raise AssertionError("Supplied official Google Maps listing link is missing")
+        if 'www.google.com/maps/search/' not in html:
+            raise AssertionError("Current Landshop Google Maps listing link is missing")
     if kind == "website" and route == "/properties":
         if 'class="mk-property-grid"' not in html and 'mk-property-grid ' not in html:
             raise AssertionError("database-backed marketplace grid is not rendered")
         if 'name="state"' not in html or 'name="sort"' not in html:
             raise AssertionError("marketplace filters and sorting controls are missing")
-        if "title=\"Sign in to list property for sale\"" not in html:
-            raise AssertionError("the marketplace Sell route is missing")
+        if 'class="ls26-market-filter"' not in html or "Sell</button>" not in html:
+            raise AssertionError("shared homepage marketplace filter and Sell tab are missing")
     for legacy in RECOVERY:
         if legacy.casefold() in visible.casefold():
             raise AssertionError("obsolete static recovery-page content is visible")
@@ -200,7 +217,12 @@ def verify_source() -> None:
     homepage = Path("apps/website/components/LandshopHome.tsx").read_text(encoding="utf-8")
     product = Path("apps/website/components/ProductPage.tsx").read_text(encoding="utf-8")
     required = (
-        "href:'https://portal.landshopnigeria.com/applications/incubate-investment'",
+        "secondaryHref:'/projects/famous-gardens'",
+        "secondaryHref:'/visit?project=famous-gardens'",
+        "secondaryHref:'/visit?topic=consultation'",
+        "Everyone deserves affordable property.",
+        "Plot Your Future. Save ₦5 million.",
+        "Where would you own next?",
         "['Buy','Sell','Rent','Shortlet']",
     )
     for marker in required:
