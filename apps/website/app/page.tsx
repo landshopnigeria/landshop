@@ -9,7 +9,7 @@ export default async function Page(){
  const featured:FeaturedProperty[]=selected.map(p=>({
   id:p.id,href:propertyHref(p),title:p.title,propertyType:p.property_type,
   location:[p.estates?.city,p.estates?.state].filter(Boolean).join(', ')||'Location on enquiry',
-  price:propertyPrice(p),
+  price:propertyPrice(p),collection:p.collection_verified_at?p.collection_type||undefined:undefined,
   image:gallery[p.id]?.find(m=>m.kind==='photo')?.src
  }));
  return <Homepage featured={featured}/>;
