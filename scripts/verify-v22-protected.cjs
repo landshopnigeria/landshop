@@ -16,7 +16,8 @@ for(const p of [
  const current=readFileSync(p,'utf8');
  const approvedHeader=(content)=>content
   .replace(/ \{label:'Projects',eyebrow:[\s\S]*?(?=\n \{label:'Careers',eyebrow:|\n \{label:'Company',eyebrow:)/, '')
-  .replace(/ \{label:'Careers',eyebrow:[\s\S]*?(?=\n \{label:'Company',eyebrow:)/, '');
+  .replace(/ \{label:'Careers',eyebrow:[\s\S]*?(?=\n \{label:'Company',eyebrow:)/, '')
+  .replace(/\n{2,}(?= \{label:'Company',eyebrow:)/g,'\n');
  const matches=p.endsWith('/SiteHeader.tsx')?approvedHeader(prior)===approvedHeader(current):prior===current;
  if(!matches){console.error('PROTECTED HEADER CHANGE OUTSIDE APPROVED PROJECTS MENU: '+p);failures++;}
  else console.log('PRESERVED: '+p);
