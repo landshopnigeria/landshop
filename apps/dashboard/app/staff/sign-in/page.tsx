@@ -1,10 +1,21 @@
 'use client';
-import {useState,type FormEvent} from 'react';
+import {useEffect,useState,type FormEvent} from 'react';
 import StaffAuthShell,{StaffAuthLogo} from '../StaffAuthShell';
 import StaffPasswordField from '../StaffPasswordField';
 import {createBrowserClient} from '@supabase/ssr';
+const callbackErrors:Record<string,string>={
+ missing_confirmation:'Your confirmation link is incomplete. Request a new confirmation email.',
+ invalid_confirmation:'This confirmation link is not valid. Request a new email.',
+ verification_failed:'The confirmation link could not be verified. It may have expired or already been used.',
+ session_unavailable:'Email verification completed without a usable session. Please sign in with your email and password.',
+ configuration:'Staff authentication is temporarily unavailable. Please contact Landshop support.'
+};
 export default function StaffSignIn(){
  const [email,setEmail]=useState(''),[password,setPassword]=useState(''),[busy,setBusy]=useState(false),[message,setMessage]=useState('');
+ useEffect(()=>{
+  const reason=new URLSearchParams(window.location.search).get('error');
+  if(reason&&Object.prototype.hasOwnProperty.call(callbackErrors,reason))setMessage(callbackErrors[reason]);
+ },[]);
  async function enter(e:FormEvent<HTMLFormElement>){
   e.preventDefault();setBusy(true);setMessage('');
   try{

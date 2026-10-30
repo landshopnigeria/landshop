@@ -7,6 +7,7 @@ export default function UpdatePassword(){
   const [confirmation,setConfirmation]=useState('');
   const [visible,setVisible]=useState(false);
   const [message,setMessage]=useState('');
+  const [signInHref,setSignInHref]=useState('/');
   const [busy,setBusy]=useState(false);
   async function submit(e:React.FormEvent<HTMLFormElement>){
     e.preventDefault();setMessage('');
@@ -18,6 +19,8 @@ export default function UpdatePassword(){
       if(sessionError || !user){setMessage('This reset link is invalid or expired. Request a new link.');return}
       const {error}=await browserSupabase().auth.updateUser({password});
       if(error) throw error;
+      // Routing is presentation-only: staff roles remain server-approved.
+      setSignInHref(user.user_metadata?.staff_signup===true?'https://app.landshopnigeria.com/staff/sign-in':'/');
       setMessage('Password updated successfully. You may now sign in.');
     }catch{setMessage('Password update failed. Request a fresh recovery email.')}
     finally{setBusy(false)}
@@ -29,6 +32,6 @@ export default function UpdatePassword(){
     <label><input type="checkbox" checked={visible} onChange={e=>setVisible(e.target.checked)}/> Show passwords</label>
     <button disabled={busy} type="submit">Update password</button>
     <p aria-live="polite" role="status">{message}</p>
-    <a href="/">Back to sign in</a>
+    <a href={signInHref}>Back to sign in</a>
   </form></main>
 }
