@@ -145,6 +145,14 @@ jobs:
              sh -ec 'psql "$DATABASE_URL" -XAt -v ON_ERROR_STOP=1 -c "$SQL"')
           [ "$result" = ready ] || { echo "::error::Production database migration/RLS verification failed";exit 1; }
           echo "Production SQL migration and RLS gate verified from live database"
+          # Read-only access-control audit: blocks a release if staff applications
+          # gain direct write policies, privileged roles lose owner approval,
+          # or unverified staff can execute protected work.
+          staff_result=$(docker run --rm --network host -e DATABASE_URL \
+            -v "$PWD/scripts/verify-staff-approval.sql:/verify-staff-approval.sql:ro" postgres:17 \
+            sh -ec 'psql "$DATABASE_URL" -XAt -v ON_ERROR_STOP=1 -f /verify-staff-approval.sql')
+          [ "$staff_result" = ready ] || { echo "::error::Landshop staff approval security gate failed"; exit 1; }
+          echo "Production staff role, identity and approval safeguards verified"
           for host in landshopnigeria.com www.landshopnigeria.com portal.landshopnigeria.com app.landshopnigeria.com; do
             curl --fail --silent --show-error --location --max-time 18 --head "https://$host/" >/dev/null || {
               echo "::error::Production domain $host does not have valid TLS/HTTP routing"
