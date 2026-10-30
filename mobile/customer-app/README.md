@@ -31,7 +31,7 @@ EXPO_PUBLIC_NATIVE_AUTH_REDIRECT_READY=false
 
 Enable only after the following have been manually verified by an authorized Supabase/Android/iOS operator:
 
-- In the **existing** Landshop Supabase Auth URL Configuration, add the exact allowed redirect `landshop://auth/callback`.
+- In the **existing** Landshop Supabase Auth URL Configuration, add both exact allowed redirects `landshop://auth/callback` (signup and Google) and `landshop://auth/callback?type=recovery` (password reset). Do not enable native auth until both have been tested.
 - Confirm Supabase Google sign-in provider and the official Google Cloud authorized callback.
 - Install a signed native development build and test `landshop://auth/callback?code=...` and `landshop://auth/callback?type=recovery&code=...` on real Android and iOS hardware using disposable test accounts. Never reuse a consumed code or paste access tokens in logs.
 - Confirm a confirmation-email callback, a Google sign-in callback, and password recovery all return to the correct native screen.
