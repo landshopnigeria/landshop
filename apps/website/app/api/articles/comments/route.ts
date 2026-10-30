@@ -2,7 +2,7 @@ import {NextRequest,NextResponse} from 'next/server';
 import {cookies} from 'next/headers';
 import {createServerClient} from '@supabase/ssr';
 import {createClient} from '@supabase/supabase-js';
-import {findGuide} from '../../../lib/guides';
+import {findGuide} from '../../../../lib/guides';
 export const dynamic='force-dynamic';
 function settings(){const url=process.env.NEXT_PUBLIC_SUPABASE_URL;const key=process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;if(!url||!key)throw Error('Comment service is not configured');return {url,key};}
 const json=(payload:unknown,status=200)=>NextResponse.json(payload,{status,headers:{'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});
