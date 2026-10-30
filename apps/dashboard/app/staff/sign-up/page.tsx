@@ -57,7 +57,7 @@ export default function StaffSignUp(){
   setPendingEmail(v.email.trim().toLowerCase());
   setConfirmationPending(true);
   setResendCompleted(false);
-  setMsg(v.role==='owner'?'Confirm your email, then complete your owner identity request in the staff portal. Owner access requires independent approval.':'Check your email to confirm your account. Your requested staff role remains subject to identity verification and management approval.');
+  setMsg(v.role==='owner'?'Confirm your email to open your staff dashboard. Company Owner privileges still require independent authorization.':'Check your email to activate your personal staff dashboard automatically. No management approval is needed to enter your dashboard.');
  }catch(e){setMsg(e instanceof Error?e.message:'Unable to register')}finally{setBusy(false)}
  }
 
