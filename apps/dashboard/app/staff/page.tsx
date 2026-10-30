@@ -26,10 +26,25 @@ export default async function Page(){
   ]);
   if(landshopOrg&&managerError==null&&verifiedManagement===true)redirect('/admin');
  }
- const [{data:profile},{data:canWork,error:workError}]=await Promise.all([
-  db.from('landshop_staff_profiles').select('*').eq('user_id',user.id).maybeSingle(),
-  db.rpc('landshop_staff_can_work',{p_user:user.id})
- ]);
+ // Confirmed staff signup creates only a personal profile, never membership.
+ const confirmedStaffSignup=Boolean(user.email_confirmed_at&&user.user_metadata?.staff_signup===true);
+ let {data:profile}=await db.from('landshop_staff_profiles').select('*').eq('user_id',user.id).maybeSingle();
+ if(confirmedStaffSignup&&!profile){
+  const fields=user.user_metadata||{},age=fields.age_at_registration;
+  if(typeof fields.preferred_username==='string'&&typeof age==='number'&&
+     Number.isInteger(age)&&age>=18&&age<=120&&typeof fields.gender==='string'&&
+     typeof fields.requested_role==='string'){
+   const {error:provisionError}=await db.rpc('landshop_staff_onboard',{
+    p_username:fields.preferred_username,p_age:age,
+    p_gender:fields.gender,p_requested_role:fields.requested_role
+   });
+   if(!provisionError){
+    const next=await db.from('landshop_staff_profiles').select('*').eq('user_id',user.id).maybeSingle();
+    profile=next.data;
+   }
+  }
+ }
+ const {data:canWork,error:workError}=await db.rpc('landshop_staff_can_work',{p_user:user.id});
  const authorized=workError==null&&canWork===true&&profile?.kyc_state==='approved'&&profile?.employment_state==='active';
  const {data:member}=authorized&&profile?await db.from('organization_members').select('role')
   .eq('user_id',user.id).eq('organization_id',profile.organization_id)
@@ -40,5 +55,6 @@ export default async function Page(){
   .eq('assignee_id',user.id).order('created_at',{ascending:false}).limit(100):{data:[]};
  return <StaffWorkspace userId={user.id} initialProfile={profile||null} initialTasks={tasks||[]}
   role={member?.role||null} initialVerified={verified}
+  selfServiceAccess={confirmedStaffSignup&&Boolean(profile)}
   metadata={(user.user_metadata||{}) as Record<string,unknown>} userEmail={user.email||''}/>;
 }
