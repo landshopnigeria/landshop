@@ -12,7 +12,7 @@ const links=[
  ['Workflow Automation','/admin/automation','⌘'],['Website Enquiries','/admin/enquiries','✉'],['Article Comments','/admin/comments','☷'],['Daily Newsletter','/admin/newsletter','✉'],['Customer Support','/admin/support','☏'],
  ['Referral Records','/admin/reports','♧'],['Staff & Roles','/admin/staff','♙'],['Workforce & Attendance','/admin/workforce','◷'],
  ['KYC & Compliance','/admin/kyc','◈'],['Survey & Allocation','/admin/seven-cities','⌖'],
- ['Reports & Analytics','/admin/reports','▥']];
+ ['Reports & Analytics','/admin/reports','▥'],['Staff Dashboard','/staff','⌂']];
 async function count(db:any,table:string){
  const {count,error}=await db.from(table).select('*',{count:'exact',head:true});
  return error?null:count;
@@ -38,6 +38,7 @@ export default async function Admin(){
  if(managementCheckError||verifiedManager!==true)return <main className="command-denied">Verified management approval is required for Command Center access.</main>;
  const {data:orgs}=await db.from('organizations').select('id').eq('kind','landshop').in('id',allowed.map(m=>m.organization_id));
  if(!orgs?.length)return <main className="command-denied">No active Landshop management assignment found.</main>;
+ const isOwner=allowed.some(m=>m.role==='owner'&&orgs.some(o=>o.id===m.organization_id));
  const [properties,apps,kyc,imports,staff,allocations,tickets,enquiries,referrals,workflows,published]=await Promise.all([
   count(db,'properties'),count(db,'applications'),count(db,'kyc_submissions'),
   count(db,'property_import_batches'),count(db,'organization_members'),count(db,'allocation_cases'),
@@ -52,11 +53,11 @@ export default async function Admin(){
  return <div className="command-shell">
   <aside className="command-side"><div className="command-brand"><img src="/media/logo.webp" alt="Landshop official logo" width={139} height={65}/><small>GLOBAL COMMAND CENTER</small></div>
    <nav aria-label="Global Command Center navigation">{links.map(([name,url,icon])=><Link href={url} className={url==='/admin'?'active':''} key={url}><span aria-hidden="true">{icon}</span> {name}</Link>)}</nav>
-   <div className="command-side-note"><strong>Landshop Enterprise</strong><p>Develop · Incubate · Grow</p><small>Permissions enforced per department.</small></div>
+   <div className="command-side-note"><strong>{isOwner?'Landshop Owner · Full Command Access':'Landshop Enterprise'}</strong><p>Develop · Incubate · Grow</p><small>Permissions enforced for every operation.</small><Link href="/staff" className="command-staff-back">← Back to Staff Dashboard</Link></div>
   </aside>
-  <div className="command-main"><header className="command-top"><div><strong>Global Command Center</strong><small>Manage · Monitor · Automate · Grow</small></div><span>Landshop Nigeria</span><div><Link href="/dashboard">Account</Link> · {user.email||'Authenticated employee'}</div></header>
+  <div className="command-main"><header className="command-top"><div><strong>Global Command Center</strong><small>{isOwner?'Verified Owner · Full Enterprise Control':'Manage · Monitor · Automate · Grow'}</small></div><span>Landshop Nigeria</span><div><Link href="/staff">Staff Dashboard</Link> · {user.email||'Authenticated employee'}</div></header>
    <main className="command-content">
-    <section className="command-banner"><div><span>Welcome to the</span><h1>Landshop Global Command Center</h1><p>Complete control. Greater visibility. Accelerated growth.</p></div><blockquote className="command-quote">Turning documented property decisions into opportunity across Africa.</blockquote></section>
+    <section className="command-banner"><div><span>{isOwner?'Owner access · All Command Center modules':'Welcome to the'}</span><h1>Landshop Global Command Center</h1><p>Complete control. Greater visibility. Accelerated growth.</p></div><blockquote className="command-quote">Turning documented property decisions into opportunity across Africa.</blockquote></section>
     <p className="command-micro">These are live access-controlled database records. No illustrative sales, property or revenue figures are shown.</p>
     <div className="command-stats">{statList.map(([title,value,icon])=><article key={title as string}><div className="command-icon">{icon}</div><small>{title}</small><h2>{value===null?'—':String(value)}</h2><p>{value===null?'Restricted or not available':'Live database count'}</p></article>)}</div>
     <div className="command-panels">
