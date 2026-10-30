@@ -1,0 +1,77 @@
+name: Landshop Native Internal Builds (Manual Only)
+on:
+  workflow_dispatch:
+    inputs:
+      profile:
+        description: "Internal QA target (never app-store submission)"
+        required: true
+        type: choice
+        options:
+          - android-internal
+          - ios-simulator
+          - ios-internal
+permissions:
+  contents: read
+concurrency:
+  group: landshop-native-manual-build
+  cancel-in-progress: false
+jobs:
+  internal-build:
+    if: ${{ github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 100
+    defaults:
+      run:
+        working-directory: mobile/customer-app
+    env:
+      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+      EAS_PROJECT_ID: ${{ vars.LANDSHOP_EAS_PROJECT_ID }}
+      PROFILE: ${{ inputs.profile }}
+      CI: "1"
+      EXPO_PUBLIC_NATIVE_AUTH_REDIRECT_READY: "false"
+    steps:
+      - name: Check out approved main branch
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Verify authorization and exact app identity
+        run: |
+          set -euo pipefail
+          test -n "$EXPO_TOKEN" || { echo "::error::Set the EXPO_TOKEN GitHub Actions secret in repository Settings."; exit 1; }
+          [[ "$EAS_PROJECT_ID" =~ ^[0-9a-fA-F-]{36}$ ]] || { echo "::error::Set LANDSHOP_EAS_PROJECT_ID repository variable to the existing EAS project UUID."; exit 1; }
+          case "$PROFILE" in android-internal|ios-simulator|ios-internal) ;; *) echo "::error::Only internal build profiles are allowed."; exit 1 ;; esac
+          node - <<'NODE'
+          const fs=require('fs');
+          const a=JSON.parse(fs.readFileSync('app.json','utf8')).expo;
+          if(a.android.package!=='com.landshopnigeria.customer'||a.ios.bundleIdentifier!=='com.landshopnigeria.customer'){
+            throw Error('Unexpected Android/iOS app identity; refusing to build');
+          }
+          NODE
+      - name: Install native dependencies
+        run: npm install --no-audit --no-fund
+      - name: Prepare approved Landshop logo assets
+        run: |
+          python3 -m pip install --user "Pillow==12.0.0"
+          npm run assets:prepare
+      - name: Validate source and configured artwork
+        run: |
+          npm run typecheck
+          npm test
+          npx expo config --type public > /dev/null
+      - name: Install EAS CLI with Expo integration
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+          packager: npm
+      - name: Link existing authorized EAS project (never create new)
+        run: eas init --id "$EAS_PROJECT_ID" --non-interactive
+      - name: Produce internal build, no store upload
+        run: |
+          set -euo pipefail
+          if [[ "$PROFILE" == android-* ]]; then PLATFORM=android; else PLATFORM=ios; fi
+          eas build --platform "$PLATFORM" --profile "$PROFILE" --non-interactive --wait
