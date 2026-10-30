@@ -1,6 +1,5 @@
-import BrandedSelect from '../components/BrandedSelect';
-
 'use client';
+import BrandedSelect from '../components/BrandedSelect';
 import {useState} from 'react';
 import {browserSupabase} from '../lib/supabase-browser';
 import './auth-enterprise.css';
