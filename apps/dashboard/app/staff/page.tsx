@@ -16,5 +16,5 @@ export default async function Page(){
  db.from('organization_members').select('role').eq('user_id',user.id).eq('status','active').limit(1).maybeSingle(),
  db.from('staff_tasks').select('id,title,details,status,starts_at,due_at,planned_minutes,delay_allowance_minutes,viewed_at,started_at,submitted_at,score,review_comment,assigned_by').eq('assignee_id',user.id).order('created_at',{ascending:false}).limit(100)
  ]);
- return <StaffWorkspace userId={user.id} initialProfile={profile||null} initialTasks={tasks||[]} role={member?.role||null} metadata={(user.user_metadata||{}) as Record<string,unknown>}/>;
+ return <StaffWorkspace userId={user.id} initialProfile={profile||null} initialTasks={tasks||[]} role={member?.role||null} metadata={(user.user_metadata||{}) as Record<string,unknown>} userEmail={user.email||''}/>;
 }
