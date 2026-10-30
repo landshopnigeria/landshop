@@ -13,7 +13,7 @@ for(const [name,start,end] of [
 ]){
  // The user approved changing only native dropdown presentation. Keep every
  // protected search option, label, field, handler and slider character intact.
- const approvedDropdownTags=(text)=>text.replace(/<BrandedSelect(?=[\\s>])/g,'<select').replace(/<\\/BrandedSelect>/g,'</select>');
+ const approvedDropdownTags=(text)=>text.split('<BrandedSelect ').join('<select ').split('<BrandedSelect>').join('<select>').split('</BrandedSelect>').join('</select>');
  const prior=exactBlock(previous,start,end);
  const next=exactBlock(current,start,end);
  const comparable=name==='Property search'?approvedDropdownTags(next):next;
