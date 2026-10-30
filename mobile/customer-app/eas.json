@@ -10,8 +10,10 @@
         "buildType": "apk"
       },
       "env": {
-        "EXPO_PUBLIC_NATIVE_AUTH_REDIRECT_READY": "false"
-      }
+        "EXPO_PUBLIC_NATIVE_AUTH_REDIRECT_READY": "false",
+        "EXPO_PUBLIC_SUPABASE_URL": "https://iwkfagzkogzidrbbezds.supabase.co"
+      },
+      "environment": "preview"
     },
     "ios-simulator": {
       "distribution": "internal",
@@ -20,21 +22,27 @@
         "simulator": true
       },
       "env": {
-        "EXPO_PUBLIC_NATIVE_AUTH_REDIRECT_READY": "false"
-      }
+        "EXPO_PUBLIC_NATIVE_AUTH_REDIRECT_READY": "false",
+        "EXPO_PUBLIC_SUPABASE_URL": "https://iwkfagzkogzidrbbezds.supabase.co"
+      },
+      "environment": "preview"
     },
     "ios-internal": {
       "distribution": "internal",
       "channel": "qa",
       "env": {
-        "EXPO_PUBLIC_NATIVE_AUTH_REDIRECT_READY": "false"
-      }
+        "EXPO_PUBLIC_NATIVE_AUTH_REDIRECT_READY": "false",
+        "EXPO_PUBLIC_SUPABASE_URL": "https://iwkfagzkogzidrbbezds.supabase.co"
+      },
+      "environment": "preview"
     },
     "production": {
       "channel": "production",
       "env": {
-        "EXPO_PUBLIC_NATIVE_AUTH_REDIRECT_READY": "false"
-      }
+        "EXPO_PUBLIC_NATIVE_AUTH_REDIRECT_READY": "false",
+        "EXPO_PUBLIC_SUPABASE_URL": "https://iwkfagzkogzidrbbezds.supabase.co"
+      },
+      "environment": "production"
     }
   }
 }
