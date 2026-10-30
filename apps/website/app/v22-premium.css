@@ -174,3 +174,18 @@
 .v22-article-sidebar .contact-hidden-field{display:none}
 @media(max-width:960px){.v22-insights-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.v22-article-layout{grid-template-columns:1fr}.v22-article-sidebar{position:static;grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:650px){.v22-insights-grid,.v22-article-sidebar{grid-template-columns:1fr}.v22-article-layout{margin:35px 0 70px}.v22-sidebar-box{padding:21px}}
+
+.v22-comment-list{display:grid;gap:13px;margin:24px 0}
+.v22-comment-list article{padding:20px 22px;background:#fff;border:1px solid #d6e7da;border-radius:13px}
+.v22-comment-list strong{display:inline-block;font-size:14px;color:#214832;margin-right:12px}
+.v22-comment-list time{font-size:12px;color:#8a988e}
+.v22-comment-list article p{margin:11px 0 0;color:#425f4b;line-height:1.75;white-space:pre-wrap;overflow-wrap:anywhere}
+.v22-comment-form{display:grid;gap:13px;margin-top:27px}
+.v22-comment-form label{font-size:14px;color:#1e4a34;font-weight:760}
+.v22-comment-form textarea{width:100%;border:1px solid #c8dfcd;border-radius:12px;background:#fff;padding:17px;line-height:1.6;resize:vertical;color:#143828;font:inherit}
+.v22-comment-form textarea:focus-visible{outline:3px solid #88caab;outline-offset:2px}
+.v22-comment-form .v22-btn{justify-self:start;cursor:pointer;border:0}
+.v22-comment-form .v22-btn:disabled{opacity:.55;cursor:not-allowed;transform:none}
+.v22-signin-prompt{margin-top:25px}
+.v22-comment-success{color:#176c47!important;font-weight:720}
+.v22-comment-error{color:#b42318!important;font-weight:720}
