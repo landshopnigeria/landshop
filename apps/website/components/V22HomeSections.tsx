@@ -19,9 +19,9 @@ const guides=[
  {title:'How to prepare for a property inspection',href:'/insights/property-inspection',tag:'INSPECTIONS',image:editorialImages.develop.src}
 ];
 const reviews=[
- {quote:'Landshop is authentic and experienced. And your customer service is 100%. From social media to follow up calls.',name:'Emmanuel Sanusi',region:'Ikotun, Lagos'},
- {quote:'I have confidence in Landshop because I’m always contacted whilst I’m far away. And of course, I will recommend Landshop to friends and family.',name:'Precious Oluwapelumi Adeleye',region:'Maryland, Lagos'},
- {quote:'You’ve made land purchase very easy and affordable for everyone, including me.',name:'Ojo Victor Oluwatimilehin',region:'Surulere, Lagos'}
+ {quote:'Landshop is authentic and experienced. And your customer service is 100%. From social media to follow-up calls. I was just informed by my account officer that my property has appreciated in price. Great.',name:'Emmanuel Sanusi',region:'Ikotun, Lagos'},
+ {quote:'I have confidence in Landshop because I’m always contacted while I’m far away. Of course, I will recommend Landshop to friends and family. I am also excited about the value appreciation. That was indeed fast.',name:'Precious Oluwapelumi Adeleye',region:'Maryland, Lagos'},
+ {quote:'You guys are any property investor’s top option. You’ve made land purchase very easy and affordable for everyone, including me. Hearing about the growth of my property is awesome, and knowing I can still continue my payment is wonderful.',name:'Ojo Victor Oluwatimilehin',region:'Surulere, Lagos'}
 ];
 const services=[
  {name:'Property Acquisition',intro:'Understand purchase options, document checks and the pathway to an informed property decision.',href:'/services/property-acquisition',photo:editorialImages.develop.src,icon:'home' as const},
