@@ -23,8 +23,8 @@ SITES = {
 # Each expected heading must exist in visible server-rendered text, not only
 # buried in Next.js hydration payloads or metadata.
 PUBLIC_PAGES = [
-    ("website", "/", "Own Your Future."),
-    ("www", "/", "Own Your Future."),
+    ("website", "/", "Your Property."),
+    ("www", "/", "Your Property."),
     ("website", "/develop", "Own Your Future"),
     ("www", "/develop", "Own Your Future"),
     ("website", "/incubate", "Invest in Possibilities."),
@@ -126,6 +126,13 @@ def check(kind: str, route: str, expected: str | None):
             raise AssertionError("V22 database-backed featured-property cards or an explicit approved-inventory empty state are missing")
         if "Verified opportunities, not placeholder listings." in visible and "Only approved, published properties appear here." not in visible:
             raise AssertionError("empty inventory state must explain the independently reviewed publication policy")
+        if 'data-v23-design="cinematic-property-video-preview"' not in html:
+            raise AssertionError("approved V23 cinematic property hero not present")
+        for field in ("query","state","city","area","type","min","max","bedrooms","bathrooms","minsize","availability","collection"):
+            if f'name="{field}"' not in html:
+                raise AssertionError("V23 advanced glass search missing "+field)
+        if 'class="ls-v23-filter-holder"' not in html:
+            raise AssertionError("V23 glass search placement is missing")
         if 'data-landshop-hero="v16-separated-product-slides"' not in html:
             raise AssertionError("approved V16 distinct-slide homepage is missing")
         if 'data-active-product="DEVELOP"' not in html:
