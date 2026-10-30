@@ -1,4 +1,4 @@
-import SiteIcon, {IconChip} from '../../components/SiteIcon';
+import SiteIcon from '../../components/SiteIcon';
 import ContactForm from './ContactForm';
 import {MarketFooter} from '../../components/MarketChrome';
 import '../properties/property-market.css';
@@ -34,38 +34,50 @@ const businessSchema = {
 };
 
 export default function Contact() {
-  return <main className="lc-premium lc-v23">
+  return <main className="lc-premium lc-v24">
     <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(businessSchema)}}/>
 
-    <div className="lc-v23-container">
-      <section className="lc-v23-hero" aria-labelledby="contact-title">
-        <div className="lc-v23-photo">
-          <img src="/media/landshop-contact-reception.webp" alt="Landshop reception with company signage, front desk and visitor waiting area" fetchPriority="high" decoding="async"/>
+    <div className="lc-v24-container">
+      <section className="lc-v24-hero" aria-labelledby="contact-title">
+        <div className="lc-v24-photo">
+          <img src="/media/landshop-contact-reception.webp" alt="Landshop reception, front desk and visitor waiting area" fetchPriority="high" decoding="async"/>
         </div>
-        <div className="lc-v23-info">
-          <h1 id="contact-title">Contact <em>Us.</em></h1>
-          <p className="lc-v23-intro">Have a question about property, investment or financing? Our team is here to help you find the right answer.</p>
-          <div className="lc-v23-address">
-            <IconChip name="pin"/>
-            <div><span className="lc-v23-label">VISIT OUR OFFICE</span><address>{office}</address></div>
-          </div>
-          <div className="lc-v23-contact-links">
-            <div className="lc-v23-contact">
-              <IconChip name="phone"/>
-              <div><span className="lc-v23-label">PHONE NUMBER</span><a href={'tel:' + phone}>+234 916 997 3359</a></div>
-            </div>
-            <div className="lc-v23-contact">
-              <IconChip name="mail"/>
-              <div><span className="lc-v23-label">EMAIL ADDRESS</span><a href={'mailto:' + email}>{email}</a></div>
+        <div className="lc-v24-info">
+          <div className="lc-v24-info-inner">
+            <h1 id="contact-title">Contact <em>Us</em></h1>
+            <p className="lc-v24-intro">Questions about property, investment or financing? Our team is here to help.</p>
+
+            <div className="lc-v24-details" aria-label="Landshop contact details">
+              <div className="lc-v24-detail">
+                <span className="lc-v24-icon" aria-hidden="true"><SiteIcon name="pin" size={23}/></span>
+                <div className="lc-v24-detail-copy">
+                  <span className="lc-v24-label">Our office</span>
+                  <address>{office}</address>
+                </div>
+              </div>
+              <div className="lc-v24-detail">
+                <span className="lc-v24-icon" aria-hidden="true"><SiteIcon name="phone" size={23}/></span>
+                <div className="lc-v24-detail-copy">
+                  <span className="lc-v24-label">Phone number</span>
+                  <a href={'tel:' + phone}>+234 916 997 3359</a>
+                </div>
+              </div>
+              <div className="lc-v24-detail lc-v24-detail--accent">
+                <span className="lc-v24-icon" aria-hidden="true"><SiteIcon name="mail" size={23}/></span>
+                <div className="lc-v24-detail-copy">
+                  <span className="lc-v24-label">Email address</span>
+                  <a href={'mailto:' + email}>{email}</a>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="lc-v23-form lc-form-col" id="enquiry" aria-labelledby="enquiry-title">
-        <div className="lc-v23-form-heading">
+      <section className="lc-v24-form" id="enquiry" aria-labelledby="enquiry-title">
+        <div className="lc-v24-form-heading">
           <h2 id="enquiry-title">Send Us a Message</h2>
-          <SiteIcon name="mail" size={24}/>
+          <SiteIcon name="mail" size={22}/>
         </div>
         <ContactForm/>
       </section>
