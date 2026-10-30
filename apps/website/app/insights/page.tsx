@@ -1,16 +1,12 @@
 import ContentShell from '../../components/ContentShell';
-import {editorialImages} from '../../lib/editorial-imagery';
 import Link from 'next/link';
+import {editorialImages} from '../../lib/editorial-imagery';
 import {guides} from '../../lib/guides';
-export const metadata={title:'Property Insights & Guides | Landshop Nigeria',description:'Practical Landshop guides to property due diligence, mortgage pre-qualification and inspections in Nigeria.'};
-export default function Insights(){return <ContentShell eyebrow="Insights & Education" title="Better property decisions start with better questions." intro="Explore practical Landshop education on acquisition, inspections and mortgage planning. These guides are informational, not a substitute for project-specific contracts or independent advice." image={editorialImages.skyline.src} imageAlt={editorialImages.skyline.alt}>
- <section><h2>Explore our knowledge center</h2><p className="content-subhead">Choose an article to read the full guide, including important checks to make before taking the next step.</p>
- <div className="content-grid">{guides.map((guide,i)=><article className="content-tile insight-card" key={guide.slug}>
-  <Link href={'/insights/'+guide.slug} aria-label={'Read '+guide.title}><img src={guide.image} alt="" loading="lazy" className="insight-card-image"/></Link>
-  <span className="number">0{i+1} / {guide.category} · {guide.readingMinutes} MIN READ</span><h3><Link href={'/insights/'+guide.slug}>{guide.title}</Link></h3><p>{guide.summary}</p>
-  <Link href={'/insights/'+guide.slug}>Read the full guide →</Link>
- </article>)}</div>
- </section>
- <aside className="content-aside"><strong>Editorial note:</strong><p>Actual property availability, title status, mortgage terms and financial eligibility must be verified from current project or lender documentation. No outcome or return is promised.</p></aside>
- <aside className="content-band"><h2>Move from reading to the right application.</h2><p>Choose Develop, Incubate or Grow and complete a secure product-specific application.</p><Link href="/applications" className="content-cta">Explore applications →</Link></aside>
- </ContentShell>}
+import V22InsightsList from '../../components/V22InsightsList';
+export const metadata={title:'Landshop Insights | Property, Finance, Lifestyle & Marketing',description:'Twenty Landshop articles covering property ownership, mortgage planning, investment risk, location research, lifestyle and property marketing.'};
+export default async function Insights({searchParams}:{searchParams:Promise<{category?:string}>}){const {category}=await searchParams;
+ return <ContentShell eyebrow="THE LANDSHOP JOURNAL" title="Insights for better property decisions." intro="Explore property ownership, investment, finance, Nigeria locations, lifestyle and honest marketing through practical guides." image={editorialImages.skyline.src} imageAlt={editorialImages.skyline.alt}>
+  <V22InsightsList articles={guides.map(g=>({slug:g.slug,title:g.title,category:g.category,summary:g.summary,image:g.image,readingMinutes:g.readingMinutes,tags:g.tags}))} initialCategory={category||'All'}/>
+  <section className="v22-root v22-section v22-muted"><div className="v22-container v22-two"><div><span className="v22-eyebrow">FIND YOUR PATHWAY</span><h2>From reading to a clearer next step.</h2><p>Our educational articles do not replace professional advice or current project documents. Explore the relevant Landshop product, or ask our team for verified details.</p></div><div className="v22-action-panel"><Link href="/develop" className="v22-text-link">Develop ↗</Link><Link href="/incubate" className="v22-text-link">Incubate ↗</Link><Link href="/grow" className="v22-text-link">Grow ↗</Link><Link href="/contact" className="v22-btn">Contact Landshop ↗</Link></div></div></section>
+ </ContentShell>;
+}
