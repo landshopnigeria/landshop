@@ -30,8 +30,23 @@ jobs:
         run: npm install --no-audit --no-fund
       - name: Verify TypeScript types
         run: npm run typecheck
-      - name: Test strict customer invitation and authentication deep links
-        run: npm run test:links
+      - name: Test strict authentication links and KYC upload constraints
+        run: npm run test
+      - name: Verify Expo EAS internal build profiles
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const app=JSON.parse(fs.readFileSync('app.json','utf8'));
+          const eas=JSON.parse(fs.readFileSync('eas.json','utf8'));
+          const builds=eas.build;
+          if(!app.expo.ios.bundleIdentifier||!app.expo.android.package)throw Error('Missing native bundle IDs');
+          for(const profile of ['android-internal','ios-simulator','ios-internal','production']){
+            if(!builds[profile])throw Error('Missing '+profile);
+            if(builds[profile].env.EXPO_PUBLIC_NATIVE_AUTH_REDIRECT_READY!=='false')throw Error('Native OAuth must remain disabled until device verification');
+          }
+          if(builds['android-internal'].android.buildType!=='apk'||builds['ios-simulator'].ios.simulator!==true)throw Error('Invalid internal QA build config');
+          if(builds.production.autoSubmit===true)throw Error('App store auto-submission is prohibited');
+          NODE
       - name: Confirm no native secret keys in source
         run: |
           if grep -rE 'service_role|sb_secret_' src App.tsx; then
