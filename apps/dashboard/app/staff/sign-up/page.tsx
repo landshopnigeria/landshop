@@ -10,7 +10,7 @@ const roles=[
 ];
 export default function StaffSignUp(){
  const [v,setV]=useState({email:'',username:'',age:'',gender:'prefer_not_to_say',role:'staff',password:'',confirm:''});
- const [busy,setBusy]=useState(false),[msg,setMsg]=useState('');
+ const [busy,setBusy]=useState(false),[msg,setMsg]=useState(''),[acknowledged,setAcknowledged]=useState(false);
  const update=(k:keyof typeof v,s:string)=>setV(p=>({...p,[k]:s}));
  async function submit(e:FormEvent<HTMLFormElement>){
  e.preventDefault();setBusy(true);setMsg('');
@@ -18,6 +18,7 @@ export default function StaffSignUp(){
   if(!/^[a-zA-Z][\w.]{2,29}$/.test(v.username))throw Error('Username must contain 3–30 letters, numbers, underscores or periods, starting with a letter');
   if(+v.age<18||+v.age>120||!Number.isInteger(+v.age))throw Error('Staff registration is available to adults aged 18 or above');
   if(v.password.length<12||v.password!==v.confirm)throw Error('Use matching passwords of at least 12 characters');
+  if(!acknowledged)throw Error('Read the staff data and location privacy notice before continuing');
   const url=process.env.NEXT_PUBLIC_SUPABASE_URL,key=process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
   if(!url||!key)throw Error('Authentication service unavailable');
   const db=createBrowserClient(url,key,{cookieOptions:{domain:'.landshopnigeria.com',secure:true,sameSite:'lax',path:'/'}});
@@ -45,6 +46,7 @@ export default function StaffSignUp(){
    <label>Confirm password<input required minLength={12} autoComplete="new-password" type="password" style={control} value={v.confirm} onChange={e=>update('confirm',e.target.value)}/></label>
   </div>
   <p style={{fontSize:12,color:'#6b806e',lineHeight:1.6}}>Your photograph and work location are requested separately after you sign in. No automatic GPS monitoring occurs.</p>
+  <label style={{display:'flex',alignItems:'flex-start',gap:10,fontSize:12,lineHeight:1.5,marginBottom:12}}><input type="checkbox" required checked={acknowledged} onChange={e=>setAcknowledged(e.target.checked)} style={{accentColor:'#2ba47a',marginTop:3}}/> I have read the <Link href="/staff/privacy" style={{color:'#148864',fontWeight:800}}>staff identity, GPS and performance privacy notice</Link>. Actual location access will be requested separately at each clock event.</label>
   <button disabled={busy} type="submit" style={{width:'100%'}}>{busy?'Submitting…':'Sign Up as Staff'}</button>
   {msg&&<p role="status" style={{fontSize:13,background:'#fff0e1',padding:14,borderRadius:10,lineHeight:1.6}}>{msg}</p>}
   <p style={{textAlign:'center'}}>Already registered? <Link href="/staff/sign-in" style={{color:'#12815e',fontWeight:800}}>Sign In</Link></p>
