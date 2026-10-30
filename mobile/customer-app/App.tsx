@@ -6,6 +6,7 @@ import QRCode from 'react-native-qrcode-svg';
 import type {Session} from '@supabase/supabase-js';
 import {supabase} from './src/supabase';
 import {parseInboundUrl} from './src/auth-links';
+import {BrandIcon} from './src/BrandIcon';
 import {finishNativeAuthentication,nativeAuthEnabled,nativeCallbackUrl,signInWithNativeGoogle,webCallbackUrl} from './src/native-auth';
 
 type Page='signin'|'signup'|'verify'|'reset-password'|'dashboard'|'referrals'|'kyc'|'profile';
@@ -34,7 +35,7 @@ function Field({title,value,onChange,placeholder,secure=false,keyboardType='defa
   keyboardType={keyboardType} autoCapitalize={autoCapitalize}
   autoCorrect={false} textContentType={secure?'password':undefined}/></View>;
 }
-function Action({label,onPress}:{label:string;onPress:()=>void}){return <Pressable onPress={onPress} style={styles.action}><Text style={styles.actionText}>{label}</Text><Text style={{color:green,fontSize:22}}>›</Text></Pressable>}
+function Action({label,onPress}:{label:string;onPress:()=>void}){return <Pressable onPress={onPress} style={styles.action}><Text style={styles.actionText}>{label}</Text><BrandIcon name="arrow" size={19} color={green}/></Pressable>}
 function Caption({children}:{children:React.ReactNode}){return <Text style={styles.caption}>{children}</Text>}
 export default function App(){
  const [session,setSession]=useState<Session|null>(null),[loading,setLoading]=useState(true),[busy,setBusy]=useState(false);
@@ -242,9 +243,18 @@ export default function App(){
  const overview=<><Text style={styles.overline}>LANDSHOP CUSTOMER ACCOUNT</Text>
   <Text style={[styles.heading,{textAlign:'left',fontSize:31,marginBottom:7}]}>Welcome to <Text style={styles.accent}>Landshop</Text></Text>
   <Text style={{fontSize:13,color:muted,marginBottom:20}}>{session?.user.email}</Text>
-  <Pressable onPress={()=>switchPage('kyc')} style={styles.kycBadge}><Text style={{color:green,fontWeight:'700'}}>✓  KYC: {kyc.replaceAll('_',' ')}</Text><Text style={{color:green,fontSize:20}}>›</Text></Pressable>
+  <Pressable onPress={()=>switchPage('kyc')} style={styles.kycBadge}><BrandIcon name="shield" size={20}/><Text style={{color:green,fontWeight:'700',flex:1}}>KYC: {kyc.replaceAll('_',' ')}</Text><BrandIcon name="arrow" size={19}/></Pressable>
   <View style={styles.quickGrid}>
-   {[['Invest in Property',()=>navigateWebsite('https://www.landshopnigeria.com/properties')],['Refer & Grow',()=>switchPage('referrals')],['Build Wealth',()=>navigateWebsite(portal+'/applications/incubate-investment')],['Applications',()=>navigateWebsite(app+'/dashboard/applications')],['Referral Wallet',()=>switchPage('referrals')],['Support',()=>navigateWebsite(portal+'/support')]].map(([title,go])=><Pressable key={String(title)} style={styles.quickCard} onPress={go as ()=>void}><Text style={styles.quickIcon}>⌂</Text><Text style={styles.quickText}>{String(title)}</Text></Pressable>)}
+   {([
+    ['Invest in Property','home',()=>navigateWebsite('https://www.landshopnigeria.com/properties')],
+    ['Refer & Grow','users',()=>switchPage('referrals')],
+    ['Build Wealth','growth',()=>navigateWebsite(portal+'/applications/incubate-investment')],
+    ['Applications','file',()=>navigateWebsite(app+'/dashboard/applications')],
+    ['Referral Wallet','wallet',()=>switchPage('referrals')],
+    ['Support','support',()=>navigateWebsite(portal+'/support')]
+   ] as const).map(([title,icon,go])=><Pressable key={title} style={styles.quickCard} onPress={go}>
+    <BrandIcon name={icon} size={26}/><Text style={styles.quickText}>{title}</Text>
+   </Pressable>)}
   </View>
   <View style={styles.row}><View style={[styles.summaryCard,styles.half]}><Text style={styles.summaryTitle}>Applications</Text><Text style={styles.summaryNumber}>{applications}</Text></View><View style={[styles.summaryCard,styles.half]}><Text style={styles.summaryTitle}>Approved Wallet</Text><Text style={styles.summaryNumber}>{new Intl.NumberFormat('en-NG',{style:'currency',currency:'NGN',maximumFractionDigits:0}).format(wallet/100)}</Text></View></View>
   <Action label="My referral link and QR" onPress={()=>switchPage('referrals')}/>
@@ -281,7 +291,16 @@ export default function App(){
    {page==='dashboard'?overview:page==='referrals'?refScreen:page==='kyc'?kycScreen:profileScreen}
    {!!notice&&<Text style={styles.message}>{notice}</Text>}
   </ScrollView>
-  <View style={styles.dock}>{[['Home','dashboard'],['Properties','properties'],['Refer','referrals'],['KYC','kyc'],['Account','profile']].map(([label,target])=><Pressable key={label} onPress={()=>target==='properties'?navigateWebsite('https://www.landshopnigeria.com/properties'):switchPage(target as Page)} style={styles.dockItem}><Text style={{fontSize:19,color:page===target?green:muted}}>{label==='Home'?'⌂':label==='Refer'?'↗':label==='KYC'?'✓':label==='Account'?'◉':'⌕'}</Text><Text style={{fontSize:10,color:page===target?green:muted,fontWeight:'700'}}>{label}</Text></Pressable>)}</View>
+  <View style={styles.dock}>{([
+   ['Home','dashboard','home'],
+   ['Properties','properties','search'],
+   ['Refer','referrals','users'],
+   ['KYC','kyc','shield'],
+   ['Account','profile','account']
+  ] as const).map(([label,target,icon])=><Pressable key={label} onPress={()=>target==='properties'?navigateWebsite('https://www.landshopnigeria.com/properties'):switchPage(target)} style={styles.dockItem}>
+   <BrandIcon name={icon} size={22} color={page===target?green:muted}/>
+   <Text style={{fontSize:10,color:page===target?green:muted,fontWeight:'700'}}>{label}</Text>
+  </Pressable>)}</View>
  </View>}
  </SafeAreaView>;
 }
