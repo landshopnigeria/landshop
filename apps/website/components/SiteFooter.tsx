@@ -8,6 +8,7 @@ const company=[
  {label:'Who We Are',href:'/about#who-we-are'},
  {label:'Vision & Mission',href:'/about'},
  {label:'Our Leadership',href:'/company/team'},
+ {label:'Careers',href:'/careers'},
  {label:'Our Partners',href:'/partners'},
  {label:'Client Experiences',href:'/testimonials'},
  {label:'Contact Us',href:'/contact'}
