@@ -64,11 +64,15 @@ revoke all on function public.landshop_staff_onboard(text,integer,text,text) fro
 grant execute on function public.landshop_staff_onboard(text,integer,text,text) to authenticated;
 
 create or replace function landshop_private.activate_staff_confirmation()
-returns trigger language plpgsql security definer set search_path='' as $$
+returns trigger language plpgsql security definer set search_path='' as $
+declare should_activate boolean:=false;
 begin
- if new.email_confirmed_at is not null
-  and new.raw_user_meta_data->>'staff_signup'='true'
-  and (tg_op='INSERT' or (tg_op='UPDATE' and old.email_confirmed_at is null)) then
+ if tg_op='INSERT' then
+  should_activate:=(new.email_confirmed_at is not null);
+ else
+  should_activate:=(new.email_confirmed_at is not null and old.email_confirmed_at is null);
+ end if;
+ if should_activate and new.raw_user_meta_data->>'staff_signup'='true' then
   begin
    perform landshop_private.activate_verified_staff(
     new.id,
@@ -91,6 +95,27 @@ for each row execute function landshop_private.activate_staff_confirmation();
 drop trigger if exists landshop_auto_staff_created on auth.users;
 create trigger landshop_auto_staff_created after insert on auth.users
 for each row execute function landshop_private.activate_staff_confirmation();
+
+-- Activate verified legacy self-registered staff accounts without granting elevated roles.
+do $
+declare person record;
+begin
+ for person in select id,raw_user_meta_data from auth.users
+  where email_confirmed_at is not null and raw_user_meta_data->>'staff_signup'='true'
+ loop
+  begin
+   perform landshop_private.activate_verified_staff(
+    person.id,
+    person.raw_user_meta_data->>'preferred_username',
+    (person.raw_user_meta_data->>'age_at_registration')::integer,
+    person.raw_user_meta_data->>'gender',
+    person.raw_user_meta_data->>'requested_role');
+  exception when others then
+   -- Suspended accounts and invalid legacy registrations remain untouched.
+   raise warning 'Landshop verified staff backfill skipped one account';
+  end;
+ end loop;
+end $;
 
 -- Standard staff receive their own attendance, tasks and daily reporting immediately
 -- after confirmed registration. Elevated roles still need independent KYC and approval.
