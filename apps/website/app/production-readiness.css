@@ -74,3 +74,32 @@ html{scroll-padding-top:96px;-webkit-text-size-adjust:100%;text-size-adjust:100%
  .v22-root :where(a,button):focus-visible,.ls26-page :where(a,button):focus-visible{outline-width:4px;outline-color:#000}
  .v22-root .ls26-faded-eyebrow{opacity:1!important;color:#215744!important}
 }
+
+
+/* Micro-display containment. The approved glass header/footer keep their appearance;
+ * only the sizing of their existing controls changes below 311px. */
+@media(max-width:310px){
+ .ls-site-chrome,.ls-glass-wrap,.ls-glass-header,.ls-utility-bar,.ls-utility-inner,
+ .ls24-newsletter-section,.ls24-global-footer{max-width:100%;min-width:0}
+ .ls-site-chrome .ls-utility-inner{min-width:0;gap:3px;padding-inline:5px}
+ .ls-site-chrome .ls-global-search{min-width:0;flex:1 1 auto;width:100%;margin:0;padding-inline:6px}
+ .ls-site-chrome .ls-global-search input{min-width:0;width:100%;font-size:10px}
+ .ls-site-chrome .ls-glass-wrap{padding-inline:4px}
+ .ls-site-chrome .ls-glass-header{min-width:0;padding:6px;gap:3px}
+ .ls-site-chrome .ls-brand{min-width:0;flex:1 1 70px;max-width:76px}
+ .ls-site-chrome .ls-glass-header .ls-brand img{width:76px;height:auto;max-width:100%}
+ .ls-site-chrome .ls-header-actions{min-width:0;gap:3px;flex:0 0 auto}
+ .ls-site-chrome .ls-start{min-width:0;min-height:34px;padding:5px;font-size:9px;gap:0;letter-spacing:-.01em}
+ .ls-site-chrome .ls-start .ls-icon{display:none}
+ .ls-site-chrome .ls-menu-button{width:34px;height:34px;min-width:34px;padding:4px}
+ .ls-site-chrome .ls-menu-button .ls-icon{width:22px;height:22px}
+ .ls-site-chrome .ls-primary-nav.ls-nav-mobile-open{max-width:calc(100vw - 8px);left:4px;right:4px}
+ .ls24-newsletter-section{padding-inline:6px}
+ .ls24-newsletter-glass{min-width:0;padding:16px 10px}
+ .ls24-newsletter-glass h2{font-size:15px!important;overflow-wrap:anywhere}
+ .ls24-footer-main{min-width:0;grid-template-columns:minmax(0,1fr);padding-inline:12px}
+ .ls24-brand-col,.ls24-footer-media{grid-column:1/-1;min-width:0}
+ .ls24-footer-bottom-inner{padding-inline:10px}
+ .ls24-legal-links{max-width:100%;gap:8px}
+ .ls24-legal-links a{white-space:normal}
+}
