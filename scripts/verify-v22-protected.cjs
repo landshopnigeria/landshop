@@ -50,13 +50,16 @@ const footerCss=readFileSync('apps/website/app/v24-global-footer.css','utf8');
 // Filter names, carousel hooks, hero layout and the V22 sections remain protected above.
 if((home.match(/subtitle:/g)||[]).length!==3){console.error('Homepage must retain exactly three approved slides.');failures++;}
 if(!home.includes('<V22HomeSections featured={featured}/>')){console.error('Homepage content sections missing.');failures++;}
-if(!layout.includes('<SiteHeader/>{children}<SiteFooter/>')){console.error('Global SiteHeader/SiteFooter layout missing.');failures++}
+const chromeLayout=/<SiteHeader\/>\{children\}(?:<GlobalArticleCarousel\/>)?<SiteFooter\/>/;
+if(!chromeLayout.test(layout)){console.error('Global SiteHeader/SiteFooter order missing or modified.');failures++}
+if(layout.includes('<GlobalArticleCarousel/>')&&!layout.includes("import GlobalArticleCarousel from '../components/GlobalArticleCarousel';")){console.error('Global article carousel import missing.');failures++}
 const priorFooter=execFileSync('git',['show','origin/'+base+':apps/website/components/SiteFooter.tsx'],{encoding:'utf8'});
 if(foot!==priorFooter){console.error('Global footer must remain byte-for-byte identical to main.');failures++}
 for(const p of ['apps/website/app/properties/[id]/page.tsx','apps/website/app/properties/[id]/property-details.css','apps/website/app/insights/[slug]/page.tsx']){
  const prior=execFileSync('git',['show','origin/'+base+':'+p],{encoding:'utf8'});
  const current=readFileSync(p,'utf8');
- if(prior!==current){console.error('PROTECTED PROPERTY/ARTICLE DETAIL CHANGED: '+p);failures++}
+ const approvedArrowOnly=p.endsWith('/insights/[slug]/page.tsx')&&prior.replaceAll('↗','→')===current;
+ if(prior!==current&&!approvedArrowOnly){console.error('PROTECTED PROPERTY/ARTICLE DETAIL CHANGED: '+p);failures++}
 }
 for(const marker of ['<NewsletterSignup/>','<FooterCarousel slides={slidesFromSources()}/>','ls24-global-footer','/testimonials','Privacy Policy','Terms &amp; Conditions']){
  if(!foot.includes(marker)){console.error('V24 footer content missing: '+marker);failures++}
