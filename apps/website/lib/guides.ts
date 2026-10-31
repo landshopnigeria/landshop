@@ -1,10 +1,11 @@
 import {v22Guides} from './v22-guides';
 export type Guide={
  tags?:string[];
- slug:string;category:string;title:string;summary:string;image:string;readingMinutes:number;
+ slug:string;category:string;title:string;summary:string;image:string;imageAlt?:string;photoNote?:string;readingMinutes:number;
  sections:{heading:string;paragraph:string;points?:string[]}[];
 };
 import {editorialImages} from './editorial-imagery';
+import {ownerArticleMedia} from './owner-article-media';
 export const guides:Guide[]=[
  {slug:'property-due-diligence',category:'DEVELOP',title:'Before you subscribe to land or a house',summary:'A structured checklist for verifying land, housing and estate purchase decisions in Nigeria.',image:editorialImages.residential.src,readingMinutes:5,sections:[
   {heading:'Start with the property, not the brochure',paragraph:'Identify the exact project, developer or lawful seller, plot or unit, and location. Ask whether the current offer is for land, an off-plan unit or a completed property.',points:['Obtain the development name, location and unique plot or unit reference.','Confirm the legal seller and the person authorized to receive payments.','Request an up-to-date written schedule of price, fees and milestones.']},
@@ -50,5 +51,14 @@ const originalGuideExtensions:Record<string,{heading:string;paragraph:string;poi
  ]
 };
 for(const guide of guides){const additional=originalGuideExtensions[guide.slug];if(additional)guide.sections.push(...additional);}
+
+// Replace the old generic/stock photos with story-specific owner photography.
+for(const guide of guides){
+ const approved=ownerArticleMedia[guide.slug];
+ if(!approved)throw new Error('Missing owner photography for published article: '+guide.slug);
+ guide.image=approved.image;
+ guide.imageAlt=approved.imageAlt;
+ guide.photoNote=approved.photoNote;
+}
 
 export function findGuide(slug:string){return guides.find(g=>g.slug===slug)}
