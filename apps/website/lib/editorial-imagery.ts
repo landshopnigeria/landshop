@@ -1,29 +1,17 @@
-/**
- * Genuine Nigerian photography for LANDSHOP marketing/editorial use.
- * These are licensed photographs of real Nigerian places and people. Product-deck archives and owner imagery remain separate.
- * These are location-tagged images of Nigeria, NOT synthetic renders.
- *
- * Editorial licensing: https://www.pexels.com/legal-pages/license/; deck media remains Landshop source material.
- * Important: marketing images are illustrative. Do not describe their subjects as
- * Landshop staff, clients or endorsers. Never use an illustrative photograph as a
- * photographed listing for a specific Landshop estate/property.
- *
- * Individual original photo pages, photographers and location notes appear in
- * docs/EDITORIAL-PHOTOGRAPHY-SOURCES.md. These should be reviewed on each renewal.
- */
+/** Editorial media used by Landshop marketing. User-provided references are illustrative and must never be represented as current Landshop property inventory. Property listing galleries continue to use original verified, owner-approved photos. The building images rejected on 31 Oct 2026 are removed from these shared slots. */
 export type EditorialPhoto={src:string;alt:string;credit:string;source:string};
 export const editorialImages={
  develop:{
-  src:'https://images.pexels.com/photos/36622005/pexels-photo-36622005.jpeg?auto=compress&cs=tinysrgb&w=2000',
-  alt:'Actual photograph of a residential development in Lagos, Nigeria; illustrative, not an identified Landshop property',
-  credit:'Taiwo Samson / Pexels',
-  source:'https://www.pexels.com/photo/modern-apartment-complex-under-construction-in-lagos-36622005/'
+  src:'/editorial/2026/ikate-exterior.jpg',
+  alt:'Modern black-and-white duplex photographed in the user-supplied Nigerian property reference collection; illustrative, not a Landshop listing',
+  credit:'User-supplied reference / Landshop creative',
+  source:'User-provided marketing reference — rights for public marketing to be confirmed'
  },
  incubate:{
-  src:'https://images.pexels.com/photos/27938900/pexels-photo-27938900.jpeg?auto=compress&cs=tinysrgb&w=2000',
-  alt:'Real aerial photograph of Lagos Osapa London neighborhood for property investment context, not a specific offer',
-  credit:'Ben Iwara / Pexels',
-  source:'https://www.pexels.com/photo/drone-view-osapa-london-lagos-state-27938900/'
+  src:'/editorial/2026/incubate-reference.jpg',
+  alt:'Photograph of completed white duplex homes from the user-supplied Nigerian real estate reference collection; not a Landshop listing',
+  credit:'User-supplied reference / Landshop creative',
+  source:'User-provided marketing reference — rights for public marketing to be confirmed'
  },
  grow:{
   src:'https://images.pexels.com/photos/30690402/pexels-photo-30690402.jpeg?auto=compress&cs=tinysrgb&w=2000',
@@ -50,27 +38,27 @@ export const editorialImages={
   source:'https://www.pexels.com/photo/professional-woman-working-in-lagos-cafe-30688908/'
  },
  residential:{
-  src:'https://images.pexels.com/photos/34557960/pexels-photo-34557960.jpeg?auto=compress&cs=tinysrgb&w=1600',
-  alt:'Real apartment tower in Lagos, Nigeria; illustrative architecture, not a Landshop property listing',
-  credit:'Zacky Dare / Pexels',
-  source:'https://www.pexels.com/photo/modern-high-rise-building-in-lagos-nigeria-34557960/'
+  src:'/editorial/2026/modern-duplex.jpg',
+  alt:'Contemporary residential duplex with white facade and black roof photographed for the user-supplied reference collection; illustrative, not a listed Landshop property',
+  credit:'User-supplied reference / Landshop creative',
+  source:'User-provided marketing reference — rights for public marketing to be confirmed'
  },
  architecture:{
-  src:'https://images.pexels.com/photos/34189426/pexels-photo-34189426.jpeg?auto=compress&cs=tinysrgb&w=1600',
-  alt:'Real contemporary urban building photographed in Lagos, Nigeria; editorial architecture photograph',
-  credit:'Faith Stephen / Pexels',
-  source:'https://www.pexels.com/photo/modern-urban-building-with-clear-sky-34189426/'
+  src:'/editorial/2026/townhouse.jpg',
+  alt:'Modern two-storey white and charcoal duplex in the user-supplied property reference collection, not a Landshop listing',
+  credit:'User-supplied reference / Landshop creative',
+  source:'User-provided marketing reference — rights for public marketing to be confirmed'
  },
  officeTower:{
-  src:'https://images.pexels.com/photos/20430713/pexels-photo-20430713.jpeg?auto=compress&cs=tinysrgb&w=1600',
-  alt:'Actual contemporary office building facade photographed in Lagos, Nigeria; editorial photograph',
-  credit:'Ebenezer Idowu / Pexels',
-  source:'https://www.pexels.com/photo/exterior-of-a-glass-office-building-20430713/'
+  src:'/editorial/2026/ikate-exterior.jpg',
+  alt:'Modern residential property exterior in Nigeria from the user-provided editorial reference collection',
+  credit:'User-supplied reference / Landshop creative',
+  source:'User-provided marketing reference — rights for public marketing to be confirmed'
  },
  skyline:{
-  src:'https://images.pexels.com/photos/32656347/pexels-photo-32656347.jpeg?auto=compress&cs=tinysrgb&w=1600',
-  alt:'Real Lagos, Nigeria city skyline near the Atlantic coast, photographed in daylight',
-  credit:'onaopemipo Rufus / Pexels',
-  source:'https://www.pexels.com/photo/aerial-view-of-lagos-cityscape-with-ocean-horizon-32656347/'
+  src:'/editorial/2026/estate-parking.jpg',
+  alt:'Illustrative modern estate architectural concept with parked cars and no palm trees; not an actual Landshop estate photo',
+  credit:'User-supplied reference / Landshop creative',
+  source:'User-provided marketing reference — rights for public marketing to be confirmed'
  }
 } as const satisfies Record<string,EditorialPhoto>;
