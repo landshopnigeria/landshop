@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import {useEffect,useRef,useState} from 'react';
+import {useRef,useState} from 'react';
 import {guides as approvedGuides} from '../lib/guides';
 import {editorialImages} from '../lib/editorial-imagery';
 import LandshopAboutCollage from './LandshopAboutCollage';
