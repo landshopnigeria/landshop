@@ -30,7 +30,7 @@ const input:React.CSSProperties={padding:'12px 13px',borderRadius:11,border:'1px
 const btn:React.CSSProperties={background:'#0c906b',color:'#fff',padding:'12px 19px',border:0,borderRadius:10,fontWeight:800,cursor:'pointer'};
 const card:React.CSSProperties={background:'#fff',border:'1px solid #dbeadf',padding:'clamp(18px,2vw,27px)',borderRadius:18,display:'grid',gap:14};
 function human(s:string){return s.replaceAll('_',' ').replace(/\b\w/g,c=>c.toUpperCase())}
-export default function StaffReportHub({userId,canWork,reports,tasks}:{userId:string;canWork:boolean;reports:Report[];tasks:Task[]}){
+export default function StaffReportHub({userId,canWork,reports,tasks,hideSubmission=false}:{userId:string;canWork:boolean;reports:Report[];tasks:Task[];hideSubmission?:boolean}){
  const [rows,setRows]=useState(reports),[busy,setBusy]=useState(false),[message,setMessage]=useState('');
  const [recipient,setRecipient]=useState('manager'),[cadence,setCadence]=useState('daily');
  const [summary,setSummary]=useState(''),[blockers,setBlockers]=useState(''),[task,setTask]=useState('');
@@ -71,7 +71,7 @@ export default function StaffReportHub({userId,canWork,reports,tasks}:{userId:st
  }
  const visible=rows.filter(r=>filter==='own'?r.staff_id===userId:r.staff_id!==userId);
  return <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(min(100%,410px),1fr))',gap:17,alignItems:'start',marginTop:25}}>
-  <section style={card}>
+  {!hideSubmission&&<section style={card}>
    <h2 style={{margin:0,fontSize:23,letterSpacing:'-.03em'}}>Submit a Work Report</h2>
    <p style={{margin:0,color:'#6a8679',fontSize:12,lineHeight:1.65}}>Reports start from your account's verified activation date. Each submission is time-stamped and visible to the authorised recipient and Global Command Center.</p>
    {canWork?<form onSubmit={submit} style={{display:'grid',gap:14}}>
@@ -102,7 +102,7 @@ export default function StaffReportHub({userId,canWork,reports,tasks}:{userId:st
     </label>
     <button style={btn} disabled={busy||summary.trim().length<20}>{busy?'Saving securely…':'Submit to '+human(recipient)}</button>
    </form>:<p role="alert">Active staff membership is needed to submit reports. Complete your email verification and staff registration.</p>}
-  </section>
+  </section>}
   <section style={card}>
    <h2 style={{margin:0,fontSize:23}}>Reporting History & Inbox</h2>
    <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
