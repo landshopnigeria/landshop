@@ -88,7 +88,7 @@ export default function SiteHeader(){
  },[]);
  const toggle=(label:string)=>{setExpanded(previous=>previous===label?null:label);setFocused(null)};
  const openHover=(label:string)=>{if(!menuOpen&&window.matchMedia('(hover: hover) and (pointer: fine)').matches){setExpanded(label);setFocused(null)}};
- const topLinks=[{text:'Account',url:portal,icon:'users' as const},{text:'Realtor Portal',url:portal,icon:'key' as const},{text:'Command Center',url:'https://app.landshopnigeria.com/admin',icon:'grid' as const}];
+ const topLinks=[{text:'Account',url:portal,icon:'users' as const},{text:'Realtor Portal',url:portal,icon:'key' as const}];
  return <div className={'ls-site-chrome '+(pathname==='/'?'ls31-over-hero':'ls31-standard-page')+' '+(navVisible||menuOpen||expanded?'ls31-nav-visible':'ls31-nav-hidden')} ref={frame}>
   <div className="ls-utility-bar"><div className="ls-utility-inner">
    <span className="ls-tagline">Everyone Deserves Affordable Property.</span>
