@@ -28,6 +28,7 @@ create table if not exists public.landshop_payment_transactions(
  reference text not null unique check(reference ~ '^LNSPAY[A-Za-z0-9]{12,56}$'),
  provider text not null default 'paystack' check(provider='paystack'),
  amount_kobo bigint not null check(amount_kobo>0),
+ purchased_days integer not null check(purchased_days between 1 and 1095),
  currency text not null default 'NGN' check(currency='NGN'),
  status text not null default 'initiated' check(status in ('initiated','pending','success','failed','reversed')),
  provider_id text,
@@ -114,8 +115,8 @@ begin
      where s.user_id=actor and s.plan_id=p_plan and s.status='suspended')
  then raise exception 'Contact Landshop support about your subscription before renewing';end if;
  ref:='LNSPAY'||replace(gen_random_uuid()::text,'-','');
- insert into public.landshop_payment_transactions(user_id,plan_id,reference,amount_kobo,currency)
- values(actor,plan.id,ref,plan.amount_kobo,plan.currency);
+ insert into public.landshop_payment_transactions(user_id,plan_id,reference,amount_kobo,purchased_days,currency)
+ values(actor,plan.id,ref,plan.amount_kobo,plan.duration_days,plan.currency);
  insert into public.audit_events(actor_id,event_type,metadata)
  values(actor,'subscription.checkout_initiated',jsonb_build_object('reference',ref,'plan_id',plan.id));
  return query select ref,plan.amount_kobo,plan.currency;
@@ -142,8 +143,8 @@ begin
  or txn.amount_kobo<>p_amount_kobo or txn.currency<>p_currency or p_currency<>'NGN'
  or p_provider_id is null or length(p_provider_id)<1 or p_domain not in ('live','test')
  then raise exception 'Transaction verification mismatch';end if;
- select duration_days into days from public.landshop_subscription_plans where id=txn.plan_id;
- if days is null then raise exception 'Subscription plan missing';end if;
+ days:=txn.purchased_days;
+ if days is null then raise exception 'Purchase duration snapshot missing';end if;
  update public.landshop_payment_transactions set status='success',provider_id=p_provider_id,
   paid_at=coalesce(p_paid_at,now()),provider_domain=p_domain,updated_at=now() where id=txn.id;
  -- Never override a management suspension even if a payment arrives.
