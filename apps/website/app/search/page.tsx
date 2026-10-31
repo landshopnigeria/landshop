@@ -4,7 +4,7 @@ import {MarketHeader,MarketFooter} from '../../components/MarketChrome';
 import {publicDb,propertyPrice} from '../../lib/marketplace';
 import '../properties/property-market.css';
 export const dynamic='force-dynamic';
-export const metadata={title:'Search Landshop | Properties, Products and Guides',description:'Search real Landshop public pages, approved properties and educational resources.'};
+export const metadata={title:'Search Landshop | Properties, Products and Guides',description:'Search real Landshop public pages, approved properties and educational resources.',robots:{index:false,follow:true}};
 const pages=[
  {title:'Develop — Land and House Ownership',url:'/develop',description:'Discover documented property development and acquisition options.'},
  {title:'Incubate — Property Investment Enquiries',url:'/incubate',description:'Learn about documented property-linked investment opportunities.'},

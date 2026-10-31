@@ -1,0 +1,47 @@
+name: Landshop Responsive, SEO & Security Smoke
+on:
+  pull_request:
+    paths:
+      - 'apps/website/**'
+      - 'apps/portal/next.config.mjs'
+      - 'apps/dashboard/next.config.mjs'
+      - 'scripts/check-landshop-responsive.mjs'
+      - '.github/workflows/landshop-readiness-smoke.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  responsive-and-discoverability:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install application dependencies
+        run: npm install --no-audit --no-fund --no-package-lock
+      - name: Install browser test runner
+        run: npm install --no-save --no-package-lock playwright@1.56.1
+      - name: Install headless Chromium
+        run: npx playwright install chromium --with-deps
+      - name: Build marketing website
+        env:
+          NEXT_TELEMETRY_DISABLED: '1'
+        run: npm run build -w @landshop/website
+      - name: Start local website
+        run: |
+          (npm run start -w @landshop/website -- --hostname 127.0.0.1 > /tmp/landshop-readiness-server.log 2>&1 &)
+          for i in $(seq 1 45); do
+            if curl -fsS --max-time 2 http://127.0.0.1:3000/api/release-health >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/landshop-readiness-server.log
+          exit 1
+      - name: Check 240–3840px viewports, public pages, discovery, and headers
+        env:
+          LANDSHOP_TEST_URL: http://127.0.0.1:3000
+        run: node scripts/check-landshop-responsive.mjs
+      - name: Show app logs on failure
+        if: failure()
+        run: cat /tmp/landshop-readiness-server.log || true

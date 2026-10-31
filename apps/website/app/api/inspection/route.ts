@@ -1,11 +1,14 @@
 import {createHash} from 'node:crypto';
 import {createClient} from '@supabase/supabase-js';
+import {publicFormThrottle,publicEmailThrottle} from '../../../lib/public-abuse-guard';
 import {NextResponse,type NextRequest} from 'next/server';
 export const runtime='nodejs';
 const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const origins=new Set(['https://www.landshopnigeria.com','https://landshopnigeria.com','http://localhost:3000','http://127.0.0.1:3000']);
 function response(status:number,message:string,reference?:string){return NextResponse.json({ok:status<300,message,reference},{status,headers:{'Cache-Control':'no-store'}})}
 export async function POST(req:NextRequest){
+ const throttle=publicFormThrottle(req,'inspection',28);
+ if(throttle)return throttle;
  const origin=req.headers.get('origin');if(origin&&!origins.has(origin))return response(403,'Origin not permitted');
  if(!req.headers.get('content-type')?.startsWith('application/json'))return response(415,'JSON required');
  let p:Record<string,unknown>;
@@ -17,6 +20,8 @@ export async function POST(req:NextRequest){
  const id=value('property_id'),name=value('full_name'),email=value('email').toLowerCase(),phone=value('phone');
  const whatsapp=value('whatsapp'),date=value('date'),time=value('time'),kind=value('inspection_type'),message=value('message');
  const attendees=Number(p.attendees||1);
+ const emailThrottle=publicEmailThrottle(email,'inspection',7);
+ if(emailThrottle)return emailThrottle;
  if(!uuid.test(id)||name.length<2||name.length>120||!/^\S+@\S+\.\S+$/.test(email)||email.length>254||
  phone.length<7||phone.length>30||whatsapp.length>30||!/^\d{4}-\d{2}-\d{2}$/.test(date)||
  !['08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00'].includes(time)||
