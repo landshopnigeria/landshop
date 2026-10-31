@@ -92,3 +92,18 @@ body main :is(h1,h2,h3),.v22-root :is(h1,h2,h3),.ls26-page :is(h1,h2,h3),
 @media(prefers-reduced-motion:reduce){
  .ls-site-chrome .ls-utility-bar,.ls-site-chrome .ls-mega,.ls30-hamburger i{transition:none!important;animation:none!important}
 }
+
+/* The arrow controls themselves are bare strokes; only action buttons have brand fills. */
+.ls-v23-hero .hero-v16-arrows button,
+.v22-root .v22-carousel-buttons button,
+.v22-root .ls26-location-controls button{
+ background:transparent!important;border:0!important;box-shadow:none!important;
+ backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+ border-radius:0!important;outline-offset:3px;color:var(--ls30-primary);
+}
+.ls-v23-hero .hero-v16-arrows button{color:#fff!important}
+.ls-v23-hero .hero-v16-arrows button:hover,
+.v22-root .v22-carousel-buttons button:hover,.v22-root .ls26-location-controls button:hover{
+ background:transparent!important;color:var(--ls30-orange)!important;transform:translateX(2px)
+}
+.ls-site-chrome .ls-utility-links a:hover,.ls-site-chrome .ls-global-search button:hover{color:var(--ls30-orange)!important}
