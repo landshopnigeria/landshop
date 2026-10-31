@@ -29,7 +29,9 @@ for(const p of [
   groupsOnly(prior)===groupsOnly(current)&&groupsOnly(current)?.length>1000&&
   topLinksOnly(prior)===topLinksOnly(current)&&topLinksOnly(current)?.length>70&&
   headerStructure.every(marker=>current.includes(marker))&&
-  ['ls-utility-collapsed','ls30-services-grid','ls30-hamburger','openHover','onMouseEnter','ls30-mega-folding'].every(marker=>current.includes(marker));
+  ['ls30-services-grid','ls30-hamburger','openHover','onMouseEnter','ls30-mega-folding'].every(marker=>current.includes(marker))&&
+  (current.includes('ls-utility-collapsed')||
+   ['ls31-over-hero','ls31-nav-visible','ls31-nav-hidden','setNavVisible'].every(marker=>current.includes(marker)));
  const matches=expectedV30Header?(approvedHeader(prior)===approvedHeader(current)||approvedV30):prior===current;
  if(!matches){console.error('PROTECTED HEADER CHANGE OUTSIDE APPROVED GROUPS / V30 MOTION: '+p);failures++;}
  else console.log('PRESERVED: '+p);
