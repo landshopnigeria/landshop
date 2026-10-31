@@ -52,3 +52,22 @@
 @media(prefers-reduced-motion:reduce){
  .ls-v23-hero .ls-v23-hero-title>strong:after{animation:none!important}
 }
+
+/* V33: compact, more legible desktop mega-menu. Keep the glass effect without
+   allowing the hero photograph to overpower menu copy. */
+@media (min-width:1051px){
+ .ls-site-chrome .ls-mega{
+  width:min(850px,calc(100vw - 40px));
+  background:rgba(249,253,250,.96);
+  border-color:rgba(205,226,216,.96);
+  -webkit-backdrop-filter:blur(22px) saturate(1.15);
+  backdrop-filter:blur(22px) saturate(1.15);
+  box-shadow:0 18px 48px rgba(7,63,52,.19);
+ }
+ .ls-site-chrome .ls-mega-layout{grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr)}
+ .ls-site-chrome .ls-mega.ls30-services-menu{width:min(610px,calc(100vw - 40px))!important}
+}
+/* Mobile already uses an inline navigation drawer rather than the desktop mega-menu. */
+@media(max-width:1050px){
+ .ls-site-chrome .ls-primary-nav.ls-nav-mobile-open{background:rgba(249,253,250,.98)}
+}
