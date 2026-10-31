@@ -25,7 +25,6 @@ export const metadata:Metadata={
  description:'Explore Landshop Nigeria estates, Famous Gardens, property acquisition, shared-ownership enquiries and mortgage guidance. Understand verified property options and your next step.',
  applicationName:'Landshop Nigeria',
  category:'real estate',
- alternates:{canonical:'https://www.landshopnigeria.com/'},
  robots:{index:true,follow:true,googleBot:{index:true,follow:true,'max-image-preview':'large','max-snippet':-1,'max-video-preview':-1}},
  openGraph:{type:'website',url:'https://www.landshopnigeria.com/',siteName:'Landshop Nigeria',locale:'en_NG',
    title:'Landshop Nigeria | Everyone Deserves Affordable Property',
