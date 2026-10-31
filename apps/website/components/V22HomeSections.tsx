@@ -3,15 +3,12 @@ import Link from 'next/link';
 import {useRef,useState} from 'react';
 import {editorialImages} from '../lib/editorial-imagery';
 import {IconChip} from './SiteIcon';
+import LandshopAboutCollage from './LandshopAboutCollage';
+import LandshopProductCards from './LandshopProductCards';
+import LandshopVideo from './LandshopVideo';
+import {landshopEditorialTeam} from '../lib/landshop-brand-media';
 
 export type V22Property={id:string;href:string;title:string;location:string;propertyType:string;price:string;collection?:'Prime'|'Luxury';image?:string};
-const paths=[
- {name:'Develop',tag:'01 / ACQUIRE PROPERTY',intro:'Prefer outright property acquisition? Explore structured land and apartment ownership, including Prime and Luxury selections.',href:'/plans/develop',photo:editorialImages.develop.src,logo:'/brand/develop.svg',icon:'building' as const},
- {name:'Incubate',tag:'02 / SHARED OWNERSHIP',intro:'Explore shared ownership with others and register to receive confirmed opportunities and participation terms.',href:'/plans/incubate',photo:editorialImages.incubate.src,logo:'/brand/incubate.svg',icon:'chart' as const},
- {name:'Grow',tag:'03 / HOME FINANCING',intro:'Simplified mortgage pathways for completed and off-plan homes. Compare options and understand the full commitment.',href:'/plans/grow',photo:editorialImages.grow.src,logo:'/brand/grow.svg',icon:'key' as const},
- {name:'DevPro',tag:'04 / ESTATE INFRASTRUCTURE',intro:'Enquire about financing for estate roads, drainage, fencing and other eligible development levies.',href:'/plans/devpro',photo:editorialImages.architecture.src,logo:'/brand/devpro.svg',icon:'building' as const},
- {name:'EstatePro',tag:'05 / CONSTRUCTION FINANCE',intro:'Explore construction funding enquiries for eligible estate subscribers who are ready to build.',href:'/plans/estatepro',photo:editorialImages.residential.src,logo:'/brand/estatepro.svg',icon:'home' as const}
-];
 const locations=[
  {name:'Lagos',slug:'lagos',text:'Explore estate opportunities and property guidance across Lagos.'},
  {name:'Ogun',slug:'ogun',text:'Find a thoughtful place for your next home or property plan.'},
@@ -30,7 +27,7 @@ const reviews=[
 ];
 const services=[
  {name:'Property Acquisition',intro:'Understand purchase options, document checks and the pathway to an informed property decision.',href:'/services/property-acquisition',photo:editorialImages.develop.src,icon:'home' as const},
- {name:'Property Advisory',intro:'Discuss property decisions, due diligence and requirements before making a commitment.',href:'/services/advisory',photo:editorialImages.team.src,icon:'compass' as const},
+ {name:'Property Advisory',intro:'Discuss property decisions, due diligence and requirements before making a commitment.',href:'/services/advisory',photo:landshopEditorialTeam.src,icon:'compass' as const},
  {name:'Mortgage Guidance',intro:'Compare financing pathways and learn what lender review and affordability involve.',href:'/services/mortgage',photo:editorialImages.grow.src,icon:'calculator' as const},
  {name:'Construction Credit',intro:'Explore documented development funding enquiries subject to applicable eligibility.',href:'/services/construction-credit',photo:editorialImages.architecture.src,icon:'building' as const}
 ];
@@ -53,18 +50,11 @@ export default function V22HomeSections({featured}:{featured:V22Property[]}){
     <p>Through property acquisition, shared ownership interest, mortgage guidance and estate development support, we help people take clearer steps toward ownership.</p>
 
     <Link className="v22-btn" href="/about">Discover Landshop <span aria-hidden="true">↗</span></Link>
-   </div><div className="v22-collage" aria-label="Landshop editorial image collection">
-    <img src={editorialImages.architecture.src} alt={editorialImages.architecture.alt} loading="lazy"/>
-    <img src={editorialImages.team.src} alt={editorialImages.team.alt} loading="lazy"/>
-    <img src={editorialImages.residential.src} alt={editorialImages.residential.alt} loading="lazy"/>
-   </div></div></section>
+   </div><LandshopAboutCollage/></div></section>
   {/* 3 / Three products */}
   <section className="v22-section v22-muted" aria-labelledby="v22-products-title"><div className="v22-container">
    <div className="v22-heading"><div><span className="v22-eyebrow ls26-faded-eyebrow">OUR</span><h2 id="v22-products-title"><span className="ls26-heading-green">Products</span><span className="v22-accent">.</span></h2></div><p>Explore the pathway that matches your property goal.</p></div>
-   <div className="v22-products">{paths.map(item=><article className="v22-product" key={item.name}>
-    <Link href={item.href} className="v22-product-image"><img src={item.photo} alt={'Editorial visual representing Landshop '+item.name} loading="lazy"/></Link>
-    <span className="v22-icon ls-new-brand-icon"><img src={item.logo} alt={item.name+' product mark'} loading="lazy"/></span><div className="v22-product-body"><small>{item.tag}</small><h3>{item.name}</h3><p>{item.intro}</p><Link href={item.href} className="v22-text-link">Explore {item.name} <span aria-hidden="true">↗</span></Link></div>
-   </article>)}</div></div></section>
+   <LandshopProductCards/></div></section>
   {/* 4 / Verified inventory + property collections */}
   <section className="v22-section" id="featured-properties" aria-labelledby="v22-properties-title"><div className="v22-container">
    <div className="v22-heading"><div><span className="v22-eyebrow ls26-faded-eyebrow">OUR SELECTED</span><h2 id="v22-properties-title"><span className="ls26-heading-green">Estates</span> / Properties<span className="v22-accent">.</span></h2></div><Link className="v22-text-link" href="/properties">View published listings ↗</Link></div>
@@ -72,9 +62,31 @@ export default function V22HomeSections({featured}:{featured:V22Property[]}){
      {p.image?<img src={p.image} alt={'Owner-approved photograph of '+p.title} loading="lazy"/>:<div className="v22-photo-pending">Original media awaiting approval</div>}
      <div className="v22-feature-info">{p.collection&&<span className="ls26-collection-badge">{p.collection}</span>}<span>{p.propertyType} · {p.location}</span><h3>{p.title}</h3><b>{p.price}</b><span className="ls26-card-cta">View Estate <span aria-hidden="true">↗</span></span></div></Link>):
     <div className="v22-inventory-empty"><h3>Verified opportunities, not placeholder listings.</h3><p>Only approved, published properties appear here. Explore the marketplace for the latest available inventory.</p><Link href="/properties" className="v22-btn">Browse the marketplace ↗</Link></div>}
-   </div><div className="ls26-collection-heading"><span className="v22-eyebrow ls26-faded-eyebrow">PRIME &amp; LUXURY</span><h3><span className="ls26-heading-green">Prime</span> &amp; Luxury<span className="v22-accent">.</span></h3></div><div className="v22-collections"><Link href="/collections/prime"><span>PRIME ESTATES</span><strong>Considered homes for everyday living.</strong><em>Explore residential properties ↗</em></Link>
-    <Link href="/collections/luxury"><span>LUXURY ESTATES</span><strong>Explore distinctive properties with verified premium features.</strong><em>Explore Luxury Estates ↗</em></Link></div>
+   </div><div className="ls26-collection-heading"><span className="v22-eyebrow ls26-faded-eyebrow">PRIME &amp; LUXURY</span><h3><span className="ls26-heading-green">Prime</span> &amp; Luxury<span className="v22-accent">.</span></h3></div><div className="v22-collections ls27-collections">
+    <Link href="/collections/prime" className="ls27-collection-card">
+     <div className="ls27-collection-cover ls27-prime-cover"><small>PRIME ESTATES / VERIFIED INVENTORY ONLY</small></div>
+     <span className="ls27-collection-pill">PRIME COLLECTION</span><strong>Prime Estates.</strong>
+     <p>Places for practical ownership and long-term plans.</p><em>Explore Prime ↗</em>
+    </Link>
+    <Link href="/collections/luxury" className="ls27-collection-card">
+     <div className="ls27-collection-cover ls27-luxury-cover"><small>LUXURY ESTATES / VERIFIED INVENTORY ONLY</small></div>
+     <span className="ls27-collection-pill">LUXURY COLLECTION</span><strong>Luxury Estates.</strong>
+     <p>Distinctive properties with verified premium features.</p><em>Explore Luxury ↗</em>
+    </Link>
+   </div>
   </div></section>
+  {/* Full Prime collection feature. Video appears ONLY with Prime content, not About. */}
+  <section className="v22-section ls27-prime-feature" aria-labelledby="ls27-prime-title">
+   <div className="v22-container ls27-prime-layout">
+    <div className="ls27-prime-copy">
+     <span className="v22-eyebrow ls26-faded-eyebrow">LANDSHOP PRIME</span>
+     <h2 id="ls27-prime-title"><span className="ls26-heading-green">Prime</span> Estates<span className="v22-accent">.</span></h2>
+     <p>Explore the Prime collection through a closer look at the places, designs and property options that fit your plans. Every current estate listing is separately verified before publication.</p>
+     <Link className="v22-btn" href="/collections/prime">Explore Prime Estates <span aria-hidden="true">↗</span></Link>
+    </div>
+    <LandshopVideo video="prime"/>
+   </div>
+  </section>
   <section className="v22-section ls26-projects-home" aria-labelledby="ls26-projects-home-title"><div className="v22-container"><div className="v22-heading"><div><span className="v22-eyebrow ls26-faded-eyebrow">OUR</span><h2 id="ls26-projects-home-title"><span className="ls26-heading-green">Projects</span><span className="v22-accent">.</span></h2></div><Link className="v22-text-link" href="/projects">View all projects ↗</Link></div><div className="ls26-grid-three ls26-project-grid">{[['Famous Gardens','Current sales focus','Iberekodo, Ibeju-Lekki','famous-gardens'],['Merit Park','Past project','Project history and updates','merit-park'],['Green Island','Past project','Project history and updates','green-island'],['Maiyegun Beach Estate','Past project','Project history and updates','maiyegun-beach-estate']].map(([name,status,location,slug])=><Link key={slug} href={'/projects/'+slug} className="ls26-estate-card" style={{textDecoration:'none',color:'inherit'}}><div className="ls26-estate-visual"><span>VERIFIED PROJECT IMAGE PENDING</span></div><div className="ls26-estate-content"><small className="ls26-eyebrow">{status}</small><h3>{name}</h3><p>{location}</p><strong className="v22-text-link">Explore project ↗</strong></div></Link>)}</div></div></section>
   {/* 5 / Service-specific visuals */}
   <section className="v22-section v22-muted" aria-labelledby="v22-services-title"><div className="v22-container">
