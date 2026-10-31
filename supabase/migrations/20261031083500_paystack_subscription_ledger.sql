@@ -65,6 +65,27 @@ grant select on public.landshop_customer_subscriptions to authenticated;
 create policy ls_subscriptions_owner_or_management on public.landshop_customer_subscriptions
  for select to authenticated using(user_id=(select auth.uid()) or public.landshop_is_management((select auth.uid())));
 
+-- A verified purchase can qualify a referral for future manual reward review.
+-- Recording a conversion never creates commission money or payable balances.
+create table if not exists public.landshop_referral_qualifications(
+ id uuid primary key default gen_random_uuid(),
+ referrer_id uuid not null references auth.users(id),
+ referee_id uuid not null references auth.users(id),
+ source_payment_id uuid not null references public.landshop_payment_transactions(id),
+ qualified_at timestamptz not null default now(),
+ status text not null default 'unrewarded' check(status in ('unrewarded','reviewed','excluded')),
+ reviewed_by uuid references auth.users(id),
+ reviewed_at timestamptz,
+ note text,
+ unique(referee_id,source_payment_id),
+ check(referrer_id<>referee_id)
+);
+create index if not exists ls_referral_qualifications_referrer on public.landshop_referral_qualifications(referrer_id,qualified_at desc);
+alter table public.landshop_referral_qualifications enable row level security;
+revoke all on public.landshop_referral_qualifications from public,anon,authenticated;
+grant select on public.landshop_referral_qualifications to authenticated;
+create policy ls_referral_qualifications_management on public.landshop_referral_qualifications
+ for select to authenticated using(public.landshop_is_management((select auth.uid())));
 create or replace function public.landshop_plan_save(
  p_id uuid,p_code text,p_name text,p_description text,p_amount_kobo bigint,p_duration_days integer,p_active boolean
 ) returns uuid language plpgsql security definer set search_path='' as $$
@@ -161,6 +182,10 @@ begin
  values(txn.user_id,'subscription.payment_verified',jsonb_build_object('transaction_id',txn.id,'plan_id',txn.plan_id,'amount_kobo',txn.amount_kobo,'provider',txn.provider,'domain',p_domain));
  insert into public.notification_outbox(event_type,user_id,payload)
  values('subscription.payment_verified',txn.user_id,jsonb_build_object('transaction_id',txn.id));
+ insert into public.landshop_referral_qualifications(referrer_id,referee_id,source_payment_id)
+ select e.referrer_id,e.referee_id,txn.id
+ from public.referral_edges e where e.referee_id=txn.user_id
+ on conflict(referee_id,source_payment_id) do nothing;
  return true;
 end $$;
 revoke all on function public.landshop_paystack_settle(text,bigint,text,text,timestamptz,text) from public,anon,authenticated;
