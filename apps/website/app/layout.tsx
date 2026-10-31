@@ -11,6 +11,7 @@ import './v22-premium.css';
 import './v23-video-preview.css';
 import './v24-global-footer.css';
 import './premium-2026.css';
+import './v28-approved-home.css';
 import SiteHeader from '../components/SiteHeader';
 import SiteFooter from '../components/SiteFooter';
 // Every marketing page must be served fresh while the V16 site is actively updated.
