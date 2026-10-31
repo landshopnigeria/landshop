@@ -1,12 +1,11 @@
 'use client';
 import Link from 'next/link';
-import {useRef,useState} from 'react';
+import {useEffect,useRef,useState} from 'react';
+import {guides as approvedGuides} from '../lib/guides';
 import {editorialImages} from '../lib/editorial-imagery';
-import {IconChip} from './SiteIcon';
 import LandshopAboutCollage from './LandshopAboutCollage';
 import LandshopProductCards from './LandshopProductCards';
 import LandshopVideo from './LandshopVideo';
-import {landshopEditorialTeam} from '../lib/landshop-brand-media';
 
 export type V22Property={id:string;href:string;title:string;location:string;propertyType:string;price:string;collection?:'Prime'|'Luxury';image?:string};
 const locations=[
@@ -15,21 +14,11 @@ const locations=[
  {name:'Edo',slug:'edo',text:'Explore locations, verified estates and responsible purchase steps.'},
  {name:'Abuja (FCT)',slug:'abuja',text:'Understand available estate choices and property requirements in the capital.'}
 ];
-const guides=[
- {title:'Before you subscribe to land or a house',href:'/insights/property-due-diligence',tag:'OWNERSHIP',image:editorialImages.residential.src},
- {title:'Understanding mortgage pre-qualification',href:'/insights/mortgage-prequalification',tag:'FINANCING',image:editorialImages.planning.src},
- {title:'How to prepare for a property inspection',href:'/insights/property-inspection',tag:'INSPECTIONS',image:editorialImages.develop.src}
-];
+const journal=approvedGuides.map(guide=>({title:guide.title,href:'/insights/'+guide.slug,tag:guide.category,image:guide.image,summary:guide.summary}));
 const reviews=[
  {quote:'Landshop is authentic and experienced. And your customer service is 100%. From social media to follow-up calls. I was just informed by my account officer that my property has appreciated in price. Great.',name:'Emmanuel Sanusi',region:'Ikotun, Lagos'},
  {quote:'I have confidence in Landshop because I’m always contacted while I’m far away. Of course, I will recommend Landshop to friends and family. I am also excited about the value appreciation. That was indeed fast.',name:'Precious Oluwapelumi Adeleye',region:'Maryland, Lagos'},
  {quote:'You guys are any property investor’s top option. You’ve made land purchase very easy and affordable for everyone, including me. Hearing about the growth of my property is awesome, and knowing I can still continue my payment is wonderful.',name:'Ojo Victor Oluwatimilehin',region:'Surulere, Lagos'}
-];
-const services=[
- {name:'Property Acquisition',intro:'Understand purchase options, document checks and the pathway to an informed property decision.',href:'/services/property-acquisition',photo:editorialImages.develop.src,icon:'home' as const},
- {name:'Property Advisory',intro:'Discuss property decisions, due diligence and requirements before making a commitment.',href:'/services/advisory',photo:landshopEditorialTeam.src,icon:'compass' as const},
- {name:'Mortgage Guidance',intro:'Compare financing pathways and learn what lender review and affordability involve.',href:'/services/mortgage',photo:editorialImages.grow.src,icon:'calculator' as const},
- {name:'Construction Credit',intro:'Explore documented development funding enquiries subject to applicable eligibility.',href:'/services/construction-credit',photo:editorialImages.architecture.src,icon:'building' as const}
 ];
 export default function V22HomeSections({featured}:{featured:V22Property[]}){
  const [review,setReview]=useState(0),[guideIndex,setGuideIndex]=useState(0),[locationIndex,setLocationIndex]=useState(0);
@@ -41,7 +30,9 @@ export default function V22HomeSections({featured}:{featured:V22Property[]}){
   const track=locationTrack.current,card=track?.querySelector<HTMLElement>('.ls26-location-card');
   if(track&&card)track.scrollTo({left:next*(card.getBoundingClientRect().width+18),behavior:'smooth'});
  };
- const activeReview=reviews[review],activeGuide=guides[guideIndex];
+ const [journalPaused,setJournalPaused]=useState(false);
+ useEffect(()=>{if(journalPaused||journal.length<2||window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;const timer=setInterval(()=>setGuideIndex(v=>(v+1)%journal.length),6500);return()=>clearInterval(timer)},[journalPaused]);
+ const activeReview=reviews[review];
  return <div className="v22-root">
   {/* 2 / About: hero and existing property filter above this component stay intact. */}
   <section className="v22-section v22-about" aria-labelledby="v22-about-title"><div className="v22-container v22-two">
@@ -51,14 +42,26 @@ export default function V22HomeSections({featured}:{featured:V22Property[]}){
 
     <Link className="v22-btn" href="/about">Discover Landshop <span aria-hidden="true">↗</span></Link>
    </div><LandshopAboutCollage/></div></section>
-  {/* 3 / Three products */}
-  <section className="v22-section v22-muted" aria-labelledby="v22-products-title"><div className="v22-container">
-   <div className="v22-heading"><div><span className="v22-eyebrow ls26-faded-eyebrow">OUR</span><h2 id="v22-products-title"><span className="ls26-heading-green">Products</span><span className="v22-accent">.</span></h2></div><p>Explore the pathway that matches your property goal.</p></div>
-   <LandshopProductCards/></div></section>
+  {/* Landshop official product artwork. Never substitute stock symbols: all assets are
+       supplied by the connected main-branch LandshopProductCards component. */}
+  <section className="v22-section v22-muted ls27-products-section" aria-labelledby="v22-products-title"><div className="v22-container">
+   <div className="v22-heading"><h2 id="v22-products-title">Product<span className="v22-accent">.</span></h2></div>
+   <LandshopProductCards/>
+  </div></section>
+  <section className="v22-section ls27-affordability" aria-labelledby="ls27-affordability-title">
+   <div className="v22-container ls27-affordability-inner">
+    <div className="ls27-affordability-copy"><span className="v22-eyebrow">THE LANDSHOP PROMISE</span>
+     <h2 id="ls27-affordability-title">Everyone deserves affordable property.</h2>
+     <p>Discover acquisition, investment and home-financing options with clear information so you can choose the next step with confidence.</p>
+     <Link href="/properties" className="v22-btn">Explore Properties ↗</Link>
+    </div>
+    <figure className="ls27-affordability-photo"><img src={editorialImages.architecture.src} alt={editorialImages.architecture.alt} loading="lazy"/><figcaption>Illustrative Nigerian architecture — not a Landshop listing</figcaption></figure>
+   </div>
+  </section>
   {/* 4 / Verified inventory + property collections */}
   <section className="v22-section" id="featured-properties" aria-labelledby="v22-properties-title"><div className="v22-container">
    <div className="v22-heading"><div><span className="v22-eyebrow ls26-faded-eyebrow">OUR SELECTED</span><h2 id="v22-properties-title"><span className="ls26-heading-green">Estates</span> / Properties<span className="v22-accent">.</span></h2></div><Link className="v22-text-link" href="/properties">View published listings ↗</Link></div>
-   <div className="v22-featured">{featured.length?featured.slice(0,3).map(p=><Link href={p.href} className="v22-feature" key={p.id}>
+   <div className="v22-featured">{featured.length?featured.slice(0,3).map(p=><Link href={p.href} className="v22-feature ls27-glass-listing" key={p.id}>
      {p.image?<img src={p.image} alt={'Owner-approved photograph of '+p.title} loading="lazy"/>:<div className="v22-photo-pending">Original media awaiting approval</div>}
      <div className="v22-feature-info">{p.collection&&<span className="ls26-collection-badge">{p.collection}</span>}<span>{p.propertyType} · {p.location}</span><h3>{p.title}</h3><b>{p.price}</b><span className="ls26-card-cta">View Estate <span aria-hidden="true">↗</span></span></div></Link>):
     <div className="v22-inventory-empty"><h3>Verified opportunities, not placeholder listings.</h3><p>Only approved, published properties appear here. Explore the marketplace for the latest available inventory.</p><Link href="/properties" className="v22-btn">Browse the marketplace ↗</Link></div>}
@@ -87,13 +90,8 @@ export default function V22HomeSections({featured}:{featured:V22Property[]}){
     <LandshopVideo video="prime"/>
    </div>
   </section>
-  <section className="v22-section ls26-projects-home" aria-labelledby="ls26-projects-home-title"><div className="v22-container"><div className="v22-heading"><div><span className="v22-eyebrow ls26-faded-eyebrow">OUR</span><h2 id="ls26-projects-home-title"><span className="ls26-heading-green">Projects</span><span className="v22-accent">.</span></h2></div><Link className="v22-text-link" href="/projects">View all projects ↗</Link></div><div className="ls26-grid-three ls26-project-grid">{[['Famous Gardens','Current sales focus','Iberekodo, Ibeju-Lekki','famous-gardens'],['Merit Park','Past project','Project history and updates','merit-park'],['Green Island','Past project','Project history and updates','green-island'],['Maiyegun Beach Estate','Past project','Project history and updates','maiyegun-beach-estate']].map(([name,status,location,slug])=><Link key={slug} href={'/projects/'+slug} className="ls26-estate-card" style={{textDecoration:'none',color:'inherit'}}><div className="ls26-estate-visual"><span>VERIFIED PROJECT IMAGE PENDING</span></div><div className="ls26-estate-content"><small className="ls26-eyebrow">{status}</small><h3>{name}</h3><p>{location}</p><strong className="v22-text-link">Explore project ↗</strong></div></Link>)}</div></div></section>
-  {/* 5 / Service-specific visuals */}
-  <section className="v22-section v22-muted" aria-labelledby="v22-services-title"><div className="v22-container">
-   <div className="v22-heading"><div><span className="v22-eyebrow">HOW WE HELP</span><h2 id="v22-services-title">Guidance beyond the property listing.</h2></div><p>The right conversation can make the next step clearer.</p></div>
-   <div className="v22-service-grid">{services.map(s=><Link className="v22-service" key={s.name} href={s.href}>
-    <img src={s.photo} loading="lazy" alt={'Illustrative editorial photography for '+s.name}/><div className="v22-service-body"><span className="v22-icon"><IconChip name={s.icon}/></span><h3>{s.name}</h3><p>{s.intro}</p><b>Explore service ↗</b></div>
-   </Link>)}</div></div></section>
+  <section className="v22-section ls26-projects-home" aria-labelledby="ls26-projects-home-title"><div className="v22-container"><div className="v22-heading"><div><span className="v22-eyebrow ls26-faded-eyebrow">OUR</span><h2 id="ls26-projects-home-title"><span className="ls26-heading-green">Projects</span><span className="v22-accent">.</span></h2></div><Link className="v22-text-link" href="/projects">View all projects ↗</Link></div><div className="ls26-grid-three ls26-project-grid">{[['Famous Gardens','Current sales focus','Iberekodo, Ibeju-Lekki','famous-gardens','/media/famous0.webp'],['Merit Park','Past project','Project history and updates','merit-park',''],['Green Island','Past project','Project history and updates','green-island',''],['Maiyegun Beach Estate','Past project','Project history and updates','maiyegun-beach-estate','/media/maiyegun0.webp']].map(([name,status,location,slug,image])=><Link key={slug} href={'/projects/'+slug} className="ls26-estate-card" style={{textDecoration:'none',color:'inherit'}}><div className="ls26-estate-visual">{image?<img src={image} alt={"Original Landshop project archive: "+name} loading="lazy" style={{width:"100%",height:"100%",objectFit:"cover"}}/>:<span>VERIFIED PROJECT IMAGE PENDING</span>}</div><div className="ls26-estate-content"><small className="ls26-eyebrow">{status}</small><h3>{name}</h3><p>{location}</p><strong className="v22-text-link">Explore project ↗</strong></div></Link>)}</div></div></section>
+  {/* Service guidance remains reachable through dedicated Services pages and Insights. */}
   {/* Curated property locations · three visible cards per desktop row; swipe and button navigation. */}
   <section className="v22-section ls26-location-section" aria-labelledby="v22-locations-title"><div className="v22-container">
    <div className="v22-heading"><div><span className="v22-eyebrow ls26-faded-eyebrow">PROPERTY LOCATIONS</span><h2 id="v22-locations-title"><span className="ls26-heading-green">Explore</span> Locations<span className="v22-accent">.</span></h2></div><Link href="/locations" className="v22-text-link">View all locations ↗</Link></div>
@@ -114,10 +112,16 @@ export default function V22HomeSections({featured}:{featured:V22Property[]}){
  <div className="v22-heading"><div><span className="v22-eyebrow ls26-faded-eyebrow">WHY</span><h2 id="ls-why-title"><span className="ls26-heading-green">Choose</span> Us<span className="v22-accent">.</span></h2></div><p>Because your property journey deserves clarity, choice and ongoing support.</p></div>
  <div className="ls-why-grid">{[['Trusted Brand','Property decisions backed by years of company experience.'],['Accessible Options','Different pathways for different ownership goals.'],['Experienced Support','A team ready to explain the steps that matter.'],['Quality of Choice','Prime and Luxury collections with approved details.'],['Flexible Planning','Understand the terms before you commit.'],['Growing Communities','Explore estates and opportunities suited to your plans.']].map(([heading,copy],index)=><article className="ls-why-card" key={heading}><span aria-hidden="true">{String(index+1).padStart(2,'0')}</span><h3>{heading}</h3><p>{copy}</p></article>)}</div>
  </div></section>
-   {/* 8 / Article spotlight carousel */}
-  <section className="v22-section v22-muted" aria-labelledby="v22-journal-title"><div className="v22-container">
-   <div className="v22-heading"><div><span className="v22-eyebrow">INSIGHTS & GUIDES</span><h2 id="v22-journal-title"><span className="ls26-heading-green">Insights</span> &amp; Updates<span className="v22-accent">.</span></h2></div><Link href="/insights" className="v22-text-link">Visit the journal ↗</Link></div>
-   <div className="v22-editorial"><div className="v22-editorial-photo"><img src={activeGuide.image} alt={'Editorial photograph for '+activeGuide.title} loading="lazy"/></div><div className="v22-editorial-copy"><span className="v22-eyebrow">{activeGuide.tag}</span><h3>{activeGuide.title}</h3><p>Practical guidance to help you understand your next property decision.</p><Link className="v22-btn" href={activeGuide.href}>Read article ↗</Link><div className="v22-carousel-buttons"><button onClick={()=>setGuideIndex((guideIndex+guides.length-1)%guides.length)} type="button" aria-label="Previous article">←</button><span>{guideIndex+1} / {guides.length}</span><button onClick={()=>setGuideIndex((guideIndex+1)%guides.length)} type="button" aria-label="Next article">→</button></div></div></div>
+  {/* Three-up automatic articles from published Landshop guides. */}
+  <section className="v22-section ls27-journal" aria-labelledby="v22-journal-title"><div className="v22-container">
+   <div className="v22-heading"><div><span className="v22-eyebrow">INSIGHTS &amp; GUIDES</span><h2 id="v22-journal-title"><span className="ls26-heading-green">Insights</span> &amp; Updates<span className="v22-accent">.</span></h2></div><Link href="/insights" className="v22-text-link">View All Articles ↗</Link></div>
+   <div role="region" aria-roledescription="carousel" aria-label="Latest Landshop articles" onMouseEnter={()=>setJournalPaused(true)} onMouseLeave={()=>setJournalPaused(false)} onFocusCapture={()=>setJournalPaused(true)} onBlurCapture={event=>{if(!event.currentTarget.contains(event.relatedTarget as Node|null))setJournalPaused(false)}}>
+    <div className="ls27-articles" aria-live="off">{[0,1,2].map(offset=>{const article=journal[(guideIndex+offset)%journal.length];return <article className="ls27-article" key={article.href+"-"+offset}>
+     <Link href={article.href} className="ls27-article-photo"><img src={article.image} alt={"Editorial image for "+article.title} loading="lazy"/></Link>
+     <div className="ls27-article-body"><span>{article.tag}</span><h3>{article.title}</h3><p>{article.summary}</p><Link href={article.href} className="v22-text-link">Read Article ↗</Link></div>
+    </article>})}</div>
+    <div className="ls27-article-actions"><div className="v22-carousel-buttons"><button onClick={()=>setGuideIndex(v=>(v+journal.length-1)%journal.length)} type="button" aria-label="Previous articles">←</button><span>{guideIndex+1} / {journal.length}</span><button onClick={()=>setGuideIndex(v=>(v+1)%journal.length)} type="button" aria-label="Next articles">→</button></div><Link href="/insights" className="v22-btn">View All Articles ↗</Link></div>
+   </div>
   </div></section>
   {/* 9 / Testimonials and pre-footer CTA; production footer below remains unchanged. */}
   <section className="v22-section v22-final" aria-labelledby="v22-voices-title"><div className="v22-container v22-two">

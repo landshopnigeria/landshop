@@ -1,0 +1,87 @@
+/* LANDSHOP V28: Approved 31 Oct homepage changes.
+ * SCOPE SAFETY: This file styles only the hero and marketing sections.
+ * No global header, search/property filters, footer, staff or auth selectors.
+ * Owner-supplied product artwork remains in LandshopProductCards.
+ */
+.ls-v23-hero .ls-v23-hero-inner{position:relative}
+.ls-v23-hero .ls-v23-hero-content{padding-right:38px}
+.ls-v23-hero .ls-v23-hero-controls{
+ position:absolute;right:8px;top:41%;transform:translateY(-50%);
+ z-index:3;display:flex;flex-direction:column;align-items:center;gap:23px;
+ width:52px;min-height:140px
+}
+.ls-v23-hero .hero-v16-indicators{display:flex;flex-direction:column;gap:11px;align-items:center;justify-content:center}
+.ls-v23-hero .hero-v16-indicators button{height:26px;width:7px;min-width:7px;min-height:26px;border-radius:20px;background:rgba(255,255,255,.46);transition:height .3s ease,background .3s ease}
+.ls-v23-hero .hero-v16-indicators button.selected{height:43px;width:7px;min-width:7px;background:#70e0ad}
+.ls-v23-hero .hero-v16-arrows{display:flex;flex-direction:column;margin-left:0;gap:8px}
+.ls-v23-hero .hero-v16-arrows button{width:39px;height:39px;font-size:21px;min-height:39px}
+.ls-v23-hero .ls-v23-hero-title span,.ls-v23-hero .ls-v23-hero-title strong{min-height:1.05em;overflow:visible}
+.ls-v23-hero .ls-v23-hero-title strong:after{content:"";display:inline-block;height:.77em;width:2px;margin-left:5px;vertical-align:-.03em;background:#bbf9d3;animation:ls28-caret 750ms step-end infinite}
+@keyframes ls28-caret{50%{opacity:0}}
+.ls27-products-section .v22-heading{margin-bottom:24px}
+.ls27-products-section .v22-heading h2{color:#073f34}
+.ls27-products-section .ls27-product-grid{margin-top:0}
+.ls27-products-section .ls27-product-card{background:rgba(255,255,255,.78);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.ls27-affordability{background:#f6faf7}
+.ls27-affordability-inner{display:grid;grid-template-columns:.95fr 1.05fr;align-items:center;gap:clamp(30px,5vw,85px)}
+.ls27-affordability h2{max-width:650px;font-size:clamp(37px,4vw,58px);line-height:1.08}
+.ls27-affordability p{max-width:565px}
+.ls27-affordability-photo{margin:0;position:relative;min-height:450px;overflow:hidden;border-radius:24px;box-shadow:0 24px 64px rgba(6,55,37,.16)}
+.ls27-affordability-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.ls27-affordability-photo figcaption{position:absolute;bottom:12px;left:12px;right:12px;color:#fff;font-size:11px;background:rgba(5,31,26,.63);padding:10px 12px;border-radius:9px;backdrop-filter:blur(7px)}
+.v22-feature.ls27-glass-listing{border:1px solid rgba(255,255,255,.72);box-shadow:0 17px 44px rgba(6,51,35,.14);backdrop-filter:blur(9px)}
+.v22-feature.ls27-glass-listing .v22-feature-info b{color:#f26b10!important;font-weight:850;font-size:clamp(22px,2vw,28px);text-shadow:0 1px 8px rgba(0,0,0,.25)}
+.ls26-project-grid .ls26-estate-visual img{display:block;transition:transform .35s ease}
+.ls26-project-grid .ls26-estate-card:hover .ls26-estate-visual img{transform:scale(1.035)}
+.v22-root .ls-why-section{background:linear-gradient(115deg,#050e0b 0%,#0a241e 36%,#135b48 78%,#2ba47a 100%);color:#fff}
+.v22-root .ls-why-section .v22-heading h2,.v22-root .ls-why-section .v22-heading p,.v22-root .ls-why-section .v22-eyebrow{color:#fff!important}
+.v22-root .ls-why-section .ls26-heading-green{color:#a6eacb!important}
+.v22-root .ls-why-section .ls-why-grid{gap:20px}
+.v22-root .ls-why-section .ls-why-card{min-height:215px;background:#218d65;color:#fff;border:1px solid rgba(255,255,255,.16);box-shadow:0 19px 50px rgba(0,0,0,.16)}
+.v22-root .ls-why-section .ls-why-card:nth-child(3n+2){background:rgba(255,255,255,.95);color:#123e31}
+.v22-root .ls-why-section .ls-why-card:nth-child(3n){background:rgba(4,17,13,.93);color:#fff}
+.v22-root .ls-why-section .ls-why-card h3,.v22-root .ls-why-section .ls-why-card p{color:inherit!important}
+.v22-root .ls-why-section .ls-why-card>span{display:grid;place-items:center;width:61px;height:61px;border-radius:15px;margin-bottom:24px;background:#0b6a4a;color:#fff!important;font-size:27px!important;line-height:1;font-weight:850}
+.v22-root .ls-why-section .ls-why-card:nth-child(3n)>span{background:#2ba47a}
+.ls27-journal{background:#f7faf8}
+.ls27-journal .v22-heading{align-items:center}
+.ls27-articles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;align-items:stretch}
+.ls27-article{background:#fff;border:1px solid #e2ede6;border-radius:20px;overflow:hidden;box-shadow:0 14px 42px rgba(11,58,40,.07);animation:ls28-article-enter .4s ease both}
+@keyframes ls28-article-enter{from{opacity:.5;transform:translateX(13px)}to{opacity:1;transform:translateX(0)}}
+.ls27-article-photo{display:block;height:205px;overflow:hidden}
+.ls27-article-photo img{width:100%;height:100%;object-fit:cover;transition:transform .4s ease}
+.ls27-article:hover .ls27-article-photo img{transform:scale(1.045)}
+.ls27-article-body{padding:23px 22px 26px}
+.ls27-article-body>span{font-size:10px;letter-spacing:.13em;font-weight:850;color:#147f60}
+.ls27-article-body h3{font-size:clamp(20px,1.9vw,27px);min-height:63px;line-height:1.2;margin:10px 0}
+.ls27-article-body p{font-size:13px;line-height:1.65;min-height:85px}
+.ls27-article-actions{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:30px}
+.ls27-article-actions .v22-carousel-buttons,.ls27-article-actions .v22-btn{margin:0}
+@media(max-width:1050px){
+ .ls27-affordability-inner{grid-template-columns:1fr 1fr}
+ .ls27-articles{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .ls27-article:nth-child(3){display:none}
+}
+@media(max-width:700px){
+ .ls-v23-hero .ls-v23-hero-content{padding-right:0}
+ .ls-v23-hero .ls-v23-hero-controls{position:relative;right:auto;top:auto;transform:none;align-self:flex-start;width:auto;min-height:0;flex-direction:row;gap:20px;margin-top:auto}
+ .ls-v23-hero .hero-v16-indicators{flex-direction:row}
+ .ls-v23-hero .hero-v16-indicators button{width:26px;min-width:26px;height:7px;min-height:7px}
+ .ls-v23-hero .hero-v16-indicators button.selected{width:42px;min-width:42px;height:7px}
+ .ls-v23-hero .hero-v16-arrows{flex-direction:row}
+ .ls27-affordability-inner{grid-template-columns:1fr}
+ .ls27-affordability-photo{min-height:300px}
+ .ls27-articles{grid-template-columns:1fr}
+ .ls27-article:nth-child(2),.ls27-article:nth-child(3){display:none}
+ .ls27-article-body h3,.ls27-article-body p{min-height:0}
+ .ls27-article-actions{flex-wrap:wrap}
+}
+@media(max-width:390px){
+ .ls-v23-hero .ls-v23-hero-controls{gap:13px}
+ .ls-v23-hero .hero-v16-arrows button{width:36px;height:36px}
+}
+@media(prefers-reduced-motion:reduce){
+ .ls-v23-hero .ls-v23-hero-title strong:after{animation:none;opacity:0}
+ .ls27-article{animation:none}
+ .ls27-article-photo img,.ls26-project-grid .ls26-estate-visual img{transition:none}
+}

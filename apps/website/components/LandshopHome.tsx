@@ -7,10 +7,11 @@ import {editorialImages} from '../lib/editorial-imagery';
 import SiteIcon from './SiteIcon';
 export type FeaturedProperty={id:string,href:string,title:string,location:string,propertyType:string,price:string,collection?:'Prime'|'Luxury',image?:string};
 const slides=[
- {name:'LANDSHOP',subtitle:'Welcome To Landshop',title:'Everyone deserves affordable property.',copy:'Your first home is a home for later and a place to put down roots. Explore your options and take the next step with Landshop.',image:'/media/deck-building.webp',primary:'Get Started',href:'https://portal.landshopnigeria.com',secondary:'Explore Famous Gardens',secondaryHref:'/projects/famous-gardens'},
- {name:'FAMOUS GARDENS',subtitle:'Welcome To Landshop',title:'Plot Your Future. Save ₦5 million.',copy:'Your Famous Gardens home could be your next chapter. Explore qualifying homes in Iberekodo, Ibeju-Lekki, with clear prices and ownership options.',image:'/media/famous0.webp',primary:'Get Started',href:'https://portal.landshopnigeria.com',secondary:'Book Inspection',secondaryHref:'/visit?project=famous-gardens'},
- {name:'FUTURE LOCATIONS',subtitle:'Own a property with ease.',title:'Where would you own next?',copy:'Choose a Nigerian state, tell us why it matters to you and join Landshop’s interest list for future property opportunities.',image:'/media/deck-develop.webp',primary:'Invest Today',href:'/mortgage-calculator',secondary:'Speak With Consultant',secondaryHref:'/visit?topic=consultation'}
+ {name:'LANDSHOP',subtitle:'Welcome To Landshop',title:'Everyone deserves affordable property.',copy:'Your first home is a home for later and a place to put down roots. Explore your options and take the next step with Landshop.',image:editorialImages.residential.src,primary:'Get Started',href:'https://portal.landshopnigeria.com',secondary:'Explore Famous Gardens',secondaryHref:'/projects/famous-gardens'},
+ {name:'FAMOUS GARDENS',subtitle:'Welcome To Landshop',title:'Plot Your Future. Save ₦5 million.',copy:'Your Famous Gardens home could be your next chapter. Explore qualifying homes in Iberekodo, Ibeju-Lekki, with clear prices and ownership options.',image:'/media/deck-construction.webp',primary:'Get Started',href:'https://portal.landshopnigeria.com',secondary:'Book Inspection',secondaryHref:'/visit?project=famous-gardens'},
+ {name:'FUTURE LOCATIONS',subtitle:'Own a property with ease.',title:'Where would you own next?',copy:'Choose a Nigerian state, tell us why it matters to you and join Landshop’s interest list for future property opportunities.',image:editorialImages.architecture.src,primary:'Invest Today',href:'/mortgage-calculator',secondary:'Speak With Consultant',secondaryHref:'/visit?topic=consultation'}
 ] as const;
+const titleParts=[['Everyone deserves','affordable property.'],['Plot Your Future.','Save ₦5 million.'],['Where would','you own next?']] as const;
 const products=[
  {title:'Develop',sub:'Own your future',description:'Discover land and housing opportunities, Prime and Luxury selections.',img:editorialImages.develop.src,href:'/develop'},
  {title:'Incubate',sub:'Explore property investment',description:'Review available property-led investment opportunities and their verified terms.',img:editorialImages.incubate.src,href:'/incubate'},
@@ -18,7 +19,7 @@ const products=[
 ];
 
 export default function Homepage({featured}:{featured:FeaturedProperty[]}){
- const [slide,setSlide]=useState(0),[purpose,setPurpose]=useState('Buy'),[pause,setPause]=useState(false);
+ const [slide,setSlide]=useState(0),[purpose,setPurpose]=useState('Buy'),[pause,setPause]=useState(false),[typedLength,setTypedLength]=useState(0);
  const router=useRouter();
  const touchStartX=useRef<number|null>(null);
  const goToSlide=(next:number)=>{setSlide((next+slides.length)%slides.length);};
@@ -30,7 +31,8 @@ export default function Homepage({featured}:{featured:FeaturedProperty[]}){
   if(Math.abs(change)>55)goToSlide(slide+(change<0?1:-1));
   setPause(false);
  };
- useEffect(()=>{if(pause)return;const id=setInterval(()=>setSlide(v=>(v+1)%slides.length),7300);return()=>clearInterval(id)},[pause]);
+ useEffect(()=>{if(pause||window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;const id=setInterval(()=>setSlide(v=>(v+1)%slides.length),6800);return()=>clearInterval(id)},[pause]);
+ useEffect(()=>{const [first,last]=titleParts[slide],total=first.length+1+last.length;if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){setTypedLength(total);return;}setTypedLength(0);let index=0;const id=setInterval(()=>{index=Math.min(total,index+1);setTypedLength(index);if(index===total)clearInterval(id)},37);return()=>clearInterval(id)},[slide]);
 
  const current=slides[slide];
  function search(e:React.FormEvent<HTMLFormElement>){
@@ -60,9 +62,8 @@ export default function Homepage({featured}:{featured:FeaturedProperty[]}){
     <div className="hero-v16-content ls-v23-hero-content" key={current.name}>
      <span className="eyebrow hero-v16-eyebrow">{current.subtitle}</span>
      <h1 className="hero-v16-title ls-v23-hero-title" aria-label={current.title}>
-      {slide===0?<><span>Everyone deserves</span><strong>affordable property.</strong></>:
-       slide===1?<><span>Plot Your Future.</span><strong>Save ₦5 million.</strong></>:
-       <><span>Where would</span><strong>you own next?</strong></>}
+      <span>{titleParts[slide][0].slice(0,typedLength)}</span>
+      <strong>{titleParts[slide][1].slice(0,Math.max(0,typedLength-titleParts[slide][0].length-1))}</strong>
      </h1>
      <p className="hero-v16-copy ls-v23-hero-description">{current.copy}</p>
      <div className="hero-v16-actions ls-v23-hero-actions">
@@ -71,7 +72,6 @@ export default function Homepage({featured}:{featured:FeaturedProperty[]}){
      </div>
     </div>
     <div className="hero-v16-controls ls-v23-hero-controls" aria-label="Choose a Landshop product slide">
-     <span className="hero-v16-progress-label">{String(slide+1).padStart(2,'0')} <small>/ 03</small></span>
      <div className="hero-v16-indicators">{slides.map((item,i)=>
       <button key={item.name} type="button" aria-label={'Show '+item.name+' slide'}
        aria-current={slide===i?'true':undefined} className={slide===i?'selected':''}
