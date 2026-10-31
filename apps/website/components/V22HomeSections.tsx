@@ -62,8 +62,18 @@ export default function V22HomeSections({featured}:{featured:V22Property[]}){
      {p.image?<img src={p.image} alt={'Owner-approved photograph of '+p.title} loading="lazy"/>:<div className="v22-photo-pending">Original media awaiting approval</div>}
      <div className="v22-feature-info">{p.collection&&<span className="ls26-collection-badge">{p.collection}</span>}<span>{p.propertyType} · {p.location}</span><h3>{p.title}</h3><b>{p.price}</b><span className="ls26-card-cta">View Estate <span aria-hidden="true">↗</span></span></div></Link>):
     <div className="v22-inventory-empty"><h3>Verified opportunities, not placeholder listings.</h3><p>Only approved, published properties appear here. Explore the marketplace for the latest available inventory.</p><Link href="/properties" className="v22-btn">Browse the marketplace ↗</Link></div>}
-   </div><div className="ls26-collection-heading"><span className="v22-eyebrow ls26-faded-eyebrow">PRIME &amp; LUXURY</span><h3><span className="ls26-heading-green">Prime</span> &amp; Luxury<span className="v22-accent">.</span></h3></div><div className="v22-collections"><Link href="/collections/prime"><span>PRIME ESTATES</span><strong>Considered homes for everyday living.</strong><em>Explore residential properties ↗</em></Link>
-    <Link href="/collections/luxury"><span>LUXURY ESTATES</span><strong>Explore distinctive properties with verified premium features.</strong><em>Explore Luxury Estates ↗</em></Link></div>
+   </div><div className="ls26-collection-heading"><span className="v22-eyebrow ls26-faded-eyebrow">PRIME &amp; LUXURY</span><h3><span className="ls26-heading-green">Prime</span> &amp; Luxury<span className="v22-accent">.</span></h3></div><div className="v22-collections ls27-collections">
+    <Link href="/collections/prime" className="ls27-collection-card">
+     <div className="ls27-collection-cover ls27-prime-cover"><small>PRIME ESTATES / VERIFIED INVENTORY ONLY</small></div>
+     <span className="ls27-collection-pill">PRIME COLLECTION</span><strong>Prime Estates.</strong>
+     <p>Places for practical ownership and long-term plans.</p><em>Explore Prime ↗</em>
+    </Link>
+    <Link href="/collections/luxury" className="ls27-collection-card">
+     <div className="ls27-collection-cover ls27-luxury-cover"><small>LUXURY ESTATES / VERIFIED INVENTORY ONLY</small></div>
+     <span className="ls27-collection-pill">LUXURY COLLECTION</span><strong>Luxury Estates.</strong>
+     <p>Distinctive properties with verified premium features.</p><em>Explore Luxury ↗</em>
+    </Link>
+   </div>
   </div></section>
   {/* Full Prime collection feature. Video appears ONLY with Prime content, not About. */}
   <section className="v22-section ls27-prime-feature" aria-labelledby="ls27-prime-title">
