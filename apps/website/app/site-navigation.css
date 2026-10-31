@@ -146,3 +146,19 @@ body{scroll-padding-top:105px}
 html{scroll-padding-top:168px}
 @media(max-width:1050px){html{scroll-padding-top:150px}.ls-mobile-subnav .ls-icon-chip{width:52px;height:52px;min-width:52px}.ls-mobile-subnav .ls-icon-chip .ls-icon{width:28px;height:28px}}
 @media(max-width:680px){html{scroll-padding-top:135px}.ls-primary-nav.ls-nav-mobile-open{max-width:calc(100vw - 20px);box-sizing:border-box}}
+
+/* V27 video-review corrections: accessible hover mega menus and glass header motion. */
+.ls-site-chrome .ls-utility-bar{max-height:52px;opacity:1;overflow:hidden;transition:max-height .48s ease,opacity .35s ease}
+.ls-site-chrome.ls-nav-scrolled .ls-utility-bar{max-height:0;opacity:0;pointer-events:none}
+.ls-site-chrome .ls-glass-wrap{transition:transform .43s cubic-bezier(.2,.8,.2,1),opacity .43s ease}
+.ls-site-chrome.ls-nav-hidden .ls-glass-wrap{transform:translateY(-125%);opacity:0;pointer-events:none}
+.ls-mega[data-menu="Services"]{width:min(880px,calc(100vw - 54px));max-height:min(76vh,630px);overflow:visible}
+.ls-mega[data-menu="Services"] .ls-mega-layout{grid-template-columns:1fr 1fr;min-height:0}
+.ls-mega[data-menu="Services"] .ls-mega-list{gap:4px;padding:13px}
+.ls-mega[data-menu="Services"] .ls-mega-list a{min-height:47px;padding:5px 8px}
+.ls-mega[data-menu="Services"] .ls-mega-list .ls-icon-chip{width:34px;height:34px;min-width:34px}
+.ls-mega[data-menu="Services"] .ls-mega-detail{padding:16px 22px}
+.ls-mega[data-menu="Services"] .ls-mega-quicklinks{grid-template-columns:repeat(2,minmax(0,1fr));gap:3px}
+.ls-mega[data-menu="Services"] .ls-mega-quicklinks a{padding:8px 5px;font-size:12px}
+@media(max-width:1050px){.ls-site-chrome.ls-nav-hidden .ls-glass-wrap:has(.ls-nav-mobile-open){transform:none;opacity:1;pointer-events:auto}}
+@media(prefers-reduced-motion:reduce){.ls-site-chrome .ls-utility-bar,.ls-site-chrome .ls-glass-wrap{transition:none}}
