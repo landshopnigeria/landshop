@@ -6,7 +6,7 @@ import './command.css';
 export const dynamic='force-dynamic';
 export const metadata={title:'Landshop Global Command Center'};
 const links=[
- ['Dashboard','/admin','⌂'],['Property Management','/admin/properties','▦'],['Leads & Applications','/admin/applications','▣'],
+ ['Dashboard','/admin','⌂'],['Enterprise Activity','/admin/activity','◷'],['Property Management','/admin/properties','▦'],['Leads & Applications','/admin/applications','▣'],
  ['CRM Application Queue','/admin/applications','↗'],['Mortgage Reviews','/admin/applications','◉'],
  ['Property Import','/admin/properties/import/advanced','⇧'],['Import Approval','/admin/properties/import/review','✓'],
  ['Workflow Automation','/admin/automation','⌘'],['Website Enquiries','/admin/enquiries','✉'],['Article Comments','/admin/comments','☷'],['Daily Newsletter','/admin/newsletter','✉'],['Customer Support','/admin/support','☏'],
