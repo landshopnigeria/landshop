@@ -62,8 +62,7 @@ export default function Homepage({featured}:{featured:FeaturedProperty[]}){
     <div className="hero-v16-content ls-v23-hero-content" key={current.name}>
      <span className="eyebrow hero-v16-eyebrow">{current.subtitle}</span>
      <h1 className="hero-v16-title ls-v23-hero-title" aria-label={current.title}>
-      <span>{titleParts[slide][0].slice(0,typedLength)}</span>
-      <strong>{titleParts[slide][1].slice(0,Math.max(0,typedLength-titleParts[slide][0].length-1))}</strong>
+      <span>{titleParts[slide][0].slice(0,typedLength)}</span>{typedLength>titleParts[slide][0].length?' ':null}<strong>{titleParts[slide][1].slice(0,Math.max(0,typedLength-titleParts[slide][0].length-1))}</strong>
      </h1>
      <p className="hero-v16-copy ls-v23-hero-description">{current.copy}</p>
      <div className="hero-v16-actions ls-v23-hero-actions">
