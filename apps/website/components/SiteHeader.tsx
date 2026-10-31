@@ -61,10 +61,13 @@ export default function SiteHeader(){
    previous=y;
    if(y<15||menuOpen||expanded){movement=0;setNavVisible(true);return}
    if(Math.abs(delta)<1)return;
-   if(Math.sign(delta)!==Math.sign(movement))movement=0;
-   movement=Math.max(-90,Math.min(90,movement+delta));
-   if(y>105&&movement>19){setNavVisible(false);movement=0}
-   else if(movement< -16){setNavVisible(true);movement=0}
+   // Any deliberate upward movement should reveal immediately; CSS performs
+   // the slower, gentle slide-in. Small mobile wheel/touch deltas count too.
+   if(delta< -2){movement=0;setNavVisible(true);return;}
+   if(delta>0){
+    movement=Math.max(0,Math.min(90,movement+delta));
+    if(y>105&&movement>19){setNavVisible(false);movement=0}
+   }
   };
   const onScroll=()=>{if(!frameId)frameId=window.requestAnimationFrame(read)};
   window.addEventListener('scroll',onScroll,{passive:true});
