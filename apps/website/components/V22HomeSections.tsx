@@ -57,7 +57,7 @@ export default function V22HomeSections({featured}:{featured:V22Property[]}){
        supplied by the connected main-branch LandshopProductCards component. */}
   <section className="v22-section v22-muted ls27-products-section" aria-labelledby="v22-products-title"><div className="v22-container">
    <div className="v22-heading"><h2 id="v22-products-title">Product<span className="v22-accent">.</span></h2></div>
-   <LandshopProductCards/>
+   <LandshopProductCards homepageOnly/>
   </div></section>
   <section className="v22-section ls27-affordability" aria-labelledby="ls27-affordability-title">
    <div className="v22-container ls27-affordability-inner">
@@ -66,7 +66,7 @@ export default function V22HomeSections({featured}:{featured:V22Property[]}){
      <p>Discover acquisition, investment and home-financing options with clear information so you can choose the next step with confidence.</p>
      <Link href="/properties" className="v22-btn">Explore Properties →</Link>
     </div>
-    <figure className="ls27-affordability-photo"><img src="/editorial/2026/estate-parking.jpg" alt="Modern estate architectural illustration with parked cars and without artificial palm trees; not a Landshop property listing" loading="lazy" decoding="async"/></figure>
+    <figure className="ls27-affordability-photo"><img src="/owner/2026/estate-residential.webp" alt="Real photograph of completed townhouses within a Nigerian residential estate, from the Landshop owner archive" loading="lazy" decoding="async"/></figure>
    </div>
   </section>
   {/* 4 / Verified inventory + property collections */}
@@ -78,12 +78,12 @@ export default function V22HomeSections({featured}:{featured:V22Property[]}){
     <div className="v22-inventory-empty"><h3>Verified opportunities, not placeholder listings.</h3><p>Only approved, published properties appear here. Explore the marketplace for the latest available inventory.</p><Link href="/properties" className="v22-btn">Browse the marketplace →</Link></div>}
    </div><div className="ls26-collection-heading"><span className="v22-eyebrow ls26-faded-eyebrow">PRIME &amp; LUXURY</span><h3><span className="ls26-heading-green">Prime</span> &amp; Luxury<span className="v22-accent">.</span></h3></div><div className="v22-collections ls27-collections">
     <Link href="/collections/prime" className="ls27-collection-card">
-     <div className="ls27-collection-cover ls27-prime-cover"><img src="/editorial/2026/modern-duplex.jpg" alt="White modern duplex in the Nigerian real estate reference collection; editorial only, not a Landshop property" loading="lazy" decoding="async"/></div>
+     <div className="ls27-collection-cover ls27-prime-cover"><img src="/owner/2026/famous-completed-homes.webp" alt="Completed estate housing photographed in the Landshop Famous Gardens archival collection" loading="lazy" decoding="async"/></div>
      <span className="ls27-collection-pill">PRIME COLLECTION</span><strong>Prime Estates.</strong>
      <p>Places for practical ownership and long-term plans.</p><em>Explore Prime →</em>
     </Link>
     <Link href="/collections/luxury" className="ls27-collection-card">
-     <div className="ls27-collection-cover ls27-luxury-cover"><img src="/editorial/2026/ikate-exterior.jpg" alt="Modern luxury duplex reference in Nigeria, editorial only rather than a Landshop listing" loading="lazy" decoding="async"/></div>
+     <div className="ls27-collection-cover ls27-luxury-cover"><img src="/owner/2026/estate-architecture.webp" alt="Real architectural photograph of modern Nigerian townhouses from Landshop owner-supplied imagery" loading="lazy" decoding="async"/></div>
      <span className="ls27-collection-pill">LUXURY COLLECTION</span><strong>Luxury Estates.</strong>
      <p>Distinctive properties with verified premium features.</p><em>Explore Luxury →</em>
     </Link>
@@ -101,7 +101,7 @@ export default function V22HomeSections({featured}:{featured:V22Property[]}){
     <LandshopVideo video="prime"/>
    </div>
   </section>
-  <section className="v22-section ls26-projects-home" aria-labelledby="ls26-projects-home-title"><div className="v22-container"><div className="v22-heading"><div><span className="v22-eyebrow ls26-faded-eyebrow">OUR</span><h2 id="ls26-projects-home-title"><span className="ls26-heading-green">Projects</span><span className="v22-accent">.</span></h2></div><Link className="v22-text-link" href="/projects">View all projects →</Link></div><div className="ls26-grid-three ls26-project-grid">{[['Famous Gardens','Current sales focus','Iberekodo, Ibeju-Lekki','famous-gardens','/media/famous0.webp'],['Merit Park','Past project','Project history and updates','merit-park','/editorial/2026/townhouse.jpg'],['Green Island','Past project','Project history and updates','green-island','/editorial/2026/incubate-reference.jpg'],['Maiyegun Beach Estate','Past project','Project history and updates','maiyegun-beach-estate','/media/maiyegun0.webp']].map(([name,status,location,slug,image])=><Link key={slug} href={'/projects/'+slug} className="ls26-estate-card" style={{textDecoration:'none',color:'inherit'}}><div className="ls26-estate-visual">{image?<><img src={image} alt={slug==="famous-gardens"||slug==="maiyegun-beach-estate"?"Original Landshop project archive: "+name:"Illustrative Nigerian residential photograph, not verified imagery of "+name} loading="lazy" style={{width:"100%",height:"100%",objectFit:"cover"}}/>{(slug==="merit-park"||slug==="green-island")&&<small className="ls29-editorial-watermark">Editorial reference · Project imagery awaiting confirmation</small>}</>:<span>VERIFIED PROJECT IMAGE PENDING</span>}</div><div className="ls26-estate-content"><small className="ls26-eyebrow">{status}</small><h3>{name}</h3><p>{location}</p><strong className="v22-text-link">Explore project →</strong></div></Link>)}</div></div></section>
+  <section className="v22-section ls26-projects-home" aria-labelledby="ls26-projects-home-title"><div className="v22-container"><div className="v22-heading"><div><span className="v22-eyebrow ls26-faded-eyebrow">OUR</span><h2 id="ls26-projects-home-title"><span className="ls26-heading-green">Projects</span><span className="v22-accent">.</span></h2></div><Link className="v22-text-link" href="/projects">View all projects →</Link></div><div className="ls26-grid-three ls26-project-grid">{[['Famous Gardens','Current sales focus','Iberekodo, Ibeju-Lekki','famous-gardens','/owner/2026/famous-exterior.webp'],['Merit Park','Past project','Project history and updates','merit-park','/editorial/2026/townhouse.jpg'],['Green Island','Past project','Project history and updates','green-island','/editorial/2026/incubate-reference.jpg'],['Maiyegun Beach Estate','Past project','Project history and updates','maiyegun-beach-estate','/media/maiyegun0.webp']].map(([name,status,location,slug,image])=><Link key={slug} href={'/projects/'+slug} className="ls26-estate-card" style={{textDecoration:'none',color:'inherit'}}><div className="ls26-estate-visual">{image?<><img src={image} alt={slug==="famous-gardens"||slug==="maiyegun-beach-estate"?"Original Landshop project archive: "+name:"Illustrative Nigerian residential photograph, not verified imagery of "+name} loading="lazy" style={{width:"100%",height:"100%",objectFit:"cover"}}/>{(slug==="merit-park"||slug==="green-island")&&<small className="ls29-editorial-watermark">Editorial reference · Project imagery awaiting confirmation</small>}</>:<span>VERIFIED PROJECT IMAGE PENDING</span>}</div><div className="ls26-estate-content"><small className="ls26-eyebrow">{status}</small><h3>{name}</h3><p>{location}</p><strong className="v22-text-link">Explore project →</strong></div></Link>)}</div></div></section>
   {/* Service guidance remains reachable through dedicated Services pages and Insights. */}
   {/* Curated property locations · three visible cards per desktop row; swipe and button navigation. */}
   <section className="v22-section ls26-location-section" aria-labelledby="v22-locations-title" {...locationsPlayback.handlers}><div className="v22-container">
