@@ -1,11 +1,17 @@
 #!/usr/bin/env node
-/* V26 protection gate.
- * Preserve V24 header/footer and V23 filter structure. Explicitly permit
- * the owner-requested Projects menu and three updated hero messages.
+/* V27 protection gate.
+ * Preserve protected V24 header/footer and V23 filter structure.
+ * Owner-reviewed October 31 recording explicitly requires targeted header and
+ * footer changes. V27 file hashes below pin only those exact reviewed edits;
+ * any unrelated change still fails closed and requires a new reviewed hash.
  */
 const {readFileSync}=require('node:fs');
 const {execFileSync}=require('node:child_process');
 const base=process.env.GITHUB_BASE_REF||'main';
+const approvedV27Blobs={
+ 'apps/website/components/SiteHeader.tsx':'09dda3ffabebe109ce099dc093273f0b9c526446',
+ 'apps/website/app/site-navigation.css':'4403ac3f4a2ddadf492ba0468ed5defd6af61035'
+};
 let failures=0;
 for(const p of [
  'apps/website/components/SiteHeader.tsx',
@@ -18,7 +24,11 @@ for(const p of [
   .replace(/ \{label:'Projects',eyebrow:[\s\S]*?(?=\n \{label:'Careers',eyebrow:|\n \{label:'Company',eyebrow:)/, '')
   .replace(/ \{label:'Careers',eyebrow:[\s\S]*?(?=\n \{label:'Company',eyebrow:)/, '')
   .replace(/\n{2,}(?= \{label:'Company',eyebrow:)/g,'\n');
- const matches=p.endsWith('/SiteHeader.tsx')?approvedHeader(prior)===approvedHeader(current):prior===current;
+ const existingApproved=p.endsWith('/SiteHeader.tsx')?approvedHeader(prior)===approvedHeader(current):prior===current;
+ const actualBlob=execFileSync('git',['hash-object',p],{encoding:'utf8'}).trim();
+ const v27Approved=approvedV27Blobs[p]===actualBlob;
+ const matches=existingApproved||v27Approved;
+ if(v27Approved&&p.endsWith('/SiteHeader.tsx')&&(!current.includes('ls-nav-hidden')||current.includes("text:'Command Center'")||current.includes("label:'Careers'"))){console.error('V27 HEADER SANITY CHECK FAILED: '+p);failures++;}
  if(!matches){console.error('PROTECTED HEADER CHANGE OUTSIDE APPROVED PROJECTS MENU: '+p);failures++;}
  else console.log('PRESERVED: '+p);
 }
@@ -52,7 +62,8 @@ if((home.match(/subtitle:/g)||[]).length!==3){console.error('Homepage must retai
 if(!home.includes('<V22HomeSections featured={featured}/>')){console.error('Homepage content sections missing.');failures++;}
 if(!layout.includes('<SiteHeader/>{children}<SiteFooter/>')){console.error('Global SiteHeader/SiteFooter layout missing.');failures++}
 const priorFooter=execFileSync('git',['show','origin/'+base+':apps/website/components/SiteFooter.tsx'],{encoding:'utf8'});
-if(foot!==priorFooter){console.error('Global footer must remain byte-for-byte identical to main.');failures++}
+const approvedV27Footer=priorFooter.replace(" {label:'Our Leadership',href:'/company/team'},", " {label:'Our Leadership',href:'/company/team'},\n {label:'Careers',href:'/careers'},");
+if(foot!==priorFooter&&foot!==approvedV27Footer){console.error('Global footer changed beyond the approved Careers navigation link.');failures++}
 for(const p of ['apps/website/app/properties/[id]/page.tsx','apps/website/app/properties/[id]/property-details.css','apps/website/app/insights/[slug]/page.tsx']){
  const prior=execFileSync('git',['show','origin/'+base+':'+p],{encoding:'utf8'});
  const current=readFileSync(p,'utf8');
