@@ -25,7 +25,7 @@ for local in sorted(set(local_refs)):
         raise SystemExit(f'Missing or undersized self-hosted image: {local}')
     with p.open('rb') as file:
         header=file.read(3)
-    if header[:3]!=b'\\xff\\xd8\\xff':
+    if header[:3]!=bytes.fromhex('ffd8ff'):
         raise SystemExit(f'Invalid JPEG image header for {local}')
     print(f'PASS self-hosted editorial reference {local}: {p.stat().st_size} bytes',flush=True)
 for url,first,second in photos:
