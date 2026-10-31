@@ -1,7 +1,13 @@
 'use client';
 import {useState} from 'react';
 type Row=Record<string,string|number|null>;
-const esc=(x:unknown)=>'"'+String(x??'').replaceAll('"','""')+'"';
+const esc=(x:unknown)=>{
+ const raw=String(x??'');
+ // Spreadsheet software interprets leading =, +, -, @, tabs and newlines as formulas.
+ // Escape untrusted cells so an exported customer field cannot execute a formula.
+ const safe=/^[\\s]*[=+@-]/.test(raw)||/^[\\t\\r\\n]/.test(raw)?"'"+raw:raw;
+ return '"'+safe.replaceAll('"','""')+'"';
+};
 export default function ExportRecords({rows,basename}:{rows:Row[];basename:string}){
  const [notice,setNotice]=useState('');
  function download(format:'csv'|'json'){
