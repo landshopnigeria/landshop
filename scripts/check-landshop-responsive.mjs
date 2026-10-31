@@ -57,6 +57,48 @@ try{
  const contact=await page.request.get(root+'/api/contact');
  if((contact.headers()['x-content-type-options']||'')!=='nosniff')errors.push('Security nosniff header missing');
  if(!(homepage.headers()['strict-transport-security']||'').includes('max-age='))errors.push('HSTS header missing');
+ // Interactive proof that the glass header is on the hero image, not above it,
+ // and slides out/in on both desktop and touch-sized screens.
+ const motionContext=await browser.newContext({locale:'en-NG',reducedMotion:'no-preference'});
+ try{
+  const motionPage=await motionContext.newPage();
+  for(const width of [375,1440]){
+   await motionPage.setViewportSize({width,height:width<600?760:920});
+   await motionPage.goto(root+'/',{waitUntil:'domcontentloaded',timeout:30000});
+   await motionPage.waitForTimeout(650);
+   const layout=await motionPage.evaluate(()=>{
+    const utility=document.querySelector('.ls-utility-bar')?.getBoundingClientRect();
+    const nav=document.querySelector('.ls-glass-header')?.getBoundingClientRect();
+    const hero=document.querySelector('.ls-v23-hero')?.getBoundingClientRect();
+    const headline=document.querySelector('.ls-v23-hero-title');
+    return {utilityBottom:utility?.bottom??-1,navTop:nav?.top??-1,
+      navBottom:nav?.bottom??-1,heroTop:hero?.top??-1,
+      heroBottom:hero?.bottom??-1,headlineTop:headline?.getBoundingClientRect().top??-1,
+      titleSize:headline?getComputedStyle(headline).fontSize:'none'};
+   });
+   if(Math.abs(layout.heroTop-layout.utilityBottom)>8||
+      layout.navTop<layout.heroTop-5||layout.navTop>layout.heroTop+25||
+      layout.navBottom>=layout.heroBottom||
+      layout.headlineTop<layout.navBottom+15)
+    errors.push('V31 overlay '+width+'px: header must be on hero with separate headline: '+JSON.stringify(layout));
+   if(layout.titleSize!=='28px')
+    errors.push('V31 heading at '+width+'px must be 28px, got '+layout.titleSize);
+   await motionPage.evaluate(()=>window.scrollTo(0,800));
+   try{await motionPage.waitForFunction(()=>document.querySelector('.ls-site-chrome')?.classList.contains('ls31-nav-hidden'),null,{timeout:3500})}
+   catch{errors.push('V31 main header did not hide on downward scroll @'+width+'px')}
+   const topAfterDown=await motionPage.evaluate(()=>{
+    const el=document.querySelector('.ls-utility-bar');
+    return el?{visible:getComputedStyle(el).visibility,top:el.getBoundingClientRect().top}:null;
+   });
+   if(!topAfterDown||topAfterDown.visible!=='visible'||Math.abs(topAfterDown.top)>3)
+    errors.push('V31 top utility bar should remain visible @'+width+'px: '+JSON.stringify(topAfterDown));
+   await motionPage.evaluate(()=>window.scrollTo(0,260));
+   try{await motionPage.waitForFunction(()=>document.querySelector('.ls-site-chrome')?.classList.contains('ls31-nav-visible'),null,{timeout:3500})}
+   catch{errors.push('V31 main header did not return on upward scroll @'+width+'px')}
+   console.log('V31 HEADER/MOTION CHECK',width,JSON.stringify(layout));
+  }
+  await motionPage.close();
+ }finally{await motionContext.close()}
  console.log('READINESS RESULT:',errors.length?'FAIL':'PASS',errors.length,'errors');
  if(errors.length){for(const e of errors)console.error('ERROR',e);process.exitCode=1;}
  await context.close();
