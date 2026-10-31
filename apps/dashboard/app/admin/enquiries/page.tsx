@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import './enquiries.css';
 import {requireLandshopStaff} from '../../../lib/admin-access';
+import EnquiryAction from './EnquiryAction';
 export const dynamic='force-dynamic';
 export const metadata={title:'Website Enquiries | Landshop Command Center'};
 export default async function WebsiteEnquiries(){
@@ -22,6 +23,7 @@ export default async function WebsiteEnquiries(){
       <div className="enquiry-contact"><a href={'mailto:'+encodeURIComponent(item.email)+'?subject='+encodeURIComponent('Re: your Landshop '+item.topic+' enquiry')}>Reply by email ↗</a>
        {item.phone&&<a href={'tel:'+item.phone.replace(/[^+\d]/g,'')}>Call customer ↗</a>}</div>
       <p className="enquiry-email">Customer email: {item.email}{item.phone?' · '+item.phone:''}</p>
+      <EnquiryAction id={item.id} current={item.status}/>
      </article>)}</div></>}
    <p className="enquiries-policy">Privacy: enquiry contents are restricted to authorized Landshop staff. Do not disclose personal details outside approved customer-service channels.</p>
   </div>
