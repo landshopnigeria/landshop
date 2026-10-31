@@ -6,7 +6,7 @@ revoke all on schema landshop_private from public,anon,authenticated;
 create or replace function landshop_private.activate_verified_staff(
  p_user uuid,p_username text,p_age integer,p_gender text,p_requested_role text
 ) returns boolean language plpgsql security definer set search_path='' as $$
-declare v_org uuid;v_existing_status text;v_profile_state text;
+declare v_org uuid;v_existing_status text;v_profile_state text;v_confirmed_at timestamptz;
 begin
  if p_user is null or not exists(
   select 1 from auth.users u where u.id=p_user
@@ -20,6 +20,7 @@ begin
   'technology_officer','technology_consultant','social_media_manager','customer_service_manager','department_manager',
   'sales','legal','marketing','staff','youth_corps','intern')
  then raise exception 'Invalid staff registration details';end if;
+ select email_confirmed_at into v_confirmed_at from auth.users where id=p_user;
  select id into v_org from public.organizations where kind='landshop' order by created_at limit 1;
  if v_org is null then raise exception 'Landshop organization unavailable';end if;
  select employment_state into v_profile_state from public.landshop_staff_profiles where user_id=p_user for update;
@@ -30,12 +31,12 @@ begin
  insert into public.landshop_staff_profiles
   (user_id,organization_id,username,age_at_registration,gender,requested_role,
    employment_state,joined_at,staff_number)
- values(p_user,v_org,lower(p_username),p_age,p_gender,p_requested_role,'active',now(),
+ values(p_user,v_org,lower(p_username),p_age,p_gender,p_requested_role,'active',v_confirmed_at,
    'LNS-'||upper(substr(replace(p_user::text,'-',''),1,12)))
  on conflict(user_id) do update set
   employment_state=case when public.landshop_staff_profiles.employment_state='pending' then 'active'
     else public.landshop_staff_profiles.employment_state end,
-  joined_at=coalesce(public.landshop_staff_profiles.joined_at,now()),
+  joined_at=coalesce(public.landshop_staff_profiles.joined_at,v_confirmed_at),
   staff_number=coalesce(public.landshop_staff_profiles.staff_number,excluded.staff_number),
   updated_at=now()
   where public.landshop_staff_profiles.employment_state not in ('suspended','ended');
