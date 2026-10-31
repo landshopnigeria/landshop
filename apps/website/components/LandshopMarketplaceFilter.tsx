@@ -24,7 +24,7 @@ export default function LandshopMarketplaceFilter({initial}:{initial:Filters}){
      {['Buy','Sell','Rent','Shortlet'].map(p=><button type="button" key={p} className={p===purpose?'active':''} aria-pressed={p===purpose} onClick={()=>setPurpose(p)}>{p}</button>)}
     </div>
   </div>
-  {purpose==='Sell'?<div className="landshop-sell-panel ls-v23-sell-panel"><div><strong>Ready to sell or list a property?</strong><p>Sign in to the secure Landshop portal to submit a property for verification before publication.</p></div><a className="primary" href="https://portal.landshopnigeria.com">Start Selling ↗</a></div>:<>
+  {purpose==='Sell'?<div className="landshop-sell-panel ls-v23-sell-panel"><div><strong>Ready to sell or list a property?</strong><p>Sign in to the secure Landshop portal to submit a property for verification before publication.</p></div><a className="primary" href="https://portal.landshopnigeria.com">Start Selling →</a></div>:<>
   <div className="ls-v23-form-grid">
    <label>Location or keyword<input name="query" defaultValue={initial.query} placeholder="Estate, location or keyword" maxLength={80}/></label>
    <label>State / FCT<select name="state" defaultValue={initial.state}><option value="">Select a listed location</option>{locations.map(s=><option key={s} value={s}>{s}</option>)}</select></label>
