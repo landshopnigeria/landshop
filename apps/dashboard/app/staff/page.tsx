@@ -35,7 +35,7 @@ export default async function Page(){
  // Verified staff onboarding establishes basic staff membership only; never requested elevated roles.
  const confirmedStaffSignup=Boolean(user.email_confirmed_at&&user.user_metadata?.staff_signup===true);
  let {data:profile}=await db.from('landshop_staff_profiles').select('*').eq('user_id',user.id).maybeSingle();
- if(confirmedStaffSignup&&!profile){
+ if(confirmedStaffSignup&&(!profile||profile.employment_state==='pending')){
   const fields=user.user_metadata||{},age=fields.age_at_registration;
   if(typeof fields.preferred_username==='string'&&typeof age==='number'&&
      Number.isInteger(age)&&age>=18&&age<=120&&typeof fields.gender==='string'&&
@@ -64,7 +64,7 @@ export default async function Page(){
  }
  return <><StaffWorkActions active={verified} initialTasks={(tasks||[]) as {id:string;title:string;status:string;due_at:string;details:string|null}[]}/>{verified&&<StaffReportHistory userId={user.id}/>}<StaffWorkspace userId={user.id} initialProfile={profile||null} initialTasks={tasks||[]}
   role={member?.role||null} initialVerified={verified}
-  selfServiceAccess={confirmedStaffSignup&&Boolean(profile)}
+  selfServiceAccess={confirmedStaffSignup&&Boolean(profile)&&profile?.employment_state!=='suspended'&&profile?.employment_state!=='ended'}
   ownerAccess={verifiedOwner}
   metadata={(user.user_metadata||{}) as Record<string,unknown>} userEmail={user.email||''}/></>;
 }
