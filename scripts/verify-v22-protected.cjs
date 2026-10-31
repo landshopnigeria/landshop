@@ -110,5 +110,28 @@ for(const source of ['apps/website/components/ContentShell.tsx','apps/website/co
  if(body.includes('<SiteFooter/>')){console.error('Duplicate local SiteFooter render in '+source);failures++}
 }
 
+// V33: every public carousel advances on a timer and pauses on interaction.
+// Property video embeds must never be interrupted by a timer.
+const carouselHook=readFileSync('apps/website/components/useCarouselPlayback.ts','utf8');
+for(const marker of ['setInterval','onMouseEnter','onMouseLeave','onFocusCapture',
+ 'onBlurCapture','onTouchStart','onTouchEnd','visibilitychange','prefers-reduced-motion']){
+ if(!carouselHook.includes(marker)){console.error('Carousel shared pause requirement missing: '+marker);failures++}
+}
+for(const path of ['LandshopHome.tsx','V22HomeSections.tsx','GlobalArticleCarousel.tsx',
+ 'FooterInteractive.tsx','PropertyMediaCarousel.tsx']){
+ const content=readFileSync('apps/website/components/'+path,'utf8');
+ if(!content.includes('useCarouselPlayback(')){
+  console.error('Public carousel missing automatic playback: '+path);failures++;
+ }
+}
+const homeSections=readFileSync('apps/website/components/V22HomeSections.tsx','utf8');
+for(const name of ['articlesPlayback','reviewsPlayback','locationsPlayback']){
+ if(!homeSections.includes(name)){console.error('Missing homepage carousel auto rotation '+name);failures++}
+}
+const propertyMedia=readFileSync('apps/website/components/PropertyMediaCarousel.tsx','utf8');
+if(!propertyMedia.includes("items[active]?.type!=='image'")){
+ console.error('Embedded video playback must remain user controlled');failures++;
+}
+
 if(failures)process.exitCode=1;
 else console.log('PASS: approved Projects/Careers additions, protected global header/footer, property detail and article templates.');
