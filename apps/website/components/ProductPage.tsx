@@ -84,14 +84,14 @@ export default function ProductPage({product}:{product:Product}){
      <h1><em>{p.label}</em><strong>{p.headline}</strong></h1>
      <p className="lp-lead">{p.intro}</p>
      <p className="lp-description">{p.description}</p>
-     <div className="lp-actions"><a className="lp-primary" href={p.heroHref}>{p.heroAction} ↗</a><a className="lp-secondary" href={p.secondaryHref}>{p.secondaryAction} →</a></div>
+     <div className="lp-actions"><a className="lp-primary" href={p.heroHref}>{p.heroAction} →</a><a className="lp-secondary" href={p.secondaryHref}>{p.secondaryAction} →</a></div>
     </div>
     <div className="lp-hero-count"><strong>0{['develop','incubate','grow'].indexOf(product)+1}</strong><span>/ 03 LANDSHOP PATHWAYS</span></div>
    </div>
   </section>
   <section className="lp-overview">
    <div className="lp-container lp-overview-grid">
-    <div className="lp-overview-heading"><span className="lp-eyebrow">WHAT {p.label.toUpperCase()} OFFERS</span><h2>Clarity at every <em>decision point.</em></h2><p>{p.quote}</p><Link href="/about">About Landshop ↗</Link></div>
+    <div className="lp-overview-heading"><span className="lp-eyebrow">WHAT {p.label.toUpperCase()} OFFERS</span><h2>Clarity at every <em>decision point.</em></h2><p>{p.quote}</p><Link href="/about">About Landshop →</Link></div>
     <div className="lp-highlights">{p.highlights.map((item,i)=><div key={item}><span className="lp-highlight-icon"><IconChip name={i===0?'home':i===1?'shield':i===2?'document':'check'}/></span><p>{item}</p></div>)}</div>
    </div>
   </section>
@@ -100,11 +100,11 @@ export default function ProductPage({product}:{product:Product}){
   </div></section>
   <section className="lp-container lp-pathways" id="applications">
    <div className="lp-heading"><span className="lp-eyebrow">CHOOSE YOUR APPLICATION</span><h2>Find the right next step.</h2><p>Every pathway opens a secure, product-specific, multi-step application in the Landshop portal.</p></div>
-   <div className="lp-pathway-grid">{p.pathways.map(item=><article key={item.name} className="lp-pathway-card"><span className="lp-card-number">{item.number}</span><span className="lp-card-icon"><IconChip name={item.name.toLowerCase().includes('inspection')?'calendar':product==='grow'?'calculator':product==='incubate'?'chart':'home'}/></span><h3>{item.name}</h3><p>{item.detail}</p><a href={item.href}>{item.action} ↗</a></article>)}</div>
+   <div className="lp-pathway-grid">{p.pathways.map(item=><article key={item.name} className="lp-pathway-card"><span className="lp-card-number">{item.number}</span><span className="lp-card-icon"><IconChip name={item.name.toLowerCase().includes('inspection')?'calendar':product==='grow'?'calculator':product==='incubate'?'chart':'home'}/></span><h3>{item.name}</h3><p>{item.detail}</p><a href={item.href}>{item.action} →</a></article>)}</div>
    <aside className="lp-disclosure"><strong>Important product information</strong><p>{p.disclaimer}</p></aside>
   </section>
   <section className="lp-knowledge"><FAQAssistant product={product}/></section>
-  <section className="lp-contact"><div className="lp-container"><div><span className="lp-eyebrow">TALK TO LANDSHOP</span><h2>Need more information before you decide?</h2><p>Our team can help you understand a product or request verified current information.</p></div><Link href="/contact">Speak With Our Team ↗</Link></div></section>
+  <section className="lp-contact"><div className="lp-container"><div><span className="lp-eyebrow">TALK TO LANDSHOP</span><h2>Need more information before you decide?</h2><p>Our team can help you understand a product or request verified current information.</p></div><Link href="/contact">Speak With Our Team →</Link></div></section>
   <footer className="lp-footer"><div><Link href="/"><img src="/media/logo-transparent.png" width={139} height={58} alt="Landshop logo"/></Link><p>Building Wealth Through Real Estate.</p></div><nav aria-label="Footer links"><Link href="/develop">Develop</Link><Link href="/incubate">Incubate</Link><Link href="/grow">Grow</Link><Link href="/applications">Applications</Link><Link href="/contact">Contact</Link></nav><small>© {new Date().getFullYear()} Landshop. All rights reserved.</small></footer>
  </main>;
 }
