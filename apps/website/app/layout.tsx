@@ -33,7 +33,12 @@ export const metadata:Metadata={
  twitter:{card:'summary_large_image',title:'Landshop Nigeria | Property Ownership and Estates',
    description:'Explore estates, products, projects and real estate guidance in Nigeria.',
    images:['/media/landshop-about-headquarters.jpg']},
- icons:{icon:'/favicon.ico'}
+ icons:{
+ icon:[{url:'/favicon.ico?v=landshop-20261031',type:'image/x-icon',sizes:'any'},
+       {url:'/icon.png',type:'image/png',sizes:'100x100'}],
+ shortcut:'/favicon.ico?v=landshop-20261031',
+ apple:[{url:'/apple-icon.png',type:'image/png',sizes:'100x100'}]
+}
 };
 const structuredData={
  '@context':'https://schema.org','@graph':[
