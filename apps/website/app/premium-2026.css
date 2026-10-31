@@ -156,3 +156,77 @@
  .mk-layout .ls26-market-filter{width:100%;margin:-27px 0 25px}
 }
 @media(prefers-reduced-motion:reduce){.v22-root .ls26-location-track{scroll-behavior:auto}.v22-root .ls26-location-card,.mk-layout .ls26-property-card{transition:none}}
+
+
+/* LANDSHOP V27 / approved media and cards. Strictly content-scoped.
+   SiteHeader, SiteFooter, property-detail, article-detail, signup and hero layouts unchanged. */
+.v22-root .ls27-about-collage{grid-template-columns:1fr 1.03fr;isolation:isolate}
+.v22-root .ls27-about-collage:before{content:"";position:absolute;inset:7% -16px -17px 8%;z-index:-1;pointer-events:none;border-radius:28px;background:linear-gradient(139deg,rgba(9,129,89,.19),rgba(39,165,115,.08) 55%,rgba(5,63,52,.14));border:1px solid rgba(9,128,89,.15);box-shadow:0 22px 58px rgba(8,62,46,.07)}
+.v22-root .ls27-about-collage img{width:100%;height:100%;object-fit:cover;border-radius:18px;box-shadow:0 12px 34px rgba(17,56,38,.12);border:2px solid rgba(255,255,255,.95)}
+.v22-root .ls27-about-collage .ls27-about-photo-1{object-position:center center}
+.v22-root .ls27-about-collage .ls27-about-photo-2{object-position:center 40%}
+.v22-root .ls27-about-collage .ls27-about-photo-3{object-position:center 56%}
+.v22-root .ls27-about-intro .v22-two>div:first-child>p{margin:0 0 11px;line-height:1.63}
+.v22-root .ls27-about-intro .v22-btn{margin-top:17px}
+.v22-root .ls27-product-grid,.ls26-page .ls27-product-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:16px;align-items:stretch;margin-top:26px}
+.v22-root .v22-product.ls27-product-card,.ls26-page .v22-product.ls27-product-card{min-width:0;display:flex;flex-direction:column;gap:0;min-height:372px;padding:26px 20px 24px;border:1px solid #dce9df;border-radius:20px;background:rgba(255,255,255,.87);backdrop-filter:blur(14px);box-shadow:0 12px 33px rgba(7,71,47,.05);transition:transform .2s,box-shadow .2s,border-color .2s}
+.v22-root .ls27-product-card:hover,.ls26-page .ls27-product-card:hover{transform:translateY(-4px);border-color:#99cdb0;box-shadow:0 24px 42px rgba(8,57,37,.12)}
+.ls27-product-card .ls27-product-brand{height:72px;width:100%;display:flex;align-items:center;justify-content:flex-start;text-decoration:none;flex:none}
+.ls27-product-card .ls27-product-brand .ls27-product-logo{display:block;object-fit:contain;object-position:left center;max-width:100%;width:195px;height:60px;transform:none!important}
+.ls27-product-card .ls27-product-brand .ls27-icon-only{width:67px;height:67px;object-fit:contain;object-position:left center}
+.v22-root .ls27-product-card .ls27-product-copy,.ls26-page .ls27-product-card .ls27-product-copy{padding:12px 0 0;display:flex;flex-direction:column;align-items:flex-start;flex:1}
+.ls27-product-card .ls27-product-copy>small{font-size:10px;font-weight:850;letter-spacing:.1em;color:#177b59;line-height:1.45;min-height:29px}
+.v22-root .ls27-product-card .ls27-product-copy>h3,.ls26-page .ls27-product-card .ls27-product-copy>h3{font-size:clamp(20px,2vw,26px);font-weight:820;letter-spacing:-.04em;color:#103f31;margin:12px 0 13px;line-height:1.12}
+.v22-root .ls27-product-card .ls27-product-copy>p,.ls26-page .ls27-product-card .ls27-product-copy>p{font-size:13px;line-height:1.75;color:#577366;margin:0 0 19px;min-height:0}
+.ls27-product-card .ls27-product-copy>a{font-size:13px;margin-top:auto}
+.v22-root .v22-collections.ls27-collections{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin-top:24px}
+.v22-root .v22-collections.ls27-collections>a.ls27-collection-card{display:flex;flex-direction:column;gap:0;min-height:435px;background:rgba(255,255,255,.91);padding:26px 27px 26px;border:1px solid #dce9e1;border-radius:22px;box-shadow:0 16px 38px rgba(13,51,33,.07);backdrop-filter:blur(15px)}
+.v22-root .v22-collections.ls27-collections .ls27-collection-cover{height:205px;width:100%;display:flex;align-items:center;justify-content:center;border-radius:15px;position:relative;overflow:hidden;margin-bottom:14px}
+.v22-root .v22-collections.ls27-collections .ls27-collection-cover:after{content:"";position:absolute;width:115px;height:165px;border:17px solid rgba(255,255,255,.42);right:-16px;top:-58px;border-radius:60px;transform:rotate(-27deg)}
+.v22-root .v22-collections .ls27-prime-cover{background:linear-gradient(135deg,#e5f0e8,#c3dfcb)}
+.v22-root .v22-collections .ls27-luxury-cover{background:linear-gradient(135deg,#e8e7dc,#c2d4c2)}
+.v22-root .ls27-collection-cover small{font-size:10px;font-weight:850;color:#568c78;letter-spacing:.12em;text-align:center;padding:20px;line-height:1.5}
+.v22-root .v22-collections.ls27-collections .ls27-collection-card .ls27-collection-pill{border:1px solid #acd5c1;border-radius:50px;padding:5px 12px;margin-bottom:16px;font-size:10px;color:#0b8460;width:100%;font-weight:850}
+.v22-root .v22-collections.ls27-collections .ls27-collection-card strong{font-size:23px;line-height:1.22;letter-spacing:-.035em;margin-bottom:8px}
+.v22-root .v22-collections.ls27-collections .ls27-collection-card p{font-size:13px;line-height:1.65;margin:0 0 19px;color:#607b6d}
+.v22-root .v22-collections.ls27-collections .ls27-collection-card em{display:block;margin-top:auto;color:#0b835e}
+.v22-root .ls27-prime-feature{background:linear-gradient(145deg,#f0f8f2,#fcfdfb);border-block:1px solid #e2ede5}
+.ls27-prime-layout,.ls27-film-layout{display:grid;grid-template-columns:minmax(0,.84fr) minmax(0,1.16fr);align-items:center;gap:clamp(22px,4.8vw,68px)}
+.v22-root .ls27-prime-copy h2{font-size:clamp(38px,4.7vw,65px);line-height:1.07;margin:0 0 18px;letter-spacing:-.05em}
+.ls27-prime-copy p,.ls27-film-layout>div:first-child>p{font-size:clamp(15px,1.5vw,17px);color:#537367;line-height:1.85;max-width:520px}
+.ls27-prime-copy .v22-btn{margin-top:23px}
+.ls27-video-block{min-width:0;width:100%}
+.ls27-video-landscape{position:relative;width:100%;aspect-ratio:16/9;min-height:0;overflow:hidden;border-radius:21px;background:linear-gradient(120deg,#0b4637,#0a7957);box-shadow:0 26px 58px rgba(4,57,37,.17);border:5px solid rgba(255,255,255,.93)}
+.ls27-video-landscape iframe{display:block;position:absolute;inset:0;width:100%;height:100%;border:0}
+.ls27-video-fallback{display:inline-flex;align-items:center;gap:5px;text-decoration:none;color:#087e5c!important;font-size:13px!important;font-weight:780!important;margin-top:14px}
+.ls27-video-fallback:hover{color:#ee7519!important}
+.v22-root .ls27-about-film{background:#f5faf6}
+.v22-root .ls27-team-story{background:#fff}
+.v22-root .ls27-team-story .ls27-team-photo{width:100%;height:100%;max-height:540px;object-fit:cover;object-position:center;border-radius:20px;box-shadow:0 20px 48px rgba(7,57,39,.09)}
+.ls26-page .ls27-collection-film{padding-top:0;padding-bottom:50px}
+.ls26-page .ls27-collection-film h2{font-size:clamp(30px,3.7vw,50px);line-height:1.12;margin:0 0 20px;letter-spacing:-.045em}
+.ls26-page .ls27-collection-film .ls27-video-landscape{border-color:#fff}
+.ls26-page .ls27-product-grid{padding-bottom:60px}
+@media(max-width:1180px){
+ .v22-root .ls27-product-grid,.ls26-page .ls27-product-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+ .v22-root .ls27-product-card,.ls26-page .ls27-product-card{min-height:348px}
+}
+@media(max-width:800px){
+ .ls27-prime-layout,.ls27-film-layout{grid-template-columns:1fr;gap:30px}
+ .v22-root .ls27-product-grid,.ls26-page .ls27-product-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .v22-root .ls27-about-collage{min-height:375px;grid-template-rows:180px 180px}
+}
+@media(max-width:620px){
+ .v22-root .ls27-product-grid,.ls26-page .ls27-product-grid{grid-template-columns:1fr;gap:13px}
+ .v22-root .v22-product.ls27-product-card,.ls26-page .v22-product.ls27-product-card{min-height:0;padding:23px 21px}
+ .ls27-product-card .ls27-product-brand{height:67px}
+ .v22-root .ls27-product-card .ls27-product-copy>p,.ls26-page .ls27-product-card .ls27-product-copy>p{margin-bottom:24px}
+ .v22-root .v22-collections.ls27-collections{grid-template-columns:1fr}
+ .v22-root .ls27-about-collage{min-height:344px;grid-template-rows:165px 165px;gap:10px}
+ .v22-root .ls27-about-collage:before{inset:8% -8px -9px 6%}
+ .v22-root .v22-collections.ls27-collections>a.ls27-collection-card{padding:17px;min-height:0}
+ .v22-root .ls27-prime-feature .v22-eyebrow{font-size:24px!important}
+ .ls27-video-landscape{border-radius:16px;border-width:3px}
+ .ls27-team-story .ls27-team-photo{height:auto}
+}
+@media(prefers-reduced-motion:reduce){.v22-root .ls27-product-card,.ls26-page .ls27-product-card{transition:none}}
