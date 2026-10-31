@@ -57,3 +57,28 @@
 @media(max-width:1150px){.mk-search-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.mk-title-row{align-items:start}}
 @media(max-width:850px){.mk-title-row{flex-wrap:wrap}.mk-property-grid:not(.mk-property-list){grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:580px){.mk-search-grid,.mk-property-grid:not(.mk-property-list){grid-template-columns:1fr}.mk-search{margin-top:-25px}.mk-tools{justify-content:flex-start}.mk-tools form select{min-width:160px}.mk-card .mk-photo{height:235px}}
+
+/* Marketplace toolbar: compact one-row controls on desktop and tablet.
+   The shared select renders a wrapper, so size that wrapper rather than a
+   hidden native select. Preserve a usable stacked layout on narrow phones. */
+@media(min-width:721px){
+ .mk-layout .mk-title-row{align-items:center;gap:16px}
+ .mk-layout .mk-title-row>div:first-child{min-width:0}
+ .mk-layout .mk-tools{display:flex;flex:0 0 auto;flex-wrap:nowrap;align-items:center;justify-content:flex-end;gap:9px;max-width:100%}
+ .mk-layout .mk-tools .mk-view-switch{display:flex;flex:0 0 auto;white-space:nowrap}
+ .mk-layout .mk-tools>span{flex:0 0 auto;white-space:nowrap}
+ .mk-layout .mk-tools form{display:flex;flex:0 0 auto;align-items:center;flex-wrap:nowrap;gap:8px;min-width:0}
+ .mk-layout .mk-tools form>.ls-branded-select{width:148px!important;min-width:0;max-width:148px;flex:0 0 148px}
+ .mk-layout .mk-tools .ls-branded-select-trigger{min-height:42px;padding:8px 11px}
+ .mk-layout .mk-tools form>button[type="submit"]{flex:0 0 auto;min-height:42px;align-self:auto}
+}
+@media(min-width:721px) and (max-width:1050px){
+ .mk-layout .mk-title-row{flex-wrap:wrap}
+ .mk-layout .mk-tools{width:100%;justify-content:flex-end}
+}
+@media(max-width:720px){
+ .mk-layout .mk-tools{width:100%;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+ .mk-layout .mk-tools form{display:flex;align-items:center;flex-wrap:nowrap;gap:8px;min-width:0}
+ .mk-layout .mk-tools form>.ls-branded-select{width:135px!important;max-width:135px;min-width:0}
+ .mk-layout .mk-tools form>button[type="submit"]{min-height:42px;align-self:auto}
+}
