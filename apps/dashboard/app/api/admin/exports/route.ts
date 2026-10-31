@@ -12,6 +12,7 @@ const allowed={
  referral_codes:{table:'referral_codes',fields:['user_id','numeric_code','code'],sort:'numeric_code'},
  referral_wallets:{table:'referral_wallets',fields:['user_id','available_kobo','pending_kobo','lifetime_earned_kobo','lifetime_paid_kobo','updated_at'],sort:'updated_at'},
  referral_rewards:{table:'referral_reward_events',fields:['id','user_id','referral_referee_id','source_transaction_id','amount_kobo','direction','status','description','created_at','approved_at'],sort:'created_at'},
+ referral_qualifications:{table:'landshop_referral_qualifications',fields:['id','referrer_id','referee_id','source_payment_id','qualified_at','status','reviewed_at'],sort:'qualified_at'},
  customers:{table:'profiles',fields:['id','full_name','display_username','phone','kyc_status','created_at'],sort:'created_at'},
  applications:{table:'applications',fields:['id','applicant_id','kind','status','created_at'],sort:'created_at'},
  kyc:{table:'kyc_submissions',fields:['id','applicant_id','kind','status','reviewed_by','reviewed_at','created_at'],sort:'created_at'},
