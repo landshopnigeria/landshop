@@ -14,13 +14,12 @@ export default async function GuidePage({params}:{params:Promise<{slug:string}>}
  const {slug}=await params;const g=findGuide(slug);if(!g)notFound();
  const related=guides.filter(a=>a.slug!==g.slug && a.category===g.category).slice(0,3);
  const categories=[...new Set(guides.map(a=>a.category))];
- return <ContentShell eyebrow={'INSIGHTS / '+g.category} title={g.title} intro={g.summary} image={g.image} imageAlt={g.imageAlt}>
+ return <ContentShell eyebrow={'INSIGHTS / '+g.category} title={g.title} intro={g.summary} image={g.image}>
  <div className="v22-root v22-article-layout">
  <div className="v22-article-primary">
   <nav className="v22-article-nav" aria-label="Article navigation"><Link href="/insights">← All Insights</Link><span>{g.readingMinutes} min read</span></nav>
   <article className="v22-article-body" itemScope itemType="https://schema.org/Article">
    <span className="v22-eyebrow">{g.category}</span>
-   {g.photoNote&&<p className="ls-owner-article-photo-note"><strong>What this real photograph illustrates:</strong> {g.photoNote}</p>}
    {g.sections.map(section=><section key={section.heading}><h2>{section.heading}</h2><p>{section.paragraph}</p>{section.points&&<ul>{section.points.map(point=><li key={point}>{point}</li>)}</ul>}</section>)}
    <aside className="v22-article-disclaimer"><strong>Information note:</strong> This article provides general educational guidance. Verify individual property records, applicable laws, financial terms and lender or investment arrangements against current authoritative documentation. Seek independent professional advice where appropriate.</aside>
   </article>
