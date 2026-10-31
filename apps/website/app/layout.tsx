@@ -16,6 +16,7 @@ import './production-readiness.css';
 import './v29-nigerian-media-global-insights.css';
 import './v30-header-motion-and-type.css';
 import './v31-hero-overlay-scroll.css';
+import './v32-editorial-and-hero.css';
 import SiteHeader from '../components/SiteHeader';
 import SiteFooter from '../components/SiteFooter';
 import GlobalArticleCarousel from '../components/GlobalArticleCarousel';
