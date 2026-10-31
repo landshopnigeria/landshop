@@ -3,6 +3,7 @@ import {useState} from 'react';
 import Link from 'next/link';
 import {createBrowserClient} from '@supabase/ssr';
 import StaffWorkActions from './StaffWorkActions';
+import StaffReportHistory from './StaffReportHistory';
 type Task={id:string;title:string;status:string;due_at:string;details:string|null};
 type Profile={username:string;kyc_state:string;staff_number:string|null;employment_state:string};
 export default function BasicStaffWorkspace({profile,tasks,email,userId}:{profile:Profile;tasks:Task[];email:string;userId:string}){
@@ -49,6 +50,6 @@ export default function BasicStaffWorkspace({profile,tasks,email,userId}:{profil
     {notice&&<p role="status" aria-live="polite" style={{padding:10,background:'#eff6f0',borderRadius:9}}>{notice}</p>}
    </div>
   </section>
-  <div style={{maxWidth:1240,margin:'auto'}}><StaffWorkActions active initialTasks={tasks}/></div>
+  <div style={{maxWidth:1240,margin:'auto'}}><StaffWorkActions active initialTasks={tasks}/><StaffReportHistory userId={userId}/></div>
  </main>;
 }
