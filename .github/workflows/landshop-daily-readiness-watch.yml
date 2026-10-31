@@ -1,0 +1,53 @@
+name: Landshop Daily Production Readiness & Security Watch
+on:
+  schedule:
+    - cron: '17 5 * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  public-health:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Check public Landshop domains and critical routes
+        run: |
+          set -euo pipefail
+          routes=(
+            https://www.landshopnigeria.com/
+            https://www.landshopnigeria.com/about
+            https://www.landshopnigeria.com/products
+            https://www.landshopnigeria.com/projects
+            https://www.landshopnigeria.com/properties
+            https://www.landshopnigeria.com/sitemap.xml
+            https://www.landshopnigeria.com/robots.txt
+            https://www.landshopnigeria.com/llms.txt
+            https://portal.landshopnigeria.com/api/release-health
+            https://app.landshopnigeria.com/api/release-health
+          )
+          failures=0
+          for url in "${routes[@]}"; do
+            code=$(curl -L --compressed -sS -o /dev/null -w '%{http_code}' --max-time 24 --retry 2 --retry-delay 2 "$url") || code=000
+            echo "$code $url"
+            case "$code" in 200) ;; *) failures=$((failures + 1)); echo "::error::Production route unhealthy: $url ($code)";; esac
+          done
+          test "$failures" -eq 0
+      - name: Confirm production security signals
+        run: |
+          set -euo pipefail
+          headers=$(curl -sS -D - -o /dev/null --max-time 18 https://www.landshopnigeria.com/)
+          echo "$headers" | grep -iq '^strict-transport-security:' || { echo "::error::Missing HSTS"; exit 1; }
+          echo "$headers" | grep -iq '^x-content-type-options: *nosniff' || { echo "::error::Missing nosniff"; exit 1; }
+          echo "$headers" | grep -iq '^content-security-policy:' || { echo "::error::Missing CSP"; exit 1; }
+  dependency-advisories:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Resolve production workspace dependency graph
+        run: npm install --no-audit --no-fund
+      - name: Detect newly reported high/critical production dependencies
+        run: npm audit --omit=dev --audit-level=high
