@@ -29,7 +29,9 @@ for(const p of [
   groupsOnly(prior)===groupsOnly(current)&&groupsOnly(current)?.length>1000&&
   topLinksOnly(prior)===topLinksOnly(current)&&topLinksOnly(current)?.length>70&&
   headerStructure.every(marker=>current.includes(marker))&&
-  ['ls-utility-collapsed','ls30-services-grid','ls30-hamburger','openHover','onMouseEnter','ls30-mega-folding'].every(marker=>current.includes(marker));
+  ['ls30-services-grid','ls30-hamburger','openHover','onMouseEnter','ls30-mega-folding'].every(marker=>current.includes(marker))&&
+  (current.includes('ls-utility-collapsed')||
+   ['ls31-over-hero','ls31-nav-visible','ls31-nav-hidden','setNavVisible'].every(marker=>current.includes(marker)));
  const matches=expectedV30Header?(approvedHeader(prior)===approvedHeader(current)||approvedV30):prior===current;
  if(!matches){console.error('PROTECTED HEADER CHANGE OUTSIDE APPROVED GROUPS / V30 MOTION: '+p);failures++;}
  else console.log('PRESERVED: '+p);
@@ -54,6 +56,16 @@ for(const marker of required){if(!home.includes(marker)){console.error('V23 prev
 const v30Style=readFileSync('apps/website/app/v30-header-motion-and-type.css','utf8');
 for(const marker of ['.ls-utility-collapsed','.ls30-services-grid','.ls30-hamburger','ls30-unfold','ls30-fold','font-size:23px','prefers-reduced-motion']){
  if(!v30Style.includes(marker)){console.error('V30 protected site presentation marker missing: '+marker);failures++}
+}
+// V31 must keep the first navigation layer over the actual hero photograph,
+// keep the slim utility bar visible, and use 28px for all public content titles.
+const newHeader=readFileSync('apps/website/components/SiteHeader.tsx','utf8');
+const v31=readFileSync('apps/website/app/v31-hero-overlay-scroll.css','utf8');
+for(const marker of ['ls31-over-hero','ls31-nav-hidden','ls31-nav-visible','setNavVisible','window.requestAnimationFrame']){
+ if(!newHeader.includes(marker)){console.error('V31 header behavior missing: '+marker);failures++}
+}
+for(const marker of ['position:absolute!important','top:100%!important','ls-utility-bar','ls31-nav-hidden','.ls-v23-hero .ls-v23-hero-inner','font-size:28px','prefers-reduced-motion']){
+ if(!v31.includes(marker)){console.error('V31 hero/header overlay style missing: '+marker);failures++}
 }
 for(const marker of ['.ls-v23-hero','.ls-v23-filter-holder','.ls-v23-form-grid','prefers-reduced-motion']){
  if(!style.includes(marker)){console.error('V23 style missing: '+marker);failures++;}

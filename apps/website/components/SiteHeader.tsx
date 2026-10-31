@@ -41,28 +41,38 @@ export default function SiteHeader(){
  const [menuOpen,setMenuOpen]=useState(false);
  const [expanded,setExpanded]=useState<string|null>(null);
  const [closingGroup,setClosingGroup]=useState<string|null>(null);
- const [utilityVisible,setUtilityVisible]=useState(true);
+ const [navVisible,setNavVisible]=useState(true);
  const [focused,setFocused]=useState<string|null>(null);
  const frame=useRef<HTMLDivElement>(null);
  const activeGroup=(expanded||closingGroup)?groupsByLabel[expanded||closingGroup||'']:null;
  const selected=activeGroup?.items.find(i=>i.title===focused)||activeGroup?.items[0];
  useEffect(()=>{setMenuOpen(false);setExpanded(null);setClosingGroup(null);setFocused(null)},[pathname]);
  useEffect(()=>{
-  // Main glass navigation stays fixed at the top; utility strip collapses on
-  // upward scrolling and returns on downward scrolling, per owner's request.
-  let previous=window.scrollY;
-  let scheduled=false;
+  // The slim top strip remains in place. The main glass navigation slides
+  // out on scroll down and reappears on scroll up, on desktop and mobile.
+  // Accumulating small movements avoids jitter from touchpad/mobile scroll.
+  let previous=Math.max(0,window.scrollY);
+  let movement=0;
+  let frameId=0;
   const read=()=>{
-   scheduled=false;
-   const y=Math.max(0,window.scrollY),delta=y-previous;
-   if(y<10)setUtilityVisible(true);
-   else if(Math.abs(delta)>6)setUtilityVisible(delta>0);
+   frameId=0;
+   const y=Math.max(0,window.scrollY);
+   const delta=y-previous;
    previous=y;
+   if(y<15||menuOpen||expanded){movement=0;setNavVisible(true);return}
+   if(Math.abs(delta)<1)return;
+   // Any deliberate upward movement should reveal immediately; CSS performs
+   // the slower, gentle slide-in. Small mobile wheel/touch deltas count too.
+   if(delta< -2){movement=0;setNavVisible(true);return;}
+   if(delta>0){
+    movement=Math.max(0,Math.min(90,movement+delta));
+    if(y>105&&movement>19){setNavVisible(false);movement=0}
+   }
   };
-  const onScroll=()=>{if(!scheduled){scheduled=true;window.requestAnimationFrame(read)}};
+  const onScroll=()=>{if(!frameId)frameId=window.requestAnimationFrame(read)};
   window.addEventListener('scroll',onScroll,{passive:true});
-  return()=>window.removeEventListener('scroll',onScroll);
- },[]);
+  return()=>{window.removeEventListener('scroll',onScroll);if(frameId)window.cancelAnimationFrame(frameId)};
+ },[menuOpen,expanded]);
  useEffect(()=>{
   if(expanded){setClosingGroup(expanded);return;}
   if(!closingGroup)return;
@@ -79,7 +89,7 @@ export default function SiteHeader(){
  const toggle=(label:string)=>{setExpanded(previous=>previous===label?null:label);setFocused(null)};
  const openHover=(label:string)=>{if(!menuOpen&&window.matchMedia('(hover: hover) and (pointer: fine)').matches){setExpanded(label);setFocused(null)}};
  const topLinks=[{text:'Account',url:portal,icon:'users' as const},{text:'Realtor Portal',url:portal,icon:'key' as const},{text:'Command Center',url:'https://app.landshopnigeria.com/admin',icon:'grid' as const}];
- return <div className={'ls-site-chrome '+(utilityVisible?'':'ls-utility-collapsed')} ref={frame}>
+ return <div className={'ls-site-chrome '+(pathname==='/'?'ls31-over-hero':'ls31-standard-page')+' '+(navVisible||menuOpen||expanded?'ls31-nav-visible':'ls31-nav-hidden')} ref={frame}>
   <div className="ls-utility-bar"><div className="ls-utility-inner">
    <span className="ls-tagline">Everyone Deserves Affordable Property.</span>
    <form role="search" action="/search" method="get" className="ls-global-search">
