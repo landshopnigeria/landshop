@@ -10,7 +10,7 @@ import {guides} from '../lib/guides';
  * Homepage already includes its own instance in V22HomeSections, so this
  * layout instance is suppressed only there. All twenty+ guides remain linked.
  */
-const articles=guides.map(({slug,title,category,summary,image})=>({slug,title,category,summary,image,href:'/insights/'+slug}));
+const articles=guides.map(({slug,title,category,summary,image,imageAlt})=>({slug,title,category,summary,image,imageAlt,href:'/insights/'+slug}));
 export default function GlobalArticleCarousel(){
  const pathname=usePathname();
  const [index,setIndex]=useState(0);
@@ -27,7 +27,7 @@ export default function GlobalArticleCarousel(){
    <div className="ls27-articles" aria-live="off">{[0,1,2].map(offset=>{
     const article=articles[(index+offset)%articles.length];
     return <article className="ls27-article" key={article.slug+'-'+offset}>
-     <Link className="ls27-article-photo" href={article.href}><img src={article.image} alt={'Editorial photograph for '+article.title} loading="lazy" decoding="async"/></Link>
+     <Link className="ls27-article-photo" href={article.href}><img src={article.image} alt={article.imageAlt||'Real property photograph for '+article.title} loading="lazy" decoding="async"/></Link>
      <div className="ls27-article-body"><span>{article.category}</span><h3>{article.title}</h3><p>{article.summary}</p><Link className="v22-text-link" href={article.href}>Read article →</Link></div>
     </article>})}</div>
    <div className="ls27-article-actions"><div className="v22-carousel-buttons">

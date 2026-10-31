@@ -17,6 +17,7 @@ import './v29-nigerian-media-global-insights.css';
 import './v30-header-motion-and-type.css';
 import './v31-hero-overlay-scroll.css';
 import './v32-editorial-and-hero.css';
+import './owner-photo-refresh.css';
 import SiteHeader from '../components/SiteHeader';
 import SiteFooter from '../components/SiteFooter';
 import GlobalArticleCarousel from '../components/GlobalArticleCarousel';
@@ -34,10 +35,10 @@ export const metadata:Metadata={
  openGraph:{type:'website',url:'https://www.landshopnigeria.com/',siteName:'Landshop Nigeria',locale:'en_NG',
    title:'Landshop Nigeria | Everyone Deserves Affordable Property',
    description:'Explore verified property options, estates and homeownership pathways with Landshop Nigeria.',
-   images:[{url:'/media/landshop-about-headquarters.jpg',alt:'Landshop Nigeria headquarters and property ownership identity'}]},
+   images:[{url:'/owner/2026/slider-01.webp',alt:'Real estate residential buildings photographed for Landshop in Nigeria'}]},
  twitter:{card:'summary_large_image',title:'Landshop Nigeria | Property Ownership and Estates',
    description:'Explore estates, products, projects and real estate guidance in Nigeria.',
-   images:['/media/landshop-about-headquarters.jpg']},
+   images:['/owner/2026/slider-01.webp']},
  icons:{
  icon:[{url:'/favicon.ico?v=landshop-20261031',type:'image/x-icon',sizes:'any'},
        {url:'/icon.png',type:'image/png',sizes:'100x100'}],
