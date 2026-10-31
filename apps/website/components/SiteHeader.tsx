@@ -18,9 +18,6 @@ const groups:Group[]=[
   {title:'Merit Park',href:'/projects/merit-park',icon:'building',description:'Project videos and subscriber support'},
   {title:'Green Island',href:'/projects/green-island',icon:'building',description:'Project videos and subscriber support'},
   {title:'Maiyegun Beach Estate',href:'/projects/maiyegun-beach-estate',icon:'building',description:'Project videos and subscriber support'}]},
- {label:'Careers',eyebrow:'CAREERS AT LANDSHOP',description:'Learn about careers, the team and upcoming programmes at Landshop.',items:[
-  {title:'Careers',href:'/careers',icon:'briefcase',description:'Working at Landshop and future openings'},
-  {title:'Career Programmes',href:'/careers/programs',icon:'users',description:'Learning and career development enquiries'}]},
  {label:'Company',eyebrow:'DISCOVER LANDSHOP',description:'Learn about our purpose, our team responsibilities and the company behind the experience.',items:[
   {title:'Who We Are',href:'/about#who-we-are',icon:'users',description:'Our company and operating philosophy'},
   {title:'Vision & Mission',href:'/about#vision',icon:'compass',description:'Our long-term direction'},
@@ -41,6 +38,8 @@ export default function SiteHeader(){
  const [menuOpen,setMenuOpen]=useState(false);
  const [expanded,setExpanded]=useState<string|null>(null);
  const [focused,setFocused]=useState<string|null>(null);
+ const [isScrolled,setIsScrolled]=useState(false),[navHidden,setNavHidden]=useState(false);
+ const hoverTimer=useRef<ReturnType<typeof setTimeout>|null>(null);
  const frame=useRef<HTMLDivElement>(null);
  const activeGroup=expanded?groupsByLabel[expanded]:null;
  const selected=activeGroup?.items.find(i=>i.title===focused)||activeGroup?.items[0];
@@ -53,8 +52,26 @@ export default function SiteHeader(){
   return()=>{window.removeEventListener('keydown',onKey);document.removeEventListener('pointerdown',onPointer)};
  },[]);
  const toggle=(label:string)=>{setExpanded(previous=>previous===label?null:label);setFocused(null)};
- const topLinks=[{text:'Account',url:portal,icon:'users' as const},{text:'Realtor Portal',url:portal,icon:'key' as const},{text:'Command Center',url:'https://app.landshopnigeria.com/admin',icon:'grid' as const}];
- return <div className="ls-site-chrome" ref={frame}>
+ const cancelHoverClose=()=>{if(hoverTimer.current)clearTimeout(hoverTimer.current)};
+ const canHover=()=>typeof window!=='undefined'&&window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+ const openOnHover=(label:string)=>{if(!canHover())return;cancelHoverClose();setExpanded(label);setFocused(null)};
+ const closeOnHover=()=>{if(!canHover())return;cancelHoverClose();hoverTimer.current=setTimeout(()=>{setExpanded(null);setFocused(null)},180)};
+ useEffect(()=>{
+  let previous=window.scrollY;
+  const onScroll=()=>{
+   const now=window.scrollY;
+   setIsScrolled(now>55);
+   if(now<75||menuOpen){setNavHidden(false)}
+   else if(Math.abs(now-previous)>9){setNavHidden(now>previous)}
+   previous=now;
+  };
+  onScroll();
+  window.addEventListener('scroll',onScroll,{passive:true});
+  return()=>window.removeEventListener('scroll',onScroll);
+ },[menuOpen]);
+ useEffect(()=>()=>{if(hoverTimer.current)clearTimeout(hoverTimer.current)},[]);
+ const topLinks=[{text:'Account',url:portal,icon:'users' as const},{text:'Realtor Portal',url:portal,icon:'key' as const}];
+ return <div className={"ls-site-chrome "+(isScrolled?"ls-nav-scrolled ":"")+(navHidden&&!menuOpen?"ls-nav-hidden ":"")} ref={frame}>
   <div className="ls-utility-bar"><div className="ls-utility-inner">
    <span className="ls-tagline">Everyone Deserves Affordable Property.</span>
    <form role="search" action="/search" method="get" className="ls-global-search">
@@ -68,8 +85,8 @@ export default function SiteHeader(){
    </Link>
    <nav className={'ls-primary-nav '+(menuOpen?'ls-nav-mobile-open':'')} aria-label="Site navigation">
     <Link className={'ls-header-link '+(pathname==='/'?'ls-nav-active':'')} href="/" onClick={()=>setMenuOpen(false)}><span>Home</span></Link>
-    {groups.map(group=><div className={'ls-header-group '+(expanded===group.label?'ls-group-open':'')} key={group.label}>
-     <button type="button" className={'ls-header-link ls-nav-toggle '+(group.items.some(item=>pathname===item.href)?'ls-nav-active':'')} onClick={()=>toggle(group.label)} aria-haspopup="true" aria-expanded={expanded===group.label} aria-controls="ls-site-mega">
+    {groups.map(group=><div className={'ls-header-group '+(expanded===group.label?'ls-group-open':'')} key={group.label} onMouseEnter={()=>openOnHover(group.label)} onMouseLeave={closeOnHover}>
+     <button type="button" className={'ls-header-link ls-nav-toggle '+(group.items.some(item=>pathname===item.href)?'ls-nav-active':'')} onClick={()=>toggle(group.label)} onFocus={()=>{if(canHover()){cancelHoverClose();setExpanded(group.label)}}} aria-haspopup="true" aria-expanded={expanded===group.label} aria-controls="ls-site-mega">
       <span>{group.label}</span><SiteIcon name="chevron" size={19}/>
      </button>
      {menuOpen&&expanded===group.label&&<div className="ls-mobile-subnav">{group.items.map(item=><Link key={item.title} href={item.href}><IconChip name={item.icon}/><span><strong>{item.title}</strong><small>{item.description}</small></span><SiteIcon name="arrow" size={22}/></Link>)}</div>}
@@ -85,7 +102,7 @@ export default function SiteHeader(){
     </button>
    </div>
   </header>
-  {activeGroup&&!menuOpen&&<section className="ls-mega" id="ls-site-mega" aria-label={activeGroup.label+' menu'}>
+  {activeGroup&&!menuOpen&&<section className="ls-mega" id="ls-site-mega" data-menu={activeGroup.label} onMouseEnter={cancelHoverClose} onMouseLeave={closeOnHover} aria-label={activeGroup.label+' menu'}>
    <div className="ls-mega-top"><span>{activeGroup.eyebrow}</span><button type="button" onClick={()=>setExpanded(null)} aria-label="Close menu"><SiteIcon name="close" size={19}/></button></div>
    <div className="ls-mega-layout"><div className="ls-mega-list">{activeGroup.items.map(item=><Link key={item.title} className={(selected?.title===item.title?'ls-selected':'')} href={item.href} onMouseEnter={()=>setFocused(item.title)} onFocus={()=>setFocused(item.title)}><IconChip name={item.icon}/><span>{item.title}</span><SiteIcon name="arrow" size={19}/></Link>)}</div>
    <div className="ls-mega-detail"><span className="ls-mega-eyebrow">{activeGroup.label.toUpperCase()} / EXPLORE</span><h2>{selected?.title}</h2><p>{selected?.description}. {activeGroup.description}</p><div className="ls-mega-quicklinks">{activeGroup.items.filter(item=>item.title!==selected?.title).map(item=><Link key={item.title} href={item.href}>{item.title}<SiteIcon name="arrow" size={16}/></Link>)}</div><Link className="ls-mega-featured" href={selected?.href||'/applications'}>Explore {selected?.title}<SiteIcon name="arrow" size={18}/></Link></div>
