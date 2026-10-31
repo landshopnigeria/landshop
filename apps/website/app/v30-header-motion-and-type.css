@@ -1,0 +1,109 @@
+/* LANDSHOP V30 — owner-approved sticky header, hover menus, and compact scale.
+   Do not modify the marketplace filter, verified listing images or global footer.
+   Header changes are contained to these classes. */
+:root{--ls30-primary:#2ba47a;--ls30-orange:#f26b10;--ls30-ink:#073f34}
+.ls-site-chrome{position:sticky!important;top:0!important;z-index:2000!important;isolation:isolate}
+.ls-site-chrome .ls-utility-bar{max-height:65px;opacity:1;overflow:hidden;transform:translateY(0);transition:max-height .58s cubic-bezier(.22,.78,.21,1),opacity .42s ease,transform .58s cubic-bezier(.22,.78,.21,1);will-change:max-height,opacity}
+.ls-site-chrome.ls-utility-collapsed .ls-utility-bar{max-height:0;opacity:0;transform:translateY(-100%);pointer-events:none;visibility:hidden;transition:max-height .58s cubic-bezier(.22,.78,.21,1),opacity .34s ease,transform .58s cubic-bezier(.22,.78,.21,1),visibility 0s linear .58s}
+.ls-site-chrome .ls-glass-wrap{padding-top:8px;padding-bottom:10px}
+.ls-site-chrome .ls-glass-header{position:relative;min-height:74px;border-radius:18px}
+.ls-site-chrome .ls-header-link{transition:color .25s ease,background .28s ease,border-color .25s ease;border-radius:8px 8px 0 0}
+.ls-site-chrome .ls-header-link:hover,.ls-site-chrome .ls-nav-toggle:hover,
+.ls-site-chrome .ls-group-open>.ls-nav-toggle{color:var(--ls30-orange)!important;border-bottom-color:var(--ls30-orange)!important;background:rgba(242,107,16,.07)!important}
+.ls-site-chrome .ls-nav-toggle .ls-icon{stroke:var(--ls30-primary)!important}
+.ls-site-chrome .ls-nav-toggle:hover .ls-icon,.ls-site-chrome .ls-group-open>.ls-nav-toggle .ls-icon{stroke:var(--ls30-orange)!important}
+.ls-site-chrome .ls-mega{top:calc(100% - 4px);transform-origin:top center;will-change:opacity,transform;overflow:hidden;max-height:calc(100dvh - 112px);overflow-y:auto;scrollbar-width:thin;border-radius:17px}
+.ls-site-chrome .ls30-mega-opening{animation:ls30-unfold .38s cubic-bezier(.15,.86,.31,1) both}
+.ls-site-chrome .ls30-mega-folding{animation:ls30-fold .32s ease-in both;pointer-events:none}
+@keyframes ls30-unfold{0%{opacity:0;transform:translateX(-50%) translateY(-12px) scaleY(.76)}100%{opacity:1;transform:translateX(-50%) translateY(0) scaleY(1)}}
+@keyframes ls30-fold{0%{opacity:1;transform:translateX(-50%) scaleY(1)}100%{opacity:0;transform:translateX(-50%) translateY(-9px) scaleY(.72)}}
+.ls-site-chrome .ls-mega-list a{min-height:48px!important;padding:5px 9px;gap:10px;transition:background .26s,color .26s}
+.ls-site-chrome .ls-mega-list a:hover,.ls-site-chrome .ls-mega-list a.ls-selected{background:rgba(242,107,16,.08);color:var(--ls30-orange)}
+.ls-site-chrome .ls-mega-list a:hover .ls-icon{stroke:var(--ls30-orange)}
+.ls-site-chrome .ls-mega-top{padding:10px 19px;color:var(--ls30-primary)}
+.ls-site-chrome .ls-mega-top button{background:transparent;border:0;color:var(--ls30-primary)}
+.ls-site-chrome .ls-mega-top button:hover{color:var(--ls30-orange)}
+.ls-site-chrome .ls-mega-layout{min-height:0}
+.ls-site-chrome .ls-mega-detail{padding:18px 22px}
+.ls-site-chrome .ls-mega-detail h2{font-size:23px!important}
+.ls-site-chrome .ls-mega-quicklinks a{padding:7px 10px}
+.ls-site-chrome .ls-mega-quicklinks a:hover,.ls-site-chrome .ls-mega-featured:hover{background:rgba(242,107,16,.12);color:var(--ls30-orange)}
+/* Services: two columns, exactly three visible rows, no scrolling within this menu. */
+.ls-site-chrome .ls-mega.ls30-services-menu{width:min(610px,calc(100vw - 28px))!important;max-height:calc(100dvh - 110px);overflow:visible}
+.ls-site-chrome .ls30-services-menu .ls-mega-top{min-height:38px;padding:8px 16px;font-size:11px}
+.ls-site-chrome .ls30-services-menu .ls-mega-top button{width:26px;height:26px}
+.ls-site-chrome .ls30-services-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px 11px;padding:13px 15px 16px}
+.ls-site-chrome .ls30-service-entry{display:flex;align-items:center;gap:11px;padding:11px;border-radius:10px;min-height:52px;min-width:0;color:var(--ls30-ink);font-size:13px;font-weight:700;transition:background .2s,color .2s}
+.ls-site-chrome .ls30-service-entry .ls-icon:first-child{width:23px;height:23px;color:var(--ls30-primary);stroke:var(--ls30-primary);flex:none}
+.ls-site-chrome .ls30-service-entry span{flex:1;white-space:normal;line-height:1.2}
+.ls-site-chrome .ls30-service-entry .ls-icon:last-child{width:18px;height:18px;color:var(--ls30-primary);flex:none}
+.ls-site-chrome .ls30-service-entry:hover,.ls-site-chrome .ls30-service-entry:focus-visible{color:var(--ls30-orange);background:rgba(242,107,16,.08)}
+.ls-site-chrome .ls30-service-entry:hover .ls-icon,.ls-site-chrome .ls30-service-entry:focus-visible .ls-icon{stroke:var(--ls30-orange)!important}
+/* Bare official line icons: no orange boxes, circles, outlines or chip shadows. */
+.ls-icon-chip,.ls-site-chrome .ls-icon-chip,.ls-mobile-subnav .ls-icon-chip,
+.v22-root .ls-icon-chip{background:transparent!important;border:0!important;box-shadow:none!important;filter:none!important;border-radius:0!important;color:var(--ls30-primary)!important;width:34px!important;min-width:34px!important;height:34px!important}
+.ls-icon-chip .ls-icon,.ls-site-chrome .ls-icon-chip .ls-icon{width:26px!important;height:26px!important;stroke:var(--ls30-primary)!important;stroke-width:2.15}
+.ls-icon-chip:hover .ls-icon,.ls-mega-list a:hover .ls-icon-chip .ls-icon,
+.ls-mobile-subnav a:hover .ls-icon-chip .ls-icon{stroke:var(--ls30-orange)!important}
+.ls-site-chrome .ls-mobile-subnav a:hover,.ls-site-chrome .ls-mobile-bottom a:hover{background:rgba(242,107,16,.08);color:var(--ls30-orange)}
+.ls-site-chrome .ls-mobile-subnav .ls-icon:last-child{stroke:var(--ls30-primary)}
+/* New asymmetric triple-line hamburger: primary green, no decorative square. */
+.ls-site-chrome .ls-menu-button{display:none;background:transparent!important;border:0!important;box-shadow:none!important;color:var(--ls30-primary)!important;padding:4px!important;width:50px!important;height:50px!important;justify-content:center;align-items:center}
+.ls30-hamburger{position:relative;display:flex;flex-direction:column;align-items:flex-end;justify-content:center;gap:6px;width:35px;height:33px}
+.ls30-hamburger i{display:block;height:3px;background:var(--ls30-primary);border-radius:99px;transform-origin:center;transition:width .32s ease,transform .36s ease,opacity .27s ease,background .2s ease}
+.ls30-hamburger i:nth-child(1){width:34px}.ls30-hamburger i:nth-child(2){width:23px}.ls30-hamburger i:nth-child(3){width:29px}
+.ls-site-chrome .ls-menu-button:hover .ls30-hamburger i{background:var(--ls30-orange)}
+.ls30-hamburger-open i:nth-child(1){transform:translateY(9px) rotate(45deg);width:33px}
+.ls30-hamburger-open i:nth-child(2){opacity:0;transform:translateX(6px)}
+.ls30-hamburger-open i:nth-child(3){transform:translateY(-9px) rotate(-45deg);width:33px}
+@media(max-width:1050px){
+ .ls-site-chrome .ls-menu-button{display:inline-flex!important}
+ .ls-site-chrome .ls-primary-nav.ls-nav-mobile-open{top:calc(100% - 2px);max-height:calc(100dvh - 125px);overflow-y:auto}
+ .ls-site-chrome .ls-header-link:hover,.ls-site-chrome .ls-nav-toggle:hover{border-bottom-color:transparent!important}
+ .ls-site-chrome .ls-mega{display:none!important}
+}
+@media(max-width:700px){
+ .ls-site-chrome .ls-glass-header{min-height:65px;padding:7px 12px}
+ .ls-site-chrome .ls-glass-wrap{padding:6px 9px 10px}
+ .ls-site-chrome .ls-menu-button{width:48px!important;height:48px!important}
+ .ls-site-chrome .ls-primary-nav.ls-nav-mobile-open{max-height:calc(100dvh - 110px)}
+}
+@media(max-height:620px) and (min-width:1051px){
+ .ls-site-chrome .ls30-services-grid{gap:0 8px;padding:5px 12px}
+ .ls-site-chrome .ls30-service-entry{min-height:42px;padding:7px}
+ .ls-site-chrome .ls30-services-menu .ls-mega-top{min-height:30px;padding:3px 12px}
+}
+/* Site typography scale: 23px headings throughout public pages, including
+   the previously oversized hero, collection, article and testimonial titles. */
+body main :is(h1,h2,h3),.v22-root :is(h1,h2,h3),.ls26-page :is(h1,h2,h3),
+.ls-site-chrome .ls-mega-detail h2{font-size:23px!important;line-height:1.28!important;letter-spacing:-.025em!important}
+.ls-v23-hero .ls-v23-hero-title,
+.ls-v23-hero .ls-v23-hero-title span,.ls-v23-hero .ls-v23-hero-title strong{font-size:23px!important;line-height:1.33!important;letter-spacing:-.025em!important}
+.ls-v23-hero .ls-v23-hero-content{max-width:610px;position:relative;z-index:1}
+.ls-v23-hero .ls-v23-hero-inner{padding-top:clamp(118px,11vw,158px)!important}
+.ls-v23-hero .hero-v16-eyebrow{font-size:12px}
+.ls-v23-hero .ls-v23-hero-description{max-width:530px!important}
+@media(max-width:700px){
+ .ls-v23-hero .ls-v23-hero-inner{padding-top:94px!important}
+ .ls-v23-hero .ls-v23-hero-content{padding-right:22px}
+ .ls-v23-hero .ls-v23-hero-title,
+ .ls-v23-hero .ls-v23-hero-title span,.ls-v23-hero .ls-v23-hero-title strong{font-size:23px!important}
+}
+@media(prefers-reduced-motion:reduce){
+ .ls-site-chrome .ls-utility-bar,.ls-site-chrome .ls-mega,.ls30-hamburger i{transition:none!important;animation:none!important}
+}
+
+/* The arrow controls themselves are bare strokes; only action buttons have brand fills. */
+.ls-v23-hero .hero-v16-arrows button,
+.v22-root .v22-carousel-buttons button,
+.v22-root .ls26-location-controls button{
+ background:transparent!important;border:0!important;box-shadow:none!important;
+ backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+ border-radius:0!important;outline-offset:3px;color:var(--ls30-primary);
+}
+.ls-v23-hero .hero-v16-arrows button{color:#fff!important}
+.ls-v23-hero .hero-v16-arrows button:hover,
+.v22-root .v22-carousel-buttons button:hover,.v22-root .ls26-location-controls button:hover{
+ background:transparent!important;color:var(--ls30-orange)!important;transform:translateX(2px)
+}
+.ls-site-chrome .ls-utility-links a:hover,.ls-site-chrome .ls-global-search button:hover{color:var(--ls30-orange)!important}
