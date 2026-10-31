@@ -1,0 +1,131 @@
+/* Landshop V31 — illustrated exact header-on-hero placement and scroll choreography.
+   The top utility strip remains present. On the homepage only, the main glass
+   header floats over the hero's actual image, rather than pushing that image down.
+   Non-home pages retain their normal content flow and global site chrome.
+*/
+.ls-site-chrome.ls31-over-hero{
+ position:sticky!important;
+ top:0!important;
+ z-index:2000!important;
+ isolation:isolate;
+}
+.ls-site-chrome .ls-utility-bar{
+ position:relative;
+ z-index:4;
+ max-height:none!important;
+ height:auto!important;
+ opacity:1!important;
+ visibility:visible!important;
+ overflow:visible!important;
+ transform:none!important;
+ transition:none!important;
+ pointer-events:auto!important;
+}
+.ls-site-chrome.ls31-over-hero .ls-glass-wrap{
+ position:absolute!important;
+ top:100%!important;
+ left:0!important;
+ right:0!important;
+ width:100%;
+ z-index:2;
+ margin:0!important;
+ padding:8px clamp(10px,2vw,28px) 12px;
+ background:transparent;
+ pointer-events:none;
+}
+.ls-site-chrome.ls31-over-hero .ls-glass-header{
+ background:rgba(242,250,245,.76)!important;
+ backdrop-filter:blur(19px) saturate(1.25)!important;
+ -webkit-backdrop-filter:blur(19px) saturate(1.25)!important;
+ box-shadow:0 18px 44px rgba(0,27,21,.22)!important;
+ border:1px solid rgba(231,249,237,.73)!important;
+}
+.ls-site-chrome .ls-glass-wrap{
+ will-change:transform,opacity;
+ transition:transform .68s cubic-bezier(.22,1,.36,1),
+            opacity .56s ease,visibility 0s linear 0s;
+ transform:translate3d(0,0,0);
+ opacity:1;
+ visibility:visible;
+}
+.ls-site-chrome.ls31-nav-hidden .ls-glass-wrap{
+ transform:translate3d(0,calc(-100% - 62px),0)!important;
+ opacity:0;
+ visibility:hidden;
+ pointer-events:none;
+ transition:transform .68s cubic-bezier(.55,.02,.62,.95),
+            opacity .44s ease,visibility 0s linear .68s;
+}
+.ls-site-chrome.ls31-nav-visible .ls-glass-wrap{
+ transform:translate3d(0,0,0)!important;
+ opacity:1;
+ visibility:visible;
+ pointer-events:auto;
+ transition:transform .72s cubic-bezier(.17,.85,.32,1),
+            opacity .56s ease,visibility 0s linear 0s;
+}
+/* The hero now starts *behind* the header. Keep the first headline and
+   actions comfortably below the glass rectangle without changing search. */
+body>main .ls-v23-hero,
+body>main .hero-v16.ls-v23-hero{margin-top:0!important}
+.ls-v23-hero .ls-v23-hero-inner{
+ padding-top:clamp(180px,15.5vw,225px)!important;
+}
+.ls-v23-hero .ls-v23-hero-content{position:relative;z-index:2}
+.ls-v23-hero .ls-v23-hero-title{
+ max-width:620px!important;
+ text-wrap:balance;
+}
+/* Typography: owner-selected 28px for all public content headings. */
+body main :is(h1,h2,h3),
+.v22-root :is(h1,h2,h3),
+.ls26-page :is(h1,h2,h3),
+.ls-site-chrome .ls-mega-detail h2{
+ font-size:28px!important;
+ line-height:1.27!important;
+ letter-spacing:-.028em!important;
+}
+.ls-v23-hero .ls-v23-hero-title,
+.ls-v23-hero .ls-v23-hero-title span,
+.ls-v23-hero .ls-v23-hero-title strong{
+ font-size:28px!important;
+ line-height:1.31!important;
+ letter-spacing:-.03em!important;
+}
+/* Leave navigation link and input font sizes independently legible. */
+.ls-site-chrome .ls-header-link{font-size:inherit}
+@media(max-width:1050px){
+ .ls-site-chrome.ls31-over-hero .ls-glass-wrap{
+  padding:7px 12px 11px;
+ }
+ .ls-v23-hero .ls-v23-hero-inner{
+  padding-top:clamp(154px,17vw,205px)!important;
+ }
+}
+@media(max-width:700px){
+ .ls-site-chrome.ls31-over-hero .ls-glass-wrap{
+  padding:7px 9px 11px;
+ }
+ .ls-v23-hero .ls-v23-hero-inner{
+  padding-top:148px!important;
+ }
+ .ls-v23-hero .ls-v23-hero-title,
+ .ls-v23-hero .ls-v23-hero-title span,
+ .ls-v23-hero .ls-v23-hero-title strong{
+  font-size:28px!important;
+ }
+ .ls-site-chrome.ls31-nav-hidden .ls-glass-wrap{
+  transform:translate3d(0,calc(-100% - 45px),0)!important;
+ }
+}
+@media(max-width:390px){
+ .ls-v23-hero .ls-v23-hero-inner{padding-top:140px!important}
+}
+@media(prefers-reduced-motion:reduce){
+ .ls-site-chrome .ls-glass-wrap,
+ .ls-site-chrome.ls31-nav-hidden .ls-glass-wrap,
+ .ls-site-chrome.ls31-nav-visible .ls-glass-wrap{
+  transition:none!important;
+  will-change:auto!important;
+ }
+}
