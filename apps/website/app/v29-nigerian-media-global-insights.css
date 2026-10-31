@@ -56,3 +56,8 @@
 .ls26-page .ls29-collection-hero-info span{font-size:clamp(13px,1.4vw,18px)}
 .ls26-page .ls29-collection-hero-info small{font-size:11px;line-height:1.4;color:rgba(255,255,255,.85)}
 @media(max-width:700px){.ls26-page .ls29-collection-hero{height:360px}.ls26-page .ls29-collection-hero-info{max-width:calc(100% - 46px)}}
+
+.v22-root.v22-section.ls29-testimonials:not(.v22-final){background:linear-gradient(117deg,#030b08,#0b4b38 58%,#2ba47a);color:#fff}
+.v22-root.v22-section.ls29-testimonials:not(.v22-final) h2{color:#fff!important}
+.v22-root.v22-section.ls29-testimonials:not(.v22-final) .v22-action-panel{background:rgba(255,255,255,.95);color:#123d31;border-radius:17px;padding:27px}
+.v22-root.v22-section.ls29-testimonials:not(.v22-final) .v22-action-panel blockquote{color:#123d31!important}
