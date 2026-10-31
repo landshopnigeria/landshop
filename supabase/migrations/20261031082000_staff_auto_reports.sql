@@ -64,7 +64,7 @@ revoke all on function public.landshop_staff_onboard(text,integer,text,text) fro
 grant execute on function public.landshop_staff_onboard(text,integer,text,text) to authenticated;
 
 create or replace function landshop_private.activate_staff_confirmation()
-returns trigger language plpgsql security definer set search_path='' as $
+returns trigger language plpgsql security definer set search_path='' as $$
 declare should_activate boolean:=false;
 begin
  if tg_op='INSERT' then
@@ -97,7 +97,7 @@ create trigger landshop_auto_staff_created after insert on auth.users
 for each row execute function landshop_private.activate_staff_confirmation();
 
 -- Activate verified legacy self-registered staff accounts without granting elevated roles.
-do $
+do $$
 declare person record;
 begin
  for person in select id,raw_user_meta_data from auth.users
@@ -115,7 +115,7 @@ begin
    raise warning 'Landshop verified staff backfill skipped one account';
   end;
  end loop;
-end $;
+end $$;
 
 -- Standard staff receive their own attendance, tasks and daily reporting immediately
 -- after confirmed registration. Elevated roles still need independent KYC and approval.
