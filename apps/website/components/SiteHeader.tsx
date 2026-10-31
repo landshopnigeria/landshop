@@ -40,11 +40,35 @@ export default function SiteHeader(){
  const pathname=usePathname()||'/';
  const [menuOpen,setMenuOpen]=useState(false);
  const [expanded,setExpanded]=useState<string|null>(null);
+ const [closingGroup,setClosingGroup]=useState<string|null>(null);
+ const [utilityVisible,setUtilityVisible]=useState(true);
  const [focused,setFocused]=useState<string|null>(null);
  const frame=useRef<HTMLDivElement>(null);
- const activeGroup=expanded?groupsByLabel[expanded]:null;
+ const activeGroup=(expanded||closingGroup)?groupsByLabel[expanded||closingGroup||'']:null;
  const selected=activeGroup?.items.find(i=>i.title===focused)||activeGroup?.items[0];
- useEffect(()=>{setMenuOpen(false);setExpanded(null);setFocused(null)},[pathname]);
+ useEffect(()=>{setMenuOpen(false);setExpanded(null);setClosingGroup(null);setFocused(null)},[pathname]);
+ useEffect(()=>{
+  // Main glass navigation stays fixed at the top; utility strip collapses on
+  // upward scrolling and returns on downward scrolling, per owner's request.
+  let previous=window.scrollY;
+  let scheduled=false;
+  const read=()=>{
+   scheduled=false;
+   const y=Math.max(0,window.scrollY),delta=y-previous;
+   if(y<10)setUtilityVisible(true);
+   else if(Math.abs(delta)>6)setUtilityVisible(delta>0);
+   previous=y;
+  };
+  const onScroll=()=>{if(!scheduled){scheduled=true;window.requestAnimationFrame(read)}};
+  window.addEventListener('scroll',onScroll,{passive:true});
+  return()=>window.removeEventListener('scroll',onScroll);
+ },[]);
+ useEffect(()=>{
+  if(expanded){setClosingGroup(expanded);return;}
+  if(!closingGroup)return;
+  const timer=window.setTimeout(()=>setClosingGroup(null),340);
+  return()=>window.clearTimeout(timer);
+ },[expanded,closingGroup]);
  useEffect(()=>{
   const onKey=(event:KeyboardEvent)=>{if(event.key==='Escape'){setExpanded(null);setMenuOpen(false)}};
   const onPointer=(event:PointerEvent)=>{if(frame.current&&!frame.current.contains(event.target as Node)){setExpanded(null);setMenuOpen(false)}};
@@ -53,8 +77,9 @@ export default function SiteHeader(){
   return()=>{window.removeEventListener('keydown',onKey);document.removeEventListener('pointerdown',onPointer)};
  },[]);
  const toggle=(label:string)=>{setExpanded(previous=>previous===label?null:label);setFocused(null)};
+ const openHover=(label:string)=>{if(!menuOpen&&window.matchMedia('(hover: hover) and (pointer: fine)').matches){setExpanded(label);setFocused(null)}};
  const topLinks=[{text:'Account',url:portal,icon:'users' as const},{text:'Realtor Portal',url:portal,icon:'key' as const},{text:'Command Center',url:'https://app.landshopnigeria.com/admin',icon:'grid' as const}];
- return <div className="ls-site-chrome" ref={frame}>
+ return <div className={'ls-site-chrome '+(utilityVisible?'':'ls-utility-collapsed')} ref={frame}>
   <div className="ls-utility-bar"><div className="ls-utility-inner">
    <span className="ls-tagline">Everyone Deserves Affordable Property.</span>
    <form role="search" action="/search" method="get" className="ls-global-search">
@@ -62,14 +87,14 @@ export default function SiteHeader(){
    </form>
    <div className="ls-utility-links">{topLinks.map(x=><a href={x.url} key={x.text}><SiteIcon name={x.icon} size={19}/>{x.text}</a>)}</div>
   </div></div>
-  <div className="ls-glass-wrap"><header className="ls-glass-header">
+  <div className="ls-glass-wrap" onMouseLeave={()=>{if(!menuOpen)setExpanded(null)}} onBlurCapture={event=>{if(!menuOpen&&!event.currentTarget.contains(event.relatedTarget as Node|null))setExpanded(null)}}><header className="ls-glass-header">
    <Link href="/" className="ls-brand" aria-label="Landshop homepage">
     <img src="/media/logo-transparent.png" alt="Landshop" width={150} height={63} decoding="async" fetchPriority="high" onError={event=>{event.currentTarget.src='/media/logo.webp'}}/>
    </Link>
    <nav className={'ls-primary-nav '+(menuOpen?'ls-nav-mobile-open':'')} aria-label="Site navigation">
     <Link className={'ls-header-link '+(pathname==='/'?'ls-nav-active':'')} href="/" onClick={()=>setMenuOpen(false)}><span>Home</span></Link>
-    {groups.map(group=><div className={'ls-header-group '+(expanded===group.label?'ls-group-open':'')} key={group.label}>
-     <button type="button" className={'ls-header-link ls-nav-toggle '+(group.items.some(item=>pathname===item.href)?'ls-nav-active':'')} onClick={()=>toggle(group.label)} aria-haspopup="true" aria-expanded={expanded===group.label} aria-controls="ls-site-mega">
+    {groups.map(group=><div className={'ls-header-group '+(expanded===group.label?'ls-group-open':'')} key={group.label} onMouseEnter={()=>openHover(group.label)}>
+     <button type="button" className={'ls-header-link ls-nav-toggle '+(group.items.some(item=>pathname===item.href)?'ls-nav-active':'')} onClick={()=>toggle(group.label)} onFocus={()=>{if(!menuOpen)setExpanded(group.label)}} aria-haspopup="true" aria-expanded={expanded===group.label} aria-controls="ls-site-mega">
       <span>{group.label}</span><SiteIcon name="chevron" size={19}/>
      </button>
      {menuOpen&&expanded===group.label&&<div className="ls-mobile-subnav">{group.items.map(item=><Link key={item.title} href={item.href}><IconChip name={item.icon}/><span><strong>{item.title}</strong><small>{item.description}</small></span><SiteIcon name="arrow" size={22}/></Link>)}</div>}
@@ -81,15 +106,20 @@ export default function SiteHeader(){
    </nav>
    <div className="ls-header-actions"><a className="ls-start" href={portal}><span>Get Started</span><SiteIcon name="external" size={17}/></a>
     <button className="ls-menu-button" type="button" aria-expanded={menuOpen} aria-label={menuOpen?'Close navigation':'Open navigation'} onClick={()=>{setMenuOpen(x=>!x);setExpanded(null)}}>
-     <SiteIcon name={menuOpen?'close':'menu'} size={28}/>
+     <span className={'ls30-hamburger '+(menuOpen?'ls30-hamburger-open':'')} aria-hidden="true"><i/><i/><i/></span>
     </button>
    </div>
   </header>
-  {activeGroup&&!menuOpen&&<section className="ls-mega" id="ls-site-mega" aria-label={activeGroup.label+' menu'}>
+  {activeGroup&&!menuOpen&&<section className={'ls-mega '+(expanded?'ls30-mega-opening':'ls30-mega-folding')+(activeGroup.label==='Services'?' ls30-services-menu':'')} id="ls-site-mega" aria-label={activeGroup.label+' menu'}>
    <div className="ls-mega-top"><span>{activeGroup.eyebrow}</span><button type="button" onClick={()=>setExpanded(null)} aria-label="Close menu"><SiteIcon name="close" size={19}/></button></div>
-   <div className="ls-mega-layout"><div className="ls-mega-list">{activeGroup.items.map(item=><Link key={item.title} className={(selected?.title===item.title?'ls-selected':'')} href={item.href} onMouseEnter={()=>setFocused(item.title)} onFocus={()=>setFocused(item.title)}><IconChip name={item.icon}/><span>{item.title}</span><SiteIcon name="arrow" size={19}/></Link>)}</div>
-   <div className="ls-mega-detail"><span className="ls-mega-eyebrow">{activeGroup.label.toUpperCase()} / EXPLORE</span><h2>{selected?.title}</h2><p>{selected?.description}. {activeGroup.description}</p><div className="ls-mega-quicklinks">{activeGroup.items.filter(item=>item.title!==selected?.title).map(item=><Link key={item.title} href={item.href}>{item.title}<SiteIcon name="arrow" size={16}/></Link>)}</div><Link className="ls-mega-featured" href={selected?.href||'/applications'}>Explore {selected?.title}<SiteIcon name="arrow" size={18}/></Link></div>
-   </div>
+   {activeGroup.label==='Services'?
+    <div className="ls30-services-grid">{activeGroup.items.map(item=><Link href={item.href} className="ls30-service-entry" key={item.href} onFocus={()=>setFocused(item.title)}>
+     <SiteIcon name={item.icon} size={24}/><span>{item.title}</span><SiteIcon name="arrow" size={19}/>
+    </Link>)}</div>:
+    <div className="ls-mega-layout"><div className="ls-mega-list">{activeGroup.items.map(item=><Link key={item.title} className={(selected?.title===item.title?'ls-selected':'')} href={item.href} onMouseEnter={()=>setFocused(item.title)} onFocus={()=>setFocused(item.title)}><IconChip name={item.icon}/><span>{item.title}</span><SiteIcon name="arrow" size={19}/></Link>)}</div>
+     <div className="ls-mega-detail"><span className="ls-mega-eyebrow">{activeGroup.label.toUpperCase()} / EXPLORE</span><h2>{selected?.title}</h2><p>{selected?.description}. {activeGroup.description}</p><div className="ls-mega-quicklinks">{activeGroup.items.filter(item=>item.title!==selected?.title).map(item=><Link key={item.title} href={item.href}>{item.title}<SiteIcon name="arrow" size={16}/></Link>)}</div><Link className="ls-mega-featured" href={selected?.href||'/applications'}>Explore {selected?.title}<SiteIcon name="arrow" size={18}/></Link></div>
+    </div>}
+
   </section>}
   </div>
  </div>;
