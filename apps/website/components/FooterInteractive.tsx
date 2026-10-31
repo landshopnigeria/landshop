@@ -1,5 +1,5 @@
 'use client';
-import {useEffect,useRef,useState,type FormEvent} from 'react';
+import {useRef,useState,type FormEvent} from 'react';
 import Link from 'next/link';
 import {useCarouselPlayback} from './useCarouselPlayback';
 
