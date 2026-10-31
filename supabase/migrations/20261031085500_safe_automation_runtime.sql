@@ -55,7 +55,7 @@ begin
  if (select node->'config'->>'event' from jsonb_array_elements(nodes) node where node->>'type'='trigger')
   not in ('staff.report_submitted','staff.report_reviewed','subscription.payment_verified',
   'staff.task_assigned','landshop.contact.received','support.ticket_created',
-  'application.submitted','kyc.submitted')
+  'application.submitted','kyc.submitted','referral.registered')
  then raise exception 'The production trigger event is not supported';end if;
  if exists(
   select 1 from jsonb_array_elements(nodes) node
