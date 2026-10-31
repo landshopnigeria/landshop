@@ -1,5 +1,4 @@
-/** Privacy-enhanced, consent-free-until-play YouTube embed. The poster has no third-party network dependency. */
-import {useId} from 'react';
+/** Privacy-enhanced YouTube embed, lazy-loaded when the player approaches the viewport; no autoplay. */
 const options={
  prime:{id:'xRGG6aZq120',title:'Explore Landshop Prime Estates',external:'https://www.youtube.com/watch?v=xRGG6aZq120'},
  about:{id:'Q29UrjaqAJU',title:'About Landshop — Company Introduction',external:'https://www.youtube.com/watch?v=Q29UrjaqAJU'}
