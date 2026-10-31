@@ -23,11 +23,11 @@ source_files=[
 ]
 for source in source_files:
  text=source.read_text()
- for filename in re.findall(r"/owner/2026/([a-z0-9-]+\\.webp)",text):
+ for filename in re.findall(r"/owner/2026/([a-z0-9-]+\.webp)",text):
   if not (assets/filename).is_file():
    raise SystemExit(f"Broken owner media reference in {source}: {filename}")
 media=(site/"lib/owner-article-media.ts").read_text()
-mapping=set(re.findall(r'"([a-z0-9-]+)":\\{image:',media))
+mapping=set(re.findall(r'"([a-z0-9-]+)":\{image:',media))
 core=(site/"lib/guides.ts").read_text()
 extra=(site/"lib/v22-guides.ts").read_text()
 slugs=set(re.findall(r"slug:'([a-z0-9-]+)'",core+extra))
