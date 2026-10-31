@@ -67,8 +67,8 @@ create or replace function landshop_private.activate_staff_confirmation()
 returns trigger language plpgsql security definer set search_path='' as $$
 begin
  if new.email_confirmed_at is not null
-  and (tg_op='INSERT' or old.email_confirmed_at is null)
-  and new.raw_user_meta_data->>'staff_signup'='true' then
+  and new.raw_user_meta_data->>'staff_signup'='true'
+  and (tg_op='INSERT' or (tg_op='UPDATE' and old.email_confirmed_at is null)) then
   begin
    perform landshop_private.activate_verified_staff(
     new.id,
