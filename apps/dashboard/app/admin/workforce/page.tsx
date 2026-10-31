@@ -16,7 +16,7 @@ export default async function Workforce(){
   <div style={{maxWidth:1230,margin:'auto'}}>
    <Link href="/admin" style={{color:'#0a8461'}}>← Global Command Center</Link>
    <p style={{fontSize:12,fontWeight:850,color:'#d96d15',letterSpacing:1.1}}>LANDSHOP PEOPLE OPERATIONS</p>
-   <h1 style={{fontSize:'clamp(29px,4vw,44px)',margin:'10px 0'}}>Workforce Command Center</h1>
+   <h1 style={{fontSize:'clamp(29px,4vw,44px)',margin:'10px 0'}}>Workforce Command Center</h1><p><Link href="/admin/workforce/reports" style={{color:'#0a8566',fontWeight:850}}>Open Department Reports & HR/Manager Inbox →</Link></p>
    <p style={{maxWidth:840,color:'#687b6e',lineHeight:1.7}}>Approved users, employment identity, attendance points, manager-assigned tasks, individual performance and annual staff reviews. Operational changes are controlled by signed-in managers and auditable backend procedures.</p>
    {(profiles.error||tasks.error||daily.error)&&<p role="alert" style={{background:'#fff2e7',padding:15}}>Unable to load one of the staff datasets. Check the verified management role and database permissions before reviewing employees.</p>}
    <WorkforcePanel people={profiles.data||[]} taskRows={tasks.data||[]} dailyRows={daily.data||[]} actorRole={member.data?.role||''}/>
