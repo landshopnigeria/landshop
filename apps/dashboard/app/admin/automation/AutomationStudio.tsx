@@ -145,6 +145,31 @@ export default function AutomationStudio({initial}:{initial:Workflow[]}){
   }catch(e){setMessage(e instanceof Error?e.message:'Rehearsal step failed.');}
   finally{setTestBusy(false);}
  }
+ async function publishInternal(){
+  if(!flow||generated||unsaved||busy)return;
+  if(!confirm('Activate this workflow for REAL internal Landshop event processing? Only approved internal-only notifications and task records are supported; external actions remain disabled.'))return;
+  setBusy(true);setMessage('');
+  try{
+   const {data,error}=await client().rpc('landshop_automation_publish_internal',{
+    p_workflow:flow.id,p_version:flow.version
+   });
+   if(error||data!==true)throw Error(error?.message||'Owner approval or safe workflow validation is missing.');
+   setFlows(x=>x.map(w=>w.id===flow.id?{...w,state:'active'}:w));
+   setMessage('Owner-approved internal automation is active. External email, SMS, WhatsApp, webhooks and financial actions remain disabled.');
+  }catch(e){setMessage(e instanceof Error?e.message:'Unable to publish internal workflow.')}
+  finally{setBusy(false)}
+ }
+ async function pauseInternal(pause:boolean){
+  if(!flow||busy)return;
+  setBusy(true);setMessage('');
+  try{
+   const {data,error}=await client().rpc('landshop_automation_pause_internal',{p_workflow:flow.id,p_pause:pause});
+   if(error||data!==true)throw Error(error?.message||'Owner permission required');
+   setFlows(x=>x.map(w=>w.id===flow.id?{...w,state:pause?'paused':'active'}:w));
+   setMessage(pause?'Internal workflow paused.':'Internal workflow resumed.');
+  }catch(e){setMessage(e instanceof Error?e.message:'Unable to change workflow status')}
+  finally{setBusy(false)}
+ }
  function reset(){
   if(!confirm('Discard unsaved changes and reload the workflow?'))return;
   if(generated){setGenerated(null);setSelected(null);setMessage('Generated preview discarded.');return;}
@@ -157,7 +182,9 @@ export default function AutomationStudio({initial}:{initial:Workflow[]}){
   <div className="auto-toolbar"><button onClick={()=>setNav(x=>!x)} aria-label="Toggle node sidebar">☰ Node Library</button><BrandedSelect aria-label="Workflow template" value={generated?'__generated':current} onChange={e=>{if(e.target.value==='__generated')return;setGenerated(null);setCurrent(e.target.value);setSelected(null);setConnect(null)}}>{generated&&<option value="__generated">New generated draft (unsaved)</option>}{flows.map(f=><option key={f.id} value={f.id}>{f.name}</option>)}</BrandedSelect><span>{generated?'Unsaved generated draft':'Version '+(flow?.version||'—')+' · '+(flow?.state||'Not configured')}</span><button onClick={()=>setConnect(selected)} disabled={!selected}>Connect selected node →</button><button onClick={()=>setInspector(x=>!x)}>{inspector?'Hide':'Show'} Inspector</button><button onClick={exportGraph} disabled={!flow&&!generated}>Export JSON</button><button onClick={reset}>Reset</button>
    <button className="auto-test-button" onClick={startTest} disabled={!flow||!!generated||unsaved||testBusy||busy}>
     {testBusy?'Working…':'Rehearse Saved Workflow'}
-   </button></div>
+   </button>
+   <button type="button" onClick={publishInternal} disabled={!flow||!!generated||unsaved||busy||flow.state==='active'} title="Verified owner approval; internal-only graph support">Activate internal workflow</button>
+   <button type="button" onClick={()=>pauseInternal(flow?.state==='active')} disabled={!flow||busy||!['active','paused'].includes(flow.state)}>{flow?.state==='active'?'Pause workflow':'Resume internal workflow'}</button></div>
   <div className={'auto-workspace '+(!nav?'no-nav ':'')+(!inspector?'no-inspector':'')}>
    {nav&&<aside className="auto-library"><h2>Workflow Library</h2><p>Add process steps to your editable canvas. Connect steps using the Connect control.</p>{types.map(type=><button key={type} onClick={()=>add(type)}><span className={'node-dot '+type}/><strong>{type}</strong><small>＋ Add step</small></button>)}<div className="auto-warning">Preview and draft only. Email, SMS, WhatsApp and financial tasks will not execute until integration, consent and approvals pass.</div></aside>}
    <section className="auto-board-shell"><div className="auto-board-head"><div><h1>{generated?.name||flow?.name||'Automation Workflow'}</h1><p>{generated?.description||flow?.description||'Build a workflow with governed actions.'}</p></div><span>{graph.nodes.length} nodes · {graph.edges.length} links</span></div>
@@ -169,7 +196,7 @@ export default function AutomationStudio({initial}:{initial:Workflow[]}){
      {graph.nodes.map(n=><button key={n.id} type="button" onPointerDown={e=>pointerDown(e,n)} onPointerMove={pointerMove} onPointerUp={pointerUp} onPointerCancel={pointerUp} onClick={()=>clickNode(n.id)}
       className={'auto-node '+n.type+(selected===n.id?' chosen':'')} style={{left:n.x,top:n.y,touchAction:'none'}}>
        <span className={'node-dot '+n.type}/><strong>{n.label}</strong><small>{n.type.toUpperCase()}</small></button>)}
-    </div></div><div className="auto-board-foot"><span>{connect?'Choose target node to connect.':'Select and drag nodes; configure with Inspector. All saves are versioned.'}</span><span>Design-only mode — no communications sent</span></div>
+    </div></div><div className="auto-board-foot"><span>{connect?'Choose target node to connect.':'Select and drag nodes; configure with Inspector. All saves are versioned.'}</span><span>Internal execution only when owner-approved. External channels disabled.</span></div>
    </section>
    {inspector&&<aside className="auto-inspector"><h2>Node Inspector</h2>{focused?<><label>Node name<input value={focused.label} maxLength={80} onChange={e=>changeNode({label:e.target.value})}/></label><label>Type<BrandedSelect value={focused.type} onChange={e=>changeNode({type:e.target.value as NodeType})}>{types.map(x=><option key={x}>{x}</option>)}</BrandedSelect></label><label>X position<input type="number" min={0} max={3000} value={Math.round(focused.x)} onChange={e=>changeNode({x:Number(e.target.value)})}/></label><label>Y position<input type="number" min={0} max={1800} value={Math.round(focused.y)} onChange={e=>changeNode({y:Number(e.target.value)})}/></label>
     {focused.type==='notification'&&<label>Delivery channel (not connected)<BrandedSelect value={focused.config?.channel||'internal'} onChange={e=>changeNode({config:{...focused.config,channel:e.target.value as 'email'|'sms'|'whatsapp'|'internal'}})}>{['internal','email','sms','whatsapp'].map(c=><option key={c} value={c}>{c.toUpperCase()}</option>)}</BrandedSelect></label>}
@@ -180,7 +207,7 @@ export default function AutomationStudio({initial}:{initial:Workflow[]}){
     <button onClick={()=>setConnect(focused.id)}>Connect →</button>
     {graph.edges.filter(e=>e.from===focused.id||e.to===focused.id).map(e=><button className="auto-disconnect" key={e.from+'-'+e.to} onClick={()=>update({...graph,edges:graph.edges.filter(link=>link!==e)})}>Disconnect {e.from===focused.id?'to '+(graph.nodes.find(n=>n.id===e.to)?.label||'step'):'from '+(graph.nodes.find(n=>n.id===e.from)?.label||'step')}</button>)}
     <button onClick={remove}>Delete node</button></>:<p>Click a workflow node to inspect or edit it.</p>}
-    <div className="auto-warning"><strong>Publishing gate</strong><p>Changes are drafts until a separate review and verified provider setup. Do not include sensitive credentials or private client data in node labels.</p></div></aside>}
+    <div className="auto-warning"><strong>Publishing gate</strong><p>Verified owner can activate linear graphs using only triggers, tasks, internal notifications and end nodes. SMS, email, WhatsApp, webhooks, approvals and finance operations still require separately authorised integrations. Never put secrets in node labels.</p></div></aside>}
   </div>
   <section className="auto-test-panel" aria-label="Workflow execution rehearsal">
    <div className="auto-test-heading"><div><span>INTERNAL REHEARSAL & AUDIT</span><h2>Execute a safe, step-by-step test</h2>

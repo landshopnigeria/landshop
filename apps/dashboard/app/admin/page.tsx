@@ -10,7 +10,7 @@ const links=[
  ['CRM Application Queue','/admin/applications','↗'],['Mortgage Reviews','/admin/applications','◉'],
  ['Property Import','/admin/properties/import/advanced','⇧'],['Import Approval','/admin/properties/import/review','✓'],
  ['Workflow Automation','/admin/automation','⌘'],['Website Enquiries','/admin/enquiries','✉'],['Article Comments','/admin/comments','☷'],['Daily Newsletter','/admin/newsletter','✉'],['Customer Support','/admin/support','☏'],
- ['Referral Records','/admin/reports','♧'],['Staff & Roles','/admin/staff','♙'],['Workforce & Attendance','/admin/workforce','◷'],
+ ['Referral Records','/admin/reports','♧'],['Staff & Roles','/admin/staff','♙'],['Workforce & Attendance','/admin/workforce','◷'],['Staff Department Reports','/admin/workforce/reports','▤'],
  ['KYC & Compliance','/admin/kyc','◈'],['Survey & Allocation','/admin/seven-cities','⌖'],
  ['Reports & Analytics','/admin/reports','▥'],['Staff Dashboard','/staff','⌂']];
 async function count(db:any,table:string){

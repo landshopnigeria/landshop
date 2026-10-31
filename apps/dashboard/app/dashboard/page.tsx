@@ -77,6 +77,7 @@ export default async function Dashboard(){
      <div className="cd-summary-card"><span>Referral Wallet</span><strong>{walletRes.error?'—':formatNaira(wallet?.available_kobo||0)}</strong><small>{wallet?.pending_kobo?formatNaira(wallet.pending_kobo)+' pending':'No approved referral payouts yet'}</small></div>
      <Link href="https://portal.landshopnigeria.com/support" className="cd-summary-card"><span>Support Cases</span><strong>{ticketsRes.error?'—':ticketsRes.count||0}</strong><small>Follow up on enquiries</small></Link>
     </section>
+    <div style={{margin:'14px 0',padding:'16px 19px',background:'#fff',border:'1px solid #e0ede4',borderRadius:14,display:'flex',alignItems:'center',justifyContent:'space-between',gap:14,flexWrap:'wrap'}}><div><strong>Landshop Subscriptions</strong><p style={{fontSize:12,color:'#708779',margin:'6px 0 0'}}>Choose an approved plan, renew access and see Paystack-verified receipts.</p></div><a style={{color:'#087f64',fontWeight:800}} href="https://portal.landshopnigeria.com/billing">Manage subscription →</a></div>
     <ReferralToolkit code={code} summary={summary} activity={referralActivityRes.data||[]} rewards={rewardHistoryRes.data||[]}/>
     <div className="cd-bottom-grid">
      <section className="cd-panel"><div className="cd-section-head"><h2>My Applications</h2><Link href="/dashboard/applications">View all →</Link></div>

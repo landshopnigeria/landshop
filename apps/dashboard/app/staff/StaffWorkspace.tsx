@@ -7,7 +7,7 @@ import StaffAuthShell from './StaffAuthShell';
 import './staff-dashboard.css';
 import {createBrowserClient} from '@supabase/ssr';
 type Profile={user_id:string;organization_id:string;username:string;requested_role:string;age_at_registration:number;gender:string;kyc_state:string;employment_state:string;photo_path:string|null;staff_number:string|null;joined_at:string|null};
-type Task={id:string;title:string;details:string|null;status:string;starts_at:string;due_at:string;planned_minutes:number|null;delay_allowance_minutes:number;viewed_at:string|null;started_at:string|null;submitted_at:string|null;score:number|null;review_comment:string|null;assigned_by:string};
+type Task={id:string;title:string;details:string|null;status:string;starts_at:string;due_at:string;planned_minutes:number|null;delay_allowance_minutes:number;viewed_at:string|null;accepted_at:string|null;started_at:string|null;submitted_at:string|null;score:number|null;review_comment:string|null;assigned_by:string};
 type Attendance={id:string;action:string;occurred_at:string;place:string;latitude:number;longitude:number;accuracy_m:number};
 type Report={score_percent:number|null;assigned_tasks:number;reviewed_tasks:number;planned_minutes:number;tracked_work_minutes:number;recommendation:string;payroll_action:string;period:string};
 const inputStyle={width:'100%',padding:12,borderRadius:10,border:'1px solid #cfe3d5',background:'white',color:'#123f2e',fontSize:14};
@@ -33,7 +33,7 @@ export default function StaffWorkspace({userId,initialProfile,initialTasks,role,
  const [daily,setDaily]=useState(''),[blockers,setBlockers]=useState(''),[selected,setSelected]=useState(''),[taskNote,setTaskNote]=useState(''),[opened,setOpened]=useState('');
  // Email-confirmed staff can access their personal dashboard immediately.
  // Tasks, attendance and management still require verified employee access.
- const verified=Boolean(verifiedAccess&&approvedRole&&profile?.employment_state==='active'&&profile?.kyc_state==='approved');
+ const verified=Boolean(verifiedAccess&&approvedRole&&profile?.employment_state==='active');
  const dashboardActive=ownerActive||verified||(selfServiceAccess&&Boolean(profile));
  const management=ownerActive||(verified&&['ceo','founder','admin','technology_officer','technology_consultant'].includes(approvedRole||''));
  const supervisor=ownerActive||(verified&&(management||['hr_officer','head_finance','social_media_manager','customer_service_manager','department_manager','operations','hr','finance'].includes(approvedRole||'')));
@@ -48,7 +48,7 @@ export default function StaffWorkspace({userId,initialProfile,initialTasks,role,
    if(pError)throw Error(pError.message);
    const latest=(p||null) as Profile|null;
    setProfile(latest);
-   const permitted=workError==null&&allowed===true&&latest?.kyc_state==='approved'&&latest?.employment_state==='active';
+   const permitted=workError==null&&allowed===true&&latest?.employment_state==='active';
    const {data:membership}=permitted&&latest?await db.from('organization_members').select('role')
     .eq('organization_id',latest.organization_id).eq('user_id',userId)
     .eq('status','active').limit(1).maybeSingle():{data:null};
@@ -71,7 +71,7 @@ export default function StaffWorkspace({userId,initialProfile,initialTasks,role,
     setReport(null);
    }else{
     const [{data:t},a,...results]=await Promise.all([
-     db.from('staff_tasks').select('id,title,details,status,starts_at,due_at,planned_minutes,delay_allowance_minutes,viewed_at,started_at,submitted_at,score,review_comment,assigned_by').eq('assignee_id',userId).order('created_at',{ascending:false}).limit(100),
+     db.from('staff_tasks').select('id,title,details,status,starts_at,due_at,planned_minutes,delay_allowance_minutes,viewed_at,accepted_at,started_at,submitted_at,score,review_comment,assigned_by').eq('assignee_id',userId).order('created_at',{ascending:false}).limit(100),
      db.rpc('landshop_attendance_history',{p_user:userId}),
      ...(['day','week','month','year'] as const).map(p=>db.rpc('landshop_staff_performance',{p_staff:userId,p_period:p}))
     ]);
@@ -109,7 +109,7 @@ export default function StaffWorkspace({userId,initialProfile,initialTasks,role,
   }catch(e){notify(e)}finally{setBusy(false)}
  }
  async function clock(action:'clock_in'|'clock_out'){
-  if(!verified){setMessage('Verified staff KYC and approved membership are required for attendance');return}
+  if(!verified){setMessage('An active verified-email workforce account is required for attendance');return}
   if(!window.navigator.geolocation){setMessage('This browser does not support GPS.');return}
   setBusy(true);setMessage('Requesting one-time GPS permission for this attendance action…');
   navigator.geolocation.getCurrentPosition(async position=>{
@@ -170,7 +170,7 @@ export default function StaffWorkspace({userId,initialProfile,initialTasks,role,
    <label>Requested role<input readOnly value={wanted.replaceAll('_',' ')}/></label><button className="ls25-action" disabled={busy}>Finish staff registration</button></form>}
   {profile&&profile.kyc_state!=='approved'&&<div className="ls25-kyc"><p>Your staff dashboard is already active. A private portrait is only required for restricted employee work and an official staff ID.</p>
    <label className="ls25-upload">Upload or replace staff portrait<input type="file" accept="image/jpeg,image/png,image/webp" disabled={busy} onChange={e=>void upload(e.target.files?.[0]||null)}/></label></div>}
-  {verified&&profile?.staff_number&&<div className="ls25-staff-id"><div className="ls25-id-heading"><img src="/media/logo-transparent.png" alt="Landshop original logo" onError={e=>{e.currentTarget.src='/media/logo.webp'}}/> <strong>Employee ID</strong></div><p>{profile.staff_number}</p><small>{profile.username} · {roleLabel}</small><button type="button" className="ls25-text-link" onClick={()=>window.print()}>Print employee ID <span>↗</span></button></div>}
+  {verified&&profile?.staff_number&&<div className="ls25-staff-id"><div className="ls25-id-heading"><img src="/media/logo-transparent.png" alt="Landshop original logo" onError={e=>{e.currentTarget.src='/media/logo.webp'}}/> <strong>{profile.kyc_state==='approved'?'Verified Employee ID':'Staff Registration Badge'}</strong></div><p>{profile.staff_number}</p><small>{profile.username} · {roleLabel}</small><small>{profile.kyc_state==='approved'?'Identity verified':'Provisional · identity not yet verified'}</small><button type="button" className="ls25-text-link" onClick={()=>window.print()}>Print employee ID <span>↗</span></button></div>}
  </section>;
  const attendanceCard=<section id="staff-attendance" className="ls25-card ls25-attendance">
   <div className="ls25-card-head"><h2><StaffGlyph name="clock" accent/> Clock In / Out</h2><button type="button" className="ls25-text-link" onClick={()=>go('attendance')}>View History <span>→</span></button></div>
@@ -191,12 +191,12 @@ export default function StaffWorkspace({userId,initialProfile,initialTasks,role,
  </section>;
  const taskCard=<section id="staff-tasks" className="ls25-card ls25-tasks">
   <div className="ls25-card-head"><h2><StaffGlyph name="clipboard" accent/> Assigned Tasks</h2><button className="ls25-text-link" type="button" onClick={()=>go('tasks')}>View All <span>→</span></button></div>
-  {filteredTasks.length===0?<div className="ls25-empty-tasks"><span className="ls25-empty-icon"><StaffGlyph name="clipboard" size={36}/></span><strong>{search?'No matching assignments':'No assignments yet'}</strong><p>{verified?'Your manager will enter tasks and expected completion times here.':'Task actions become available after staff verification.'}</p></div>:<div className="ls25-task-list">{filteredTasks.slice(0,activeTab==='dashboard'?4:100).map(t=><article className="ls25-task" key={t.id}>
+  {filteredTasks.length===0?<div className="ls25-empty-tasks"><span className="ls25-empty-icon"><StaffGlyph name="clipboard" size={36}/></span><strong>{search?'No matching assignments':'No assignments yet'}</strong><p>{verified?'Your manager will enter tasks and expected completion times here.':'Task actions become available after email confirmation and staff activation.'}</p></div>:<div className="ls25-task-list">{filteredTasks.slice(0,activeTab==='dashboard'?4:100).map(t=><article className="ls25-task" key={t.id}>
    <div className="ls25-task-title"><strong>{t.title}</strong><span>{t.status.replaceAll('_',' ')}</span></div>
    <button className="ls25-text-link" type="button" disabled={busy} onClick={()=>{setOpened(opened===t.id?'':t.id);if(opened!==t.id&&!t.viewed_at&&verified)void action(t.id,'view')}}>{opened===t.id?'Close details':'Open assignment →'}</button>
    {opened===t.id&&<div className="ls25-task-body"><p>{t.details}</p><p>Due: {new Date(t.due_at).toLocaleString('en-NG',{timeZone:'Africa/Lagos'})} WAT · Planned: {t.planned_minutes||0} min · Delay: {t.delay_allowance_minutes||0} min</p>
-   <p>First viewed: {t.viewed_at?new Date(t.viewed_at).toLocaleString('en-NG',{timeZone:'Africa/Lagos'}):'Not yet'} · Score: {t.score??'Pending'}</p>{t.review_comment&&<p>Manager feedback: {t.review_comment}</p>}
-   {verified&&['assigned','in_progress','returned','blocked'].includes(t.status)&&<div className="ls25-small-actions"><button disabled={busy} onClick={()=>action(t.id,'start')}>Start</button><button disabled={busy} onClick={()=>action(t.id,'pause')}>Pause</button><button disabled={busy} onClick={()=>setSelected(selected===t.id?'':t.id)}>Report / Submit</button></div>}
+   <p>First viewed: {t.viewed_at?new Date(t.viewed_at).toLocaleString('en-NG',{timeZone:'Africa/Lagos'}):'Not yet'} · Accepted: {t.accepted_at?new Date(t.accepted_at).toLocaleString('en-NG',{timeZone:'Africa/Lagos'}):'Not yet'} · Score: {t.score??'Pending'}</p>{t.review_comment&&<p>Manager feedback: {t.review_comment}</p>}
+   {verified&&['assigned','in_progress','returned','blocked'].includes(t.status)&&<div className="ls25-small-actions">{t.status==='assigned'&&!t.accepted_at&&<button disabled={busy} onClick={()=>action(t.id,'accept')}>Accept task</button>}<button disabled={busy||Boolean(t.status==='assigned'&&!t.accepted_at)} onClick={()=>action(t.id,'start')}>Start</button><button disabled={busy} onClick={()=>action(t.id,'pause')}>Pause</button><button disabled={busy} onClick={()=>setSelected(selected===t.id?'':t.id)}>Report / Submit</button></div>}
    {selected===t.id&&<div className="ls25-task-submit"><textarea rows={3} value={taskNote} onChange={e=>setTaskNote(e.target.value)} placeholder="Describe completed work or the blocker"/><div className="ls25-small-actions"><button disabled={busy} onClick={()=>action(t.id,'submit',taskNote)}>Submit work</button><button disabled={busy} onClick={()=>action(t.id,'blocked',taskNote)}>Flag blocker</button></div></div>}
    </div>}</article>)}</div>}
  </section>;
@@ -205,7 +205,8 @@ export default function StaffWorkspace({userId,initialProfile,initialTasks,role,
   <form id="landshop-daily-form" onSubmit={sendDaily} className="ls25-daily-form">
   <label><span><StaffGlyph name="sun" size={19} color="#f58a0b"/> Today's work summary</span><textarea required minLength={20} maxLength={6000} value={daily} onChange={e=>setDaily(e.target.value)} placeholder="Describe tasks handled, results delivered and time-sensitive activities..."/><small>{daily.length}/6000</small></label>
   <label><span><StaffGlyph name="clock" size={19} color="#287eea"/> Delays / dependencies</span><textarea maxLength={3000} value={blockers} onChange={e=>setBlockers(e.target.value)} placeholder="Anything that delayed a task, instructions awaited, approvals needed..."/><small>{blockers.length}/3000</small></label></form>
-  {!verified&&<p className="ls25-disclaimer">Submitting daily activity reports requires an approved employee identity.</p>}
+  {!verified&&<p className="ls25-disclaimer">Submit a report after confirming your staff email and activating your standard membership.</p>}
+  <Link href="/staff/submissions" className="ls25-text-link" style={{display:'inline-block',marginTop:14,fontWeight:800}}>Submit daily or monthly report to HR, Manager, Finance or Management →</Link>
  </section>;
  const menuName:Record<string,string>={dashboard:'Staff Dashboard',overview:'Work Overview',profile:'My Profile',attendance:'Attendance',tasks:'Assigned Tasks',daily:'Daily Routine',performance:'My Performance'};
  // Until both identity verification and an active Landshop membership are present,
@@ -234,7 +235,7 @@ export default function StaffWorkspace({userId,initialProfile,initialTasks,role,
     <img src="/media/logo-transparent.png" alt="Landshop original logo: Develop, Incubate, Grow" onError={e=>{e.currentTarget.src='/media/logo.webp'}}/>
    </Link><button type="button" className="ls25-collapse-button" aria-label={collapsed?'Expand sidebar':'Collapse sidebar'} aria-expanded={!collapsed} onClick={()=>setCollapsed(x=>!x)}><StaffGlyph name="menu"/></button></div>
    <nav className="ls25-nav" aria-label="Staff and owner navigation">{nav.map(([id,label,icon])=><button key={id} className={'ls25-navitem'+(activeTab===id?' active':'')} type="button" title={label} aria-current={activeTab===id?'page':undefined} onClick={()=>go(id)}><StaffGlyph name={icon} size={22}/><span>{label}</span></button>)}{ownerActive&&<Link href="/admin" className="ls25-navitem ls25-owner-nav" title="Open Global Command Center" onClick={()=>setMobileNav(false)}><StaffGlyph name="briefcase" size={22}/><span>Global Command Center</span></Link>}</nav>
-   <div className="ls25-sidefooter">{supervisor&&<Link href="/staff/team" title="Manage team tasks"><StaffGlyph name="clipboard"/><span>Manage Team</span></Link>}{management&&<Link href="/admin" title="Global Command Center"><StaffGlyph name="briefcase"/><span>Command Center</span></Link>}
+   <div className="ls25-sidefooter"><Link href="/staff/submissions" title="Submit reports and review departmental inbox"><StaffGlyph name="file"/><span>Department Reports</span></Link>{supervisor&&<Link href="/staff/team" title="Manage team tasks"><StaffGlyph name="clipboard"/><span>Manage Team</span></Link>}{management&&<Link href="/admin" title="Global Command Center"><StaffGlyph name="briefcase"/><span>Command Center</span></Link>}
    <button type="button" title="Log Out" onClick={signOut}><StaffGlyph name="log-out"/><span>Log Out</span></button></div>
    <div aria-hidden="true" className="ls25-deco"/>
   </aside>
@@ -250,7 +251,7 @@ export default function StaffWorkspace({userId,initialProfile,initialTasks,role,
    <main className="ls25-content">
     {message&&<div role="status" aria-live="polite" className="ls25-toast">{message}<button type="button" aria-label="Dismiss notice" onClick={()=>setMessage('')}>×</button></div>}
     {ownerActive&&<section className="ls25-owner-access" aria-labelledby="owner-command-title"><div className="ls25-owner-access-icon"><StaffGlyph name="briefcase" size={29}/></div><div className="ls25-owner-access-copy"><p>VERIFIED LANDSHOP OWNER</p><h2 id="owner-command-title">Your Global Command Center</h2><span>Manage properties, people, customers, applications, approvals, automation, operations and reports.</span></div><Link href="/admin" className="ls25-owner-access-cta">Open Global Command Center <span aria-hidden="true">↗</span></Link></section>}
-    {!verified&&!ownerActive&&<div className="ls25-account-active" role="status"><StaffGlyph name="shield" size={22}/><div><strong>Staff dashboard activated automatically</strong><p>Email confirmation gives immediate dashboard access. Internal task execution, attendance, employee ID and management functions require separate company authorization.</p></div></div>}
+    {!verified&&!ownerActive&&<div className="ls25-account-active" role="status"><StaffGlyph name="shield" size={22}/><div><strong>Staff account activation</strong><p>Verify your email to activate personal tasks and work reports. Management permissions still require independent approval.</p></div></div>}
     {(activeTab==='dashboard'||activeTab==='overview')&&<div className="ls25-stats">
      <div className="ls25-stat"><span className="ls25-stat-icon green"><StaffGlyph name="user" size={27}/></span><div><small>Your Role</small><strong>{roleLabel}</strong></div></div>
      <div className="ls25-stat"><span className="ls25-stat-icon orange"><StaffGlyph name="shield" size={27}/></span><div><small>KYC Status</small><strong>{kycLabel}</strong><small>Employment: {profile?.employment_state||'Pending'}</small></div></div>

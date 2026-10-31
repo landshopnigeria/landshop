@@ -1,0 +1,38 @@
+name: Landshop Internal Automation Queue
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: landshop-internal-automation-worker
+  cancel-in-progress: false
+jobs:
+  drain:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      SERVICE_ROLE: ${{ secrets.LANDSHOP_SUPABASE_SERVICE_ROLE_KEY }}
+      SUPABASE_URL: https://iwkfagzkogzidrbbezds.supabase.co
+    steps:
+      - name: Dispatch only owner-approved, internal-safe Landshop workflows
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "${SERVICE_ROLE:-}" ]; then
+            echo "Internal automation worker is not activated: configure LANDSHOP_SUPABASE_SERVICE_ROLE_KEY securely."
+            exit 0
+          fi
+          json='{"p_limit":20}'
+          response="$(curl --fail-with-body --silent --show-error --retry 2 --retry-delay 3 --max-time 30 \
+            -X POST "${SUPABASE_URL}/rest/v1/rpc/landshop_automation_dispatch" \
+            -H "apikey: ${SERVICE_ROLE}" -H "Authorization: Bearer ${SERVICE_ROLE}" \
+            -H "Content-Type: application/json" --data "${json}")"
+          node -e '
+           const result=JSON.parse(process.argv[1]);
+           for(const key of ["events_examined","runs_created","notices_created"]){
+             if(!Number.isInteger(result[key]))throw Error("Invalid automation dispatch response");
+           }
+           console.log("Internal automation run:",JSON.stringify(result));
+          ' "${response}"
