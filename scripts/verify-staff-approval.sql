@@ -33,8 +33,23 @@ WITH source AS (
   AND coalesce(position('Only the active owner may grant a Command Center role' IN review_fn)>0,false) AS privileged_roles_owner_only,
  coalesce(position('v_record.photo_path is null' IN review_fn)>0,false)
   AND coalesce(position('v_record.kyc_state<>''submitted''' IN review_fn)>0,false) AS verified_portrait_gate,
+ -- Two approved email-verified onboarding schemes:
+ -- (a) legacy idempotent registration with no activation;
+ -- (b) automatic BASIC staff activation after email confirmation, while
+ --     preserving suspension, protecting existing roles, and never granting
+ --     a privileged role based on a user-submitted requested_role.
  coalesce(position('email_confirmed_at' IN onboard_fn)>0,false)
-  AND coalesce(position('on conflict(user_id) do nothing' IN onboard_fn)>0,false) AS confirmed_onboarding,
+  AND (
+   coalesce(position('on conflict(user_id) do nothing' IN onboard_fn)>0,false)
+   OR (
+    coalesce(position('on conflict(user_id) do update set' IN onboard_fn)>0,false)
+    AND coalesce(position('employment_state=case when public.landshop_staff_profiles.employment_state=''pending'' then ''active'' else public.landshop_staff_profiles.employment_state end' IN onboard_fn)>0,false)
+    AND coalesce(position('employment_state in (''suspended'',''ended'')' IN onboard_fn)>0,false)
+    AND coalesce(position('if v_state in (''suspended'',''revoked'')' IN onboard_fn)>0,false)
+    AND coalesce(position('values(v_org,v_user,''staff'',''active'')' IN onboard_fn)>0,false)
+    AND coalesce(position('where organization_id=v_org and user_id=v_user and role=''staff''' IN onboard_fn)>0,false)
+   )
+  ) AS confirmed_onboarding,
  coalesce(position('landshop_is_staff(p_user)' IN work_fn)>0,false)
   AND coalesce(position('kyc_state=''approved''' IN work_fn)>0,false)
   AND coalesce(position('employment_state=''active''' IN work_fn)>0,false) AS verified_work_gate
