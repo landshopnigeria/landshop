@@ -124,7 +124,7 @@ jobs:
               fi
               # Email confirmation is enough for entry to the PERSONAL staff dashboard.
               # Sensitive employee/management operations retain independent authorization.
-              grep -Fq "selfServiceAccess={confirmedStaffSignup&&Boolean(profile)}" apps/dashboard/app/staff/page.tsx || { echo "::error::Staff dashboard email activation missing"; exit 1; }
+              grep -Fq "selfServiceAccess={confirmedStaffSignup&&Boolean(profile)&&profile?.employment_state!=='suspended'&&profile?.employment_state!=='ended'}" apps/dashboard/app/staff/page.tsx || { echo "::error::Staff dashboard email activation missing"; exit 1; }
               grep -Fq "if(!dashboardActive)return" apps/dashboard/app/staff/StaffWorkspace.tsx || { echo "::error::Management gate still blocks personal dashboard"; exit 1; }
               grep -Fq "landshop_staff_can_work" apps/dashboard/app/staff/page.tsx || { echo "::error::Employee work authorization missing"; exit 1; }
               grep -Fq "landshop_is_management" apps/dashboard/app/staff/page.tsx || { echo "::error::Owner management gate missing"; exit 1; }

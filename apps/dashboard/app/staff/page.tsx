@@ -2,6 +2,9 @@ import {cookies} from 'next/headers';
 import {redirect} from 'next/navigation';
 import {createServerClient} from '@supabase/ssr';
 import StaffWorkspace from './StaffWorkspace';
+import StaffWorkActions from './StaffWorkActions';
+import BasicStaffWorkspace from './BasicStaffWorkspace';
+import StaffReportHistory from './StaffReportHistory';
 export const dynamic='force-dynamic';
 export const metadata={title:'My Staff Dashboard | Landshop'};
 export default async function Page(){
@@ -29,10 +32,10 @@ export default async function Page(){
   ]);
   verifiedOwner=Boolean(landshopOrg&&managerError==null&&verifiedManagement===true);
  }
- // Confirmed staff signup creates only a personal profile, never membership.
+ // Verified staff onboarding establishes basic staff membership only; never requested elevated roles.
  const confirmedStaffSignup=Boolean(user.email_confirmed_at&&user.user_metadata?.staff_signup===true);
  let {data:profile}=await db.from('landshop_staff_profiles').select('*').eq('user_id',user.id).maybeSingle();
- if(confirmedStaffSignup&&!profile){
+ if(confirmedStaffSignup&&(!profile||profile.employment_state==='pending')){
   const fields=user.user_metadata||{},age=fields.age_at_registration;
   if(typeof fields.preferred_username==='string'&&typeof age==='number'&&
      Number.isInteger(age)&&age>=18&&age<=120&&typeof fields.gender==='string'&&
@@ -48,7 +51,7 @@ export default async function Page(){
   }
  }
  const {data:canWork,error:workError}=await db.rpc('landshop_staff_can_work',{p_user:user.id});
- const authorized=workError==null&&canWork===true&&profile?.kyc_state==='approved'&&profile?.employment_state==='active';
+ const authorized=workError==null&&canWork===true&&profile?.employment_state==='active';
  const {data:member}=authorized&&profile?await db.from('organization_members').select('role')
   .eq('user_id',user.id).eq('organization_id',profile.organization_id)
   .eq('status','active').limit(1).maybeSingle():{data:null};
@@ -56,9 +59,12 @@ export default async function Page(){
  const {data:tasks}=verified?await db.from('staff_tasks')
   .select('id,title,details,status,starts_at,due_at,planned_minutes,delay_allowance_minutes,viewed_at,started_at,submitted_at,score,review_comment,assigned_by')
   .eq('assignee_id',user.id).order('created_at',{ascending:false}).limit(100):{data:[]};
- return <StaffWorkspace userId={user.id} initialProfile={profile||null} initialTasks={tasks||[]}
+ if(verified&&profile?.kyc_state!=='approved'&&!verifiedOwner){
+  return <BasicStaffWorkspace profile={profile as {username:string;kyc_state:string;staff_number:string|null;employment_state:string}} tasks={(tasks||[]) as {id:string;title:string;status:string;due_at:string;details:string|null}[]} email={user.email||''} userId={user.id}/>;
+ }
+ return <><StaffWorkActions active={verified} initialTasks={(tasks||[]) as {id:string;title:string;status:string;due_at:string;details:string|null}[]}/>{verified&&<StaffReportHistory userId={user.id}/>}<StaffWorkspace userId={user.id} initialProfile={profile||null} initialTasks={tasks||[]}
   role={member?.role||null} initialVerified={verified}
-  selfServiceAccess={confirmedStaffSignup&&Boolean(profile)}
+  selfServiceAccess={confirmedStaffSignup&&Boolean(profile)&&profile?.employment_state!=='suspended'&&profile?.employment_state!=='ended'}
   ownerAccess={verifiedOwner}
-  metadata={(user.user_metadata||{}) as Record<string,unknown>} userEmail={user.email||''}/>;
+  metadata={(user.user_metadata||{}) as Record<string,unknown>} userEmail={user.email||''}/></>;
 }
