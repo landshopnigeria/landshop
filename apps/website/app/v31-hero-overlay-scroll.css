@@ -92,8 +92,6 @@ body main :is(h1,h2,h3),
  line-height:1.31!important;
  letter-spacing:-.03em!important;
 }
-/* Leave navigation link and input font sizes independently legible. */
-.ls-site-chrome .ls-header-link{font-size:inherit}
 @media(max-width:1050px){
  .ls-site-chrome.ls31-over-hero .ls-glass-wrap{
   padding:7px 12px 11px;
