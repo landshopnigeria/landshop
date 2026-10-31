@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import {requireLandshopStaff} from '../../../lib/admin-access';
+import ExportRecords from '../reports/ExportRecords';
 export const dynamic='force-dynamic';
 export const metadata={title:'Customer Activity | Landshop Global Command Center'};
 type Activity={activity_type:string;record_id:string;customer_id:string|null;stage:string;happened_at:string};
@@ -20,6 +21,9 @@ export default async function CustomerActivity(){
     <section aria-label="Activity by type" style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(190px,1fr))',gap:14,margin:'24px 0'}}>
      {Object.entries(names).map(([type,label])=><article key={type} style={{background:'white',padding:18,border:'1px solid #d6e8db',borderRadius:14}}><small>{label}</small><div style={{fontSize:32,fontWeight:750}}>{counts[type]||0}</div><small>In loaded activity feed</small></article>)}
     </section>
+    <div style={{marginBottom:18}}>
+     <ExportRecords basename="landshop-customer-activity" rows={rows.map(r=>({activity_type:r.activity_type,record_id:r.record_id,customer_id:r.customer_id,stage:r.stage,happened_at:r.happened_at}))}/>
+    </div>
     <div style={{overflowX:'auto',background:'white',border:'1px solid #d3e6d9',borderRadius:16}}>
      <table style={{width:'100%',borderCollapse:'collapse',minWidth:650}}>
       <thead><tr>{['Activity','Reference','Customer ID','Status','Recorded','Manage'].map(h=><th key={h} style={{padding:14,textAlign:'left',background:'#e8f2ec'}}>{h}</th>)}</tr></thead>
