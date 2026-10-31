@@ -26,8 +26,18 @@ try{
       linksWithoutLabels:[...document.querySelectorAll('a')].filter(a=>!((a.textContent||'').trim()||a.getAttribute('aria-label')||a.querySelector('img[alt]'))).length
     };
    });
-   if(Math.max(result.documentWidth,result.bodyWidth)>width+3)
+   if(Math.max(result.documentWidth,result.bodyWidth)>width+3){
+    const overflow=await page.evaluate(()=>{
+      const width=window.innerWidth;
+      return [...document.querySelectorAll('body *')].map(element=>{
+       const r=element.getBoundingClientRect();
+       return {tag:element.tagName.toLowerCase(),className:typeof element.className==='string'?element.className.slice(0,125):'',
+         left:Math.round(r.left),right:Math.round(r.right),scrollWidth:element.scrollWidth,clientWidth:element.clientWidth};
+      }).filter(x=>x.right>width+3 && x.left<width && x.right-x.left>0).sort((a,b)=>b.right-a.right).slice(0,12);
+    });
+    console.error('OVERFLOW ELEMENTS',path,width,JSON.stringify(overflow));
     errors.push(path+' @'+width+': horizontal page overflow '+Math.max(result.documentWidth,result.bodyWidth)+'px');
+   }
    if(!result.hasH1||!result.hasTitle||!result.hasDescription)
     errors.push(path+' @'+width+': missing essential heading/title/description');
    console.log('CHECK',path,width,JSON.stringify(result));
