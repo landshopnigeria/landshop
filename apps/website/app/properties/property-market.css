@@ -82,3 +82,5 @@
  .mk-layout .mk-tools form>.ls-branded-select{width:135px!important;max-width:135px;min-width:0}
  .mk-layout .mk-tools form>button[type="submit"]{min-height:42px;align-self:auto}
 }
+
+/* Production release checkpoint: marketplace sort controls remain inline and property publishing retains verified-only visibility. */
