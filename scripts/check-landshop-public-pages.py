@@ -47,7 +47,7 @@ PUBLIC_PAGES = [
     ("website", "/contact", "Contact Us"),
     ("website", "/insights", "Insights for better property decisions."),
     ("website", "/company/team", "The work behind every decision"),
-    ("website", "/testimonials", "Stories behind the property journey."),
+    ("website", "/testimonials", "What our clients say about us."),
     ("website", "/terms", "Terms & Conditions"),
     ("website", "/privacy", "Privacy Policy"),
     ("website", "/thrift", "Build towards property goals, together"),
