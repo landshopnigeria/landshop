@@ -67,6 +67,8 @@ jobs:
           python3 -m pip install --quiet Pillow==11.3.0
           python3 scripts/prepare-transparent-logo.py
           test -s apps/website/public/media/logo-transparent.png
+      - name: Verify owner-provided real photography and all editorial mappings
+        run: python3 scripts/verify-landshop-owner-media.py
       - name: Install and validate
         run: |
           set -euo pipefail
