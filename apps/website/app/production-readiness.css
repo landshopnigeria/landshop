@@ -12,7 +12,7 @@ html{scroll-padding-top:96px;-webkit-text-size-adjust:100%;text-size-adjust:100%
 .mk-layout :where(.mk-wrap,.mk-card){min-width:0}
 .v22-root img,.content-page img,.ls26-page img,.landshop-product img,.mk-layout img{max-width:100%}
 .v22-root :where(iframe,video),.ls26-page :where(iframe,video),.content-page :where(iframe,video){max-width:100%}
-.v22-root :where(.v22-container,.v22-two,.ls27-prime-layout,.ls27-film-layout),.ls26-page :where(.ls26-container,.ls26-plan-hero,.ls27-film-layout){width:min(100% - 36px, 1280px);margin-inline:auto}
+.v22-root .v22-container,.ls26-page .ls26-container{width:min(100% - 36px, 1280px);margin-inline:auto}
 .v22-root :where(.v22-section h2,.ls27-prime-copy h2),.ls26-page :where(h1,h2),.content-page :where(h1,h2){text-wrap:balance}
 .v22-root :where(p,li),.ls26-page :where(p,li),.content-page :where(p,li){text-wrap:pretty}
 .v22-root :where(button,a),.ls26-page :where(button,a),.mk-layout :where(button,a),.content-page :where(button,a){touch-action:manipulation}
