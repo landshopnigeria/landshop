@@ -27,7 +27,9 @@ for(const p of [
  ];
  const approvedV30=expectedV30Header&&
   groupsOnly(prior)===groupsOnly(current)&&groupsOnly(current)?.length>1000&&
-  topLinksOnly(prior)===topLinksOnly(current)&&topLinksOnly(current)?.length>70&&
+  (topLinksOnly(prior)===topLinksOnly(current)||
+   topLinksOnly(prior)?.replace(",{text:'Command Center',url:'https://app.landshopnigeria.com/admin',icon:'grid' as const}",'')===topLinksOnly(current))&&
+  topLinksOnly(current)?.length>70&&!topLinksOnly(current)?.includes('Command Center')&&
   headerStructure.every(marker=>current.includes(marker))&&
   ['ls30-services-grid','ls30-hamburger','openHover','onMouseEnter','ls30-mega-folding'].every(marker=>current.includes(marker))&&
   (current.includes('ls-utility-collapsed')||
@@ -35,6 +37,14 @@ for(const p of [
  const matches=expectedV30Header?(approvedHeader(prior)===approvedHeader(current)||approvedV30):prior===current;
  if(!matches){console.error('PROTECTED HEADER CHANGE OUTSIDE APPROVED GROUPS / V30 MOTION: '+p);failures++;}
  else console.log('PRESERVED: '+p);
+}
+const publicHeader=readFileSync('apps/website/components/SiteHeader.tsx','utf8');
+if(publicHeader.includes("text:'Command Center'")||publicHeader.includes("url:'https://app.landshopnigeria.com/admin'")){
+ console.error('Internal Command Center link cannot appear in public header');failures++;
+}
+const v32Style=readFileSync('apps/website/app/v32-editorial-and-hero.css','utf8');
+for(const marker of ['v22-article-body','v22-article-sidebar','color:#2BA47A!important','font-size:33px!important','display:inline!important']){
+ if(!v32Style.includes(marker)){console.error('Required V32 article/hero styling missing: '+marker);failures++}
 }
 const home=readFileSync('apps/website/components/LandshopHome.tsx','utf8');
 const style=readFileSync('apps/website/app/v23-video-preview.css','utf8');

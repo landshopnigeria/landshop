@@ -1,0 +1,54 @@
+/* Landshop V32 — scoped owner-approved adjustments.
+ * Public article section and sidebar headings use the official primary green.
+ * The hero typography grows independently; other page titles remain 28px.
+ * No changes to filters, footer, staff access, verified listing media or menus.
+ */
+.v22-root.v22-article-layout .v22-article-body :is(h2,h3),
+.v22-root.v22-article-layout .v22-article-comments :is(h2,h3),
+.v22-root.v22-article-layout .v22-article-related :is(h2,h3),
+.v22-root.v22-article-layout .v22-article-sidebar :is(h2,h3){
+ color:#2BA47A!important;
+}
+.v22-root.v22-article-layout .v22-article-body h2{
+ font-weight:780;
+}
+.ls-v23-hero .ls-v23-hero-content{
+ max-width:min(860px,100%)!important;
+ width:100%;
+}
+.ls-v23-hero .ls-v23-hero-title{
+ font-size:33px!important;
+ line-height:1.24!important;
+ max-width:min(770px,100%)!important;
+ text-wrap:pretty!important;
+ letter-spacing:-.035em!important;
+}
+.ls-v23-hero .ls-v23-hero-title>span,
+.ls-v23-hero .ls-v23-hero-title>strong{
+ display:inline!important;
+ font-size:inherit!important;
+ line-height:inherit!important;
+ letter-spacing:inherit!important;
+ vertical-align:baseline;
+ white-space:normal;
+}
+.ls-v23-hero .ls-v23-hero-title>span{color:#fff!important}
+.ls-v23-hero .ls-v23-hero-title>strong{color:#e6f7e9!important}
+@media(max-width:700px){
+ .ls-v23-hero .ls-v23-hero-content{max-width:100%!important;padding-right:0!important}
+ .ls-v23-hero .ls-v23-hero-title{
+  font-size:33px!important;
+  max-width:100%!important;
+  line-height:1.27!important;
+  overflow-wrap:normal;
+ }
+}
+@media(max-width:320px){
+ .ls-v23-hero .ls-v23-hero-title{
+  font-size:32px!important;
+  overflow-wrap:break-word;
+ }
+}
+@media(prefers-reduced-motion:reduce){
+ .ls-v23-hero .ls-v23-hero-title>strong:after{animation:none!important}
+}
