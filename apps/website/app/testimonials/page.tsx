@@ -8,6 +8,6 @@ export default function Testimonials(){
   <section className="v22-root v22-section"><div className="v22-container"><span className="v22-eyebrow">CLIENT EXPERIENCES</span><h2>Property journeys, in their words.</h2>
    <div className="v22-products">{landshopTestimonials.filter(x=>x.status==='approved').map(t=><article key={t.id} className="v22-action-panel"><span className="v22-eyebrow">HISTORICAL DECK TESTIMONIAL</span><blockquote style={{fontSize:20,lineHeight:1.5,margin:0,color:'#234d39'}}>“{t.quote}”</blockquote><strong>{t.name}</strong><small>{t.location}</small></article>)}</div>
   </div></section>
-  <section className="v22-root v22-section v22-muted"><div className="v22-container v22-two"><div><span className="v22-eyebrow">YOUR PROPERTY JOURNEY</span><h2>Start a conversation with Landshop.</h2><p>Ask our team for current properties, appointment availability and documented application processes.</p></div><Link className="v22-btn" href="/contact">Contact Landshop ↗</Link></div></section>
+  <section className="v22-root v22-section v22-muted"><div className="v22-container v22-two"><div><span className="v22-eyebrow">YOUR PROPERTY JOURNEY</span><h2>Start a conversation with Landshop.</h2><p>Ask our team for current properties, appointment availability and documented application processes.</p></div><Link className="v22-btn" href="/contact">Contact Landshop →</Link></div></section>
  </ContentShell>;
 }
