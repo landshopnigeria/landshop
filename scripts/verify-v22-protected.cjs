@@ -20,14 +20,14 @@ for(const p of [
   .replace(/\n{2,}(?= \{label:'Company',eyebrow:)/g,'\n');
  const expectedV30Header=p.endsWith('/SiteHeader.tsx');
  const groupsOnly=(value)=>value.split('const groups:Group[]=[')[1]?.split("const portal='https://portal.landshopnigeria.com'")[0];
- const topLinksOnly=(value)=>value.match(/const topLinks=\\[[^;]+;/)?.[0];
+ const topLinksOnly=(value)=>value.split('const topLinks=[')[1]?.split(';')[0];
  const headerStructure=[
   'ls-utility-inner','ls-global-search','ls-glass-header','ls-brand','ls-primary-nav',
   'ls-header-group','ls-mega','ls-mobile-subnav','ls-start','ls-mobile-bottom'
  ];
  const approvedV30=expectedV30Header&&
   groupsOnly(prior)===groupsOnly(current)&&groupsOnly(current)?.length>1000&&
-  topLinksOnly(prior)===topLinksOnly(current)&&
+  topLinksOnly(prior)===topLinksOnly(current)&&topLinksOnly(current)?.length>70&&
   headerStructure.every(marker=>current.includes(marker))&&
   ['ls-utility-collapsed','ls30-services-grid','ls30-hamburger','openHover','onMouseEnter','ls30-mega-folding'].every(marker=>current.includes(marker));
  const matches=expectedV30Header?(approvedHeader(prior)===approvedHeader(current)||approvedV30):prior===current;
