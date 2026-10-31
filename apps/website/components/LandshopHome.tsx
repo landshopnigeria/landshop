@@ -5,6 +5,7 @@ import V22HomeSections from './V22HomeSections';
 import {useRouter} from 'next/navigation';
 import {editorialImages} from '../lib/editorial-imagery';
 import SiteIcon from './SiteIcon';
+import {useCarouselPlayback} from './useCarouselPlayback';
 export type FeaturedProperty={id:string,href:string,title:string,location:string,propertyType:string,price:string,collection?:'Prime'|'Luxury',image?:string};
 const slides=[
  {name:'LANDSHOP',subtitle:'Welcome To Landshop',title:'Everyone deserves affordable property.',copy:'Your first home is a home for later and a place to put down roots. Explore your options and take the next step with Landshop.',image:editorialImages.incubate.src,primary:'Get Started',href:'https://portal.landshopnigeria.com',secondary:'Explore Famous Gardens',secondaryHref:'/projects/famous-gardens'},
@@ -19,19 +20,24 @@ const products=[
 ];
 
 export default function Homepage({featured}:{featured:FeaturedProperty[]}){
- const [slide,setSlide]=useState(0),[purpose,setPurpose]=useState('Buy'),[pause,setPause]=useState(false),[typedLength,setTypedLength]=useState(0);
+ const [slide,setSlide]=useState(0),[purpose,setPurpose]=useState('Buy'),[typedLength,setTypedLength]=useState(0);
  const router=useRouter();
  const touchStartX=useRef<number|null>(null);
  const goToSlide=(next:number)=>{setSlide((next+slides.length)%slides.length);};
- const onTouchStart=(event:React.TouchEvent<HTMLElement>)=>{touchStartX.current=event.changedTouches[0]?.screenX??null;setPause(true)};
+ const playback=useCarouselPlayback({
+  count:slides.length,delay:6800,onAdvance:()=>setSlide(i=>(i+1)%slides.length)
+ });
+ const onTouchStart=(event:React.TouchEvent<HTMLElement>)=>{
+  touchStartX.current=event.changedTouches[0]?.screenX??null;
+  playback.handlers.onTouchStart();
+ };
  const onTouchEnd=(event:React.TouchEvent<HTMLElement>)=>{
   const start=touchStartX.current;touchStartX.current=null;
+  playback.handlers.onTouchEnd();
   if(start===null)return;
   const change=event.changedTouches[0]?.screenX-start;
   if(Math.abs(change)>55)goToSlide(slide+(change<0?1:-1));
-  setPause(false);
  };
- useEffect(()=>{if(pause||window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;const id=setInterval(()=>setSlide(v=>(v+1)%slides.length),6800);return()=>clearInterval(id)},[pause]);
  useEffect(()=>{const [first,last]=titleParts[slide],total=first.length+1+last.length;if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){setTypedLength(total);return;}setTypedLength(0);let index=0;const id=setInterval(()=>{index=Math.min(total,index+1);setTypedLength(index);if(index===total)clearInterval(id)},37);return()=>clearInterval(id)},[slide]);
 
  const current=slides[slide];
@@ -50,9 +56,9 @@ export default function Homepage({featured}:{featured:FeaturedProperty[]}){
   <section className="hero hero-v16 ls-v23-hero" data-landshop-hero="v16-separated-product-slides"
    data-v23-design="cinematic-property-video-preview" data-active-product={current.name}
    aria-roledescription="carousel" aria-label="Landshop product opportunities"
-   onMouseEnter={()=>setPause(true)} onMouseLeave={()=>setPause(false)}
-   onFocusCapture={()=>setPause(true)} onBlurCapture={event=>{if(!event.currentTarget.contains(event.relatedTarget as Node|null))setPause(false)}}
-   onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}
+   onMouseEnter={playback.handlers.onMouseEnter} onMouseLeave={playback.handlers.onMouseLeave}
+   onFocusCapture={playback.handlers.onFocusCapture} onBlurCapture={playback.handlers.onBlurCapture}
+   onTouchStart={onTouchStart} onTouchEnd={onTouchEnd} onTouchCancel={playback.handlers.onTouchCancel}
    onKeyDown={event=>{if(event.key==='ArrowLeft'){event.preventDefault();goToSlide(slide-1)}if(event.key==='ArrowRight'){event.preventDefault();goToSlide(slide+1)}}}>
    <div className="hero-v16-media ls-v23-hero-media" aria-hidden="true">{slides.map((item,i)=>
      <div key={item.name} className={'hero-v16-image '+(slide===i?'is-visible':'')}
