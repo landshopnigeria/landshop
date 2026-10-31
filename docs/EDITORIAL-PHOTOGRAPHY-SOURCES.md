@@ -1,10 +1,24 @@
-# Landshop real Nigerian editorial photography — sources and reuse limits
+# Landshop editorial media provenance and reuse limits
 
-This revision intentionally **replaces AI-generated and unsuitable generic marketing visuals with photographs** taken in Nigeria. Each selected photographer's photo page explicitly describes Lagos/Nigerian locations and grants use under the Pexels License. The 2026-10-29 source pages were checked during curation. Images are delivered from the Pexels CDN using sized JPEG variants for desktop/mobile consumption.
+**Updated October 31, 2026.** This register separates photographs sourced under the Pexels License, owner-provided reference photographs, and illustrative imagery. The public site uses photographic references of modern low-rise duplexes in place of the previously rejected urban high-rises. The official property listings must always use approved original photographs of the specific estate or unit.
 
-**Do not scrape Instagram, Facebook, estate agents, developers or listing portals and republish their material without explicit rights.** References located there inform art direction only. Generic editorial architecture must never be presented as the actual listing photo or a property owned/managed by Landshop. The only valid property listing assets are actual approved photos supplied by the property owner/developer or a licensee able to grant publication rights.
+Owner-provided photo references may have third-party copyright or model/property restrictions; this repository records their source **but does not establish commercial publication rights**. The operator must confirm those rights separately before relying on them in a permanent paid campaign. None of the references may be used as a verified property listing photo or attributed to a specific Landshop estate without evidence.
 
-## Individual image provenance
+## October 31 marketing/reference media
+
+| Bundled file | Use | Classification | Property accuracy |
+| --- | --- | --- | --- |
+| `/editorial/2026/modern-duplex.jpg` | Prime visual and residential editorial | User-provided modern duplex photograph | Not a Landshop listing |
+| `/editorial/2026/townhouse.jpg` | Luxury/contemporary architectural editorial | User-provided duplex photograph | Not a Landshop listing |
+| `/editorial/2026/ikate-exterior.jpg` | Luxury and selected article subjects | User-provided Nigerian duplex photograph | Not a Landshop listing |
+| `/editorial/2026/incubate-reference.jpg` | Incubate/real estate investment editorial | User-provided development photograph | Not a Landshop listing |
+| `/editorial/2026/estate-parking.jpg` | Residential marketing concept with cars, no artificial palms | AI-assisted illustrative concept based on user feedback | Not a photograph of a real estate listing |
+
+Pexels photographs of Nigerian people remain illustrative only, and no identified person is represented as a Landshop staff member or endorser. For approved project images (`/media/famous0.webp`, `/media/maiyegun0.webp`), retain actual Landshop archives.
+
+## Earlier Pexels sources (for archival provenance; some high-rise usage retired)
+
+
 
 | Website usage | Real photo and original page | Photographer | Reality check | Advertising policy |
 | --- | --- | --- | --- | --- |

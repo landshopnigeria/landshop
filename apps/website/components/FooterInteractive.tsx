@@ -44,7 +44,7 @@ export function FooterCarousel({slides}:{slides:FooterSlide[]}){
   const ticker=window.setInterval(()=>setActive(i=>(i+1)%count),6500);
   return()=>window.clearInterval(ticker);
  },[paused,count]);
- if(!count)return <div className="ls24-carousel-empty"><Link href="/insights">Explore Landshop insights ↗</Link></div>;
+ if(!count)return <div className="ls24-carousel-empty"><Link href="/insights">Explore Landshop insights →</Link></div>;
  const current=slides[active%count];
  const go=(n:number)=>setActive((n+count)%count);
  return <div ref={carouselRef} className="ls24-carousel-shell" role="region" aria-roledescription="carousel" aria-label="Landshop testimonials and insights"
@@ -58,7 +58,7 @@ export function FooterCarousel({slides}:{slides:FooterSlide[]}){
   <div className="ls24-carousel-bottom">
    <p className={'ls24-carousel-headline '+(current.kind==='testimonial'?'is-quote':'')}>{current.kind==='testimonial'?'“'+current.heading+'”':current.heading}</p>
    <span className="ls24-carousel-byline">{current.byline}</span>
-   {current.href&&<Link className="ls24-carousel-link" href={current.href}>{current.kind==='article'?'Read article ↗':'View experience ↗'}</Link>}
+   {current.href&&<Link className="ls24-carousel-link" href={current.href}>{current.kind==='article'?'Read article →':'View experience →'}</Link>}
   </div>
   <div className="ls24-carousel-controls">
    <div className="ls24-carousel-dots" role="group" aria-label="Choose a slide">{slides.map((slide,i)=><button type="button" key={slide.id} className={active===i?'active':''} onClick={()=>go(i)} aria-current={active===i?'true':undefined} aria-label={'Show '+slide.type.toLowerCase()+' '+(i+1)}/>)}</div>

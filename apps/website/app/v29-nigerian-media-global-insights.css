@@ -1,0 +1,63 @@
+/* Landshop V29: modern Nigerian estate references, full-size branded collections,
+ * testimonial gradient and shared three-across insights. No header, footer or search styling.
+ */
+.v22-root .ls27-collection-cover.ls27-prime-cover,
+.v22-root .ls27-collection-cover.ls27-luxury-cover{
+ background:#edf3ee!important;
+ border-radius:16px;position:relative;overflow:hidden;padding:0!important;
+}
+.v22-root .ls27-collection-cover img{display:block;width:100%;height:100%;object-fit:cover;object-position:center;transition:transform .4s ease}
+.v22-root .ls27-collection-cover:after{display:none!important;content:none!important}
+.v22-root .ls27-collection-card:hover .ls27-collection-cover img{transform:scale(1.035)}
+.v22-root .ls27-prime-cover img{object-position:center 45%}
+.v22-root .ls27-luxury-cover img{object-position:center 41%}
+.v22-root .ls27-collection-card{overflow:hidden}
+.v22-root .ls27-affordability-photo{background:#eef3f2}
+.v22-root .ls27-affordability-photo img{object-fit:cover;object-position:center}
+.v22-root .ls26-estate-visual{position:relative}
+.v22-root .ls29-editorial-watermark{position:absolute;bottom:9px;left:9px;right:9px;display:block;z-index:1;padding:7px 9px;border-radius:7px;background:rgba(8,35,28,.86);color:#fff;font-size:10px;line-height:1.35;font-weight:680;letter-spacing:0}
+.v22-root .v22-final.ls29-testimonials{
+ background:linear-gradient(112deg,#040807 0%,#082b23 30%,#0d614b 72%,#2ba47a 100%)!important;
+ color:#fff!important;position:relative;isolation:isolate;overflow:hidden
+}
+.v22-root .ls29-testimonials::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 80% 20%,rgba(115,224,161,.13),transparent 48%);pointer-events:none}
+.v22-root .ls29-testimonials .v22-container{position:relative;z-index:1}
+.v22-root .ls29-testimonials h2{color:#fff!important;max-width:660px;line-height:1.1;font-size:clamp(35px,4.1vw,64px)!important;letter-spacing:-.045em}
+.v22-root .ls29-testimonials .v22-btn{background:#f26b10;color:#fff;border:1px solid #ffa263;min-height:51px;padding:14px 22px;display:inline-flex;align-items:center;gap:12px;font-weight:800}
+.v22-root .ls29-testimonials .v22-btn:hover{background:#ff812e;color:#fff}
+.v22-root .ls29-testimonials .v22-quote{background:rgba(255,255,255,.93)!important;color:#123d30;border:1px solid rgba(255,255,255,.83);backdrop-filter:blur(16px);box-shadow:0 28px 65px rgba(0,0,0,.23)}
+.v22-root .ls29-testimonials .v22-quote blockquote,
+.v22-root .ls29-testimonials .v22-quote strong{color:#113d30!important}
+.v22-root .ls29-testimonials .v22-quote small{color:#457b62}
+.ls29-global-articles{border-top:1px solid #dcece1;padding-block:clamp(56px,6vw,98px)}
+.ls29-global-articles .ls27-articles{grid-template-columns:repeat(3,minmax(0,1fr));align-items:stretch}
+.ls29-global-articles .ls27-article{height:100%;display:flex;flex-direction:column}
+.ls29-global-articles .ls27-article-body{flex:1;display:flex;flex-direction:column}
+.ls29-global-articles .ls27-article-body>a{margin-top:auto}
+.ls29-global-articles .ls27-article-photo{height:215px}
+.ls29-global-articles .ls27-article-photo img{object-fit:cover;object-position:center}
+.ls29-global-articles .v22-btn{white-space:nowrap}
+.v22-root .v22-text-link,.v22-root .v22-btn,.ls26-page .ls26-button{letter-spacing:normal}
+@media(max-width:1000px){.ls29-global-articles .ls27-articles{grid-template-columns:repeat(2,minmax(0,1fr))}.ls29-global-articles .ls27-article:nth-child(3){display:none}}
+@media(max-width:700px){.ls29-global-articles .ls27-articles{grid-template-columns:1fr}.ls29-global-articles .ls27-article:nth-child(2),.ls29-global-articles .ls27-article:nth-child(3){display:none}
+ .v22-root .ls29-testimonials .v22-two{grid-template-columns:1fr;gap:32px}
+ .v22-root .ls27-collection-cover img{object-position:center}
+ .ls29-global-articles .ls27-article-photo{height:205px}
+ .v22-root .ls29-testimonials{padding-block:66px}
+}
+@media(prefers-reduced-motion:reduce){.v22-root .ls27-collection-cover img{transition:none}}
+
+.ls26-page .ls29-collection-hero{position:relative;height:clamp(310px,34vw,480px);overflow:hidden;border-radius:24px;margin:14px 0 32px;background:#e8f3eb;box-shadow:0 22px 58px rgba(9,61,39,.12)}
+.ls26-page .ls29-collection-hero>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 46%}
+.ls26-page .ls29-collection-hero:after{content:"";position:absolute;inset:0;background:linear-gradient(91deg,rgba(1,24,17,.8),rgba(1,24,17,.16) 75%);pointer-events:none}
+.ls26-page .ls29-collection-hero-info{position:absolute;z-index:1;bottom:clamp(20px,4vw,44px);left:clamp(18px,4vw,47px);max-width:630px;display:flex;flex-direction:column;align-items:start;gap:12px;color:#fff}
+.ls26-page .ls29-collection-hero-info>img{width:122px;height:auto;max-height:55px;object-fit:contain;object-position:left center;border-radius:7px;background:rgba(255,255,255,.94);padding:6px}
+.ls26-page .ls29-collection-hero-info strong{font-size:clamp(31px,4.4vw,58px);line-height:1.04;letter-spacing:-.05em}
+.ls26-page .ls29-collection-hero-info span{font-size:clamp(13px,1.4vw,18px)}
+.ls26-page .ls29-collection-hero-info small{font-size:11px;line-height:1.4;color:rgba(255,255,255,.85)}
+@media(max-width:700px){.ls26-page .ls29-collection-hero{height:360px}.ls26-page .ls29-collection-hero-info{max-width:calc(100% - 46px)}}
+
+.v22-root.v22-section.ls29-testimonials:not(.v22-final){background:linear-gradient(117deg,#030b08,#0b4b38 58%,#2ba47a);color:#fff}
+.v22-root.v22-section.ls29-testimonials:not(.v22-final) h2{color:#fff!important}
+.v22-root.v22-section.ls29-testimonials:not(.v22-final) .v22-action-panel{background:rgba(255,255,255,.95);color:#123d31;border-radius:17px;padding:27px}
+.v22-root.v22-section.ls29-testimonials:not(.v22-final) .v22-action-panel blockquote{color:#123d31!important}

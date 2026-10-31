@@ -22,7 +22,7 @@ const paths:Record<SiteIconName,string>={
  close:'M5 5l14 14 M19 5 5 19',
  chevron:'m6 9 6 6 6-6',
  arrow:'M4 12h16 m-6-6 6 6-6 6',
- external:'M8 4H20v12 M20 4l-11 11 M18 18v2H4V6h2',
+ external:'M4 12h16 m-6-6 6 6-6 6',
  book:'M4 4h7a3 3 0 0 1 3 3v14a3 3 0 0 0-3-3H4z M20 4h-4a3 3 0 0 0-3 3v14a3 3 0 0 1 3-3h4z',
  heart:'M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8z',
  sparkles:'m12 2 2.2 6.8L21 11l-6.8 2.2L12 20l-2.2-6.8L3 11l6.8-2.2z M19 17l.8 2.2L22 20l-2.2.8L19 23l-.8-2.2L16 20l2.2-.8z',

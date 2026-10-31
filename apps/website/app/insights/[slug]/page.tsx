@@ -24,12 +24,12 @@ export default async function GuidePage({params}:{params:Promise<{slug:string}>}
    <aside className="v22-article-disclaimer"><strong>Information note:</strong> This article provides general educational guidance. Verify individual property records, applicable laws, financial terms and lender or investment arrangements against current authoritative documentation. Seek independent professional advice where appropriate.</aside>
   </article>
   <V22ArticleComments slug={slug}/>
-  {related.length>0&&<section className="v22-article-related"><h2>Related reading</h2>{related.map(r=><Link key={r.slug} href={'/insights/'+r.slug}>{r.title} <span>↗</span></Link>)}</section>}
+  {related.length>0&&<section className="v22-article-related"><h2>Related reading</h2>{related.map(r=><Link key={r.slug} href={'/insights/'+r.slug}>{r.title} <span>→</span></Link>)}</section>}
  </div>
  <aside className="v22-article-sidebar" aria-label="Article sidebars">
   <div className="v22-sidebar-box"><h3>Explore categories</h3>{categories.map(c=><Link key={c} href={'/insights?category='+encodeURIComponent(c)}>{c}</Link>)}</div>
   <div className="v22-sidebar-box"><h3>Article tags</h3><div className="v22-taglist">{(g.tags?.length?g.tags:[g.category,'Property guidance','Landshop']).map(t=><span key={t}>{t}</span>)}</div></div>
   <div className="v22-sidebar-box"><h3>Ask Landshop</h3><p>Have a question about a property, product or service? Send it to our team.</p><ContactForm/></div>
-  <div className="v22-sidebar-box"><h3>About Landshop</h3><p>Landshop helps people make better-informed property decisions through Develop, Incubate and Grow.</p><Link className="v22-text-link" href="/about">Learn more about us ↗</Link></div>
+  <div className="v22-sidebar-box"><h3>About Landshop</h3><p>Landshop helps people make better-informed property decisions through Develop, Incubate and Grow.</p><Link className="v22-text-link" href="/about">Learn more about us →</Link></div>
  </aside></div></ContentShell>;
 }

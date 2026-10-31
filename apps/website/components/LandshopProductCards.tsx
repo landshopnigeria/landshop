@@ -8,7 +8,7 @@ export default function LandshopProductCards(){
   </Link>
   <div className="v22-product-body ls27-product-copy">
    <small>{item.category}</small><h3>{item.name}</h3><p>{item.description}</p>
-   <Link href={item.href} className="v22-text-link">Explore More <span aria-hidden="true">↗</span></Link>
+   <Link href={item.href} className="v22-text-link">Explore More <span aria-hidden="true">→</span></Link>
   </div>
  </article>)}
  </div>;

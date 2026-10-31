@@ -20,7 +20,26 @@ const drafts:Draft[]=[
  {slug:'marketing-property-online',title:'Marketing a Property Online: Photography, Descriptions and Honest Listings',category:'Property Marketing & Technology',summary:'Present genuine property facts with useful images and accurate descriptions.',focus:'Effective property marketing helps prospective buyers understand what is actually available, including orientation, condition, location and price transparency.',documents:'Prepare authorized photographs, precise specifications, current pricing, publication permission and any mandatory disclosures.',practical:'Photograph key rooms and external access honestly, describe measurable attributes, and give visitors a clear way to ask questions or request inspection.',risks:'Artificially enhanced or unrelated photographs can mislead; recycled prices and invented amenities may compromise customer trust.',decision:'Keep a documented review process that updates or removes information when availability changes.',tags:['Marketing','Photography','Listings']},
  {slug:'virtual-tours-and-portals',title:'How Virtual Tours, Video and Property Portals Improve the Buying Journey',category:'Property Marketing & Technology',summary:'Use online media to research properties without mistaking it for an inspection or legal search.',focus:'A video walkthrough can make room proportions and circulation easier to grasp, while portal tools help organize documents and enquiries.',documents:'Check the source of the media, recording date, property reference, permissions, and whether the presentation matches the currently marketed unit.',practical:'Compare portraits, landscapes, floor plans and video views; ask for measurements, recent imagery and a confirmed inspection opportunity.',risks:'Camera lenses, edits and old videos may distort size, condition or completion status. A tour is not evidence of title.',decision:'Use digital content to narrow choices and prepare better questions for a subsequent verified site visit.',tags:['Virtual tours','Technology','Property video']}
 ];
-const sourceImages=[editorialImages.residential.src,editorialImages.planning.src,editorialImages.develop.src,editorialImages.architecture.src,editorialImages.team.src,editorialImages.grow.src];
+/* Match the actual article's subject instead of cycling unrelated stock photos. */
+const articleImages:Record<string,string>={
+ 'nigerian-property-titles-explained':editorialImages.planning.src,
+ 'first-home-nigeria':'/editorial/2026/modern-duplex.jpg',
+ 'prime-vs-luxury':'/editorial/2026/ikate-exterior.jpg',
+ 'property-instalment-plans':editorialImages.grow.src,
+ 'rent-to-own-versus-purchase':'/editorial/2026/townhouse.jpg',
+ 'construction-cost-nigeria':editorialImages.develop.src,
+ 'real-estate-investment-risk':'/editorial/2026/incubate-reference.jpg',
+ 'fractional-property-investing':editorialImages.team.src,
+ 'evaluate-property-investment-offer':editorialImages.planning.src,
+ 'choosing-investment-location':editorialImages.incubate.src,
+ 'property-decisions-lagos':'/editorial/2026/townhouse.jpg',
+ 'property-decisions-abuja':'/editorial/2026/ikate-exterior.jpg',
+ 'lekki-epe-corridor':'/editorial/2026/incubate-reference.jpg',
+ 'family-friendly-home':'/editorial/2026/modern-duplex.jpg',
+ 'low-maintenance-home':'/editorial/2026/ikate-exterior.jpg',
+ 'marketing-property-online':editorialImages.team.src,
+ 'virtual-tours-and-portals':editorialImages.architecture.src
+};
 function makeSections(d:Draft){
 return [
  {heading:'Why this matters',paragraph:d.focus+' Before proceeding, identify the exact decision you need to make and separate relevant facts from sales claims. A useful first step is to write down what you know today, who provided the information and which points still require a reliable source. That simple record gives later discussions a reference point, especially when financial commitments or property documentation are involved.'},
@@ -34,5 +53,5 @@ return [
 ].map((s,i)=>({...s,points:i===5?['Identify all parties and the exact asset or service.','Verify current documentation, costs and relevant approvals.','Ask for independent professional review where appropriate.','Record outstanding questions and confirm next steps in writing.']:undefined}));
 }
 export const v22Guides:Guide[]=drafts.map((d,i)=>({
- slug:d.slug,title:d.title,category:d.category,summary:d.summary,image:sourceImages[i%sourceImages.length],readingMinutes:8,tags:d.tags,sections:makeSections(d)
+ slug:d.slug,title:d.title,category:d.category,summary:d.summary,image:articleImages[d.slug]||editorialImages.residential.src,readingMinutes:8,tags:d.tags,sections:makeSections(d)
 }));

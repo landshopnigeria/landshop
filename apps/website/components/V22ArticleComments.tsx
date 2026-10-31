@@ -42,8 +42,8 @@ export default function V22ArticleComments({slug}:{slug:string}){
   </div>}
   {authenticated?<form onSubmit={send} className="v22-comment-form"><label htmlFor="v22-comment-body">Write a comment</label>
    <textarea id="v22-comment-body" value={comment} onChange={e=>setComment(e.target.value)} minLength={12} maxLength={3000} rows={5} required placeholder="Share a thoughtful, respectful comment…"/>
-   <button className="v22-btn" type="submit" disabled={sending||comment.trim().length<12}>{sending?'Submitting…':'Submit Comment ↗'}</button>
-  </form>:<div className="v22-signin-prompt"><p>Sign in or create a Landshop account to write a comment.</p><a className="v22-btn" href={login}>Sign In / Sign Up ↗</a></div>}
+   <button className="v22-btn" type="submit" disabled={sending||comment.trim().length<12}>{sending?'Submitting…':'Submit Comment →'}</button>
+  </form>:<div className="v22-signin-prompt"><p>Sign in or create a Landshop account to write a comment.</p><a className="v22-btn" href={login}>Sign In / Sign Up →</a></div>}
   {message&&<p role="status" className="v22-comment-success">{message}</p>}
   {error&&<p role="alert" className="v22-comment-error">{error}</p>}
  </section>
