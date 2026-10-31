@@ -1,7 +1,7 @@
 'use client';
 import {useEffect,useState} from 'react';
 import {createBrowserClient} from '@supabase/ssr';
-type Submission={id:string;title:string;details:string;period:string;recipient_role:string;report_date:string;status:string};
+type Submission={id:string;title:string;details:string;period:string;recipient_role:string;report_date:string;status:string;review_note:string|null};
 export default function StaffReportHistory({userId}:{userId:string}){
  const [rows,setRows]=useState<Submission[]>([]),[message,setMessage]=useState(''),[loading,setLoading]=useState(false);
  const [editing,setEditing]=useState<string|null>(null),[title,setTitle]=useState(''),[details,setDetails]=useState('');
@@ -12,7 +12,7 @@ export default function StaffReportHistory({userId}:{userId:string}){
  }
  async function load(){
   try{
-   const {data,error}=await db().from('landshop_staff_submissions').select('id,title,details,period,recipient_role,report_date,status').eq('staff_id',userId).order('created_at',{ascending:false}).limit(40);
+   const {data,error}=await db().from('landshop_staff_submissions').select('id,title,details,period,recipient_role,report_date,status,review_note').eq('staff_id',userId).order('created_at',{ascending:false}).limit(40);
    if(error)throw error;setRows(data||[]);
   }catch(e){setMessage(e instanceof Error?e.message:'Unable to load reports')}
  }
@@ -32,6 +32,7 @@ export default function StaffReportHistory({userId}:{userId:string}){
   {message&&<p role="status" aria-live="polite">{message}</p>}
   {rows.length===0?<p>No reports submitted yet.</p>:rows.map(r=><div key={r.id} style={{borderTop:'1px solid #d9e7dd',padding:'14px 0'}}>
    <strong>{r.title}</strong><p style={{margin:'4px 0'}}><small>{r.period} · {r.report_date} · {r.recipient_role.replaceAll('_',' ')} · {r.status}</small></p>
+   {r.review_note&&<p style={{fontSize:13,background:'#fff6eb',padding:10,borderRadius:8}}><strong>Management feedback:</strong> {r.review_note}</p>}
    {r.status==='returned'&&<button type="button" onClick={()=>edit(r)}>Revise returned report</button>}
    {editing===r.id&&<div style={{display:'grid',gap:8,marginTop:12}}>
     <label>Report title<input value={title} maxLength={180} onChange={e=>setTitle(e.target.value)} style={{padding:10,border:'1px solid #a9cbb5',borderRadius:8}}/></label>
