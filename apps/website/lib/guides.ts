@@ -59,6 +59,7 @@ for(const guide of guides){
  guide.image=approved.image;
  guide.imageAlt=approved.imageAlt;
  guide.photoNote=approved.photoNote;
+ guide.sections.unshift({heading:'Reading the real photographic evidence',paragraph:approved.photoNote});
 }
 
 export function findGuide(slug:string){return guides.find(g=>g.slug===slug)}
