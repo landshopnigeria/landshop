@@ -1,0 +1,56 @@
+/* LANDSHOP V27 — 31 October video corrections; all styles scoped to the requested marketing sections. */
+:root{--ls27-green:#2ba47a;--ls27-orange:#f26b10;--ls27-dark:#073f34}
+.ls27-products-section .v22-heading{margin-bottom:35px}
+.ls27-products-section .v22-heading h2{color:#073f34}
+.ls27-products{grid-template-columns:repeat(3,minmax(0,1fr));gap:22px}
+.ls27-product{padding:31px 28px 24px!important;border:1px solid rgba(255,255,255,.85)!important;background:rgba(255,255,255,.72)!important;backdrop-filter:blur(19px);-webkit-backdrop-filter:blur(19px);min-height:300px;box-shadow:0 16px 50px rgba(18,68,47,.085)}
+.ls27-product .ls27-product-icon{width:96px;height:96px;display:flex;align-items:center;justify-content:center;border-radius:23px;background:rgba(43,164,122,.09);border:1px solid rgba(43,164,122,.17);margin:0 0 23px}
+.ls27-product .ls27-product-icon img{width:75px;height:75px;object-fit:contain;transform:none!important}
+.ls27-product .v22-product-body{padding:0}
+.ls27-product .v22-product-body h3{font-size:clamp(23px,2.3vw,29px);margin:0 0 11px}
+.ls27-product .v22-product-body p{min-height:72px;margin:0 0 14px}
+.ls27-product:hover{border-color:rgba(43,164,122,.5)!important}
+.ls27-affordability{background:#f7faf8}
+.ls27-affordability-inner{display:grid;grid-template-columns:.96fr 1.04fr;align-items:center;gap:clamp(30px,5vw,90px)}
+.ls27-affordability h2{max-width:610px;line-height:1.09}
+.ls27-affordability p{max-width:555px}
+.ls27-affordability-photo{margin:0;position:relative;min-height:450px;overflow:hidden;border-radius:26px;box-shadow:0 25px 60px rgba(4,55,38,.14)}
+.ls27-affordability-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.ls27-affordability-photo figcaption{position:absolute;bottom:12px;left:12px;right:12px;color:white;font-size:11px;background:rgba(7,35,28,.58);padding:9px 11px;border-radius:8px;backdrop-filter:blur(8px)}
+.ls27-glass-listing{border:1px solid rgba(255,255,255,.8)!important;box-shadow:0 15px 42px rgba(7,64,46,.14)!important;backdrop-filter:blur(12px)}
+.v22-feature.ls27-glass-listing .v22-feature-info b{color:var(--ls27-orange)!important;font-weight:850;font-size:clamp(22px,2vw,29px);text-shadow:0 1px 7px rgba(0,0,0,.45)}
+.ls26-estate-visual img{display:block}
+.ls-why-section{position:relative;background:linear-gradient(115deg,#060d0b 0%,#09251f 40%,#125946 75%,#2ba47a 100%)!important;color:#fff;isolation:isolate}
+.ls-why-section .v22-heading h2,.ls-why-section .v22-heading p,.ls-why-section .v22-eyebrow{color:#fff!important}
+.ls-why-section .ls26-heading-green{color:#a6ecc8!important}
+.ls-why-section .ls-why-grid{gap:20px}
+.ls-why-section .ls-why-card{background:rgba(43,164,122,.96);color:#fff;border:1px solid rgba(255,255,255,.18);box-shadow:0 18px 52px rgba(0,0,0,.2);backdrop-filter:blur(12px);min-height:215px}
+.ls-why-section .ls-why-card:nth-child(3n+2){background:rgba(255,255,255,.95);color:#123e31}
+.ls-why-section .ls-why-card:nth-child(3n){background:rgba(5,15,13,.9);color:#fff}
+.ls-why-section .ls-why-card h3,.ls-why-section .ls-why-card p{color:inherit!important}
+.ls-why-section .ls-why-card>span{display:grid;place-items:center;width:62px;height:62px;border-radius:14px;margin-bottom:25px;background:#167d58;color:#fff!important;font-size:28px!important;font-weight:850;line-height:1}
+.ls-why-section .ls-why-card:nth-child(3n+1)>span{background:#073f34}
+.ls-why-section .ls-why-card:nth-child(3n)>span{background:#2ba47a}
+.ls27-journal{background:#f6f9f6}
+.ls27-journal .v22-heading{align-items:center}
+.ls27-articles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px;align-items:stretch}
+.ls27-article{background:rgba(255,255,255,.9);border:1px solid #e3eee6;border-radius:19px;overflow:hidden;box-shadow:0 14px 40px rgba(12,62,41,.08);animation:ls27-card-swap .44s ease both}
+@keyframes ls27-card-swap{from{opacity:.52;transform:translateX(22px)}to{opacity:1;transform:translateX(0)}}
+.ls27-article-photo{height:208px;display:block;overflow:hidden}
+.ls27-article-photo img{width:100%;height:100%;object-fit:cover;transition:transform .4s ease}
+.ls27-article:hover img{transform:scale(1.04)}
+.ls27-article-body{padding:23px 23px 26px}
+.ls27-article-body>span{font-weight:850;letter-spacing:.12em;font-size:10px;color:#138362}
+.ls27-article h3{font-size:clamp(21px,2vw,27px);margin:11px 0;min-height:63px}
+.ls27-article p{font-size:13px;line-height:1.65;min-height:84px}
+.ls27-article-actions{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-top:30px}
+.ls27-article-actions .v22-carousel-buttons{margin:0}
+.ls27-article-actions .v22-btn{margin:0}
+.ls-v23-property-filter .ls-v23-form-grid{grid-template-columns:repeat(6,minmax(0,1fr));gap:11px}
+.ls-v23-property-filter .ls-v23-form-grid label{min-width:0}
+.ls-v23-property-filter .ls-v23-form-grid input,.ls-v23-property-filter .ls-v23-form-grid select{min-width:0;max-width:100%;font-size:12px}
+@media(max-width:1180px){.ls-v23-property-filter .ls-v23-form-grid{grid-template-columns:repeat(4,minmax(0,1fr))}.ls27-products{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:800px){.ls-v23-property-filter .ls-v23-form-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.ls27-affordability-inner{grid-template-columns:1fr}.ls27-affordability-photo{min-height:350px}.ls27-articles{grid-template-columns:repeat(2,minmax(0,1fr))}.ls27-article:nth-child(3){display:none}}
+@media(max-width:600px){.ls27-products,.ls27-articles{grid-template-columns:1fr}.ls27-article:nth-child(3){display:none}.ls27-article:nth-child(2){display:none}.ls27-product{min-height:0}.ls27-affordability-photo{min-height:260px}.ls27-article-actions{flex-wrap:wrap}.ls-v23-property-filter .ls-v23-form-grid{grid-template-columns:1fr 1fr;gap:8px}.ls-v23-property-filter .ls-v23-form-grid label:first-child{grid-column:span 2}}
+@media(max-width:350px){.ls-v23-property-filter .ls-v23-form-grid{grid-template-columns:1fr}.ls-v23-property-filter .ls-v23-form-grid label:first-child{grid-column:auto}}
+@media(prefers-reduced-motion:reduce){.ls27-article{animation:none}.ls27-article-photo img{transition:none}}
