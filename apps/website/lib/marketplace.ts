@@ -15,7 +15,7 @@ export function cleanFilters(p:Params){
  const clean=(value?:string,max=90)=>(typeof value==='string'?value:'').trim().slice(0,max);
  const state=clean(p.state,45),city=clean(p.city,60),lga=clean(p.lga,60),area=clean(p.area,70),type=clean(p.type,40),query=clean(p.query,80);
  const purpose=['Buy','Rent','Shortlet'].includes(p.purpose||'')?p.purpose!:'Buy';
- const sort=['newest','price_asc','price_desc'].includes(p.sort||'')?p.sort!:'newest';
+ const sort=['newest','price_asc','price_desc','name_asc','name_desc'].includes(p.sort||'')?p.sort!:'newest';
  const view=p.view==='list'?'list':'grid';
  const positive=(raw?:string)=>{const n=Number(raw);return raw&&Number.isSafeInteger(n)&&n>0&&n<=1000000000000?n:0};
  const bedrooms=Number.isInteger(Number(p.bedrooms))&&Number(p.bedrooms)>=1&&Number(p.bedrooms)<=10?Number(p.bedrooms):0;
@@ -64,6 +64,8 @@ export async function listPublished(filters:Filters){
  if(filters.max)propertyQuery=propertyQuery.lte('amount_kobo',filters.max*100);
  if(filters.sort==='price_asc')propertyQuery=propertyQuery.order('amount_kobo',{ascending:true,nullsFirst:false}).order('id',{ascending:true});
  else if(filters.sort==='price_desc')propertyQuery=propertyQuery.order('amount_kobo',{ascending:false,nullsFirst:false}).order('id',{ascending:true});
+ else if(filters.sort==='name_asc')propertyQuery=propertyQuery.order('title',{ascending:true}).order('id',{ascending:true});
+ else if(filters.sort==='name_desc')propertyQuery=propertyQuery.order('title',{ascending:false}).order('id',{ascending:true});
  else propertyQuery=propertyQuery.order('created_at',{ascending:false}).order('id',{ascending:false});
  const {data,error,count}=await propertyQuery.range((filters.page-1)*PAGE_SIZE,filters.page*PAGE_SIZE-1);
  return {rows:(data||[]) as unknown as Listing[],count:count||0,error:error?'Published inventory cannot be retrieved at this time':null};
