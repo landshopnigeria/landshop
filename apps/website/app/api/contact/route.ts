@@ -1,11 +1,14 @@
 import {createHash} from 'node:crypto';
 import {createClient} from '@supabase/supabase-js';
+import {publicFormThrottle,publicEmailThrottle} from '../../../lib/public-abuse-guard';
 import {NextResponse,type NextRequest} from 'next/server';
 export const runtime='nodejs';
 const ALLOWED_ORIGINS=new Set(['https://www.landshopnigeria.com','https://landshopnigeria.com','http://localhost:3000','http://127.0.0.1:3000']);
 const TOPICS=new Set(['Develop','Incubate','Grow','Property Acquisition','Property Inspection','Mortgage Guidance','Customer Support','Property Updates','Other']);
 function reply(status:number,message:string,ok=false,reference?:string){return NextResponse.json({ok,message,reference},{status,headers:{'Cache-Control':'no-store'}})}
 export async function POST(request:NextRequest){
+ const throttle=publicFormThrottle(request,'contact',28);
+ if(throttle)return throttle;
  const origin=request.headers.get('origin');
  if(origin&&!ALLOWED_ORIGINS.has(origin))return reply(403,'This request origin is not permitted.');
  if(!request.headers.get('content-type')?.toLowerCase().startsWith('application/json'))return reply(415,'Send the form as JSON.');
@@ -23,6 +26,8 @@ export async function POST(request:NextRequest){
  const phone=typeof payload.phone==='string'?payload.phone.trim():'';
  const topic=typeof payload.topic==='string'?payload.topic:'';
  const message=typeof payload.message==='string'?payload.message.trim():'';
+ const emailThrottle=publicEmailThrottle(email,'contact',7);
+ if(emailThrottle)return emailThrottle;
  if(full_name.length<2||full_name.length>120||!/^\S+@\S+\.\S+$/.test(email)||email.length>254||phone.length>30||!TOPICS.has(topic)||message.length<20||message.length>3000||payload.consent!==true)return reply(422,'Please check your name, email, enquiry type, message and consent.');
  const url=process.env.NEXT_PUBLIC_SUPABASE_URL;
  const key=process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
