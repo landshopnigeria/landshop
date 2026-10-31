@@ -6,6 +6,7 @@ import {editorialImages} from '../lib/editorial-imagery';
 import LandshopAboutCollage from './LandshopAboutCollage';
 import LandshopProductCards from './LandshopProductCards';
 import LandshopVideo from './LandshopVideo';
+import {useCarouselPlayback} from './useCarouselPlayback';
 
 export type V22Property={id:string;href:string;title:string;location:string;propertyType:string;price:string;collection?:'Prime'|'Luxury';image?:string};
 const locations=[
@@ -30,8 +31,18 @@ export default function V22HomeSections({featured}:{featured:V22Property[]}){
   const track=locationTrack.current,card=track?.querySelector<HTMLElement>('.ls26-location-card');
   if(track&&card)track.scrollTo({left:next*(card.getBoundingClientRect().width+18),behavior:'smooth'});
  };
- const [journalPaused,setJournalPaused]=useState(false);
- useEffect(()=>{if(journalPaused||journal.length<2||window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;const timer=setInterval(()=>setGuideIndex(v=>(v+1)%journal.length),6500);return()=>clearInterval(timer)},[journalPaused]);
+ const articlesPlayback=useCarouselPlayback({
+  count:journal.length,delay:6200,onAdvance:()=>setGuideIndex(i=>(i+1)%journal.length)
+ });
+ const reviewsPlayback=useCarouselPlayback({
+  count:reviews.length,delay:7200,onAdvance:()=>setReview(i=>(i+1)%reviews.length)
+ });
+ const locationsPlayback=useCarouselPlayback({
+  count:locations.length,delay:6100,onAdvance:()=>{
+   const visible=window.innerWidth<=720?1:window.innerWidth<=1040?2:3;
+   goLocation(locationIndex>=locations.length-visible?0:locationIndex+1);
+  }
+ });
  const activeReview=reviews[review];
  return <div className="v22-root">
   {/* 2 / About: hero and existing property filter above this component stay intact. */}
@@ -93,7 +104,7 @@ export default function V22HomeSections({featured}:{featured:V22Property[]}){
   <section className="v22-section ls26-projects-home" aria-labelledby="ls26-projects-home-title"><div className="v22-container"><div className="v22-heading"><div><span className="v22-eyebrow ls26-faded-eyebrow">OUR</span><h2 id="ls26-projects-home-title"><span className="ls26-heading-green">Projects</span><span className="v22-accent">.</span></h2></div><Link className="v22-text-link" href="/projects">View all projects →</Link></div><div className="ls26-grid-three ls26-project-grid">{[['Famous Gardens','Current sales focus','Iberekodo, Ibeju-Lekki','famous-gardens','/media/famous0.webp'],['Merit Park','Past project','Project history and updates','merit-park','/editorial/2026/townhouse.jpg'],['Green Island','Past project','Project history and updates','green-island','/editorial/2026/incubate-reference.jpg'],['Maiyegun Beach Estate','Past project','Project history and updates','maiyegun-beach-estate','/media/maiyegun0.webp']].map(([name,status,location,slug,image])=><Link key={slug} href={'/projects/'+slug} className="ls26-estate-card" style={{textDecoration:'none',color:'inherit'}}><div className="ls26-estate-visual">{image?<><img src={image} alt={slug==="famous-gardens"||slug==="maiyegun-beach-estate"?"Original Landshop project archive: "+name:"Illustrative Nigerian residential photograph, not verified imagery of "+name} loading="lazy" style={{width:"100%",height:"100%",objectFit:"cover"}}/>{(slug==="merit-park"||slug==="green-island")&&<small className="ls29-editorial-watermark">Editorial reference · Project imagery awaiting confirmation</small>}</>:<span>VERIFIED PROJECT IMAGE PENDING</span>}</div><div className="ls26-estate-content"><small className="ls26-eyebrow">{status}</small><h3>{name}</h3><p>{location}</p><strong className="v22-text-link">Explore project →</strong></div></Link>)}</div></div></section>
   {/* Service guidance remains reachable through dedicated Services pages and Insights. */}
   {/* Curated property locations · three visible cards per desktop row; swipe and button navigation. */}
-  <section className="v22-section ls26-location-section" aria-labelledby="v22-locations-title"><div className="v22-container">
+  <section className="v22-section ls26-location-section" aria-labelledby="v22-locations-title" {...locationsPlayback.handlers}><div className="v22-container">
    <div className="v22-heading"><div><span className="v22-eyebrow ls26-faded-eyebrow">PROPERTY LOCATIONS</span><h2 id="v22-locations-title"><span className="ls26-heading-green">Explore</span> Locations<span className="v22-accent">.</span></h2></div><Link href="/locations" className="v22-text-link">View all locations →</Link></div>
    <div className="ls26-location-carousel"><div className="ls26-location-track" ref={locationTrack} aria-label="Landshop locations carousel" tabIndex={0}>
     {locations.map((item,i)=><Link className="ls26-location-card" href={'/locations/'+item.slug} key={item.slug} aria-label={'Explore '+item.name+' property location'}>
@@ -115,7 +126,7 @@ export default function V22HomeSections({featured}:{featured:V22Property[]}){
   {/* Three-up automatic articles from published Landshop guides. */}
   <section className="v22-section ls27-journal" aria-labelledby="v22-journal-title"><div className="v22-container">
    <div className="v22-heading"><div><span className="v22-eyebrow">INSIGHTS &amp; GUIDES</span><h2 id="v22-journal-title"><span className="ls26-heading-green">Insights</span> &amp; Updates<span className="v22-accent">.</span></h2></div><Link href="/insights" className="v22-text-link">View All Articles →</Link></div>
-   <div role="region" aria-roledescription="carousel" aria-label="Latest Landshop articles" onMouseEnter={()=>setJournalPaused(true)} onMouseLeave={()=>setJournalPaused(false)} onFocusCapture={()=>setJournalPaused(true)} onBlurCapture={event=>{if(!event.currentTarget.contains(event.relatedTarget as Node|null))setJournalPaused(false)}}>
+   <div role="region" aria-roledescription="carousel" aria-label="Latest Landshop articles" {...articlesPlayback.handlers}>
     <div className="ls27-articles" aria-live="off">{[0,1,2].map(offset=>{const article=journal[(guideIndex+offset)%journal.length];return <article className="ls27-article" key={article.href+"-"+offset}>
      <Link href={article.href} className="ls27-article-photo"><img src={article.image} alt={"Editorial image for "+article.title} loading="lazy"/></Link>
      <div className="ls27-article-body"><span>{article.tag}</span><h3>{article.title}</h3><p>{article.summary}</p><Link href={article.href} className="v22-text-link">Read Article →</Link></div>
@@ -126,7 +137,7 @@ export default function V22HomeSections({featured}:{featured:V22Property[]}){
   {/* 9 / Testimonials and pre-footer CTA; production footer below remains unchanged. */}
   <section className="v22-section v22-final ls29-testimonials" aria-labelledby="v22-voices-title"><div className="v22-container v22-two">
    <div className="ls29-testimonials-copy"><h2 id="v22-voices-title">What our clients say about us.</h2><Link href="/contact" className="v22-btn">Start a conversation →</Link></div>
-   <div className="v22-quote" aria-live="polite"><span className="v22-quote-mark">“</span><blockquote>{activeReview.quote}</blockquote><strong>{activeReview.name}</strong><small>{activeReview.region}</small>
+   <div className="v22-quote" aria-live="polite" role="region" aria-roledescription="carousel" aria-label="Landshop client testimonials" {...reviewsPlayback.handlers}><span className="v22-quote-mark">“</span><blockquote>{activeReview.quote}</blockquote><strong>{activeReview.name}</strong><small>{activeReview.region}</small>
     <div className="v22-carousel-buttons"><button onClick={()=>setReview((review+reviews.length-1)%reviews.length)} type="button" aria-label="Previous testimonial">←</button><span>{review+1} / {reviews.length}</span><button onClick={()=>setReview((review+1)%reviews.length)} type="button" aria-label="Next testimonial">→</button></div>
    </div></div></section>
  </div>;
