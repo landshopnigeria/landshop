@@ -153,6 +153,13 @@ jobs:
             sh -ec 'psql "$DATABASE_URL" -XAt -v ON_ERROR_STOP=1 -f /verify-staff-approval.sql')
           [ "$staff_result" = ready ] || { echo "::error::Landshop staff approval security gate failed"; exit 1; }
           echo "Production staff role, identity and approval safeguards verified"
+          # Staff task directory and supervisor performance reports must remain
+          # scoped to verified staff and the assigning supervisor.
+          task_result=$(docker run --rm --network host -e DATABASE_URL \
+            -v "$PWD/scripts/verify-staff-task-security.sql:/verify-staff-task-security.sql:ro" postgres:17 \
+            sh -ec 'psql "$DATABASE_URL" -XAt -v ON_ERROR_STOP=1 -f /verify-staff-task-security.sql')
+          [ "$task_result" = ready ] || { echo "::error::Staff task scope and permission gate failed"; exit 1; }
+          echo "Production staff task authorization safeguards verified"
           for host in landshopnigeria.com www.landshopnigeria.com portal.landshopnigeria.com app.landshopnigeria.com; do
             curl --fail --silent --show-error --location --max-time 18 --head "https://$host/" >/dev/null || {
               echo "::error::Production domain $host does not have valid TLS/HTTP routing"
