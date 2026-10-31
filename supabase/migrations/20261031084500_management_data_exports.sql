@@ -23,7 +23,7 @@ begin
  if actor is null or not exists(select 1 from public.organization_members m join public.organizations o
  on o.id=m.organization_id where m.user_id=actor and m.role='owner' and m.status='active' and o.kind='landshop')
  then raise exception 'Verified Landshop owner only';end if;
- if p_dataset not in ('referrals','referral_codes','referral_wallets','referral_rewards','customers','applications',
+ if p_dataset not in ('referrals','referral_codes','referral_wallets','referral_rewards','referral_qualifications','customers','applications',
   'kyc','application_documents','staff','staff_reports','tasks','payments','subscriptions','properties','automation_runs','audit_events')
   or p_format not in ('csv','json','xlsx','pdf') or p_count not between 0 and 10000
  then raise exception 'Invalid export request';end if;
