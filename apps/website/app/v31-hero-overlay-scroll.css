@@ -127,3 +127,21 @@ body main :is(h1,h2,h3),
   will-change:auto!important;
  }
 }
+
+/* Very narrow mobile widths: a long verified-inventory headline must wrap
+   inside its card instead of expanding the page beyond 240px. */
+@media(max-width:320px){
+ .v22-root .v22-inventory-empty{
+  box-sizing:border-box;
+  min-width:0;
+  max-width:100%;
+  width:100%;
+  padding:14px!important;
+  overflow-wrap:anywhere;
+ }
+ .v22-root .v22-inventory-empty :is(h2,h3,p,a){
+  min-width:0;
+  max-width:100%;
+  overflow-wrap:anywhere;
+ }
+}
