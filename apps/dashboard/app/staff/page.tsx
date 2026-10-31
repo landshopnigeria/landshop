@@ -29,7 +29,7 @@ export default async function Page(){
   ]);
   verifiedOwner=Boolean(landshopOrg&&managerError==null&&verifiedManagement===true);
  }
- // Confirmed staff signup creates only a personal profile, never membership.
+ // Verified staff onboarding establishes basic staff membership only; never requested elevated roles.
  const confirmedStaffSignup=Boolean(user.email_confirmed_at&&user.user_metadata?.staff_signup===true);
  let {data:profile}=await db.from('landshop_staff_profiles').select('*').eq('user_id',user.id).maybeSingle();
  if(confirmedStaffSignup&&!profile){
@@ -48,7 +48,7 @@ export default async function Page(){
   }
  }
  const {data:canWork,error:workError}=await db.rpc('landshop_staff_can_work',{p_user:user.id});
- const authorized=workError==null&&canWork===true&&profile?.kyc_state==='approved'&&profile?.employment_state==='active';
+ const authorized=workError==null&&canWork===true&&profile?.employment_state==='active';
  const {data:member}=authorized&&profile?await db.from('organization_members').select('role')
   .eq('user_id',user.id).eq('organization_id',profile.organization_id)
   .eq('status','active').limit(1).maybeSingle():{data:null};
