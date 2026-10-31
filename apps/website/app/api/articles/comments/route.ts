@@ -3,6 +3,7 @@ import {cookies} from 'next/headers';
 import {createServerClient} from '@supabase/ssr';
 import {createClient} from '@supabase/supabase-js';
 import {findGuide} from '../../../../lib/guides';
+import {publicFormThrottle} from '../../../../lib/public-abuse-guard';
 export const dynamic='force-dynamic';
 function settings(){const url=process.env.NEXT_PUBLIC_SUPABASE_URL;const key=process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;if(!url||!key)throw Error('Comment service is not configured');return {url,key};}
 const json=(payload:unknown,status=200)=>NextResponse.json(payload,{status,headers:{'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});
@@ -23,10 +24,21 @@ export async function GET(request:NextRequest){
  }catch{return json({ok:false,message:'Comments temporarily unavailable'},503);}
 }
 export async function POST(request:NextRequest){
+ const throttle=publicFormThrottle(request,'article-comment',36);
+ if(throttle)return throttle;
+ if(!request.headers.get('content-type')?.startsWith('application/json'))return json({ok:false,message:'JSON required'},415);
+ const size=Number(request.headers.get('content-length')||'0');
+ if(size>6500)return json({ok:false,message:'Request too large'},413);
  const origin=request.headers.get('origin');
  if(origin && origin!=='https://www.landshopnigeria.com' && origin!=='https://landshopnigeria.com' && origin!=='http://localhost:3000')return json({ok:false,message:'Unrecognized request origin'},403);
  let payload:{slug?:unknown;body?:unknown};
- try{payload=await request.json()}catch{return json({ok:false,message:'Invalid request'},400)}
+ try{
+  const raw=await request.text();
+  if(raw.length>6500)return json({ok:false,message:'Request too large'},413);
+  const parsed:unknown=JSON.parse(raw);
+  if(!parsed||typeof parsed!=='object'||Array.isArray(parsed))return json({ok:false,message:'Invalid request'},400);
+  payload=parsed as typeof payload;
+ }catch{return json({ok:false,message:'Invalid request'},400)}
  const slug=typeof payload.slug==='string'?payload.slug.trim():'';
  const body=typeof payload.body==='string'?payload.body.trim():'';
  if(!findGuide(slug))return json({ok:false,message:'Article not found'},404);
