@@ -81,8 +81,28 @@ try{
       layout.navBottom>=layout.heroBottom||
       layout.headlineTop<layout.navBottom+15)
     errors.push('V31 overlay '+width+'px: header must be on hero with separate headline: '+JSON.stringify(layout));
-   if(layout.titleSize!=='28px')
-    errors.push('V31 heading at '+width+'px must be 28px, got '+layout.titleSize);
+   if(layout.titleSize!=='33px')
+    errors.push('V32 hero title at '+width+'px must be 33px, got '+layout.titleSize);
+   const heroPresentation=await motionPage.evaluate(()=>{
+    const heading=document.querySelector('.ls-v23-hero-title');
+    const outer=heading?.getBoundingClientRect();
+    const first=heading?.querySelector('span');
+    const second=heading?.querySelector('strong');
+    const utility=document.querySelector('.ls-utility-links');
+    const adminLink=document.querySelector('.ls-site-chrome a[href="https://app.landshopnigeria.com/admin"]');
+    return {
+     width:outer?.width??0,
+     firstDisplay:first?getComputedStyle(first).display:'none',
+     secondDisplay:second?getComputedStyle(second).display:'none',
+     publicCommandCenter:Boolean(adminLink)||Boolean(utility?.textContent?.includes('Command Center'))
+    };
+   });
+   if(heroPresentation.firstDisplay!=='inline'||heroPresentation.secondDisplay!=='inline')
+    errors.push('V32 hero headline must wrap naturally instead of forced breaks: '+JSON.stringify(heroPresentation));
+   if(width>700&&heroPresentation.width<650)
+    errors.push('V32 desktop hero headline did not gain sufficient width: '+JSON.stringify(heroPresentation));
+   if(heroPresentation.publicCommandCenter)
+    errors.push('V32 Command Center must not appear in public header');
    await motionPage.evaluate(()=>window.scrollTo({top:800,behavior:'instant'}));
    try{await motionPage.waitForFunction(()=>document.querySelector('.ls-site-chrome')?.classList.contains('ls31-nav-hidden'),null,{timeout:3500})}
    catch{errors.push('V31 main header did not hide on downward scroll @'+width+'px')}
@@ -97,6 +117,16 @@ try{
    catch{const diagnostics=await motionPage.evaluate(()=>({scrollY:window.scrollY,scrollHeight:document.documentElement.scrollHeight,nav:document.querySelector('.ls-site-chrome')?.className}));errors.push('V31 main header did not return on upward scroll @'+width+'px: '+JSON.stringify(diagnostics))}
    console.log('V31 HEADER/MOTION CHECK',width,JSON.stringify(layout));
   }
+  await motionPage.goto(root+'/insights/property-due-diligence',{waitUntil:'domcontentloaded',timeout:30000});
+  const articleColors=await motionPage.evaluate(()=>{
+   const bodyHeading=document.querySelector('.v22-article-body section h2');
+   const sidebarHeading=document.querySelector('.v22-article-sidebar h3');
+   return {body:bodyHeading?getComputedStyle(bodyHeading).color:'missing',
+    sidebar:sidebarHeading?getComputedStyle(sidebarHeading).color:'missing'};
+  });
+  if(articleColors.body!=='rgb(43, 164, 122)'||articleColors.sidebar!=='rgb(43, 164, 122)')
+   errors.push('V32 article detail headings should use official primary green: '+JSON.stringify(articleColors));
+  console.log('V32 ARTICLE HEADING CHECK',JSON.stringify(articleColors));
   await motionPage.close();
  }finally{await motionContext.close()}
  console.log('READINESS RESULT:',errors.length?'FAIL':'PASS',errors.length,'errors');
