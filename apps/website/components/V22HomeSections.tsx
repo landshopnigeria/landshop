@@ -15,7 +15,7 @@ const locations=[
  {name:'Edo',slug:'edo',text:'Explore locations, verified estates and responsible purchase steps.'},
  {name:'Abuja (FCT)',slug:'abuja',text:'Understand available estate choices and property requirements in the capital.'}
 ];
-const journal=approvedGuides.map(guide=>({title:guide.title,href:'/insights/'+guide.slug,tag:guide.category,image:guide.image,summary:guide.summary}));
+const journal=approvedGuides.map(guide=>({title:guide.title,href:'/insights/'+guide.slug,tag:guide.category,image:guide.image,imageAlt:guide.imageAlt,summary:guide.summary}));
 const reviews=[
  {quote:'Landshop is authentic and experienced. And your customer service is 100%. From social media to follow-up calls. I was just informed by my account officer that my property has appreciated in price. Great.',name:'Emmanuel Sanusi',region:'Ikotun, Lagos'},
  {quote:'I have confidence in Landshop because I’m always contacted while I’m far away. Of course, I will recommend Landshop to friends and family. I am also excited about the value appreciation. That was indeed fast.',name:'Precious Oluwapelumi Adeleye',region:'Maryland, Lagos'},
@@ -128,7 +128,7 @@ export default function V22HomeSections({featured}:{featured:V22Property[]}){
    <div className="v22-heading"><div><span className="v22-eyebrow">INSIGHTS &amp; GUIDES</span><h2 id="v22-journal-title"><span className="ls26-heading-green">Insights</span> &amp; Updates<span className="v22-accent">.</span></h2></div><Link href="/insights" className="v22-text-link">View All Articles →</Link></div>
    <div role="region" aria-roledescription="carousel" aria-label="Latest Landshop articles" {...articlesPlayback.handlers}>
     <div className="ls27-articles" aria-live="off">{[0,1,2].map(offset=>{const article=journal[(guideIndex+offset)%journal.length];return <article className="ls27-article" key={article.href+"-"+offset}>
-     <Link href={article.href} className="ls27-article-photo"><img src={article.image} alt={"Editorial image for "+article.title} loading="lazy"/></Link>
+     <Link href={article.href} className="ls27-article-photo"><img src={article.image} alt={article.imageAlt||"Property photograph for "+article.title} loading="lazy"/></Link>
      <div className="ls27-article-body"><span>{article.tag}</span><h3>{article.title}</h3><p>{article.summary}</p><Link href={article.href} className="v22-text-link">Read Article →</Link></div>
     </article>})}</div>
     <div className="ls27-article-actions"><div className="v22-carousel-buttons"><button onClick={()=>setGuideIndex(v=>(v+journal.length-1)%journal.length)} type="button" aria-label="Previous articles">←</button><span>{guideIndex+1} / {journal.length}</span><button onClick={()=>setGuideIndex(v=>(v+1)%journal.length)} type="button" aria-label="Next articles">→</button></div><Link href="/insights" className="v22-btn">View All Articles →</Link></div>
