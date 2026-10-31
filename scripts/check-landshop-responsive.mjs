@@ -83,7 +83,7 @@ try{
     errors.push('V31 overlay '+width+'px: header must be on hero with separate headline: '+JSON.stringify(layout));
    if(layout.titleSize!=='28px')
     errors.push('V31 heading at '+width+'px must be 28px, got '+layout.titleSize);
-   await motionPage.evaluate(()=>window.scrollTo(0,800));
+   await motionPage.evaluate(()=>window.scrollTo({top:800,behavior:'instant'}));
    try{await motionPage.waitForFunction(()=>document.querySelector('.ls-site-chrome')?.classList.contains('ls31-nav-hidden'),null,{timeout:3500})}
    catch{errors.push('V31 main header did not hide on downward scroll @'+width+'px')}
    const topAfterDown=await motionPage.evaluate(()=>{
@@ -92,9 +92,9 @@ try{
    });
    if(!topAfterDown||topAfterDown.visible!=='visible'||Math.abs(topAfterDown.top)>3)
     errors.push('V31 top utility bar should remain visible @'+width+'px: '+JSON.stringify(topAfterDown));
-   await motionPage.evaluate(()=>window.scrollTo(0,260));
+   await motionPage.evaluate(()=>window.scrollTo({top:260,behavior:'instant'}));
    try{await motionPage.waitForFunction(()=>document.querySelector('.ls-site-chrome')?.classList.contains('ls31-nav-visible'),null,{timeout:3500})}
-   catch{errors.push('V31 main header did not return on upward scroll @'+width+'px')}
+   catch{const diagnostics=await motionPage.evaluate(()=>({scrollY:window.scrollY,scrollHeight:document.documentElement.scrollHeight,nav:document.querySelector('.ls-site-chrome')?.className}));errors.push('V31 main header did not return on upward scroll @'+width+'px: '+JSON.stringify(diagnostics))}
    console.log('V31 HEADER/MOTION CHECK',width,JSON.stringify(layout));
   }
   await motionPage.close();
