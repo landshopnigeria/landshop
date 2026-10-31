@@ -5,6 +5,7 @@ const datasets=[
  ['referral_codes','Referral Codes'],
  ['referral_wallets','Referral Wallets'],
  ['referral_rewards','Referral Reward Events'],
+ ['referral_qualifications','Paystack-Qualified Referrals'],
  ['customers','Customer Profiles'],
  ['applications','Property Applications'],
  ['kyc','KYC Review Status'],
