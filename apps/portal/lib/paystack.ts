@@ -8,6 +8,7 @@ export function paystackSettings(){
  const key=process.env.PAYSTACK_SECRET_KEY||'';
  const mode=process.env.PAYSTACK_MODE;
  if(mode!=='live'&&mode!=='test')throw Error('PAYSTACK_MODE must explicitly be live or test');
+ if(process.env.NODE_ENV==='production'&&mode!=='live')throw Error('Production must never grant subscriptions from Paystack test payments');
  if(!key.startsWith(mode==='live'?'sk_live_':'sk_test_'))throw Error('Matching Paystack server secret key is not configured');
  return {secret:key,mode};
 }
