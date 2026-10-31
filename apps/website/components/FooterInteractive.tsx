@@ -1,6 +1,7 @@
 'use client';
-import {useEffect,useRef,useState,type FormEvent} from 'react';
+import {useRef,useState,type FormEvent} from 'react';
 import Link from 'next/link';
+import {useCarouselPlayback} from './useCarouselPlayback';
 
 export type FooterSlide={
  id:string;kind:'testimonial'|'article';type:string;image:string;alt:string;heading:string;byline:string;href?:string;
@@ -36,22 +37,20 @@ export function NewsletterSignup(){
  </section>
 }
 export function FooterCarousel({slides}:{slides:FooterSlide[]}){
- const [active,setActive]=useState(0),[paused,setPaused]=useState(false);
+ const [active,setActive]=useState(0),[videoPlaying,setVideoPlaying]=useState(false);
  const carouselRef=useRef<HTMLDivElement|null>(null);
  const count=slides.length;
- useEffect(()=>{
-  if(paused||count<2||window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
-  const ticker=window.setInterval(()=>setActive(i=>(i+1)%count),6500);
-  return()=>window.clearInterval(ticker);
- },[paused,count]);
+ const playback=useCarouselPlayback({
+  count,delay:6500,disabled:videoPlaying,
+  onAdvance:()=>setActive(i=>(i+1)%count)
+ });
  if(!count)return <div className="ls24-carousel-empty"><Link href="/insights">Explore Landshop insights →</Link></div>;
  const current=slides[active%count];
- const go=(n:number)=>setActive((n+count)%count);
+ const go=(n:number)=>{setVideoPlaying(false);setActive((n+count)%count)};
  return <div ref={carouselRef} className="ls24-carousel-shell" role="region" aria-roledescription="carousel" aria-label="Landshop testimonials and insights"
-  onMouseEnter={()=>setPaused(true)} onMouseLeave={()=>setPaused(false)}
-  onFocus={()=>setPaused(true)} onBlur={e=>{if(!e.currentTarget.contains(e.relatedTarget as Node|null))setPaused(false)}}
+  {...playback.handlers}
   onKeyDown={e=>{if(e.key==='ArrowLeft'){e.preventDefault();go(active-1)}else if(e.key==='ArrowRight'){e.preventDefault();go(active+1)}}}>
-  {current.videoUrl?<video key={current.id} className="ls24-carousel-photo" controls playsInline preload="metadata" poster={current.image} onPlay={()=>setPaused(true)} onPause={()=>setPaused(false)}><source src={current.videoUrl}/></video>:
+  {current.videoUrl?<video key={current.id} className="ls24-carousel-photo" controls playsInline preload="metadata" poster={current.image} onPlay={()=>setVideoPlaying(true)} onPause={()=>setVideoPlaying(false)} onEnded={()=>setVideoPlaying(false)}><source src={current.videoUrl}/></video>:
    <img key={current.id} className="ls24-carousel-photo" src={current.image} alt={current.alt} loading="lazy"/>}
   <div className="ls24-carousel-layer" aria-hidden="true"/>
   <div className="ls24-carousel-top"><span className="ls24-carousel-type">{current.type}</span><span className="ls24-carousel-count">{String(active+1).padStart(2,'0')} / {String(count).padStart(2,'0')}</span></div>
@@ -64,6 +63,6 @@ export function FooterCarousel({slides}:{slides:FooterSlide[]}){
    <div className="ls24-carousel-dots" role="group" aria-label="Choose a slide">{slides.map((slide,i)=><button type="button" key={slide.id} className={active===i?'active':''} onClick={()=>go(i)} aria-current={active===i?'true':undefined} aria-label={'Show '+slide.type.toLowerCase()+' '+(i+1)}/>)}</div>
    <div className="ls24-carousel-arrows"><button type="button" onClick={()=>go(active-1)} aria-label="Previous testimonial or article"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="m15 18-6-6 6-6"/></svg></button><button type="button" onClick={()=>go(active+1)} aria-label="Next testimonial or article"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="m9 18 6-6-6-6"/></svg></button></div>
   </div>
-  {!paused&&count>1&&<div className="ls24-carousel-progress" aria-hidden="true" key={active}/>}
+  {!playback.paused&&count>1&&<div className="ls24-carousel-progress" aria-hidden="true" key={active}/>}
  </div>;
 }

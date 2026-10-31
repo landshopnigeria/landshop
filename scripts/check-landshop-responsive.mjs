@@ -127,6 +127,24 @@ try{
   if(articleColors.body!=='rgb(43, 164, 122)'||articleColors.sidebar!=='rgb(43, 164, 122)')
    errors.push('V32 article detail headings should use official primary green: '+JSON.stringify(articleColors));
   console.log('V32 ARTICLE HEADING CHECK',JSON.stringify(articleColors));
+  // V33 interactive regression: hovering over a carousel freezes its slide,
+  // leaving it resumes timer-based advancement without clicking controls.
+  await motionPage.goto(root+'/',{waitUntil:'domcontentloaded',timeout:30000});
+  await motionPage.waitForSelector('.v22-quote blockquote');
+  await motionPage.hover('.v22-quote');
+  await motionPage.waitForTimeout(650);
+  const quoteBefore=await motionPage.locator('.v22-quote blockquote').textContent();
+  await motionPage.waitForTimeout(7600);
+  const quoteWhileHovered=await motionPage.locator('.v22-quote blockquote').textContent();
+  if(quoteBefore!==quoteWhileHovered)
+   errors.push('V33 testimonial carousel advanced while mouse was hovering');
+  await motionPage.mouse.move(0,0);
+  try{
+   await motionPage.waitForFunction(before=>document.querySelector('.v22-quote blockquote')?.textContent!==before,quoteBefore,{timeout:10000});
+  }catch{
+   errors.push('V33 testimonial carousel did not resume automatic advance after mouse exit');
+  }
+  console.log('V33 CAROUSEL HOVER/RESUME CHECK',JSON.stringify({frozen:quoteBefore===quoteWhileHovered}));
   await motionPage.close();
  }finally{await motionContext.close()}
  console.log('READINESS RESULT:',errors.length?'FAIL':'PASS',errors.length,'errors');
