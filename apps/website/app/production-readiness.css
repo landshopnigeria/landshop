@@ -1,0 +1,76 @@
+/* Landshop production hardening: scalable typography and responsive content grids.
+ * Intentionally leaves header, footer, authentication, and property/article page composition intact.
+ * The long-form content layout is the same; only overflow and sizing adapt to the viewport.
+ */
+:root{color-scheme:light}
+html{scroll-padding-top:96px;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+.v22-root,.content-page,.ls26-page,.landshop-product,.mk-layout{min-width:0}
+.v22-root :where(p,h1,h2,h3,h4,a,li),.content-page :where(p,h1,h2,h3,h4,a,li),.ls26-page :where(p,h1,h2,h3,h4,a,li),.landshop-product :where(p,h1,h2,h3,h4,a,li),.mk-layout :where(p,h1,h2,h3,h4,a,li){overflow-wrap:break-word}
+.v22-root :where(.v22-container,.v22-two,.v22-heading,.v22-product,.v22-collections,.v22-service,.v22-feature,.ls26-grid-three,.ls27-prime-layout,.ls27-film-layout),
+.ls26-page :where(.ls26-container,.ls26-two,.ls26-grid-three,.ls27-film-layout,.ls26-plan-hero,.ls27-product-grid),
+.content-page :where(.content-hero-inner,.content-main),
+.mk-layout :where(.mk-wrap,.mk-card){min-width:0}
+.v22-root img,.content-page img,.ls26-page img,.landshop-product img,.mk-layout img{max-width:100%}
+.v22-root :where(iframe,video),.ls26-page :where(iframe,video),.content-page :where(iframe,video){max-width:100%}
+.v22-root :where(.v22-container,.v22-two,.ls27-prime-layout,.ls27-film-layout),.ls26-page :where(.ls26-container,.ls26-plan-hero,.ls27-film-layout){width:min(100% - 36px, 1280px);margin-inline:auto}
+.v22-root :where(.v22-section h2,.ls27-prime-copy h2),.ls26-page :where(h1,h2),.content-page :where(h1,h2){text-wrap:balance}
+.v22-root :where(p,li),.ls26-page :where(p,li),.content-page :where(p,li){text-wrap:pretty}
+.v22-root :where(button,a),.ls26-page :where(button,a),.mk-layout :where(button,a),.content-page :where(button,a){touch-action:manipulation}
+.v22-root :where(button,a,input,select,textarea):focus-visible,
+.ls26-page :where(button,a,input,select,textarea):focus-visible,
+.mk-layout :where(button,a,input,select,textarea):focus-visible,
+.content-page :where(button,a,input,select,textarea):focus-visible{outline:3px solid #0a956c;outline-offset:3px}
+.v22-root .v22-collage img,.v22-root .ls27-about-photo{aspect-ratio:auto}
+.v22-root .ls27-video-landscape,.ls26-page .ls27-video-landscape{aspect-ratio:16/9}
+@media(max-width:960px){
+ .v22-root :where(.v22-service-grid,.ls26-grid-three){grid-template-columns:repeat(2,minmax(0,1fr))}
+ .v22-root .v22-heading{flex-wrap:wrap;align-items:flex-start}
+ .v22-root .ls27-prime-layout,.v22-root .ls27-film-layout{grid-template-columns:1fr}
+ .ls26-page .ls27-film-layout{grid-template-columns:1fr}
+}
+@media(max-width:600px){
+ .v22-root .v22-container,.ls26-page .ls26-container{width:calc(100% - 28px)}
+ .v22-root :where(.v22-grid,.v22-service-grid,.v22-collections,.ls26-grid-three,.v22-featured,.v22-products,.v22-steps,.ls-why-grid){grid-template-columns:minmax(0,1fr)}
+ .ls26-page :where(.ls26-grid-three,.ls26-two,.ls26-plan-hero){grid-template-columns:minmax(0,1fr)}
+ .v22-root :where(.v22-section h2,.ls27-prime-copy h2){font-size:clamp(27px,8.3vw,43px);line-height:1.12}
+ .ls26-page :where(h1,h2){font-size:clamp(29px,8.8vw,44px)}
+ .v22-root .v22-heading{gap:12px}
+ .v22-root .ls27-product-grid,.ls26-page .ls27-product-grid{grid-template-columns:minmax(0,1fr)}
+ .v22-root .v22-section{padding-block:clamp(42px,11vw,70px)}
+ .v22-root :where(.ls27-product-card,.ls-why-card){min-width:0}
+ .v22-root .v22-collage,.v22-root .ls27-about-collage{grid-template-columns:1fr 1fr}
+ .ls26-page .ls26-hero-actions{flex-wrap:wrap}
+ .ls26-page .ls26-hero-actions>a{max-width:100%;min-width:0}
+}
+@media(max-width:350px){
+ .v22-root .v22-container,.ls26-page .ls26-container{width:calc(100% - 20px)}
+ .v22-root :where(.v22-section h2,.ls27-prime-copy h2){font-size:clamp(24px,8.6vw,33px)}
+ .ls26-page :where(h1,h2){font-size:clamp(25px,9vw,33px)}
+ .v22-root .v22-eyebrow,.v22-root .ls26-faded-eyebrow{letter-spacing:.05em!important}
+ .v22-root .ls27-product-card,.ls26-page .ls27-product-card{padding:16px!important;border-radius:16px}
+ .v22-root .ls27-product-brand{height:60px}
+ .v22-root .v22-collage,.v22-root .ls27-about-collage{grid-template-rows:130px 130px;min-height:270px;gap:7px}
+ .v22-root .ls26-location-card{flex-basis:94%;padding:17px;min-height:260px}
+ .ls26-page .ls26-aside{padding:18px}
+ .ls26-page .ls26-button,.ls26-page .ls26-outline{padding:12px 15px}
+}
+@media(min-width:1920px){
+ .v22-root .v22-container,.ls26-page .ls26-container,.content-page .content-hero-inner{max-width:1480px}
+ .v22-root .v22-section{padding-block:clamp(92px,5.5vw,160px)}
+ .v22-root .v22-section p{font-size:clamp(17px,1.05vw,21px)}
+ .v22-root .ls27-product-card{min-height:390px}
+}
+@media(min-width:3200px){
+ .v22-root .v22-container,.ls26-page .ls26-container,.content-page .content-hero-inner{max-width:1860px}
+ .v22-root .v22-section{padding-block:160px}
+ .v22-root .v22-heading h2{font-size:clamp(64px,2.3vw,86px)}
+ .v22-root .v22-product-body p{font-size:20px}
+ .v22-root .ls27-product-card .ls27-product-copy>h3{font-size:34px}
+ .v22-root .ls27-product-card .ls27-product-copy>p{font-size:20px}
+ .v22-root .ls27-product-card{min-height:440px}
+}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.v22-root :where(*),.ls26-page :where(*){scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
+@media(prefers-contrast:more){
+ .v22-root :where(a,button):focus-visible,.ls26-page :where(a,button):focus-visible{outline-width:4px;outline-color:#000}
+ .v22-root .ls26-faded-eyebrow{opacity:1!important;color:#215744!important}
+}
