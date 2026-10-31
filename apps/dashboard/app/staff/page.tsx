@@ -2,6 +2,7 @@ import {cookies} from 'next/headers';
 import {redirect} from 'next/navigation';
 import {createServerClient} from '@supabase/ssr';
 import StaffWorkspace from './StaffWorkspace';
+import StaffWorkActions from './StaffWorkActions';
 export const dynamic='force-dynamic';
 export const metadata={title:'My Staff Dashboard | Landshop'};
 export default async function Page(){
@@ -56,9 +57,9 @@ export default async function Page(){
  const {data:tasks}=verified?await db.from('staff_tasks')
   .select('id,title,details,status,starts_at,due_at,planned_minutes,delay_allowance_minutes,viewed_at,started_at,submitted_at,score,review_comment,assigned_by')
   .eq('assignee_id',user.id).order('created_at',{ascending:false}).limit(100):{data:[]};
- return <StaffWorkspace userId={user.id} initialProfile={profile||null} initialTasks={tasks||[]}
+ return <><StaffWorkActions active={verified} initialTasks={(tasks||[]) as {id:string;title:string;status:string;due_at:string;details:string|null}[]}/><StaffWorkspace userId={user.id} initialProfile={profile||null} initialTasks={tasks||[]}
   role={member?.role||null} initialVerified={verified}
   selfServiceAccess={confirmedStaffSignup&&Boolean(profile)}
   ownerAccess={verifiedOwner}
-  metadata={(user.user_metadata||{}) as Record<string,unknown>} userEmail={user.email||''}/>;
+  metadata={(user.user_metadata||{}) as Record<string,unknown>} userEmail={user.email||''}/></>;
 }
