@@ -1,0 +1,61 @@
+name: Import reviewed owner photographic assets
+on:
+  push:
+    branches:
+      - feature/owner-photography-refresh-2026
+    paths:
+      - 'scripts/import-landshop-owner-photography.py'
+      - '.github/workflows/import-landshop-owner-media.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: landshop-owner-media-import
+  cancel-in-progress: false
+jobs:
+  import_owner_media:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Download owner-approved source archives
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/landshop-owner-uploads
+          curl -fLSs --retry 2 --connect-timeout 15 --max-time 300 'https://at.adobe.com/OUXL27kl02xeT2wn' -o /tmp/landshop-owner-uploads/slider.zip
+          curl -fLSs --retry 2 --connect-timeout 15 --max-time 300 'https://at.adobe.com/60MmA2pEoqE3Vg9T' -o /tmp/landshop-owner-uploads/products.zip
+          curl -fLSs --retry 2 --connect-timeout 15 --max-time 300 'https://at.adobe.com/vx1i4WecFEc8f2cE' -o /tmp/landshop-owner-uploads/famous.zip
+          curl -fLSs --retry 2 --connect-timeout 15 --max-time 300 'https://at.adobe.com/JhNT3bVde6A9xN83' -o /tmp/landshop-owner-uploads/garden.zip
+          curl -fLSs --retry 2 --connect-timeout 15 --max-time 300 'https://at.adobe.com/xBkgiKe242POPxKG' -o /tmp/landshop-owner-uploads/layouts.zip
+          python3 - <<'PY'
+          from zipfile import ZipFile
+          from pathlib import Path
+          for path in Path('/tmp/landshop-owner-uploads').glob('*.zip'):
+              with ZipFile(path) as archive:
+                  if archive.testzip():raise SystemExit(f'Invalid owner asset archive: {path.name}')
+              print(f'Validated ZIP {path.name}: {path.stat().st_size} bytes')
+          PY
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Convert reviewed owner media to optimized EXIF-free WebP
+        env:
+          LANDSHOP_ZIP_SLIDER: /tmp/landshop-owner-uploads/slider.zip
+          LANDSHOP_ZIP_PRODUCTS: /tmp/landshop-owner-uploads/products.zip
+          LANDSHOP_ZIP_FAMOUS: /tmp/landshop-owner-uploads/famous.zip
+          LANDSHOP_ZIP_GARDEN: /tmp/landshop-owner-uploads/garden.zip
+          LANDSHOP_ZIP_LAYOUTS: /tmp/landshop-owner-uploads/layouts.zip
+        run: |
+          python3 -m pip install --quiet Pillow==11.3.0
+          python3 scripts/import-landshop-owner-photography.py
+      - name: Commit actual photo assets to development branch
+        run: |
+          set -euo pipefail
+          git config user.name "landshop-owner-media-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add apps/website/public/owner/2026/
+          if git diff --cached --quiet; then echo 'No image changes needed'; exit 0; fi
+          git commit -m "Import 31 approved owner-supplied Landshop photographs"
+          git push origin HEAD:feature/owner-photography-refresh-2026
