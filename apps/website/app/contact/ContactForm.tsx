@@ -42,7 +42,7 @@ export default function ContactForm(){
    <div className="contact-hidden-field" aria-hidden="true"><label>Website<input name="website" type="text" tabIndex={-1} autoComplete="off"/></label></div>
   </div>
   <label className="contact-enquiry-consent"><input type="checkbox" name="consent" value="yes" required/><span>I agree to Landshop using the details I provide to respond to this enquiry.</span></label>
-  <div className="contact-enquiry-actions"><button className="content-cta" disabled={status==='sending'} type="submit">{status==='sending'?'Sending enquiry…':'Send Enquiry ↗'}</button></div>
+  <div className="contact-enquiry-actions"><button className="content-cta" disabled={status==='sending'} type="submit">{status==='sending'?'Sending enquiry…':'Send Enquiry →'}</button></div>
   {feedback&&<p role={status==='error'?'alert':'status'} className={'contact-enquiry-feedback '+status}>{feedback}</p>}
  </form>;
 }
