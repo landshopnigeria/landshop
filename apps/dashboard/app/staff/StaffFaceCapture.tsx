@@ -17,13 +17,19 @@ export default function StaffFaceCapture({busy,status,onSubmit}:Props){
  const [sending,setSending]=useState(false);
  const videoRef=useRef<HTMLVideoElement|null>(null);
  const streamRef=useRef<MediaStream|null>(null);
+ const cameraRequestRef=useRef(0);
  const stopCamera=useCallback(()=>{
+  cameraRequestRef.current+=1;
   streamRef.current?.getTracks().forEach(track=>track.stop());
   streamRef.current=null;
   if(videoRef.current)videoRef.current.srcObject=null;
   setCameraOn(false);
  },[]);
- useEffect(()=>()=>{streamRef.current?.getTracks().forEach(track=>track.stop())},[]);
+ useEffect(()=>{
+  const onPageHide=()=>{cameraRequestRef.current+=1;streamRef.current?.getTracks().forEach(track=>track.stop());streamRef.current=null};
+  window.addEventListener('pagehide',onPageHide);
+  return()=>{window.removeEventListener('pagehide',onPageHide);onPageHide()};
+ },[]);
  useEffect(()=>{
   if(!captured){setPreview(null);return}
   const url=URL.createObjectURL(captured);
@@ -48,7 +54,9 @@ export default function StaffFaceCapture({busy,status,onSubmit}:Props){
   setError('');
   try{
    stopCamera();
+   const requestToken=cameraRequestRef.current;
    const media=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:'user',width:{ideal:1280},height:{ideal:960}}});
+   if(cameraRequestRef.current!==requestToken||!videoRef.current){media.getTracks().forEach(track=>track.stop());return}
    streamRef.current=media;
    if(videoRef.current){videoRef.current.srcObject=media;await videoRef.current.play()}
    setCameraOn(true);
