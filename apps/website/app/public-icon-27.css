@@ -67,3 +67,13 @@ body .ls24-carousel-arrows svg, body .ls24-newsletter-form button svg, body .ls2
 @media(max-width:280px){
  body .mk-layout .mk-btn{max-width:100%;min-width:0;box-sizing:border-box;padding-inline:10px;gap:7px;white-space:normal}
 }
+
+/* The mobile hamburger drawing follows the same 27px icon system.
+ * The 46px button remains unchanged for accessible touch interaction.
+ */
+body .ls-site-chrome .ls30-hamburger{width:27px!important;height:27px!important;gap:5px}
+body .ls-site-chrome .ls30-hamburger i:nth-child(1){width:27px!important}
+body .ls-site-chrome .ls30-hamburger i:nth-child(2){width:20px!important}
+body .ls-site-chrome .ls30-hamburger i:nth-child(3){width:24px!important}
+body .ls-site-chrome .ls30-hamburger-open i:nth-child(1){width:27px!important;transform:translateY(8px) rotate(45deg)}
+body .ls-site-chrome .ls30-hamburger-open i:nth-child(3){width:27px!important;transform:translateY(-8px) rotate(-45deg)}

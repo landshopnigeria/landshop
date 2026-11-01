@@ -40,6 +40,38 @@ try{
    }
    if(!result.hasH1||!result.hasTitle||!result.hasDescription)
     errors.push(path+' @'+width+': missing essential heading/title/description');
+   // Validate the computed icon treatment, not only the CSS source.
+   // Run once per route at a typical phone width to catch runtime regressions.
+   if(width===375){
+    const iconAudit=await page.evaluate(()=>{
+     const visible=element=>{
+      const style=getComputedStyle(element);
+      return style.display!=='none'&&style.visibility!=='hidden'&&element.getClientRects().length>0;
+     };
+     const dimensions=element=>{
+      const style=getComputedStyle(element);
+      return {width:parseFloat(style.width),height:parseFloat(style.height)};
+     };
+     const icons=[...document.querySelectorAll('svg.ls-icon')].filter(visible);
+     const wrongIconSizes=icons.map(icon=>({className:icon.getAttribute('class'),...dimensions(icon)}))
+      .filter(icon=>Math.abs(icon.width-27)>.1||Math.abs(icon.height-27)>.1).slice(0,8);
+     const approvedPath='M2.5 12h19 M14.5 5l7 7-7 7';
+     const wrongArrows=[...document.querySelectorAll('svg.ls-approved-arrow')].filter(visible)
+      .filter(icon=>icon.querySelector('path')?.getAttribute('d')!==approvedPath).slice(0,8)
+      .map(icon=>icon.querySelector('path')?.getAttribute('d'));
+     const oldArrowGlyphs=/[→←↗↖↘↙➔➜➝⟶⇢⇠›‹»«❯❮⟩⟨➤⇒⇨⇦]/;
+     const legacyArrowActions=[...document.querySelectorAll('a,button')].filter(visible)
+      .filter(element=>oldArrowGlyphs.test(element.textContent||'')).slice(0,8)
+      .map(element=>(element.textContent||'').trim().slice(0,90));
+     const menu=document.querySelector('.ls30-hamburger');
+     const mobileMenu=menu&&visible(menu)?dimensions(menu):null;
+     return {iconCount:icons.length,wrongIconSizes,wrongArrows,legacyArrowActions,mobileMenu};
+    });
+    if(!iconAudit.iconCount||iconAudit.wrongIconSizes.length||iconAudit.wrongArrows.length||iconAudit.legacyArrowActions.length||
+       !iconAudit.mobileMenu||Math.abs(iconAudit.mobileMenu.width-27)>.1||Math.abs(iconAudit.mobileMenu.height-27)>.1)
+     errors.push(path+' @375px: 27px icon / canonical arrow runtime audit failed '+JSON.stringify(iconAudit));
+    console.log('APPROVED ICON RUNTIME',path,JSON.stringify(iconAudit));
+   }
    console.log('CHECK',path,width,JSON.stringify(result));
   }
  }
