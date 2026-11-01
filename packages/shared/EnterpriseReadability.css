@@ -1,0 +1,28 @@
+/* Landshop enterprise readability baseline: legible controls, arrows and icons.
+   Scoped to existing marketing, portal and dashboard shells; does not alter imagery,
+   verified property layouts or the approved header/footer structure. */
+:root{--landshop-control-text:15px;--landshop-icon-size:23px}
+:is(.ls25-shell,.dc-shell,.command-shell,.mk-layout,.ls-site-chrome,.v22-root,.ls26-page,.content-page) :is(button,input,select,textarea){font-size:max(14px,1em)}
+:is(.ls25-shell,.dc-shell,.command-shell,.mk-layout,.ls-site-chrome,.v22-root,.ls26-page,.content-page) :is(button,a,select){line-height:1.4}
+:is(.ls25-shell,.dc-shell,.command-shell,.mk-layout,.ls-site-chrome,.v22-root,.ls26-page,.content-page) :is(a,button) > svg:not([class*="logo"]),
+:is(.ls25-shell,.dc-shell,.command-shell,.mk-layout,.ls-site-chrome,.v22-root,.ls26-page,.content-page) :is(a,button) > .ls-icon{
+ width:clamp(20px,1.35em,26px);height:clamp(20px,1.35em,26px);flex-shrink:0;vertical-align:middle
+}
+:is(.ls25-shell,.dc-shell,.command-shell,.mk-layout,.ls-site-chrome,.v22-root,.ls26-page,.content-page) :is(a,button) > span[aria-hidden="true"]:not([class*="avatar"]){font-size:max(21px,1.25em);line-height:1}
+.ls25-shell .ls25-navitem svg,.dc-shell .dc-side nav svg,.command-shell .command-side nav svg{width:24px;height:24px}
+.command-shell .command-side nav a{font-size:14px;min-height:47px}
+.command-shell .command-side nav a span{font-size:24px;width:30px}
+.command-shell .panel-top a,.command-shell .command-quick a{font-size:14px}
+.command-shell .command-top small,.command-shell .command-brand small{font-size:12px}
+.command-shell .command-stats small,.command-shell .command-table td,.command-shell .command-table th{font-size:13px}
+.command-shell .command-panel>p,.command-shell .command-stats p{font-size:14px}
+.dc-shell .dc-side nav a,.dc-shell .cd-sidebar nav a{font-size:15px}
+.dc-shell .cd-action-chevron,.dc-shell .cd-verified>span[aria-hidden="true"]{font-size:26px}
+.ls25-shell .ls25-navitem{font-size:15px}
+.ls25-shell .ls25-card-head h2{font-size:19px}
+.ls25-shell .ls25-text-link{font-size:14px}
+.ls25-shell .ls25-collapse-button{min-width:40px;min-height:40px}
+@media(max-width:600px){
+ :root{--landshop-icon-size:22px}
+ .command-shell .command-side nav a,.dc-shell .dc-side nav a{min-height:46px}
+}
