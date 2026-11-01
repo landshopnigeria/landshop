@@ -48,4 +48,18 @@ for route,reference in [
   if response.status!=200 or reference not in html:
    raise SystemExit(f"New photo not present on live page: {route}")
  print("PAGE_IMAGE_OK",route,reference,flush=True)
+# The separate 2026 owner archive includes documentary Merit Park signage.
+# This archive is distinct from the 31 previously approved marketing photos.
+url="https://www.landshopnigeria.com/owner/2026/merit-park-archival-signage.jpg?release="+sha[:12]
+with urlopen(Request(url,headers={"Cache-Control":"no-store"}),timeout=22) as response:
+ first=response.read(3)
+ if response.status!=200 or first!=b'\\xff\\xd8\\xff':
+  raise SystemExit("Approved historical Merit Park JPEG missing or corrupted on live website")
+print("IMAGE_OK merit-park-archival-signage.jpg",flush=True)
+for route in ("/projects","/projects/merit-park"):
+ with urlopen(Request("https://www.landshopnigeria.com"+route+"?release="+sha[:12],headers={"Cache-Control":"no-store"}),timeout=25) as response:
+  html=response.read(1_600_000).decode("utf-8","replace")
+  if response.status!=200 or "/owner/2026/merit-park-archival-signage.jpg" not in html:
+   raise SystemExit("Historical Merit Park photo not visible in HTML at "+route)
+ print("PAGE_IMAGE_OK",route,flush=True)
 print(f"PASS {len(files)} publicly served owner photographs for release {sha[:12]}")
