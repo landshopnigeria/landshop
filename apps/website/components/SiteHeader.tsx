@@ -18,13 +18,12 @@ const groups:Group[]=[
   {title:'Merit Park',href:'/projects/merit-park',icon:'building',description:'Project videos and subscriber support'},
   {title:'Green Island',href:'/projects/green-island',icon:'building',description:'Project videos and subscriber support'},
   {title:'Maiyegun Beach Estate',href:'/projects/maiyegun-beach-estate',icon:'building',description:'Project videos and subscriber support'}]},
- {label:'Careers',eyebrow:'CAREERS AT LANDSHOP',description:'Learn about careers, the team and upcoming programmes at Landshop.',items:[
-  {title:'Careers',href:'/careers',icon:'briefcase',description:'Working at Landshop and future openings'},
-  {title:'Career Programmes',href:'/careers/programs',icon:'users',description:'Learning and career development enquiries'}]},
  {label:'Company',eyebrow:'DISCOVER LANDSHOP',description:'Learn about our purpose, our team responsibilities and the company behind the experience.',items:[
   {title:'Who We Are',href:'/about#who-we-are',icon:'users',description:'Our company and operating philosophy'},
   {title:'Vision & Mission',href:'/about#vision',icon:'compass',description:'Our long-term direction'},
   {title:'Our Teams',href:'/company/team',icon:'briefcase',description:'People, operations and responsibilities'},
+  {title:'Careers',href:'/careers',icon:'briefcase',description:'Working at Landshop and future openings'},
+  {title:'Career Programmes',href:'/careers/programs',icon:'users',description:'Learning and career development enquiries'},
   {title:'Contact Landshop',href:'/contact',icon:'mail',description:'Speak with the right team'}]},
  {label:'Services',eyebrow:'PROPERTY SERVICES',description:'Choose a service or start a guided application. All prices and property terms require verification.',items:[
   {title:'Property Acquisition',href:'/services/property-acquisition',icon:'home',description:'Explore ownership opportunities'},
