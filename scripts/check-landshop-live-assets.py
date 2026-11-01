@@ -19,9 +19,12 @@ HOSTS=("landshopnigeria.com","www.landshopnigeria.com")
 APPLICATIONS=(("portal.landshopnigeria.com","/",'class="authGlass"'),("app.landshopnigeria.com","/staff/sign-in",'class="lsa-card signin"'),("app.landshopnigeria.com","/staff/sign-up",'class="lsa-card signup"'))
 PAGES=(
     ("/","cinematic-property-video-preview",".ls-v23-hero"),
-    ("/develop","data-product-journey",".lp-pathway-card"),
-    ("/incubate","data-product-journey",".lp-pathway-card"),
-    ("/grow","data-product-journey",".lp-pathway-card"),
+    ("/develop","lde-gallery",".lde-sidecard"),
+    ("/incubate","lde-gallery",".lde-sidecard"),
+    ("/grow","lde-gallery",".lde-sidecard"),
+    ("/projects/famous-gardens","lde-gallery",".lde-thumbs"),
+    ("/projects/merit-park","lde-gallery",".lde-thumbs"),
+    ("/projects/maiyegun-beach-estate","lde-gallery",".lde-thumbs"),
     ("/properties","mk-property-grid",".mk-tools"),
 )
 UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/156.0.0.0 Safari/537.36"
