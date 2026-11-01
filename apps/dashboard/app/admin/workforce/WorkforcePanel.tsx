@@ -3,7 +3,7 @@ import BrandedSelect from '../../../components/BrandedSelect';
 
 import {useEffect,useState,type FormEvent} from 'react';
 import {createBrowserClient} from '@supabase/ssr';
-type Member={user_id:string;username:string;requested_role:string;employment_state:string;kyc_state:string;photo_path:string|null;staff_number:string|null;review_note:string|null};
+type Member={user_id:string;username:string;requested_role:string;employment_state:string;kyc_state:string;photo_path:string|null;staff_number:string|null;review_note:string|null;verification_provider:string|null;verification_session_id:string|null};
 type Task={id:string;assignee_id:string;assigned_by:string;title:string;status:string;due_at:string;planned_minutes:number|null;delay_allowance_minutes:number;score:number|null;assignee_report:string|null;review_comment:string|null};
 type History={id:string;action:string;occurred_at:string;place:string;latitude:number;longitude:number;accuracy_m:number};
 type Daily={id:string;staff_id:string;report_date:string;summary:string;blockers:string|null;updated_at:string};
@@ -32,7 +32,13 @@ export default function WorkforcePanel({people,taskRows,dailyRows,actorRole}:{pe
   catch(e){setMsg(e instanceof Error?e.message:'Request failed');return null}finally{setBusy(false)}
  }
  async function review(approve:boolean){if(!selected)return;
-  const ok=await call('landshop_staff_review',{p_user:selected,p_approve:approve,p_role:role,p_reason:reason},approve?'Identity verified, membership approved and staff ID issued.':'Identity review rejected with an audit note.');
+  const chosenProfile=staff.find(x=>x.user_id===selected);
+  if(approve&&chosenProfile?.kyc_state==='approved'){
+   const ok=await call('landshop_staff_assign_verified_role',{p_user:selected,p_role:role,p_reason:reason},'Verified employee role updated. Identity approval was preserved; changes were audit logged.');
+   if(ok)setMsg('Verified identity retained. Updated role: '+role.replaceAll('_',' ')+'. This change is audit logged.');
+   return;
+  }
+  const ok=await call('landshop_staff_review',{p_user:selected,p_approve:approve,p_role:role,p_reason:reason},approve?'Independent identity review completed, staff ID issued and role recorded.':'Identity review requires attention; report was audit logged.');
   if(ok)setStaff(p=>p.map(x=>x.user_id===selected?{...x,employment_state:approve?'active':'pending',kyc_state:approve?'approved':'rejected',staff_number:approve?x.staff_number||'Issued by server':x.staff_number}:x));
  }
  async function revoke(){if(!selected)return;const ok=await call('landshop_staff_revoke',{p_user:selected,p_reason:reason},'Staff access suspended. This is a reversible governance action, not hard deletion.');if(ok)setStaff(x=>x.map(p=>p.user_id===selected?{...p,employment_state:'suspended'}:p))}
@@ -53,14 +59,15 @@ export default function WorkforcePanel({people,taskRows,dailyRows,actorRole}:{pe
   {msg&&<p role="status" style={{padding:16,borderRadius:11,background:'#fff0e0',color:'#86511e',fontSize:13}}>{msg}</p>}
   <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(min(100%,360px),1fr))',gap:18}}>
   <section className="wcard"><h2>Staff identity & access review</h2>
-  <p className="subtle">Every role starts as a request. Photo and employee status require an independent management decision. Only the owner can approve Command Center roles.</p>
+  <p className="subtle">Basic staff access begins after email verification. Biometric/document checks can approve identity automatically when the provider is connected, while elevated roles still require a separately authorized manager or owner. Only the owner may grant Command Center roles.</p>
   <label>Choose registered staff<BrandedSelect value={selected} onChange={e=>{setSelected(e.target.value);setRole(staff.find(x=>x.user_id===e.target.value)?.requested_role||'staff')}} style={field}><option value="">Choose applicant</option>{staff.map(s=><option value={s.user_id} key={s.user_id}>{s.username} · {s.kyc_state} / {s.employment_state}</option>)}</BrandedSelect></label>
   {chosen&&<div style={{display:'grid',gap:8,marginTop:15}}>
    <strong>{chosen.username}</strong><small>Requested: {chosen.requested_role.replaceAll('_',' ')}</small><small>Current ID: {chosen.staff_number||'Not assigned'}</small>
+   {chosen.verification_provider==='veriff'&&chosen.kyc_state==='approved'&&<small style={{color:'#087958',fontWeight:850}}>Identity independently verified by document and live selfie service</small>}
    {photo[chosen.user_id]?<img src={photo[chosen.user_id]} width={125} height={155} alt="Privately submitted staff KYC portrait" style={{borderRadius:12,objectFit:'cover'}}/>:<p className="subtle">No accessible original portrait for verification.</p>}
    <label>Approved role<BrandedSelect value={role} style={field} onChange={e=>setRole(e.target.value)}>{managerRoles.map(r=><option key={r} value={r}>{r.replaceAll('_',' ')}</option>)}</BrandedSelect></label>
    <label>Reason and identity-verification evidence<textarea style={field} rows={3} minLength={20} maxLength={1000} value={reason} onChange={e=>setReason(e.target.value)} placeholder="Describe the reviewed face photo, employment authorization, and assigned department"/></label>
-   <div className="actions"><button disabled={busy||reason.trim().length<20||!photo[chosen.user_id]} style={btn} onClick={()=>review(true)}>Approve identity + role</button><button disabled={busy||reason.trim().length<20} style={{...btn,background:'#b96b22'}} onClick={()=>review(false)}>Reject KYC</button><button disabled={busy||reason.trim().length<20} style={{...btn,background:'#9a3737'}} onClick={revoke}>Suspend access</button></div>
+   <div className="actions"><button disabled={busy||reason.trim().length<20||!photo[chosen.user_id]} style={btn} onClick={()=>review(true)}>{chosen.kyc_state==='approved'?'Assign verified role':'Approve identity + role'}</button><button disabled={busy||reason.trim().length<20||chosen.kyc_state==='approved'} style={{...btn,background:'#b96b22'}} onClick={()=>review(false)}>Reject KYC</button><button disabled={busy||reason.trim().length<20} style={{...btn,background:'#9a3737'}} onClick={revoke}>Suspend access</button></div>
   </div>}
   </section>
   <section className="wcard"><h2>Manager-assigned task</h2><p className="subtle">Provide the exact estimated time, deadline, delay allowance and expected outcome. The employee receives a timestamped assignment.</p>
