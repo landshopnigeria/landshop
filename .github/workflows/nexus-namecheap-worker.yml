@@ -80,11 +80,11 @@ jobs:
             test -n "${LANDSHOP_SUPABASE_SERVICE_ROLE_KEY:-}"' ||
             { echo '::error::NEXUS_PROTECTED_ENV_NOT_READY'; exit 3; }
           existing="$(crontab -l 2>/dev/null || true)"
-          printf '%s\n' "$existing" | grep -v '# LANDSHOP_NEXUS_SAFE_PREVIEW' > "$root/cron.next"
+          printf '%s\n' "$existing" | sed '/# LANDSHOP_NEXUS_SAFE_PREVIEW/d' > "$root/cron.next"
           printf '%s\n' '* * * * * /usr/bin/flock -n "$HOME/landshop-nexus-runtime/worker.lock" /usr/bin/timeout 45 "$HOME/landshop-nexus-runtime/nexus_namecheap_once.sh" >> "$HOME/landshop-nexus-runtime/worker.log" 2>&1 # LANDSHOP_NEXUS_SAFE_PREVIEW' >> "$root/cron.next"
+          /usr/bin/flock -n "$root/worker.lock" /usr/bin/timeout 45 "$root/nexus_namecheap_once.sh" >/dev/null
+          echo 'NEXUS_ONE_SHOT_QUEUE_CLAIM_SUCCEEDED'
           crontab "$root/cron.next"
           rm -f "$root/cron.next"
           echo 'NEXUS_SAFE_PREVIEW_SCHEDULE_INSTALLED'
-          /usr/bin/flock -n "$root/worker.lock" /usr/bin/timeout 45 "$root/nexus_namecheap_once.sh" >/dev/null
-          echo 'NEXUS_ONE_SHOT_QUEUE_CLAIM_SUCCEEDED'
           REMOTE
