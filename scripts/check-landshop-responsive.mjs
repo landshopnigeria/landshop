@@ -180,6 +180,54 @@ try{
   if(articleColors.body!=='rgb(43, 164, 122)'||articleColors.sidebar!=='rgb(43, 164, 122)')
    errors.push('V32 article detail headings should use official primary green: '+JSON.stringify(articleColors));
   console.log('V32 ARTICLE HEADING CHECK',JSON.stringify(articleColors));
+
+  // The owner-approved article hero must work for both sample stories.
+  // Verify gallery order, usable controls, photos, compact typography, and
+  // preservation of the long-form body/sidebar on the actual rendered page.
+  for(const slug of ['marketing-property-online','first-home-nigeria']){
+   await motionPage.setViewportSize({width:1440,height:920});
+   const response=await motionPage.goto(root+'/insights/'+slug,{waitUntil:'domcontentloaded',timeout:30000});
+   if(response?.status()!==200){errors.push('ARTICLE HERO '+slug+': HTTP '+response?.status());continue}
+   try{
+    await motionPage.waitForSelector('.lsah-slide-img.lsah-slide-active',{timeout:10000});
+    await motionPage.waitForFunction(()=>{const img=document.querySelector('.lsah-slide-img.lsah-slide-active');return img&&img.complete&&img.naturalWidth>0},null,{timeout:12000});
+    const state=await motionPage.evaluate(()=>{
+     const title=document.querySelector('.lsah-title');
+     return {hero:!!document.querySelector('.lsah-hero'),titleSize:title?parseFloat(getComputedStyle(title).fontSize):0,
+      slides:document.querySelectorAll('.lsah-slide-img').length,
+      glass:!!document.querySelector('.lsah-glass'),
+      contact:document.querySelector('.lsah-primary-cta')?.getAttribute('href'),
+      body:!!document.querySelector('.v22-article-body'),sidebar:!!document.querySelector('.v22-article-sidebar'),
+      image:document.querySelector('.lsah-slide-img.lsah-slide-active')?.getAttribute('src')};
+    });
+    if(!state.hero||!state.glass||state.titleSize>32.1||state.titleSize<25||state.slides!==3||state.contact!=='/contact'||!state.body||!state.sidebar)
+     errors.push('ARTICLE HERO '+slug+' missing preview contract: '+JSON.stringify(state));
+    if(slug==='marketing-property-online'&&!state.image?.includes('garden-property-filming'))
+     errors.push('Marketing article does not open with its approved filming photo');
+    if(slug==='first-home-nigeria'&&!state.image?.includes('famous-completed-homes'))
+     errors.push('First-home article does not open with its approved estate photo');
+    await motionPage.getByRole('button',{name:'Next photograph'}).click();
+    if(!((await motionPage.locator('.lsah-slide-count').innerText()).includes('02 / 03')))
+     errors.push('ARTICLE HERO '+slug+': next-slide button did not advance');
+    await motionPage.getByRole('button',{name:'Previous photograph'}).click();
+    if(!((await motionPage.locator('.lsah-slide-count').innerText()).includes('01 / 03')))
+     errors.push('ARTICLE HERO '+slug+': previous-slide button did not reverse');
+    await motionPage.getByRole('button',{name:'Pause',exact:true}).click();
+    if(!((await motionPage.getByRole('button',{name:'Play',exact:true}).count())===1))
+     errors.push('ARTICLE HERO '+slug+': pause button did not toggle');
+    await motionPage.setViewportSize({width:375,height:760});
+    const mobile=await motionPage.evaluate(()=>({
+     width:document.documentElement.scrollWidth,
+     titleSize:parseFloat(getComputedStyle(document.querySelector('.lsah-title')).fontSize),
+     heroHeight:Math.round(document.querySelector('.lsah-hero').getBoundingClientRect().height)
+    }));
+    if(mobile.width>378||mobile.titleSize>26.1||mobile.heroHeight<590)
+     errors.push('ARTICLE HERO '+slug+': mobile layout differs from approved preview '+JSON.stringify(mobile));
+    console.log('APPROVED ARTICLE HERO CHECK',slug,JSON.stringify({desktop:state,mobile}));
+   }catch(error){errors.push('ARTICLE HERO '+slug+': interactive browser test failed '+String(error))}
+  }
+  await motionPage.setViewportSize({width:1440,height:920});
+
   // V33 interactive regression: hovering over a carousel freezes its slide,
   // leaving it resumes timer-based advancement without clicking controls.
   await motionPage.goto(root+'/',{waitUntil:'domcontentloaded',timeout:30000});

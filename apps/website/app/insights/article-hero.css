@@ -1,0 +1,57 @@
+/* Article DETAIL hero ONLY. Faithful to the approved interactive sample.
+ * Does not style the article body, article sidebar, global header, newsletter, or footer.
+ */
+.lsah-hero{position:relative;height:540px;isolation:isolate;overflow:hidden;background:linear-gradient(120deg,#124a3d,#2b9479);color:#fff;font-family:"Helvetica Neue",Arial,sans-serif}
+.lsah-hero *{box-sizing:border-box}
+.lsah-hero .lsah-slide-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:opacity .5s ease,transform 9s ease;opacity:0;z-index:0;transform:scale(1.045)}
+.lsah-hero .lsah-slide-img.lsah-slide-active{opacity:1;transform:scale(1)}
+.lsah-hero::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(4,38,32,.91),rgba(5,49,39,.55) 48%,rgba(8,45,33,.12) 100%),linear-gradient(0deg,rgba(0,27,20,.5),transparent 50%);z-index:1;pointer-events:none}
+.lsah-hero::after{content:"";pointer-events:none;position:absolute;inset:0;border:1px solid #ffffff0a;z-index:3}
+.lsah-hero .lsah-hero-content{height:100%;max-width:1320px;margin:auto;display:flex;flex-direction:column;justify-content:flex-end;padding:46px clamp(22px,6.5vw,90px) 78px;position:relative;z-index:2}
+.lsah-hero .lsah-crumb{position:absolute;top:34px;left:clamp(22px,6.5vw,90px);display:flex;align-items:center;gap:9px;color:#e5fff2;font-size:11px;font-weight:560;text-shadow:0 1px 3px #002;flex-wrap:wrap;max-width:calc(100% - 44px)}
+.lsah-hero .lsah-crumb a{text-decoration:underline;text-decoration-color:#ffffff6b;text-underline-offset:4px;color:inherit}
+.lsah-hero .lsah-crumb a:hover{color:#ffc797}
+.lsah-hero .lsah-glass{width:min(700px,100%);border-radius:18px;border:1px solid #ffffff48;background:rgba(8,65,52,.18);box-shadow:0 18px 35px #001e1414;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);padding:26px 30px 28px}
+.lsah-hero .lsah-eyebrow{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#b4f4d9;font-weight:900;margin:0 0 13px;line-height:1.5}
+.lsah-hero .lsah-title{font-size:clamp(26px,2.35vw,32px)!important;font-weight:800;line-height:1.18;letter-spacing:-.038em;margin:0 0 13px;max-width:665px;text-wrap:balance;color:white!important}
+.lsah-hero .lsah-desc{font-size:13px;line-height:1.65;color:#eefbf5;margin:0 0 19px;max-width:600px}
+.lsah-hero .lsah-actions{display:flex;align-items:center;flex-wrap:wrap;gap:11px}
+.lsah-hero .lsah-primary-cta,.lsah-hero .lsah-ghost-cta{font-size:12px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;gap:12px;border-radius:10px;padding:13px 17px;min-height:43px;transition:background .2s ease,color .2s ease,border-color .2s ease;text-decoration:none}
+.lsah-hero .lsah-primary-cta{background:#2ba47a;color:#fff}
+.lsah-hero .lsah-primary-cta:hover,.lsah-hero .lsah-ghost-cta:hover{background:#f26b10;color:#fff;border-color:#f26b10}
+.lsah-hero .lsah-ghost-cta{border:1px solid #ffffffa6;background:#ffffff1e;color:#fff}
+.lsah-hero .lsah-hero-meta{position:absolute;bottom:21px;left:clamp(22px,6.5vw,90px);font-size:10px;color:#e3f4e8;letter-spacing:.04em}
+.lsah-hero .lsah-hero-controls{position:absolute;z-index:2;right:clamp(22px,5vw,70px);bottom:29px;display:flex;align-items:center;gap:15px}
+.lsah-hero .lsah-slide-count{font-size:10px;color:#f0f9f3;font-weight:850;letter-spacing:.07em;min-width:36px}
+.lsah-hero .lsah-carousel-controls{display:flex;gap:7px}
+.lsah-hero .lsah-circle-arrow{border:1px solid #ffffff91;border-radius:50%;background:#ffffff2b;color:#fff;width:40px;height:40px;display:grid;place-items:center;padding:0;cursor:pointer}
+.lsah-hero .lsah-circle-arrow:hover{background:#f26b10;border-color:#f26b10}
+.lsah-hero .lsah-pause-control{padding:7px 9px;font-size:10px;font-weight:800;white-space:nowrap;border-radius:8px;background:#ffffff22;color:white;border:1px solid #ffffff58;cursor:pointer}
+.lsah-hero .lsah-pause-control:hover{background:#f26b10;border-color:#f26b10}
+.lsah-hero .lsah-slide-progress{position:absolute;z-index:2;right:clamp(22px,5vw,70px);top:37px;display:flex;gap:6px}
+.lsah-hero .lsah-slide-dot{width:30px;height:5px;border-radius:99px;background:#ffffff6d;border:0;padding:0;cursor:pointer}
+.lsah-hero .lsah-slide-dot.lsah-slide-dot-active{background:#f7a06a;width:42px}
+.lsah-hero .lsah-slide-caption{position:absolute;z-index:2;right:clamp(22px,5vw,70px);top:55px;font-size:9px;color:#effcf4;text-align:right;max-width:275px;line-height:1.4;text-shadow:0 1px 5px #0138}
+.lsah-hero :is(button,a):focus-visible{outline:3px solid #f5a26d;outline-offset:3px}
+@media(max-width:950px){.lsah-hero .lsah-glass{width:min(600px,100%)}}
+@media(max-width:650px){
+ .lsah-hero{height:610px}
+ .lsah-hero .lsah-hero-content{padding:70px 17px 100px}
+ .lsah-hero .lsah-glass{padding:22px 19px}
+ .lsah-hero .lsah-title{font-size:26px!important}
+ .lsah-hero .lsah-desc{font-size:12px}
+ .lsah-hero .lsah-slide-caption{display:none}
+ .lsah-hero .lsah-hero-controls{left:17px;right:auto;bottom:26px}
+ .lsah-hero .lsah-hero-meta{left:auto;right:17px;bottom:32px}
+ .lsah-hero .lsah-crumb{top:25px;left:17px}
+ .lsah-hero .lsah-slide-progress{top:70px;right:16px}
+}
+@media(max-width:330px){
+ .lsah-hero .lsah-glass{padding:18px 15px}
+ .lsah-hero .lsah-title{font-size:24px!important}
+ .lsah-hero .lsah-hero-controls{gap:8px}
+ .lsah-hero .lsah-circle-arrow{width:34px;height:34px}
+ .lsah-hero .lsah-slide-count{min-width:31px}
+ .lsah-hero .lsah-hero-meta{font-size:9px}
+}
+@media(prefers-reduced-motion:reduce){.lsah-hero .lsah-slide-img,.lsah-hero .lsah-primary-cta,.lsah-hero .lsah-ghost-cta{transition:none!important;transform:none!important}}
