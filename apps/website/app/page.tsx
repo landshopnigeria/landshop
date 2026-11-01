@@ -1,4 +1,5 @@
 import Homepage,{type FeaturedProperty} from '../components/LandshopHome';
+import './home-approved-reference.css';
 import {cleanFilters,listPublished,propertyPrice,propertyHref} from '../lib/marketplace';
 import {loadPropertyMedia} from '../lib/property-showcase';
 export const dynamic='force-dynamic';
