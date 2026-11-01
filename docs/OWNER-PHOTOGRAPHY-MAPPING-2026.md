@@ -48,3 +48,7 @@ Green Island has no securely attributed site photograph in the six user-supplied
 The production estate registry currently contains Merit Park as a draft historical record, not an approved active listing. Green Island does not have a verified live estate record. Current estate imagery must only be published when project identity, rights of publication and date/context are confirmed.
 
 **Site policy:** Real owner-supplied photographic evidence is welcome; a period marketing banner is labelled as historical advertising, not current construction. No unverified Green Island photograph is published. Product payments, new unit availability and title claims remain independently gated.
+
+### Responsive release verification note
+
+The independent browser smoke test of this historical photo change surfaced an unrelated global mobile overflow regression after a new 70px icon style was added to the production branch. The global icon stylesheet was corrected on `main` to keep larger desktop icons while scaling and wrapping icons on narrow screens. The historical photo release requires a fresh responsive check against that corrected base. No approved header, footer, property detail or marketplace filter structure is modified by this project-photo update.
