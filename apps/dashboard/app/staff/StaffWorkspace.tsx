@@ -4,6 +4,7 @@ import BrandedSelect from '../../components/BrandedSelect';
 import {useEffect,useState,type FormEvent,type ReactNode} from 'react';
 import Link from 'next/link';
 import StaffAuthShell from './StaffAuthShell';
+import StaffFaceCapture from './StaffFaceCapture';
 import './staff-dashboard.css';
 import {createBrowserClient} from '@supabase/ssr';
 type Profile={user_id:string;organization_id:string;username:string;requested_role:string;age_at_registration:number;gender:string;kyc_state:string;employment_state:string;photo_path:string|null;staff_number:string|null;joined_at:string|null};
@@ -106,7 +107,7 @@ export default function StaffWorkspace({userId,initialProfile,initialTasks,role,
    if(upError)throw Error(upError.message);
    const {error}=await db.rpc('landshop_staff_submit_photo',{p_path:path});
    if(error)throw Error(error.message);
-   setMessage('Your photograph was uploaded privately. Dashboard access remains active; restricted work privileges require separate verification.');
+   setMessage('Your photograph was submitted privately. Your staff dashboard remains active. Identity approval and restricted work privileges require separate verification.');
    await refresh();
   }catch(e){notify(e)}finally{setBusy(false)}
  }
@@ -189,8 +190,8 @@ export default function StaffWorkspace({userId,initialProfile,initialTasks,role,
    <div className="ls25-dual"><label>Age at registration<input required min={18} max={120} type="number" value={age} onChange={e=>setAge(e.target.value)}/></label>
    <label>Gender<BrandedSelect value={gender} onChange={e=>setGender(e.target.value)}><option value="prefer_not_to_say">Prefer not to say</option><option value="female">Female</option><option value="male">Male</option><option value="non_binary">Non-binary</option></BrandedSelect></label></div>
    <label>Requested role<input readOnly value={wanted.replaceAll('_',' ')}/></label><button className="ls25-action" disabled={busy}>Finish staff registration</button></form>}
-  {profile&&profile.kyc_state!=='approved'&&<div className="ls25-kyc"><p>Your staff dashboard is already active. A private portrait is only required for restricted employee work and an official staff ID.</p>
-   <label className="ls25-upload">Upload or replace staff portrait<input type="file" accept="image/jpeg,image/png,image/webp" disabled={busy} onChange={e=>void upload(e.target.files?.[0]||null)}/></label></div>}
+  {profile&&profile.kyc_state!=='approved'&&<div className="ls25-kyc"><p>Your personal staff workspace is already active. Submit a private portrait through any of the three supported methods. Restricted privileges and an official staff ID require genuine identity verification.</p>
+   <StaffFaceCapture busy={busy} status={profile.kyc_state} onSubmit={upload}/></div>}
   {verified&&profile?.staff_number&&<div className="ls25-staff-id"><div className="ls25-id-heading"><img src="/media/logo-transparent.png" alt="Landshop original logo" onError={e=>{e.currentTarget.src='/media/logo.webp'}}/> <strong>Employee ID</strong></div><p>{profile.staff_number}</p><small>{profile.username} · {roleLabel}</small><button type="button" className="ls25-text-link" onClick={()=>window.print()}>Print employee ID <span>↗</span></button></div>}
  </section>;
  const attendanceCard=<section id="staff-attendance" className="ls25-card ls25-attendance">
@@ -233,7 +234,7 @@ export default function StaffWorkspace({userId,initialProfile,initialTasks,role,
  // Until both identity verification and an active Landshop membership are present,
  // show only onboarding and approval status—not the employee command dashboard.
  if(!dashboardActive)return <StaffAuthShell><section className="ls25-applicant" aria-labelledby="staff-onboarding-title">
-  <div className="ls25-applicant-heading"><p>LANDSHOP PEOPLE & MANAGEMENT</p>
+  <div className="ls25-applicant-heading"><p>LANDSHOP STAFF PORTAL</p>
    <h1 id="staff-onboarding-title">{(profile?.requested_role||wanted)==='owner'?'Owner':'Staff'} <span>registration</span></h1>
    <p>{!profile?'Complete your registration to request '+(wanted==='owner'?'company ownership':'staff access')+'.':
       profile.kyc_state==='submitted'&&profile.requested_role==='owner'?'Your owner identity request is submitted. Independent company authorization is required before Command Center access.':
@@ -274,7 +275,7 @@ export default function StaffWorkspace({userId,initialProfile,initialTasks,role,
     {ownerActive&&<section className="ls25-owner-access" aria-labelledby="owner-command-title"><div className="ls25-owner-access-icon"><StaffGlyph name="briefcase" size={29}/></div><div className="ls25-owner-access-copy"><p>VERIFIED LANDSHOP OWNER</p><h2 id="owner-command-title">Your Global Command Center</h2><span>Manage properties, people, customers, applications, approvals, automation, operations and reports.</span></div><Link href="/admin" className="ls25-owner-access-cta">Open Global Command Center <span aria-hidden="true">↗</span></Link></section>}
     {!verified&&!ownerActive&&<div className="ls25-account-active" role="status"><StaffGlyph name="shield" size={22}/><div><strong>Staff dashboard activated automatically</strong><p>Email confirmation gives immediate dashboard access. Internal task execution, attendance, employee ID and management functions require separate company authorization.</p></div></div>}
     {(activeTab==='dashboard'||activeTab==='overview')&&<section className="ls26-welcome ls26-staff-welcome">
-      <div><small>LANDSHOP PEOPLE & MANAGEMENT</small><h2>Good day, {profile?.username||username||'team member'}</h2><p>Manage your work, attendance, reports and performance at a glance.</p><span className="ls26-pill">{verified?'Verified staff access':'Personal dashboard active'}</span></div>
+      <div><small>LANDSHOP STAFF PORTAL</small><h2>Good day, {profile?.username||username||'team member'}</h2><p>Manage your work, attendance, reports and performance at a glance.</p><span className="ls26-pill">{verified?'Verified staff access':'Personal dashboard active'}</span></div>
     </section>}
     {(activeTab==='dashboard'||activeTab==='overview')&&<div className="ls25-stats">
      <div className="ls25-stat"><span className="ls25-stat-icon green"><StaffGlyph name="user" size={27}/></span><div><small>Your Role</small><strong>{roleLabel}</strong></div></div>
