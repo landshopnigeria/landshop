@@ -52,7 +52,7 @@ const required=[
  'data-v23-design="cinematic-property-video-preview"',
  'data-landshop-hero="v16-separated-product-slides"',
  'className="glass-search ls-v23-property-filter"',
- '<V22HomeSections featured={featured}/>',
+ '<LandshopApprovedSections featured={featured}/>',
  "['Buy','Sell','Rent','Shortlet']",
  'Everyone deserves affordable property.',
  'Plot Your Future. Save ₦5 million.',
@@ -84,10 +84,16 @@ for(const marker of ['.ls-v23-hero','.ls-v23-filter-holder','.ls-v23-form-grid',
 const layout=readFileSync('apps/website/app/layout.tsx','utf8');
 const foot=readFileSync('apps/website/components/SiteFooter.tsx','utf8');
 const footerCss=readFileSync('apps/website/app/v24-global-footer.css','utf8');
-// Approved copy changes are intentionally not byte-equal to the V23 hero.
-// Filter names, carousel hooks, hero layout and the V22 sections remain protected above.
+// The owner approved replacing only the homepage marketing-section renderer.
+// Verify all original homepage code including the hero and filter is identical to main
+// after replacing just the marketing import and JSX call.
+const originalHome=execFileSync('git',['show','origin/'+base+':apps/website/components/LandshopHome.tsx'],{encoding:'utf8'});
+const approvedHomeOnly=home
+  .replace("import LandshopApprovedSections from './LandshopApprovedSections';","import V22HomeSections from './V22HomeSections';")
+  .replace('<LandshopApprovedSections featured={featured}/>','<V22HomeSections featured={featured}/>');
+if(approvedHomeOnly!==originalHome){console.error('PROTECTED HOMEPAGE HERO OR PROPERTY FILTER CHANGED: only approved marketing renderer swap permitted.');failures++;}
 if((home.match(/subtitle:/g)||[]).length!==3){console.error('Homepage must retain exactly three approved slides.');failures++;}
-if(!home.includes('<V22HomeSections featured={featured}/>')){console.error('Homepage content sections missing.');failures++;}
+if(!home.includes('<LandshopApprovedSections featured={featured}/>')){console.error('Homepage content sections missing.');failures++;}
 const chromeLayout=/<SiteHeader\/>\{children\}(?:<GlobalArticleCarousel\/>)?<SiteFooter\/>/;
 if(!chromeLayout.test(layout)){console.error('Global SiteHeader/SiteFooter order missing or modified.');failures++}
 if(layout.includes('<GlobalArticleCarousel/>')&&!layout.includes("import GlobalArticleCarousel from '../components/GlobalArticleCarousel';")){console.error('Global article carousel import missing.');failures++}
@@ -132,15 +138,15 @@ for(const marker of ['setInterval','onMouseEnter','onMouseLeave','onFocusCapture
  'onBlurCapture','onTouchStart','onTouchEnd','visibilitychange','prefers-reduced-motion']){
  if(!carouselHook.includes(marker)){console.error('Carousel shared pause requirement missing: '+marker);failures++}
 }
-for(const path of ['LandshopHome.tsx','V22HomeSections.tsx','GlobalArticleCarousel.tsx',
+for(const path of ['LandshopHome.tsx','LandshopApprovedSections.tsx','V22HomeSections.tsx','GlobalArticleCarousel.tsx',
  'FooterInteractive.tsx','PropertyMediaCarousel.tsx']){
  const content=readFileSync('apps/website/components/'+path,'utf8');
  if(!content.includes('useCarouselPlayback(')){
   console.error('Public carousel missing automatic playback: '+path);failures++;
  }
 }
-const homeSections=readFileSync('apps/website/components/V22HomeSections.tsx','utf8');
-for(const name of ['articlesPlayback','reviewsPlayback','locationsPlayback']){
+const homeSections=readFileSync('apps/website/components/LandshopApprovedSections.tsx','utf8');
+for(const name of ['articlePlayback','reviewPlayback','locationPlayback']){
  if(!homeSections.includes(name)){console.error('Missing homepage carousel auto rotation '+name);failures++}
 }
 const propertyMedia=readFileSync('apps/website/components/PropertyMediaCarousel.tsx','utf8');

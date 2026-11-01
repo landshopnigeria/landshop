@@ -20,6 +20,7 @@ import './v31-hero-overlay-scroll.css';
 import './v32-editorial-and-hero.css';
 import './owner-photo-refresh.css';
 import './public-icon-70.css';
+import './landshop-approved-home.css';
 import SiteHeader from '../components/SiteHeader';
 import SiteFooter from '../components/SiteFooter';
 import GlobalArticleCarousel from '../components/GlobalArticleCarousel';
