@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check 27px action icons and the approved compact V-only navbar dropdown exception."""
+"""Check 27px general icons, 23px directional arrows and compact V-only navbar carets."""
 from pathlib import Path
 import re
 import sys
@@ -29,8 +29,16 @@ if "public-icon-35.css" in layout:
     violations.append("Legacy 35px icon stylesheet is still imported")
 if "width:27px!important;height:27px!important" not in css:
     violations.append("Missing 27px size enforcement")
-if "size={27}" not in approved or 'name="arrow"' not in approved:
-    violations.append("Approved arrow is not the canonical 27px SiteIcon")
+if "size={23}" not in approved or 'name="arrow"' not in approved:
+    violations.append("Approved arrow is not the canonical 23px SiteIcon")
+if "ls-icon-directional" not in icons:
+    violations.append("Directional SVG arrow class is missing")
+if "body svg.ls-icon-directional" not in css:
+    violations.append("23px directional arrow styling is missing")
+if not re.search(r"body svg\.ls-icon-directional[^}]*?width:23px!important", css, re.S):
+    violations.append("Directional arrows are not constrained to 23px")
+if "body .ls24-carousel-arrows svg" not in css:
+    violations.append("Carousel directional arrows are not included in the 23px standard")
 paths = dict(re.findall(r"^\s*(arrow|external|chevron):'([^']+)'", icons, re.M))
 if set(paths) != {"arrow", "external", "chevron"} or paths["arrow"] != paths["external"]:
     violations.append("Action arrow and external arrow must use the same approved short arrow")
@@ -43,4 +51,4 @@ if violations:
     for violation in violations:
         print(violation)
     sys.exit(1)
-print("PASS: 27px action icons, approved short arrows and compact navbar V chevrons")
+print("PASS: 27px general icons, 23px directional arrows and compact V navbar chevrons")
