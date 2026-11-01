@@ -75,6 +75,8 @@ body .ls-site-chrome .ls-primary-nav .ls-nav-toggle .ls-icon-chevron{
   height:15px!important;
   min-width:15px!important;
   max-width:15px!important;
+  min-height:15px!important;
+  max-height:15px!important;
   flex:0 0 15px;
   margin:0 0 0 1px;
   transform:none!important;
@@ -87,6 +89,16 @@ body .ls-site-chrome .ls-primary-nav .ls-nav-toggle[aria-expanded="true"] .ls-ic
 }
 @media(max-width:1050px){
  body .ls-site-chrome .ls-primary-nav .ls-nav-toggle .ls-icon-chevron{
-  width:17px!important;height:17px!important;min-width:17px!important;max-width:17px!important;flex-basis:17px;
+  width:17px!important;height:17px!important;min-width:17px!important;max-width:17px!important;
+  min-height:17px!important;max-height:17px!important;flex-basis:17px;
  }
 }
+/* The mobile hamburger drawing follows the same 27px icon system.
+ * The 46px button remains unchanged for accessible touch interaction.
+ */
+body .ls-site-chrome .ls30-hamburger{width:27px!important;height:27px!important;gap:5px}
+body .ls-site-chrome .ls30-hamburger i:nth-child(1){width:27px!important}
+body .ls-site-chrome .ls30-hamburger i:nth-child(2){width:20px!important}
+body .ls-site-chrome .ls30-hamburger i:nth-child(3){width:24px!important}
+body .ls-site-chrome .ls30-hamburger-open i:nth-child(1){width:27px!important;transform:translateY(8px) rotate(45deg)}
+body .ls-site-chrome .ls30-hamburger-open i:nth-child(3){width:27px!important;transform:translateY(-8px) rotate(-45deg)}

@@ -40,6 +40,53 @@ try{
    }
    if(!result.hasH1||!result.hasTitle||!result.hasDescription)
     errors.push(path+' @'+width+': missing essential heading/title/description');
+   // Validate the computed icon treatment, not only the CSS source.
+   // Run once per route at a typical phone width to catch runtime regressions.
+   if(width===375){
+    // Open the mobile menu to measure its real rendered V dropdown indicators.
+    // An ancestor with display:none would otherwise leave SVG intrinsic widths
+    // at 27px even though the live dropdown caret style is 17px.
+    try{
+     await page.locator('.ls-menu-button').click({timeout:5000});
+     await page.locator('.ls-primary-nav.ls-nav-mobile-open').waitFor({state:'visible',timeout:5000});
+    }catch(error){errors.push(path+' @375px: mobile navigation did not open '+String(error))}
+    const iconAudit=await page.evaluate(()=>{
+     const visible=element=>{
+      const style=getComputedStyle(element);
+      return style.display!=='none'&&style.visibility!=='hidden'&&element.getClientRects().length>0;
+     };
+     const dimensions=element=>{
+      const style=getComputedStyle(element);
+      return {width:parseFloat(style.width),height:parseFloat(style.height)};
+     };
+     const allIcons=[...document.querySelectorAll('svg.ls-icon')];
+     const icons=allIcons.filter(visible);
+     // The mobile nav is collapsed by default. Inspect its computed caret
+     // dimensions even before a customer opens the menu.
+     const navChevrons=allIcons.filter(icon=>icon.matches('.ls-site-chrome .ls-primary-nav .ls-nav-toggle .ls-icon-chevron'));
+     // Every non-dropdown action icon and directional arrow must be 27px.
+     const actionIcons=icons.filter(icon=>!navChevrons.includes(icon));
+     const wrongIconSizes=actionIcons.map(icon=>({className:icon.getAttribute('class'),...dimensions(icon)}))
+      .filter(icon=>Math.abs(icon.width-27)>.1||Math.abs(icon.height-27)>.1).slice(0,8);
+     const wrongChevrons=navChevrons.map(icon=>({...dimensions(icon),path:icon.querySelector('path')?.getAttribute('d')}))
+      .filter(icon=>Math.abs(icon.width-17)>.1||Math.abs(icon.height-17)>.1||icon.path!=='M5.5 9l6.5 6.5L18.5 9').slice(0,8);
+     const approvedPath='M2.5 12h19 M14.5 5l7 7-7 7';
+     const wrongArrows=[...document.querySelectorAll('svg.ls-approved-arrow')].filter(visible)
+      .filter(icon=>icon.querySelector('path')?.getAttribute('d')!==approvedPath).slice(0,8)
+      .map(icon=>icon.querySelector('path')?.getAttribute('d'));
+     const oldArrowGlyphs=/[→←↗↖↘↙➔➜➝⟶⇢⇠›‹»«❯❮⟩⟨➤⇒⇨⇦]/;
+     const legacyArrowActions=[...document.querySelectorAll('a,button')].filter(visible)
+      .filter(element=>oldArrowGlyphs.test(element.textContent||'')).slice(0,8)
+      .map(element=>(element.textContent||'').trim().slice(0,90));
+     const menu=document.querySelector('.ls30-hamburger');
+     const mobileMenu=menu&&visible(menu)?dimensions(menu):null;
+     return {iconCount:actionIcons.length,dropdownCount:navChevrons.length,wrongIconSizes,wrongChevrons,wrongArrows,legacyArrowActions,mobileMenu};
+    });
+    if(!iconAudit.iconCount||!iconAudit.dropdownCount||iconAudit.wrongIconSizes.length||iconAudit.wrongChevrons.length||iconAudit.wrongArrows.length||iconAudit.legacyArrowActions.length||
+       !iconAudit.mobileMenu||Math.abs(iconAudit.mobileMenu.width-27)>.1||Math.abs(iconAudit.mobileMenu.height-27)>.1)
+     errors.push(path+' @375px: 27px icon / canonical arrow runtime audit failed '+JSON.stringify(iconAudit));
+    console.log('APPROVED ICON RUNTIME',path,JSON.stringify(iconAudit));
+   }
    console.log('CHECK',path,width,JSON.stringify(result));
   }
  }
