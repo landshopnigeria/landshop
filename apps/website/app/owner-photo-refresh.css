@@ -111,6 +111,45 @@
 }
 .v22-article-body .ls-owner-article-photo-note strong{color:#0b6d50}
 .v22-root .v22-article-body h2{color:#2ba47a}
+/* Use only project-matched historical archive images; never imply real-time status. */
+.ls-owner-historical-card{position:relative;overflow:hidden}
+.ls-owner-archive-label{
+ position:absolute;
+ inset:auto 10px 10px 10px;
+ display:block;
+ width:calc(100% - 20px);
+ padding:9px 12px;
+ border-radius:9px;
+ background:rgba(7,63,52,.9);
+ color:#fff;
+ line-height:1.5;
+ font-size:11px;
+ font-weight:700;
+}
+.ls-owner-historical-media{max-width:880px}
+.ls-owner-historical-media>figure{
+ margin:22px 0 0;
+ padding:0;
+ overflow:hidden;
+ border-radius:16px;
+ border:1px solid #dbe9df;
+ background:#fff;
+ box-shadow:0 8px 30px rgba(7,63,52,.07);
+}
+.ls-owner-historical-media>figure>img{
+ display:block;
+ width:100%;
+ height:auto;
+ max-height:540px;
+ object-fit:contain;
+ background:#e9f1eb;
+}
+.ls-owner-historical-media>figure>figcaption{
+ padding:13px 17px;
+ font-size:13px;
+ line-height:1.7;
+ color:#315f48;
+}
 @media(max-width:980px){
  .v22-root .ls27-product-grid.ls-owner-home-three{grid-template-columns:repeat(2,minmax(0,1fr))}
  .ls-owner-project-gallery{grid-template-columns:repeat(2,minmax(0,1fr))}
