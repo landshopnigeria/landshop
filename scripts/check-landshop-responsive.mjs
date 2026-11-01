@@ -66,8 +66,14 @@ try{
      const navChevrons=allIcons.filter(icon=>icon.matches('.ls-site-chrome .ls-primary-nav .ls-nav-toggle .ls-icon-chevron'));
      // Every non-dropdown action icon and directional arrow must be 27px.
      const actionIcons=icons.filter(icon=>!navChevrons.includes(icon));
-     const wrongIconSizes=actionIcons.map(icon=>({className:icon.getAttribute('class'),...dimensions(icon)}))
+     // Directional arrows have a distinct newer 23px contract. All other
+     // visible interface icons remain at 27px.
+     const directionalIcons=actionIcons.filter(icon=>icon.classList.contains('ls-icon-directional'));
+     const generalIcons=actionIcons.filter(icon=>!directionalIcons.includes(icon));
+     const wrongIconSizes=generalIcons.map(icon=>({className:icon.getAttribute('class'),...dimensions(icon)}))
       .filter(icon=>Math.abs(icon.width-27)>.1||Math.abs(icon.height-27)>.1).slice(0,8);
+     const wrongDirectionalSizes=directionalIcons.map(icon=>({className:icon.getAttribute('class'),...dimensions(icon)}))
+      .filter(icon=>Math.abs(icon.width-23)>.1||Math.abs(icon.height-23)>.1).slice(0,8);
      const wrongChevrons=navChevrons.map(icon=>({...dimensions(icon),path:icon.querySelector('path')?.getAttribute('d')}))
       .filter(icon=>Math.abs(icon.width-17)>.1||Math.abs(icon.height-17)>.1||icon.path!=='M5.5 9l6.5 6.5L18.5 9').slice(0,8);
      const approvedPath='M2.5 12h19 M14.5 5l7 7-7 7';
@@ -80,11 +86,11 @@ try{
       .map(element=>(element.textContent||'').trim().slice(0,90));
      const menu=document.querySelector('.ls30-hamburger');
      const mobileMenu=menu&&visible(menu)?dimensions(menu):null;
-     return {iconCount:actionIcons.length,dropdownCount:navChevrons.length,wrongIconSizes,wrongChevrons,wrongArrows,legacyArrowActions,mobileMenu};
+     return {iconCount:actionIcons.length,directionalCount:directionalIcons.length,dropdownCount:navChevrons.length,wrongIconSizes,wrongDirectionalSizes,wrongChevrons,wrongArrows,legacyArrowActions,mobileMenu};
     });
-    if(!iconAudit.iconCount||!iconAudit.dropdownCount||iconAudit.wrongIconSizes.length||iconAudit.wrongChevrons.length||iconAudit.wrongArrows.length||iconAudit.legacyArrowActions.length||
+    if(!iconAudit.iconCount||!iconAudit.directionalCount||!iconAudit.dropdownCount||iconAudit.wrongIconSizes.length||iconAudit.wrongDirectionalSizes.length||iconAudit.wrongChevrons.length||iconAudit.wrongArrows.length||iconAudit.legacyArrowActions.length||
        !iconAudit.mobileMenu||Math.abs(iconAudit.mobileMenu.width-27)>.1||Math.abs(iconAudit.mobileMenu.height-27)>.1)
-     errors.push(path+' @375px: 27px icon / canonical arrow runtime audit failed '+JSON.stringify(iconAudit));
+     errors.push(path+' @375px: 27px icons / 23px directional arrows / V caret runtime audit failed '+JSON.stringify(iconAudit));
     console.log('APPROVED ICON RUNTIME',path,JSON.stringify(iconAudit));
    }
    console.log('CHECK',path,width,JSON.stringify(result));
