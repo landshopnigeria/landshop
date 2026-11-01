@@ -2,6 +2,7 @@
 import {useEffect,useState} from 'react';
 import {createBrowserClient} from '@supabase/ssr';
 import Link from 'next/link';
+import './staff-biometric.css';
 
 type Check={enabled:boolean;status:string;next:string;url:string|null};
 const endpoint='https://iwkfagzkogzidrbbezds.supabase.co/functions/v1/staff-identity';
