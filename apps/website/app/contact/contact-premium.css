@@ -43,6 +43,23 @@
   object-fit:cover;
   object-position:center 46%;
 }
+.lc-v24-photo-evidence{
+  position:absolute;
+  bottom:18px;
+  left:18px;
+  right:18px;
+  width:fit-content;
+  max-width:calc(100% - 36px);
+  padding:10px 13px;
+  border-radius:10px;
+  background:rgba(7,63,52,.86);
+  backdrop-filter:blur(10px);
+  color:#fff;
+  font-size:12px;
+  line-height:1.5;
+  letter-spacing:.01em;
+  font-weight:700;
+}
 .lc-v24-info{
   display:flex;
   align-items:center;
