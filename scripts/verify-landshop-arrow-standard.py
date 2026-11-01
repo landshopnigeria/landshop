@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fail the marketing-site release on mixed visible arrow glyphs or stale icon sizing."""
+"""Check 27px action icons and the approved compact V-only navbar dropdown exception."""
 from pathlib import Path
 import re
 import sys
@@ -31,12 +31,16 @@ if "width:27px!important;height:27px!important" not in css:
     violations.append("Missing 27px size enforcement")
 if "size={27}" not in approved or 'name="arrow"' not in approved:
     violations.append("Approved arrow is not the canonical 27px SiteIcon")
-paths = re.findall(r"^\s*(arrow|external|chevron):'([^']+)'", icons, re.M)
-if len(paths) != 3 or len(set(value for _, value in paths)) != 1:
-    violations.append("SiteIcon arrow/external/dropdown shapes diverge")
+paths = dict(re.findall(r"^\s*(arrow|external|chevron):'([^']+)'", icons, re.M))
+if set(paths) != {"arrow", "external", "chevron"} or paths["arrow"] != paths["external"]:
+    violations.append("Action arrow and external arrow must use the same approved short arrow")
+if paths.get("chevron") != "M5.5 9l6.5 6.5L18.5 9":
+    violations.append("Navbar dropdown indicators must use the approved V-shaped chevron")
+if "ls-nav-toggle .ls-icon-chevron" not in css:
+    violations.append("Navbar chevrons must remain compact and distinct from 27px action icons")
 if violations:
     print("FAIL: Mixed arrow/icon design detected")
     for violation in violations:
         print(violation)
     sys.exit(1)
-print("PASS: 27px icons and one approved straight arrow across public pages")
+print("PASS: 27px action icons, approved short arrows and compact navbar V chevrons")
