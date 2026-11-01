@@ -1,7 +1,7 @@
 'use client';
 import {useEffect,useState,useRef} from 'react';
 import Link from 'next/link';
-import V22HomeSections from './V22HomeSections';
+import LandshopApprovedSections from './LandshopApprovedSections';
 import {useRouter} from 'next/navigation';
 import {editorialImages} from '../lib/editorial-imagery';
 import SiteIcon from './SiteIcon';
@@ -121,7 +121,7 @@ export default function Homepage({featured}:{featured:FeaturedProperty[]}){
     </>}
    </form>
   </div>
-  <V22HomeSections featured={featured}/>
+  <LandshopApprovedSections featured={featured}/>
 
  </main>;
 }
