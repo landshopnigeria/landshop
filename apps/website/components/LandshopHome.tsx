@@ -3,7 +3,7 @@ import ApprovedArrow from './ApprovedArrow';
 
 import {useEffect,useState,useRef} from 'react';
 import Link from 'next/link';
-import V22HomeSections from './V22HomeSections';
+import ApprovedHomepageContent from './ApprovedHomepageContent';
 import {useRouter} from 'next/navigation';
 import {editorialImages} from '../lib/editorial-imagery';
 import SiteIcon from './SiteIcon';
@@ -123,7 +123,7 @@ export default function Homepage({featured}:{featured:FeaturedProperty[]}){
     </>}
    </form>
   </div>
-  <V22HomeSections featured={featured}/>
+  <ApprovedHomepageContent featured={featured}/>
 
  </main>;
 }

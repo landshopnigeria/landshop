@@ -157,8 +157,10 @@ def check(kind: str, route: str, expected: str | None):
         # A successful Next.js page must not show stock estate photo archives as live properties.
         if "Explore genuine photographs from Landshop estate archives" in visible:
             raise AssertionError("obsolete estate archive is still substituted for public property listings")
-        if ('class="v22-feature"' not in html and 'class="v22-inventory-empty"' not in html):
-            raise AssertionError("V22 database-backed featured-property cards or an explicit approved-inventory empty state are missing")
+        if 'data-approved-homepage="reference-2026"' not in html:
+            raise AssertionError("Owner-approved homepage reference body is missing below the protected filter")
+        if 'lsap-estate-grid' not in html or ('lsap-estate-card' not in html):
+            raise AssertionError("Homepage estate cards or owner-approved archive cards are missing")
         if "Verified opportunities, not placeholder listings." in visible and "Only approved, published properties appear here." not in visible:
             raise AssertionError("empty inventory state must explain the independently reviewed publication policy")
         if 'data-v23-design="cinematic-property-video-preview"' not in html:

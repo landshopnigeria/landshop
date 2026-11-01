@@ -84,3 +84,26 @@
 }
 
 /* Production release checkpoint: marketplace sort controls remain inline and property publishing retains verified-only visibility. */
+
+/* Properties page: one unbroken transaction-tab row, only on this route.
+   No alteration to the shared header, hero, search/filter component or footer. */
+.mk-layout .ls-v23-search-tabs{display:flex!important;flex-wrap:nowrap!important;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:thin;white-space:nowrap;gap:clamp(10px,2vw,28px)}
+.mk-layout .ls-v23-search-tabs>button{flex:0 0 auto;white-space:nowrap;min-width:max-content}
+.mk-layout .mk-entered-previews{margin:23px 0 32px}
+.mk-layout .mk-entered-intro{max-width:780px;margin-bottom:23px}
+.mk-layout .mk-entered-intro small{font-size:11px;letter-spacing:.12em;color:#31815f;font-weight:800}
+.mk-layout .mk-entered-intro h2{font-size:clamp(23px,2.5vw,32px);color:#124731;letter-spacing:-.04em;margin:10px 0}
+.mk-layout .mk-entered-intro p{font-size:13px;color:#688273;line-height:1.7}
+.mk-layout .mk-entered-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:19px}
+.mk-layout .mk-entered-card{display:flex;flex-direction:column;overflow:hidden;min-width:0;border:1px solid #dfece4;border-radius:19px;box-shadow:0 13px 38px #0a422b14;background:#fff}
+.mk-layout .mk-entered-image{position:relative;aspect-ratio:1.48;overflow:hidden;background:#dcebe0}
+.mk-layout .mk-entered-image>img{width:100%;height:100%;object-fit:cover;display:block}
+.mk-layout .mk-entered-image>span{position:absolute;left:15px;top:15px;border-radius:50px;background:#fffefa;padding:8px 10px;color:#116f50;font-size:9px;font-weight:850;letter-spacing:.09em}
+.mk-layout .mk-entered-body{display:flex;flex:1;flex-direction:column;padding:22px}
+.mk-layout .mk-entered-body small{font-size:9px;font-weight:850;color:#458d67;letter-spacing:.09em}
+.mk-layout .mk-entered-body h3{font-size:21px;color:#12432e;letter-spacing:-.04em;line-height:1.25;margin:10px 0}
+.mk-layout .mk-entered-body p{font-size:12px;line-height:1.7;color:#6a7f72;flex:1}
+.mk-layout .mk-entered-body>a{border-top:1px solid #e2eee5;padding-top:13px;color:#0c7859;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:space-between}
+.mk-layout .mk-entered-note{font-size:11px;color:#687e70;line-height:1.6;margin:17px 0}
+@media(max-width:800px){.mk-layout .mk-entered-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.mk-layout .mk-entered-grid{grid-template-columns:1fr}.mk-layout .mk-entered-body{padding:18px}.mk-layout .ls-v23-search-tabs{gap:17px}}
