@@ -71,6 +71,6 @@ for body in (project_card,detail):
   raise SystemExit("Merit Park photo must be labelled historical")
 if "nigeriapropertycentre.com/for-sale/land" not in detail:
  raise SystemExit("Green Island historical listing attribution missing")
-if "'green-island':" not in project_card or "awaiting verification" not in project_card.lower():
+if "slug:'green-island'" not in project_card or "awaiting verification" not in project_card.lower():
  raise SystemExit("Green Island unverified imagery must remain unclaimed")
 print(f"Owner photography verified: {len(photos)} WebP files, {len(slugs)} article mappings, 3 slides and 3 featured product cards")
