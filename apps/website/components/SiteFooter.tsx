@@ -62,7 +62,7 @@ export default function SiteFooter(){
  return <><NewsletterSignup/><footer className="ls24-global-footer" aria-label="Landshop global footer">
   <div className="ls24-glass-area"><div className="ls24-footer-main">
    <div className="ls24-brand-col">
-    <Link href="/" aria-label="Landshop home"><img className="ls24-footer-logo" src="/media/logo-transparent.png" width={184} height={94} alt="Landshop — Develop, Incubate, Grow"/></Link>
+    <Link href="/" aria-label="Landshop home"><img className="ls24-footer-logo" src="/media/logo-transparent.png" width={184} height={94} alt="Landshop: Develop, Incubate, Grow"/></Link>
     <p className="ls24-footer-brand-copy">Building wealth through real estate. Clearer pathways to ownership, investment enquiries and home financing.</p>
     <p className="ls24-contact-line"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 7 9-7"/></svg><a href="mailto:care@landshopnigeria.com">care@landshopnigeria.com</a></p>
     <p className="ls24-contact-line"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 4h4l2 5-2.5 2c1.5 3 3.5 5 6.5 6.5L17 15l4 2v4c-9 1-18-8-17-17z" strokeLinejoin="round"/></svg><a href="tel:+2349169973359">+234 916 997 3359</a></p>
@@ -79,7 +79,7 @@ export default function SiteFooter(){
    <div className="ls24-social-links" aria-label="Landshop social media">
     {socials.map(item=>{const url=trustedSocialUrl(item.href);const svg=<svg viewBox="0 0 24 24" aria-hidden="true">{item.paths.map((p,i)=><path key={i} d={p}/>)}</svg>;
       return url?<a key={item.name} href={url} target="_blank" rel="noopener noreferrer" aria-label={'Landshop on '+item.name} title={item.name}>{svg}</a>
-      :<span key={item.name} className="ls24-social-disabled" aria-label={item.name+' link not configured'} title={item.name+' — link pending verification'}>{svg}</span>
+      :<span key={item.name} className="ls24-social-disabled" aria-label={item.name+' link not configured'} title={item.name+' (link pending verification)'}>{svg}</span>
     })}
    </div>
   </div></div>
