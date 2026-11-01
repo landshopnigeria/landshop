@@ -19,7 +19,19 @@ const specs={
 } as const;
 type Slug=keyof typeof specs;
 export function generateStaticParams(){return Object.keys(specs).map(slug=>({slug}))}
-export async function generateMetadata({params}:{params:Promise<{slug:string}>}){const {slug}=await params;const svc=specs[slug as Slug];return {title:svc?svc.title+' | Landshop':'Service not found',description:svc?.description}}
+export const dynamicParams=false;
+export async function generateMetadata({params}:{params:Promise<{slug:string}>}){
+ const {slug}=await params;const svc=specs[slug as Slug];
+ if(!svc)return {title:'Service not found'};
+ const title=svc.title+' | Landshop';
+ const url='https://www.landshopnigeria.com/services/'+slug;
+ const image=new URL(svc.images[0],'https://www.landshopnigeria.com').toString();
+ return {
+  title,description:svc.description,alternates:{canonical:url},
+  openGraph:{type:'website' as const,url,siteName:'Landshop Nigeria',title,description:svc.description,images:[{url:image,alt:svc.title+' service at Landshop'}]},
+  twitter:{card:'summary_large_image' as const,title,description:svc.description,images:[image]}
+ };
+}
 export default async function ServicePage({params}:{params:Promise<{slug:string}>}){
  const {slug}=await params;if(!(slug in specs))notFound();const s=specs[slug as Slug];
  const d:DetailData={kind:'Service',title:s.title,eyebrow:'LANDSHOP SERVICES · CLIENT SUPPORT',description:s.description,status:'Enquiries and appointments accepted · Subject to confirmation',category:s.category,location:'Nigeria · Eligible Landshop projects',date:'Available by enquiry',tags:['Landshop',s.category,'Consultation'],images:s.images.map((src,i)=>({src,caption:'Original Landshop '+(src.includes('event')?'team/event':src.includes('famous')?'Famous Gardens project':src.includes('maiyegun')?'Maiyegun project':'property archive')+' photograph · '+(i+1)+' of '+s.images.length+'. Used for service context, not as evidence of a specific available property.'})),facts:[['Service',s.title],['Project eligibility','Confirm with Landshop'],['Booking','Staff confirmation required'],['Documentation','Verified records on request']],overview:s.tagline+' '+s.description+' Landshop helps you take the next step with clear information and appropriate property-specific verification.',highlights:[...s.steps],milestones:s.steps.map((step,i)=>['0'+(i+1),step] as [string,string]),disclaimer:'Services depend on verified current records, property eligibility and applicable terms. No online enquiry guarantees title, availability, financing or an appointment.',related:items.filter(x=>x.slug!==slug),primaryHref:s.target,primaryLabel:slug==='inspection'?'Request an inspection':'Start a service enquiry',secondaryHref:'/services',secondaryLabel:'Explore all services'};
