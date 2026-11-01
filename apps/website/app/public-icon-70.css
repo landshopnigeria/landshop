@@ -58,4 +58,19 @@ body .ls-site-chrome .ls30-service-entry{min-height:90px}
  body .mk-layout .mk-title-row{min-width:0}
  body .ls-site-chrome .ls-header-link{white-space:normal}
 }
+/* Phone-scale correction: 70px desktop icons are too wide for 240px to 375px screens.
+   Keep the original larger icon treatment on desktop without horizontal page overflow. */
+@media(max-width:700px){
+ :root{--ls-public-icon-size:clamp(28px,7.5vw,42px)}
+ body .ls-site-chrome .ls-icon-chip,
+ body .ls-site-chrome .ls-mega-list .ls-icon-chip{
+  width:clamp(38px,10vw,48px)!important;
+  min-width:clamp(38px,10vw,48px)!important;
+  height:clamp(38px,10vw,48px)!important;
+ }
+ body .ls-site-chrome .ls-menu-button{width:52px!important;height:52px!important}
+ body .ls-site-chrome .ls30-hamburger{transform:scale(1.15)}
+ body .ls24-social-links{max-width:100%;min-width:0;flex-wrap:wrap}
+ body .ls24-social-links :is(a,span){min-width:34px;flex:0 0 34px}
+}
 @media(prefers-reduced-motion:reduce){body .ls-site-chrome .ls30-hamburger{transition:none}}
