@@ -73,6 +73,7 @@ jobs:
         run: |
           set -euo pipefail
           npm install --no-audit --no-fund
+          npm audit --omit=dev --audit-level=high
           npm run build -w @landshop/website
           npm run build -w @landshop/portal
           npm run build -w @landshop/dashboard
