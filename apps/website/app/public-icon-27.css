@@ -62,3 +62,8 @@ body .ld-gallery-prev .ls-approved-arrow {transform:rotate(180deg)!important}
 body .ld-gallery-next .ls-approved-arrow {transform:none!important}
 body .ls24-carousel-arrows button {min-width:43px;min-height:43px}
 body .ls24-carousel-arrows svg, body .ls24-newsletter-form button svg, body .ls24-contact-line svg, body .ls24-social-links svg {width:27px!important;height:27px!important}
+
+/* Keep the property-page call to action inside even a 240px viewport. */
+@media(max-width:280px){
+ body .mk-layout .mk-btn{max-width:100%;min-width:0;box-sizing:border-box;padding-inline:10px;gap:7px;white-space:normal}
+}
