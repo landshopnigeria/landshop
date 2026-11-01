@@ -5,6 +5,7 @@ import {useEffect,useState,type FormEvent,type ReactNode} from 'react';
 import Link from 'next/link';
 import StaffAuthShell from './StaffAuthShell';
 import StaffFaceCapture from './StaffFaceCapture';
+import StaffBiometricVerification from './StaffBiometricVerification';
 import './staff-dashboard.css';
 import {createBrowserClient} from '@supabase/ssr';
 type Profile={user_id:string;organization_id:string;username:string;requested_role:string;age_at_registration:number;gender:string;kyc_state:string;employment_state:string;photo_path:string|null;staff_number:string|null;joined_at:string|null};
@@ -109,7 +110,7 @@ export default function StaffWorkspace({userId,initialProfile,initialTasks,role,
    if(error)throw Error(error.message);
    setMessage('Your photograph was submitted privately. Your staff dashboard remains active. Identity approval and restricted work privileges require separate verification.');
    await refresh();
-  }catch(e){notify(e)}finally{setBusy(false)}
+  }catch(e){notify(e);throw e}finally{setBusy(false)}
  }
  async function clock(action:'clock_in'|'clock_out'){
   if(!verified){setMessage('Verified staff KYC and approved membership are required for attendance');return}
@@ -191,7 +192,7 @@ export default function StaffWorkspace({userId,initialProfile,initialTasks,role,
    <label>Gender<BrandedSelect value={gender} onChange={e=>setGender(e.target.value)}><option value="prefer_not_to_say">Prefer not to say</option><option value="female">Female</option><option value="male">Male</option><option value="non_binary">Non-binary</option></BrandedSelect></label></div>
    <label>Requested role<input readOnly value={wanted.replaceAll('_',' ')}/></label><button className="ls25-action" disabled={busy}>Finish staff registration</button></form>}
   {profile&&profile.kyc_state!=='approved'&&<div className="ls25-kyc"><p>Your personal staff workspace is already active. Submit a private portrait through any of the three supported methods. Restricted privileges and an official staff ID require genuine identity verification.</p>
-   <StaffFaceCapture busy={busy} status={profile.kyc_state} onSubmit={upload}/></div>}
+   <StaffFaceCapture busy={busy} status={profile.kyc_state} onSubmit={upload}/><StaffBiometricVerification photoReady={Boolean(profile.photo_path)} kycState={profile.kyc_state}/></div>}
   {verified&&profile?.staff_number&&<div className="ls25-staff-id"><div className="ls25-id-heading"><img src="/media/logo-transparent.png" alt="Landshop original logo" onError={e=>{e.currentTarget.src='/media/logo.webp'}}/> <strong>Employee ID</strong></div><p>{profile.staff_number}</p><small>{profile.username} · {roleLabel}</small><button type="button" className="ls25-text-link" onClick={()=>window.print()}>Print employee ID <span>↗</span></button></div>}
  </section>;
  const attendanceCard=<section id="staff-attendance" className="ls25-card ls25-attendance">
