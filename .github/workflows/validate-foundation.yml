@@ -24,10 +24,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: '22'
+          package-manager-cache: false
       - name: Install dependencies
         run: npm install --no-audit --no-fund
       - name: Block high or critical production dependency advisories
@@ -157,7 +158,7 @@ jobs:
             wait "$pid" || true
             echo "Standalone runtime startup and route smoke verified for $app"
           done
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
       - name: Install Python worker dependencies
