@@ -1,3 +1,4 @@
+import CustomerNavigation from './CustomerNavigation';
 import {redirect} from 'next/navigation';
 import {createServerClient} from '@supabase/ssr';
 import {cookies} from 'next/headers';
@@ -49,11 +50,7 @@ export default async function Dashboard(){
  const greeting=hour<12?'Good morning':hour<17?'Good afternoon':'Good evening';
  const formatNaira=(kobo:number)=>new Intl.NumberFormat('en-NG',{style:'currency',currency:'NGN',maximumFractionDigits:0}).format(kobo/100);
  return <div className="dc-shell cd-v25">
-  <aside className="dc-side cd-sidebar">
-   <a className="dc-side-brand" href="https://www.landshopnigeria.com" aria-label="Landshop homepage"><img src="/media/logo.webp" alt="Landshop" width={128} height={60}/></a>
-   <nav aria-label="Customer dashboard">{links.map(([label,to,icon])=><Link key={label} href={to} className={label==='Overview'?'active':''}><Icon name={icon}/><span>{label}</span></Link>)}</nav>
-   <div className="cd-side-help"><strong>Landshop Support</strong><p>Questions about your property journey?</p><a href="https://portal.landshopnigeria.com/support">Contact our team →</a></div>
-  </aside>
+  <CustomerNavigation/>
   <div className="dc-main">
    <header className="cd-topbar"><a href="https://www.landshopnigeria.com" className="cd-mobile-logo" aria-label="Landshop homepage"><img src="/media/logo.webp" alt="Landshop" width={98} height={43}/></a><span>My Landshop</span><div><Link href="/dashboard/account" aria-label="Account and profile" className="cd-avatar">{firstname.slice(0,1).toUpperCase()}</Link></div></header>
    <main className="cd-main">
