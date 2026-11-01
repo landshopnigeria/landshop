@@ -37,6 +37,6 @@ const paths:Record<SiteIconName,string>={
  settings:'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z M19 13v-2l2-2-2-4-3 1-2-3h-4L8 6 5 5 3 9l2 2v2l-2 2 2 4 3-1 2 3h4l2-3 3 1 2-4z'
 };
 export default function SiteIcon({name,size=27,className='',...props}:{name:SiteIconName,size?:number,className?:string}&Omit<SVGProps<SVGSVGElement>,'name'>){
- return <svg aria-hidden="true" focusable="false" className={'ls-icon '+(name==='chevron'?'ls-icon-chevron ':'')+className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.15" strokeLinecap="round" strokeLinejoin="round" {...props}><path d={paths[name]}/></svg>;
+ return <svg aria-hidden="true" focusable="false" className={'ls-icon '+(name==='chevron'?'ls-icon-chevron ':name==='arrow'||name==='external'?'ls-icon-directional ':'')+className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.15" strokeLinecap="round" strokeLinejoin="round" {...props}><path d={paths[name]}/></svg>;
 }
 export function IconChip({name}:{name:SiteIconName}){return <span className="ls-icon-chip"><SiteIcon name={name} size={27}/></span>}
