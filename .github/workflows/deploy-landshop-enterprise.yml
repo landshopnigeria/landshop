@@ -217,6 +217,18 @@ jobs:
             fi
           done
           REMOTE
+      - name: Prevent older queued releases from overwriting the latest main build
+        shell: bash
+        env:
+          RELEASE_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+        run: |
+          set -euo pipefail
+          current_sha=$(git ls-remote origin refs/heads/main | awk '{print $1}')
+          if [ -z "$current_sha" ] || [ "$current_sha" != "$RELEASE_SHA" ]; then
+            echo "::error::Release $RELEASE_SHA is not current main ($current_sha); refusing to overwrite newer production code."
+            exit 1
+          fi
+          echo "Confirmed release is current main: $RELEASE_SHA"
       - name: Back up existing production Next.js release before overwriting
         shell: bash
         env:
@@ -284,8 +296,14 @@ jobs:
               "release/$app/" "$target:$root/"
             # The only --delete scope is inside that app's generated Next.js build folder.
             # No environment file, uploads, database or user-managed directory is removed.
-            rsync -az --delete -e "ssh -p $SSH_PORT -o BatchMode=yes -o StrictHostKeyChecking=yes" \
+            # Remove stale generated HTML/RSC build output, but preserve older
+            # content-addressed JS/CSS chunks for visitors with open tabs.
+            # Deleting /_next/static on every deployment breaks still-open tabs.
+            rsync -az --delete --exclude='/static/' -e "ssh -p $SSH_PORT -o BatchMode=yes -o StrictHostKeyChecking=yes" \
               "release/$app/apps/$app/.next/" "$target:$root/apps/$app/.next/"
+            # New chunks are immutable and hashed. Do not remove older chunks here.
+            rsync -az -e "ssh -p $SSH_PORT -o BatchMode=yes -o StrictHostKeyChecking=yes" \
+              "release/$app/apps/$app/.next/static/" "$target:$root/apps/$app/.next/static/"
             ssh "${ssh_args[@]}" "$target" "touch $remote_path/tmp/restart.txt"
           done
       - name: Verify all three domains serve the newly published Next.js applications
