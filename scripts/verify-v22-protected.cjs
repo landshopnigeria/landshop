@@ -92,12 +92,27 @@ const chromeLayout=/<SiteHeader\/>\{children\}(?:<GlobalArticleCarousel\/>)?<Sit
 if(!chromeLayout.test(layout)){console.error('Global SiteHeader/SiteFooter order missing or modified.');failures++}
 if(layout.includes('<GlobalArticleCarousel/>')&&!layout.includes("import GlobalArticleCarousel from '../components/GlobalArticleCarousel';")){console.error('Global article carousel import missing.');failures++}
 const priorFooter=execFileSync('git',['show','origin/'+base+':apps/website/components/SiteFooter.tsx'],{encoding:'utf8'});
-if(foot!==priorFooter){console.error('Global footer must remain byte-for-byte identical to main.');failures++}
+// Allow exactly the owner's two copy-only punctuation changes in the footer.
+// All structural, navigation, markup and styling changes remain prohibited.
+const footerPunctuationOnly=(text)=>text
+ .replace('Landshop — Develop, Incubate, Grow','Landshop: Develop, Incubate, Grow')
+ .replace(' — link pending verification',' (link pending verification)');
+if(foot!==priorFooter&&foot!==footerPunctuationOnly(priorFooter)){
+ console.error('Global footer changed outside the two approved copy replacements.');failures++;
+}
 for(const p of ['apps/website/app/properties/[id]/page.tsx','apps/website/app/properties/[id]/property-details.css','apps/website/app/insights/[slug]/page.tsx']){
  const prior=execFileSync('git',['show','origin/'+base+':'+p],{encoding:'utf8'});
  const current=readFileSync(p,'utf8');
  const approvedArrowOnly=p.endsWith('/insights/[slug]/page.tsx')&&prior.replaceAll('↗','→')===current;
- if(prior!==current&&!approvedArrowOnly){console.error('PROTECTED PROPERTY/ARTICLE DETAIL CHANGED: '+p);failures++}
+ // Permit only three explicitly requested punctuation/wording changes to
+ // property detail copy, without relaxing layout or business logic protection.
+ const approvedPropertyCopyOnly=p.endsWith('/properties/[id]/page.tsx')&&prior
+  .replace(' listing — view official media, features and prices.',' listing. View official media, features and prices.')
+  .replace('Landshop property enquiry — ','Landshop property enquiry: ')
+  .replace('From — approved minimum price','Starting at the approved minimum price')===current;
+ if(prior!==current&&!approvedArrowOnly&&!approvedPropertyCopyOnly){
+  console.error('PROTECTED PROPERTY/ARTICLE DETAIL CHANGED: '+p);failures++;
+ }
 }
 for(const marker of ['<NewsletterSignup/>','<FooterCarousel slides={slidesFromSources()}/>','ls24-global-footer','/testimonials','Privacy Policy','Terms &amp; Conditions']){
  if(!foot.includes(marker)){console.error('V24 footer content missing: '+marker);failures++}
