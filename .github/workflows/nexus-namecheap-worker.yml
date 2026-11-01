@@ -53,6 +53,7 @@ jobs:
           scp -P "$SSH_PORT" -o BatchMode=yes -o StrictHostKeyChecking=yes \
             services/document-worker/nexus_runtime_worker.py \
             services/document-worker/nexus_namecheap_once.sh \
+            services/document-worker/nexus_provision_interactive.sh \
             "$remote:landshop-nexus-runtime/"
           ssh "${opts[@]}" "$remote" bash -s -- "$CONFIG_PATH" <<'REMOTE'
           set -euo pipefail
@@ -60,6 +61,7 @@ jobs:
           root="$HOME/landshop-nexus-runtime"
           chmod 600 "$root/nexus_runtime_worker.py"
           chmod 700 "$root/nexus_namecheap_once.sh"
+          chmod 700 "$root/nexus_provision_interactive.sh"
           config="${1:-$HOME/.config/landshop/nexus-worker.env}"
           case "$config" in "$HOME"/*) ;; *) echo '::error::NEXUS_CONFIG_PATH_UNSAFE';exit 3;; esac
           if pgrep -f '[n]exus_runtime_worker.py --loop' >/dev/null; then
@@ -102,6 +104,7 @@ jobs:
           echo 'NEXUS_ONE_SHOT_QUEUE_CLAIM_SUCCEEDED'
           crontab "$root/cron.next"
           rm -f "$root/cron.next"
+          crontab -l | grep -F '# LANDSHOP_NEXUS_SAFE_PREVIEW' >/dev/null || { echo '::error::NEXUS_SCHEDULE_VERIFY_FAILED';exit 3; }
           echo 'NEXUS_SAFE_PREVIEW_SCHEDULE_INSTALLED'
           REMOTE
       - name: Report exact-commit NEXUS activation status
