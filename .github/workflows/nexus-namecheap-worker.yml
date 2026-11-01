@@ -65,7 +65,18 @@ jobs:
             exit 0
           fi
           if ! test -f "$config" || test -L "$config";then
-            echo '::error::NEXUS_CONFIG_MISSING: protected ~/.config/landshop/nexus-worker.env is required; no credentials printed'
+            # Presence-only diagnostics. Never source or print application env files.
+            echo 'NEXUS_WORKER_CONFIG_ABSENT'
+            for candidate in "$HOME/landshop-app/.env" "$HOME/landshop-app/.env.production" "$HOME/landshop-app/.env.local" "$HOME/landshop-portal/.env" "$HOME/landshop-portal/.env.production" "$HOME/landshop-portal/.env.local"; do
+              if test -f "$candidate" && test ! -L "$candidate"; then
+                if grep -Eq '^[[:space:]]*(LANDSHOP_SUPABASE_SERVICE_ROLE_KEY|SUPABASE_SERVICE_ROLE_KEY)=' "$candidate"; then
+                  echo 'NEXUS_EXISTING_APP_ENV_HAS_WORKER_CREDENTIAL_NAME'
+                else
+                  echo 'NEXUS_EXISTING_APP_ENV_WITHOUT_WORKER_CREDENTIAL_NAME'
+                fi
+              fi
+            done
+            echo '::error::NEXUS_CONFIG_MISSING: worker-specific protected config must be provisioned by a credential administrator'
             exit 3
           fi
           case "$(stat -c %a "$config")" in 600|400) ;; *)
