@@ -47,8 +47,8 @@ export default async function Admin(){
   count(db,'support_tickets'),count(db,'contact_enquiries'),count(db,'referral_edges'),count(db,'automation_workflows'),
   db.from('properties').select('*',{count:'exact',head:true}).eq('status','published').then(result=>result.error?null:result.count)
  ]);
- const [customerCount,taskCount,submissionsRes,draftRes,reviewRes,payRes,scoreRes]=await Promise.all([
-  count(db,'profiles'),count(db,'staff_tasks'),
+ const [customerCount,activeStaffRes,taskCount,submissionsRes,draftRes,reviewRes,payRes,scoreRes]=await Promise.all([
+  count(db,'profiles'),db.from('landshop_staff_profiles').select('*',{count:'exact',head:true}).eq('employment_state','active'),count(db,'staff_tasks'),
   db.from('landshop_staff_submissions').select('*',{count:'exact',head:true}).eq('status','submitted'),
   db.from('properties').select('*',{count:'exact',head:true}).eq('status','draft'),
   db.from('kyc_submissions').select('*',{count:'exact',head:true}).in('status',['submitted','pending','under_review']),
@@ -68,8 +68,8 @@ export default async function Admin(){
    <main className="command-content">
     <CommandOverview
      metrics={[
-      {label:'Total Staff',value:staff,icon:'♙',url:'/admin/staff'},
-      {label:'Customers',value:customerCount,icon:'♧',url:'/admin/customer-activity'},
+      {label:'Active Staff',value:activeStaffRes.error?null:activeStaffRes.count,icon:'♙',url:'/admin/staff'},
+      {label:'User Profiles',value:customerCount,icon:'♧',url:'/admin/customer-activity'},
       {label:'Properties',value:properties,icon:'▦',url:'/admin/properties'},
       {label:'Applications',value:apps,icon:'▤',url:'/admin/applications'},
       {label:'Support Cases',value:tickets,icon:'☏',url:'/admin/support'},
