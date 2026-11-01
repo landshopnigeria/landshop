@@ -16,6 +16,7 @@ from urllib.request import Request, urlopen
 
 EXPECTED=os.environ.get("LANDSHOP_EXPECTED_SHA", "").strip()
 HOSTS=("landshopnigeria.com","www.landshopnigeria.com")
+APPLICATIONS=(("portal.landshopnigeria.com","/",'class="authGlass"'),("app.landshopnigeria.com","/staff/sign-in",'class="lsa-card signin"'),("app.landshopnigeria.com","/staff/sign-up",'class="lsa-card signup"'))
 PAGES=(
     ("/","cinematic-property-video-preview",".ls-v23-hero"),
     ("/develop","data-product-journey",".lp-pathway-card"),
@@ -85,6 +86,7 @@ def check(host,path,marker,css_class):
     found=False
     footer_css_found=False
     marketplace_toolbar_found=False
+    correct_icon_css_found=False
     css_ok=0
     for relative in parser.css[:10]:
         asset=urljoin(f"https://{host}",relative)
@@ -95,12 +97,16 @@ def check(host,path,marker,css_class):
         css_text=content.decode("utf-8","replace")
         if css_class in css_text:
             found=True
+        if "--ls-public-icon-size:35px" in css_text:
+            correct_icon_css_found=True
         if ".mk-tools form>.ls-branded-select" in css_text and "148px" in css_text:
             marketplace_toolbar_found=True
         if ".ls24-glass-area" in css_text and "landshop-footer-cris6882.svg" in css_text:
             footer_css_found=True
     if not found:
         raise AssertionError(f"New CSS selector {css_class} absent from live stylesheets on {host}{path}")
+    if path=="/" and not correct_icon_css_found:
+        raise AssertionError("Current 35px public icon stylesheet absent from fresh HTML asset links")
     if path=="/properties" and not marketplace_toolbar_found:
         raise AssertionError("Current compact marketplace toolbar CSS absent from live build")
     if not footer_css_found:
@@ -120,6 +126,39 @@ def check(host,path,marker,css_class):
             raise AssertionError(f"New JavaScript bundle cannot be loaded: {asset}")
     print(f"  VERIFIED page markup + release meta + {css_ok} CSS files + JS references",flush=True)
 
+def check_application(host,path,marker):
+    """Detect stale portal/staff HTML even when all three health endpoints are fresh."""
+    url=f"https://{host}{path}"
+    status,headers,data,final=request(url)
+    html=data.decode("utf-8","replace")
+    parser=Assets()
+    parser.feed(html)
+    print(f"APP HTTP {host}{path}: {status} final={final} release={parser.meta_sha} cache-control={get_header(headers,'Cache-Control')}",flush=True)
+    if status!=200 or marker not in html or "/_next/" not in html:
+        raise AssertionError(f"{host}{path} does not serve the approved Next.js sign-in page")
+    if parser.meta_sha!=EXPECTED:
+        raise AssertionError(f"{host}{path} stale HTML release: {parser.meta_sha!r}")
+    if "no-store" not in get_header(headers,"Cache-Control").lower():
+        raise AssertionError(f"{host}{path} sign-in HTML is cacheable")
+    busted=url+("?landshop_probe="+EXPECTED[:12])
+    status,_,fresh_body,_=request(busted)
+    fresh=Assets();fresh.feed(fresh_body.decode("utf-8","replace"))
+    if status!=200 or fresh.meta_sha!=EXPECTED:
+        raise AssertionError(f"{host}{path} cache-busted HTML is out of date")
+    if not parser.css or not parser.js:
+        raise AssertionError(f"{host}{path} does not reference fresh compiled assets")
+    for relative in parser.css[:6]:
+        asset=urljoin(url,relative)
+        asset_status,asset_headers,asset_body,_=request(asset)
+        if asset_status!=200 or "css" not in get_header(asset_headers,"Content-Type").lower() or len(asset_body)<50:
+            raise AssertionError(f"{host}{path} CSS missing: {asset}")
+    for relative in parser.js[:2]:
+        asset=urljoin(url,relative)
+        asset_status,asset_headers,asset_body,_=request(asset)
+        if asset_status!=200 or not any(x in get_header(asset_headers,"Content-Type").lower() for x in ("javascript","ecmascript","text/plain")) or not asset_body:
+            raise AssertionError(f"{host}{path} JavaScript missing: {asset}")
+    print(f"  VERIFIED dynamic HTML + exact release + {len(parser.css)} CSS refs + {len(parser.js)} JS refs",flush=True)
+
 def main():
     if not re.fullmatch("[0-9a-f]{40}",EXPECTED):
         raise RuntimeError("LANDSHOP_EXPECTED_SHA must be the exact Git commit")
@@ -133,10 +172,16 @@ def main():
             except (AssertionError,URLError,HTTPError,OSError,TimeoutError,ValueError) as exc:
                 failures.append((host,path,str(exc)))
                 print(f"FAILED {host}{path}: {exc}",file=sys.stderr,flush=True)
+    for host,path,marker in APPLICATIONS:
+        try:
+            check_application(host,path,marker)
+        except (AssertionError,URLError,HTTPError,OSError,TimeoutError,ValueError) as exc:
+            failures.append((host,path,str(exc)))
+            print(f"FAILED {host}{path}: {exc}",file=sys.stderr,flush=True)
     for host,path,error in failures:
         print(f"FAILURE SUMMARY {host}{path}: {error}",file=sys.stderr)
     if failures:
         raise SystemExit(1)
-    print("PASS: Both domain variants serve current HTML + matching CSS and JS for all four principal pages.")
+    print("PASS: Both website variants and portal/staff entry points serve exact-commit HTML + fresh CSS and JavaScript.")
 if __name__=="__main__":
     main()
