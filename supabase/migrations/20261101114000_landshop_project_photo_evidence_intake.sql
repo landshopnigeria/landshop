@@ -41,7 +41,7 @@ grant select on public.landshop_project_photo_evidence to authenticated;
 drop policy if exists landshop_project_photo_staff_read on public.landshop_project_photo_evidence;
 create policy landshop_project_photo_staff_read on public.landshop_project_photo_evidence
  for select to authenticated using (
-  (uploaded_by=(select auth.uid()) and public.landshop_staff_can_work((select auth.uid())))
+  (uploaded_by=(select auth.uid()) and (public.landshop_staff_can_work((select auth.uid())) or public.landshop_is_management((select auth.uid()))))
   or public.landshop_is_management((select auth.uid()))
  );
 
@@ -51,7 +51,7 @@ drop policy if exists landshop_project_photo_original_upload on storage.objects;
 create policy landshop_project_photo_original_upload on storage.objects
  for insert to authenticated with check (
  bucket_id='landshop-project-evidence'
- and public.landshop_staff_can_work((select auth.uid()))
+ and (public.landshop_staff_can_work((select auth.uid())) or public.landshop_is_management((select auth.uid())))
  and (storage.foldername(name))[1]=(select auth.uid())::text
  and (storage.foldername(name))[2] in
   ('green-island','merit-park','maiyegun-beach-estate','famous-gardens')
@@ -63,7 +63,7 @@ create policy landshop_project_photo_original_read on storage.objects
  bucket_id='landshop-project-evidence'
  and (
   ((storage.foldername(name))[1]=(select auth.uid())::text
-   and public.landshop_staff_can_work((select auth.uid())))
+   and (public.landshop_staff_can_work((select auth.uid())) or public.landshop_is_management((select auth.uid()))))
   or public.landshop_is_management((select auth.uid()))
  )
 );
@@ -75,7 +75,7 @@ create or replace function public.landshop_project_photo_submit(
 ) returns uuid language plpgsql security definer set search_path='' as $$
 declare v_user uuid:=auth.uid();v_id uuid;v_path_pattern text;
 begin
- if v_user is null or not public.landshop_staff_can_work(v_user)
+ if v_user is null or not (public.landshop_staff_can_work(v_user) or public.landshop_is_management(v_user))
  then raise exception 'Verified active staff account required';end if;
  if p_project not in ('green-island','merit-park','maiyegun-beach-estate','famous-gardens')
  then raise exception 'Unknown historical project';end if;
