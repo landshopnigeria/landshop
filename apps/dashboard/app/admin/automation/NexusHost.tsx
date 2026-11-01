@@ -242,7 +242,7 @@ export default function NexusHost({initial,html}:{initial:Flow[];html:string}){
    <span className="nexus-host-locked">External publishing locked</span>
   </div>
   <iframe ref={iframe} title="Landshop NEXUS visual automation workflow studio" className="nexus-host-frame"
-   sandbox="allow-scripts allow-downloads" srcDoc={html}/>
+   sandbox="allow-scripts allow-downloads" srcDoc={html} onLoad={()=>post('hello')}/>
   {historyOpen&&<aside className="nexus-run-drawer" aria-label="Audited rehearsal history">
    <header><div><small>SERVER-RECORDED EXECUTION</small><strong>Workflow Rehearsal</strong></div><button onClick={()=>setHistoryOpen(false)} aria-label="Close run history">×</button></header>
    <p>Real database run records and immutable step events. External services, devices, payments and communication actions are never invoked by a rehearsal.</p>
