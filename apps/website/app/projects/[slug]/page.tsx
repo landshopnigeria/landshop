@@ -72,5 +72,18 @@ const data:Record<string,DetailData>={
  related:related.filter(x=>x.slug!=='green-island'),primaryHref:'/contact?topic=Customer%20Support&project=green-island',primaryLabel:'Request verified records',secondaryHref:'/projects',secondaryLabel:'Browse projects'
  }
 };
-export async function generateMetadata({params}:{params:Promise<{slug:string}>}){const {slug}=await params;const d=data[slug];return {title:d?d.title+' | Landshop Projects':'Project not found',description:d?.description,alternates:d?{canonical:'/projects/'+slug}:undefined};}
+export const dynamicParams=false;
+export function generateStaticParams(){return Object.keys(data).map(slug=>({slug}));}
+export async function generateMetadata({params}:{params:Promise<{slug:string}>}){
+ const {slug}=await params;const d=data[slug];
+ if(!d)return {title:'Project not found'};
+ const url='https://www.landshopnigeria.com/projects/'+slug;
+ const image=new URL(d.images[0].src,'https://www.landshopnigeria.com').toString();
+ return {
+  title:d.title+' | Landshop Projects',description:d.description,
+  alternates:{canonical:url},
+  openGraph:{type:'website' as const,url,siteName:'Landshop Nigeria',title:d.title+' | Landshop Projects',description:d.description,images:[{url:image,alt:d.images[0].caption}]},
+  twitter:{card:'summary_large_image' as const,title:d.title+' | Landshop Projects',description:d.description,images:[image]}
+ };
+}
 export default async function Project({params}:{params:Promise<{slug:string}>}){const {slug}=await params;const d=data[slug];if(!d)notFound();return <main className="ls26-page"><div className="ls26-container"><nav className="ls26-crumb"><Link href="/">Home</Link> / <Link href="/projects">Projects</Link> / {d.title}</nav></div><DetailExperience data={d}/>{slug==='merit-park'&&<section className="ls26-container" style={{paddingBottom:55}}><p>Historical source: <a href="https://thenationonlineng.net/firm-unveils-affordable-purchase-of-land-and-property/" target="_blank" rel="noopener noreferrer">Published report describing 2020 land allocation activity</a>. This reporting does not verify present-day ownership or construction status.</p></section>}</main>}
