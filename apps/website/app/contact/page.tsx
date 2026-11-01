@@ -41,7 +41,8 @@ export default function Contact() {
     <div className="lc-v24-container">
       <section className="lc-v24-hero" aria-labelledby="contact-title">
         <div className="lc-v24-photo">
-          <img src="/media/landshop-contact-reception.webp" alt="Landshop reception, front desk and visitor waiting area" fetchPriority="high" decoding="async"/>
+          <img src="/owner/2026/garden-site-team.webp" alt="Landshop project team and construction personnel photographed on site; archival owner-supplied image, not a photograph of the Lagos reception" fetchPriority="high" decoding="async"/>
+          <span className="lc-v24-photo-evidence">Our people on site · Archival photograph</span>
         </div>
         <div className="lc-v24-info">
           <div className="lc-v24-info-inner">
