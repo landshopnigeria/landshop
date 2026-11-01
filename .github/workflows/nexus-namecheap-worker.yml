@@ -1,0 +1,90 @@
+name: Activate guarded NEXUS safe-preview worker on Namecheap
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/nexus-namecheap-worker.yml'
+      - 'services/document-worker/nexus_runtime_worker.py'
+      - 'services/document-worker/nexus_namecheap_once.sh'
+permissions:
+  contents: read
+jobs:
+  namecheap-nexus:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: landshop-production
+    timeout-minutes: 8
+    concurrency:
+      group: landshop-nexus-namecheap-worker
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate Python syntax and worker tests
+        run: |
+          python3 -m py_compile services/document-worker/nexus_runtime_worker.py
+          cd services/document-worker
+          python3 -m unittest test_nexus_runtime_worker -v
+      - name: Configure verified production SSH
+        env:
+          DEPLOY_KEY: ${{ secrets.LANDSHOP_SSH_KEY || secrets.NAMECHEAP_SSH_PRIVATE_KEY }}
+          KNOWN_HOSTS: ${{ secrets.LANDSHOP_SSH_KNOWN_HOSTS || secrets.NAMECHEAP_SSH_KNOWN_HOSTS || vars.LANDSHOP_SSH_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          test -n "$DEPLOY_KEY" && test -n "$KNOWN_HOSTS"
+          install -d -m 700 "$HOME/.ssh"
+          printf '%s\n' "$DEPLOY_KEY" > "$HOME/.ssh/id_ed25519"
+          printf '%s\n' "$KNOWN_HOSTS" > "$HOME/.ssh/known_hosts"
+          chmod 600 "$HOME/.ssh/id_ed25519" "$HOME/.ssh/known_hosts"
+      - name: Inspect and activate isolated preview queue worker
+        env:
+          SSH_HOST: ${{ secrets.LANDSHOP_SSH_HOST || secrets.NAMECHEAP_SSH_HOST || vars.LANDSHOP_SSH_HOST }}
+          SSH_PORT: ${{ vars.LANDSHOP_SSH_PORT || secrets.LANDSHOP_SSH_PORT || secrets.NAMECHEAP_SSH_PORT || '21098' }}
+          SSH_USER: ${{ secrets.LANDSHOP_SSH_USER || secrets.NAMECHEAP_SSH_USER || vars.LANDSHOP_SSH_USER }}
+        run: |
+          set -euo pipefail
+          test -n "$SSH_HOST" && test -n "$SSH_USER"
+          [[ "$SSH_PORT" =~ ^[0-9]{1,5}$ ]]
+          remote="$SSH_USER@$SSH_HOST"
+          opts=(-p "$SSH_PORT" -o BatchMode=yes -o StrictHostKeyChecking=yes -o ConnectTimeout=15)
+          ssh "${opts[@]}" "$remote" 'mkdir -p "$HOME/landshop-nexus-runtime" && chmod 700 "$HOME/landshop-nexus-runtime"'
+          scp -P "$SSH_PORT" -o BatchMode=yes -o StrictHostKeyChecking=yes \
+            services/document-worker/nexus_runtime_worker.py \
+            services/document-worker/nexus_namecheap_once.sh \
+            "$remote:landshop-nexus-runtime/"
+          ssh "${opts[@]}" "$remote" bash -s <<'REMOTE'
+          set -euo pipefail
+          umask 077
+          root="$HOME/landshop-nexus-runtime"
+          chmod 600 "$root/nexus_runtime_worker.py"
+          chmod 700 "$root/nexus_namecheap_once.sh"
+          config="$HOME/.config/landshop/nexus-worker.env"
+          if pgrep -f '[n]exus_runtime_worker.py --loop' >/dev/null; then
+            echo 'NEXUS_EXISTING_LOOP_PROCESS_PRESENT; not installing duplicate scheduled execution'
+            exit 0
+          fi
+          if ! test -f "$config" || test -L "$config";then
+            echo '::error::NEXUS_CONFIG_MISSING: protected ~/.config/landshop/nexus-worker.env is required; no credentials printed'
+            exit 3
+          fi
+          case "$(stat -c %a "$config")" in 600|400) ;; *)
+            echo '::error::NEXUS_CONFIG_PERMISSIONS_INVALID';exit 3;;
+          esac
+          if ! command -v flock >/dev/null || ! command -v crontab >/dev/null || ! command -v timeout >/dev/null; then
+            echo '::error::NEXUS_PROCESS_CONTROLS_MISSING'; exit 3
+          fi
+          # Preflight credentials and project with no network calls or secret output.
+          bash -c 'set -a; source "$HOME/.config/landshop/nexus-worker.env"; set +a;
+            test "${LANDSHOP_NEXUS_RUNTIME_ENABLED:-}" = 1 &&
+            test "${LANDSHOP_SUPABASE_URL:-}" = https://iwkfagzkogzidrbbezds.supabase.co &&
+            test -n "${LANDSHOP_SUPABASE_SERVICE_ROLE_KEY:-}"' ||
+            { echo '::error::NEXUS_PROTECTED_ENV_NOT_READY'; exit 3; }
+          existing="$(crontab -l 2>/dev/null || true)"
+          printf '%s\n' "$existing" | grep -v '# LANDSHOP_NEXUS_SAFE_PREVIEW' > "$root/cron.next"
+          printf '%s\n' '* * * * * /usr/bin/flock -n "$HOME/landshop-nexus-runtime/worker.lock" /usr/bin/timeout 45 "$HOME/landshop-nexus-runtime/nexus_namecheap_once.sh" >> "$HOME/landshop-nexus-runtime/worker.log" 2>&1 # LANDSHOP_NEXUS_SAFE_PREVIEW' >> "$root/cron.next"
+          crontab "$root/cron.next"
+          rm -f "$root/cron.next"
+          echo 'NEXUS_SAFE_PREVIEW_SCHEDULE_INSTALLED'
+          /usr/bin/flock -n "$root/worker.lock" /usr/bin/timeout 45 "$root/nexus_namecheap_once.sh" >/dev/null
+          echo 'NEXUS_ONE_SHOT_QUEUE_CLAIM_SUCCEEDED'
+          REMOTE
