@@ -1,0 +1,49 @@
+/* Landshop public website — standard icon and arrow size: 35px.
+ * This file replaces the former 70px public-icon treatment.
+ * Keep all existing header, footer, property filter and card structures intact.
+ */
+:root{--ls-public-icon-size:35px}
+body :is(.ls-site-chrome,.v22-root,.ls26-page,.content-page,.mk-layout,.ls-v23-hero,.ls24-global-footer,.ls24-newsletter-section,.landshop-product) svg:not([class*="logo"]):not([class*="chart"]):not([class*="graph"]):not([class*="brand"]),
+body :is(.ls-site-chrome,.v22-root,.ls26-page,.content-page,.mk-layout,.ls-v23-hero,.ls24-global-footer,.ls24-newsletter-section,.landshop-product) .ls-icon{
+ width:35px!important;
+ height:35px!important;
+ max-width:35px;
+ flex-shrink:0;
+ vertical-align:middle;
+}
+body :is(.ls-site-chrome,.v22-root,.ls26-page,.content-page,.mk-layout,.ls-v23-hero,.ls24-global-footer,.ls24-newsletter-section,.landshop-product) :is(a,button) > span[aria-hidden="true"]:not([class*="avatar"]):not([class*="badge"]){
+ font-size:35px!important;
+ line-height:1!important;
+}
+body .ls-site-chrome .ls-icon-chip,
+body .ls-site-chrome .ls-mega-list .ls-icon-chip{
+ width:45px!important;
+ min-width:45px!important;
+ height:45px!important;
+ display:inline-flex;
+ align-items:center;
+ justify-content:center;
+}
+body .ls-site-chrome .ls-mega-list a{min-height:54px!important;gap:9px}
+body .ls-site-chrome .ls-mega-list a > span:nth-child(2){min-width:0}
+body .ls-site-chrome .ls-menu-button{width:46px!important;height:46px!important}
+body .ls-site-chrome .ls30-hamburger{transform:none;transform-origin:center}
+body .mk-layout .mk-view-switch a{gap:8px;min-height:48px}
+body .mk-layout .mk-tools .mk-view-switch{align-items:center}
+body .ls-site-chrome .ls-mega-quicklinks a{min-height:48px}
+body .ls-site-chrome .ls30-service-entry{min-height:58px}
+body .ls-site-chrome .ls-header-link{height:auto;min-height:48px}
+body .ls-site-chrome .ls-glass-header{min-height:64px}
+@media(max-width:1050px){
+ body .ls-site-chrome .ls-header-link{min-height:48px}
+ body .ls-site-chrome .ls-mobile-subnav a{min-height:54px}
+ body .ls-site-chrome .ls-glass-header{min-height:64px}
+}
+@media(max-width:700px){
+ :root{--ls-public-icon-size:35px}
+ body .ls-site-chrome .ls-menu-button{width:46px!important;height:46px!important}
+ body .ls-site-chrome .ls30-hamburger{transform:none}
+ body .ls24-social-links{max-width:100%;min-width:0;flex-wrap:wrap}
+ body .mk-layout .mk-title-row{min-width:0}
+}
+@media(prefers-reduced-motion:reduce){body .ls-site-chrome .ls30-hamburger{transition:none}}
