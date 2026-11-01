@@ -27,3 +27,10 @@
 
 ## QA and production gates
 `python3 scripts/verify-landshop-owner-media.py` verifies file signatures, file sizes, asset references, all 20 article slug mappings, and 3+3 homepage visuals. It is a mandatory step in validation and production release workflows. Existing header, footer, property filter, and property-details page structure are intentionally unchanged.
+
+## November 1 follow-up: Contact page and past-project provenance
+
+- The old `/media/landshop-contact-reception.webp` was a tiny legacy placeholder, and its caption asserted it depicted the actual Landshop reception without adequate provenance. Contact now displays `/owner/2026/garden-site-team.webp`, an original on-site photo from the owner ZIPs, with an explicit archival caption. **This is not represented as a photograph of the Lagos office.**
+- The original Landshop archive already includes `/media/maiyegun0.webp`, whose project association is documented in `docs/EDITORIAL-PHOTOGRAPHY-SOURCES.md`. It may show historical Maiyegun project activity, but it is not evidence of current construction completion, units, pricing, occupation or land-title status. It appears on the Maiyegun portfolio card and historical project page with plain-language notices.
+- Merit Park and Green Island have no new image assignments in this update. The legacy archive's naming is not sufficient to independently confirm both project identities. The current media placeholders are retained until exact estate-specific images and publication rights are approved.
+- The public Contact and Maiyegun page photo references, as well as original WebP file headers, are checked by CI and the Namecheap post-deployment validation.
