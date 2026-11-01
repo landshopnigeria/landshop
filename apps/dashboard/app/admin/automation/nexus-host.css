@@ -32,3 +32,11 @@
 @media(max-width:1250px){.nexus-host-status{display:none}.nexus-host-locked{display:none}}
 @media(max-width:900px){.nexus-host-toolbar{gap:6px;padding-inline:8px}.nexus-host-title span{display:none}.nexus-host-toolbar button{padding:9px 8px}.nexus-host select{max-width:170px}.nexus-host-select{font-size:0}}
 @media(max-width:480px){.nexus-host-toolbar{height:56px}.nexus-host-frame{height:calc(100dvh - 56px)}.nexus-run-drawer{top:56px}.nexus-host select{width:120px;min-width:80px}.nexus-host-toolbar button{font-size:10px;padding:8px 5px}}
+
+/* Private NEXUS runtime operational telemetry only. */
+.nexus-runtime-monitor .nexus-runtime-stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin:17px 0}
+.nexus-runtime-monitor .nexus-runtime-stats>div{background:#edf8f1;border:1px solid #d4e8d9;border-radius:10px;padding:10px 5px;text-align:center;min-width:0}
+.nexus-runtime-monitor .nexus-runtime-stats strong{display:block;font-size:20px;line-height:1.2;color:#116649}
+.nexus-runtime-monitor .nexus-runtime-stats small{display:block;font-size:8px;color:#577d65;overflow:hidden;text-overflow:ellipsis}
+.nexus-runtime-monitor>button{width:100%;margin-top:5px}
+@media(max-width:1120px){.nexus-host-toolbar{gap:5px}.nexus-host-toolbar button{font-size:10px;padding:9px 7px}.nexus-host-title strong{display:none}}
