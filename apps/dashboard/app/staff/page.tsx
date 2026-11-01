@@ -62,9 +62,9 @@ export default async function Page(){
  if(verified&&profile?.kyc_state!=='approved'&&!verifiedOwner){
   return <BasicStaffWorkspace profile={profile as {username:string;kyc_state:string;staff_number:string|null;employment_state:string}} tasks={(tasks||[]) as {id:string;title:string;status:string;due_at:string;details:string|null}[]} email={user.email||''} userId={user.id}/>;
  }
- return <><StaffWorkActions active={verified} initialTasks={(tasks||[]) as {id:string;title:string;status:string;due_at:string;details:string|null}[]}/>{verified&&<StaffReportHistory userId={user.id}/>}<StaffWorkspace userId={user.id} initialProfile={profile||null} initialTasks={tasks||[]}
+ return <StaffWorkspace workPanel={<StaffWorkActions active={verified} initialTasks={(tasks||[]) as {id:string;title:string;status:string;due_at:string;details:string|null}[]}/>} reportPanel={verified?<StaffReportHistory userId={user.id}/>:null} userId={user.id} initialProfile={profile||null} initialTasks={tasks||[]}
   role={member?.role||null} initialVerified={verified}
   selfServiceAccess={confirmedStaffSignup&&Boolean(profile)&&profile?.employment_state!=='suspended'&&profile?.employment_state!=='ended'}
   ownerAccess={verifiedOwner}
-  metadata={(user.user_metadata||{}) as Record<string,unknown>} userEmail={user.email||''}/></>;
+  metadata={(user.user_metadata||{}) as Record<string,unknown>} userEmail={user.email||''}/>;
 }
