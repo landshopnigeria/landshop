@@ -54,4 +54,23 @@ for page in [site/"app/projects/page.tsx",site/"app/projects/[slug]/page.tsx"]:
  body=page.read_text()
  if '/media/maiyegun0.webp' not in body or 'archiv' not in body.lower():
   raise SystemExit(f"Maiyegun archival image and historical disclaimer missing in {page}")
+# The Merit Park owner archive contains a legible historical billboard.
+# Preserve its original match and prohibit attribution to an available plot.
+import hashlib
+historic=assets/"merit-park-archival-signage.jpg"
+if not historic.is_file() or not 100000 <= historic.stat().st_size <= 950000:
+ raise SystemExit("Missing approved historical Merit Park photo")
+if hashlib.sha256(historic.read_bytes()).hexdigest()!="227450e4f813c5cc150e0aca0d42344f321f06cd981b1dec1725b194a1c3f42b":
+ raise SystemExit("Merit Park archival photo differs from the verified owner-supplied original")
+project_card=(site/"app/projects/page.tsx").read_text()
+detail=(site/"app/projects/[slug]/page.tsx").read_text()
+for body in (project_card,detail):
+ if "/owner/2026/merit-park-archival-signage.jpg" not in body:
+  raise SystemExit("Merit Park must display its verified owner-supplied historical photo")
+ if "historical" not in body.lower() and "archiv" not in body.lower():
+  raise SystemExit("Merit Park photo must be labelled historical")
+if "nigeriapropertycentre.com/for-sale/land" not in detail:
+ raise SystemExit("Green Island historical listing attribution missing")
+if "slug:'green-island'" not in project_card or "awaiting verification" not in project_card.lower():
+ raise SystemExit("Green Island unverified imagery must remain unclaimed")
 print(f"Owner photography verified: {len(photos)} WebP files, {len(slugs)} article mappings, 3 slides and 3 featured product cards")

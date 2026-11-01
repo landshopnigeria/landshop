@@ -34,3 +34,21 @@
 - The original Landshop archive already includes `/media/maiyegun0.webp`, whose project association is documented in `docs/EDITORIAL-PHOTOGRAPHY-SOURCES.md`. It may show historical Maiyegun project activity, but it is not evidence of current construction completion, units, pricing, occupation or land-title status. It appears on the Maiyegun portfolio card and historical project page with plain-language notices.
 - Merit Park and Green Island have no new image assignments in this update. The legacy archive's naming is not sufficient to independently confirm both project identities. The current media placeholders are retained until exact estate-specific images and publication rights are approved.
 - The public Contact and Maiyegun page photo references, as well as original WebP file headers, are checked by CI and the Namecheap post-deployment validation.
+
+## November 1 verification of Merit Park and Green Island
+
+An additional photograph was located inside the owner-provided `Other images.zip` archive, at `Other images/268.jpg`. The real on-site billboard visibly contains the project names **Merit Park** and **Famous Garden**, with a historical property marketing visual. It is not a photograph of an independently verified Merit Park property parcel or completed development. To preserve this distinction, the new site asset is labelled as historical branding and displayed on the Merit Park portfolio card and history page only.
+
+The derivative `/owner/2026/merit-park-archival-signage.jpg` is a 1600 by 1200 pixel JPEG without retained camera metadata, 656119 bytes. Its expected SHA256 is `227450e4f813c5cc150e0aca0d42344f321f06cd981b1dec1725b194a1c3f42b`, checked in CI. The original owner archive is the source of the photograph; temporary Adobe transfer links are deleted from the release branch.
+
+Independent period source: [The Nation, February 2, 2020](https://thenationonlineng.net/firm-unveils-affordable-purchase-of-land-and-property/) reported historical Landshop activity at a Merit Park and Famous Garden allocation event. This historical reporting does not confirm current project availability, title or allocations.
+
+Green Island has no securely attributed site photograph in the six user-supplied ZIP archives, the current public media files or the matching Supabase storage objects. [Nigeria Property Centre historical listing, December 2024](https://nigeriapropertycentre.com/for-sale/land/mixed-use-land/lagos/lekki-ibeju/2622661-prime-plots-of-land) names Landshop LTD as advertiser of a Green Island plot listing at Iba-Oloja, Ibeju-Lekki. The listing is no longer on the market. Its former price and proposed development features are not current facts and must not be advertised as such.
+
+The production estate registry currently contains Merit Park as a draft historical record, not an approved active listing. Green Island does not have a verified live estate record. Current estate imagery must only be published when project identity, rights of publication and date/context are confirmed.
+
+**Site policy:** Real owner-supplied photographic evidence is welcome; a period marketing banner is labelled as historical advertising, not current construction. No unverified Green Island photograph is published. Product payments, new unit availability and title claims remain independently gated.
+
+### Responsive release verification note
+
+The independent browser smoke test of this historical photo change surfaced an unrelated global mobile overflow regression after a new 70px icon style was added to the production branch. The global icon stylesheet was corrected on `main` to keep larger desktop icons while scaling and wrapping icons on narrow screens. The historical photo release requires a fresh responsive check against that corrected base. No approved header, footer, property detail or marketplace filter structure is modified by this project-photo update.
