@@ -1,1 +1,20 @@
-{"name":"landshop-enterprise","private":true,"version":"0.1.0","workspaces":["apps/*","services/api","packages/*"],"scripts":{"dev:web":"npm run dev -w @landshop/website","dev:portal":"npm run dev -w @landshop/portal","dev:dashboard":"npm run dev -w @landshop/dashboard","build":"npm run build --workspaces --if-present"}}
+{
+  "name": "landshop-enterprise",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": [
+    "apps/*",
+    "services/api",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:web": "npm run dev -w @landshop/website",
+    "dev:portal": "npm run dev -w @landshop/portal",
+    "dev:dashboard": "npm run dev -w @landshop/dashboard",
+    "build": "npm run build --workspaces --if-present"
+  },
+  "overrides": {
+    "postcss": "8.5.32",
+    "multer": "2.5.0"
+  }
+}
