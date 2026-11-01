@@ -146,14 +146,22 @@ export default function StaffWorkspace({userId,initialProfile,initialTasks,role,
  const todayAttendance=attendance.filter(a=>new Date(a.occurred_at).toLocaleDateString('en-CA',{timeZone:'Africa/Lagos'})===new Date().toLocaleDateString('en-CA',{timeZone:'Africa/Lagos'}));
  const lastClock=attendance[0];
  const monthlyClockDays=new Set(attendance.filter(a=>a.action==='clock_in'&&new Date(a.occurred_at).toLocaleString('en-CA',{timeZone:'Africa/Lagos',year:'numeric',month:'2-digit'})===new Date(now).toLocaleString('en-CA',{timeZone:'Africa/Lagos',year:'numeric',month:'2-digit'})).map(a=>new Date(a.occurred_at).toLocaleDateString('en-CA',{timeZone:'Africa/Lagos'}))).size;
- const todaySorted=[...todayAttendance].sort((a,b)=>new Date(a.occurred_at).getTime()-new Date(b.occurred_at).getTime());
+ // Today's duty time must include the overlap of shifts that started before midnight.
+ // Africa/Lagos (WAT) remains UTC+01:00 year-round. Never invent an end time.
+ const localNow=new Date(now+3600000);
+ const todayStart=Date.UTC(localNow.getUTCFullYear(),localNow.getUTCMonth(),localNow.getUTCDate())-3600000;
+ const clockTimeline=[...attendance].sort((a,b)=>new Date(a.occurred_at).getTime()-new Date(b.occurred_at).getTime());
  let sessionStart:number|null=null,dutyMs=0;
- for(const event of todaySorted){
+ for(const event of clockTimeline){
   const stamp=new Date(event.occurred_at).getTime();
+  if(!Number.isFinite(stamp)||stamp>now)continue;
   if(event.action==='clock_in'&&sessionStart===null)sessionStart=stamp;
-  if(event.action==='clock_out'&&sessionStart!==null){dutyMs+=Math.max(0,stamp-sessionStart);sessionStart=null}
+  if(event.action==='clock_out'&&sessionStart!==null){
+   dutyMs+=Math.max(0,stamp-Math.max(sessionStart,todayStart));
+   sessionStart=null;
+  }
  }
- if(sessionStart!==null)dutyMs+=Math.max(0,now-sessionStart);
+ if(sessionStart!==null)dutyMs+=Math.max(0,now-Math.max(sessionStart,todayStart));
  const dutyHours=Math.floor(dutyMs/3600000)+'h '+String(Math.floor((dutyMs%3600000)/60000)).padStart(2,'0')+'m';
 
 
