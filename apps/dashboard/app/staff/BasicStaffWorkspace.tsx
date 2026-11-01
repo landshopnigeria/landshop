@@ -48,6 +48,29 @@ export default function BasicStaffWorkspace({profile,tasks,email,userId}:{profil
    <div className="ls-basic-content">
     <div className="ls-basic-section-heading"><div><small>MY WORKSPACE</small><h2>{menu.find(([key])=>key===section)?.[1]}</h2></div><span>Staff access · {profile.employment_state}</span></div>
     {notice&&<p role="status" aria-live="polite" className="ls-basic-message">{notice}</p>}
+    {section==='overview'&&<section className="ls26-welcome ls26-staff-welcome"><div><small>MY LANDSHOP WORKSPACE</small><h2>Good day, {profile.username}</h2><p>Your people, performance, attendance and reporting workspace in one place.</p></div></section>}
+    {section==='overview'&&<div className="ls26-staff-overview">
+      <section className="ls26-panel ls26-score-panel" aria-label="Staff performance scores">
+       <div className="ls26-panel-heading"><h3>Performance Scores</h3><span>Manager-reviewed tasks</span></div>
+       <div className="ls26-score-grid">{(['Daily','Weekly','Monthly','Yearly'] as const).map(label=><div key={label} className="ls26-score">
+        <strong>{label} Score</strong><div className="ls26-ring" role="img" aria-label={label+' score not yet reviewed'}><span>—<small>Not scored</small></span></div>
+       </div>)}</div>
+       <p className="ls26-note">Scores appear when management reviews your completed tasks. No score is displayed as zero.</p>
+      </section>
+      <section className="ls26-panel ls26-attendance-panel"><div className="ls26-panel-heading"><h3>Today's Attendance</h3><span className="ls26-pill">Verification required</span></div>
+       <div className="ls26-clock-buttons"><button type="button" disabled title="Identity approval required before clock-in">↳ Clock In</button><button type="button" disabled title="Identity approval required before clock-out">↗ Clock Out</button></div>
+       <p>Clock-in, clock-out, location consent and attendance history activate when identity verification is approved.</p>
+       <button type="button" className="ls26-inline-action" onClick={()=>navigate('kyc')}>Complete identity verification <span aria-hidden="true">→</span></button>
+      </section>
+      <section className="ls26-panel ls26-kpi-panel"><div className="ls26-panel-heading"><h3>My KPI Summary</h3><span>Live operational records</span></div>
+       <div className="ls26-kpis"><div><strong>{tasks.filter(t=>['reviewed','completed','accepted'].includes(t.status)).length}</strong><span>Tasks completed</span></div><div><strong>{tasks.filter(t=>['assigned','returned','in_progress'].includes(t.status)).length}</strong><span>Open tasks</span></div><div><strong>—</strong><span>Attendance rate</span></div><div><strong>—</strong><span>Performance</span></div></div>
+      </section>
+      <section className="ls26-panel ls26-report-panel"><div className="ls26-panel-heading"><h3>Reports & Activity</h3></div>
+       <button type="button" onClick={()=>navigate('reports')}>▤ Daily Report <span aria-hidden="true">→</span></button>
+       <button type="button" onClick={()=>navigate('reports')}>▥ Weekly / Monthly Report <span aria-hidden="true">→</span></button>
+       <button type="button" onClick={()=>navigate('tasks')}>☑ Assigned Tasks ({tasks.length}) <span aria-hidden="true">→</span></button>
+      </section>
+    </div>}
     {section==='overview'&&<div className="ls-basic-cards">
       <section className="ls-basic-card"><h3>Welcome, {profile.username}</h3><p>{email}</p><p>Start with your identity profile, then use the sidebar to manage assignments and reports. Only one workspace section stays open at a time.</p><div className="ls-basic-actions"><button onClick={()=>navigate('kyc')}>Complete My KYC <span aria-hidden="true">→</span></button><button onClick={()=>navigate('tasks')}>My Tasks <span aria-hidden="true">→</span></button></div></section>
       <section className="ls-basic-card"><h3>Account status</h3><dl><dt>Email verification</dt><dd>Confirmed</dd><dt>Employment</dt><dd>{profile.employment_state}</dd><dt>Identity review</dt><dd>{profile.kyc_state.replaceAll('_',' ')}</dd><dt>Staff number</dt><dd>{profile.staff_number||'Pending issuance'}</dd></dl></section>
