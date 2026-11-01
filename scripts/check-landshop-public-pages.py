@@ -25,17 +25,20 @@ SITES = {
 PUBLIC_PAGES = [
     ("website", "/", "Everyone deserves affordable property."),
     ("www", "/", "Everyone deserves affordable property."),
-    ("website", "/develop", "Own Your Future"),
-    ("www", "/develop", "Own Your Future"),
-    ("website", "/incubate", "Invest in Possibilities."),
-    ("website", "/grow", "Make Homeownership Possible."),
+    ("website", "/develop", "DEVELOP"),
+    ("www", "/develop", "DEVELOP"),
+    ("website", "/incubate", "INCUBATE"),
+    ("website", "/grow", "GROW"),
     ("website", "/plans/grow", "Grow into homeownership."),
     ("website", "/plans/develop", "A place for the plans you are making."),
     ("website", "/plans/incubate", "Explore a shared route into property."),
     ("website", "/plans/devpro", "Support the development of your estate."),
     ("website", "/plans/estatepro", "Move your building plans forward."),
     ("website", "/projects", "Explore the places behind Landshop."),
-    ("website", "/projects/famous-gardens", "A home for the future you are planning."),
+    ("website", "/projects/famous-gardens", "Famous Gardens"),
+    ("website", "/projects/merit-park", "Merit Park"),
+    ("website", "/projects/maiyegun-beach-estate", "Maiyegun Beach Estate"),
+    ("website", "/projects/green-island", "Green Island"),
     ("website", "/collections/prime", "Prime Estates."),
     ("website", "/collections/luxury", "Luxury Estates."),
     ("website", "/visit", "Come with questions."),
@@ -51,10 +54,10 @@ PUBLIC_PAGES = [
     ("website", "/terms", "Terms & Conditions"),
     ("website", "/privacy", "Privacy Policy"),
     ("website", "/thrift", "Build towards property goals, together"),
-    ("website", "/services/property-acquisition", "From a property enquiry"),
-    ("website", "/services/advisory", "Independent questions deserve clear answers"),
-    ("website", "/services/mortgage", "Understand the full cost"),
-    ("website", "/services/construction-credit", "Plan your development financing"),
+    ("website", "/services/property-acquisition", "Property Acquisition"),
+    ("website", "/services/advisory", "Property Advisory"),
+    ("website", "/services/mortgage", "Mortgage Guidance"),
+    ("website", "/services/construction-credit", "Construction Credit Enquiries"),
     ("website", "/grow/beta-mortgage", "Explore a structured route"),
     ("website", "/grow/mortgage-xtra", "Plan a financing journey"),
     ("portal", "/", "Welcome Back"),
@@ -188,10 +191,21 @@ def check(kind: str, route: str, expected: str | None):
             if label not in html:
                 raise AssertionError(f"required V16 slider control/action missing: {label}")
     if kind in ("website","www") and route in ("/develop","/incubate","/grow"):
-        if 'data-product-journey=' not in html:
-            raise AssertionError("V16 premium product page template is missing")
+        for marker in ('class="lde"', 'class="lde-gallery"', 'class="lde-side"', 'class="lde-tabs"', 'class="lde-related"'):
+            if marker not in html:
+                raise AssertionError("approved image-led product details missing: "+marker)
         if "portal.landshopnigeria.com/applications/" not in html:
             raise AssertionError("secure guided product forms are not linked")
+    if kind in ("website","www") and (route.startswith("/projects/") or route.startswith("/services/")):
+        for marker in ('class="lde"', 'class="lde-gallery"', 'class="lde-side"', 'class="lde-tabs"', 'class="lde-related"'):
+            if marker not in html:
+                raise AssertionError("approved image-led detail template missing: "+marker)
+        if route=="/projects/famous-gardens" and "/media/famous0.webp" not in html:
+            raise AssertionError("Famous Gardens owner-supplied gallery missing")
+        if route=="/projects/merit-park" and "/media/drone0.webp" not in html:
+            raise AssertionError("Merit Park drone gallery missing")
+        if route=="/projects/maiyegun-beach-estate" and "/media/maiyegun0.webp" not in html:
+            raise AssertionError("Maiyegun site gallery missing")
     if kind == "website" and route == "/contact":
         if 'class="lc-v24-photo"' not in html or 'class="contact-enquiry-form"' not in html:
             raise AssertionError("approved Landshop reception image or secure enquiry form is missing")
