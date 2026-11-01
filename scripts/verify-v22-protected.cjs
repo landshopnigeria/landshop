@@ -103,7 +103,13 @@ if(foot!==priorFooter&&foot!==footerPunctuationOnly(priorFooter)){
 for(const p of ['apps/website/app/properties/[id]/page.tsx','apps/website/app/properties/[id]/property-details.css','apps/website/app/insights/[slug]/page.tsx']){
  const prior=execFileSync('git',['show','origin/'+base+':'+p],{encoding:'utf8'});
  const current=readFileSync(p,'utf8');
- const approvedArrowOnly=p.endsWith('/insights/[slug]/page.tsx')&&prior.replaceAll('↗','→')===current;
+ // Protect the article template byte-for-byte after reversing ONLY the
+ // approved arrow component substitution and its import. All content, DOM
+ // structure, behavior and data access must remain identical.
+ const approvedArrowOnly=p.endsWith('/insights/[slug]/page.tsx')&&
+  current.replace(/^import ApprovedArrow from '[^']+';\n/,'')
+   .replace(/<ApprovedArrow direction="left" \/>/g,'←')
+   .replace(/<ApprovedArrow \/>/g,'→')===prior;
  // Permit only three explicitly requested punctuation/wording changes to
  // property detail copy, without relaxing layout or business logic protection.
  const approvedPropertyCopyOnly=p.endsWith('/properties/[id]/page.tsx')&&prior
