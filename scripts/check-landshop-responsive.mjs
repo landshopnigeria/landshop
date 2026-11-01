@@ -52,10 +52,12 @@ try{
       const style=getComputedStyle(element);
       return {width:parseFloat(style.width),height:parseFloat(style.height)};
      };
-     const icons=[...document.querySelectorAll('svg.ls-icon')].filter(visible);
-     // The navigation dropdown has a separately approved compact V marker.
-     // Every action icon and directional arrow must still be exactly 27px.
-     const navChevrons=icons.filter(icon=>icon.matches('.ls-site-chrome .ls-primary-nav .ls-nav-toggle .ls-icon-chevron'));
+     const allIcons=[...document.querySelectorAll('svg.ls-icon')];
+     const icons=allIcons.filter(visible);
+     // The mobile nav is collapsed by default. Inspect its computed caret
+     // dimensions even before a customer opens the menu.
+     const navChevrons=allIcons.filter(icon=>icon.matches('.ls-site-chrome .ls-primary-nav .ls-nav-toggle .ls-icon-chevron'));
+     // Every non-dropdown action icon and directional arrow must be 27px.
      const actionIcons=icons.filter(icon=>!navChevrons.includes(icon));
      const wrongIconSizes=actionIcons.map(icon=>({className:icon.getAttribute('class'),...dimensions(icon)}))
       .filter(icon=>Math.abs(icon.width-27)>.1||Math.abs(icon.height-27)>.1).slice(0,8);
