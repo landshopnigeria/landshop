@@ -1,5 +1,5 @@
 'use client';
-import {useState,type FormEvent} from 'react';
+import {useState,type FormEvent,type CSSProperties} from 'react';
 import {createBrowserClient} from '@supabase/ssr';
 
 type Evidence={
@@ -17,8 +17,8 @@ const projects:{id:ProjectSlug;name:string}[]=[
  {id:'famous-gardens',name:'Famous Gardens'}
 ];
 const statusColor={pending:'#9a620e',verified:'#067452',rejected:'#b23d3d'};
-const field:React.CSSProperties={display:'block',width:'100%',boxSizing:'border-box',padding:'12px 13px',borderRadius:10,border:'1px solid #c9ded1',background:'#fff',fontSize:14,color:'#123d31',marginTop:6};
-const labelStyle:React.CSSProperties={display:'block',fontSize:13,fontWeight:700,color:'#2a5947'};
+const field:CSSProperties={display:'block',width:'100%',boxSizing:'border-box',padding:'12px 13px',borderRadius:10,border:'1px solid #c9ded1',background:'#fff',fontSize:14,color:'#123d31',marginTop:6};
+const labelStyle:CSSProperties={display:'block',fontSize:13,fontWeight:700,color:'#2a5947'};
 const labelName:Record<RightsBasis,string>={
  landshop_owned:'Landshop original photograph',
  owner_licensed:'Written licence from owner or photographer',
