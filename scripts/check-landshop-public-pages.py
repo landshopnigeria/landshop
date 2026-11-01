@@ -170,10 +170,10 @@ def check(kind: str, route: str, expected: str | None):
                 raise AssertionError("V23 advanced glass search missing "+field)
         if 'class="ls-v23-filter-holder"' not in html:
             raise AssertionError("V23 glass search placement is missing")
-        if 'class="ls26-location-track"' not in html:
-            raise AssertionError("V5 three-card location carousel is missing")
-        if "ls26-faded-eyebrow" not in html:
-            raise AssertionError("V5 bold faded section subtitles are missing")
+        if 'class="lsap-location-track"' not in html or 'class="lsap-location"' not in html:
+            raise AssertionError("Approved three-column property locations carousel is missing")
+        if 'class="lsap-head"' not in html or 'class="lsap-kicker"' not in html:
+            raise AssertionError("Approved homepage section subtitles are missing")
         if "Projects" not in visible or "Careers" not in visible:
             raise AssertionError("requested Projects/Careers header links are missing")
         if 'data-landshop-hero="v16-separated-product-slides"' not in html:
@@ -221,6 +221,12 @@ def verify_source() -> None:
     nav = Path("apps/website/components/SiteHeader.tsx").read_text(encoding="utf-8")
     icons = Path("apps/website/components/SiteIcon.tsx").read_text(encoding="utf-8")
     nav_css = Path("apps/website/app/public-icon-27.css").read_text(encoding="utf-8")
+    approved_body = Path("apps/website/components/ApprovedHomepageContent.tsx").read_text(encoding="utf-8")
+    approved_css = Path("apps/website/app/home-approved-reference.css").read_text(encoding="utf-8")
+    if 'className="lsap-location-track"' not in approved_body or 'className="lsap-location"' not in approved_body:
+        raise AssertionError("Approved homepage location carousel JSX is missing")
+    if 'flex:0 0 calc((100% - 40px)/3)' not in approved_css:
+        raise AssertionError("Homepage desktop carousel must display three property locations per row")
     if '<SiteIcon name="chevron" size={19}/>' not in nav:
         raise AssertionError("Public dropdown navigation V chevrons are missing")
     if "chevron:'M5.5 9l6.5 6.5L18.5 9'" not in icons:
