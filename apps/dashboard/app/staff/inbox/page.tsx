@@ -31,7 +31,7 @@ export default async function StaffInbox(){
  return <main style={{minHeight:'100vh',background:'#f5faf6',padding:'clamp(18px,5vw,64px)',color:'#123f30'}}>
   <div style={{maxWidth:1000,margin:'auto'}}>
    <Link href="/staff" style={{color:'#13865b'}}>← Staff dashboard</Link>
-   <p style={{letterSpacing:1,color:'#f26b10',fontSize:12,fontWeight:700}}>LANDSHOP PEOPLE & MANAGEMENT</p>
+   <p style={{letterSpacing:1,color:'#f26b10',fontSize:12,fontWeight:700}}>LANDSHOP Landshop Staff Portal</p>
    <h1>Reports Routed to My Role</h1>
    <p>Review daily and monthly reports sent to your authorized department role. Every decision is verified and recorded by the server.</p>
    {error?<p role="alert">Unable to load your reporting queue: {error.message}</p>:
