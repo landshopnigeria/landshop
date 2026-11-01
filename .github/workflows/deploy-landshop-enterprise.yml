@@ -21,6 +21,18 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      - name: Skip obsolete release commits before building
+        shell: bash
+        env:
+          RELEASE_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+        run: |
+          set -euo pipefail
+          latest=$(git ls-remote origin refs/heads/main | awk '{print $1}')
+          if [ -z "$latest" ] || [ "$latest" != "$RELEASE_SHA" ];then
+            echo "::error::This release commit is superseded by main. Refusing to deploy stale code."
+            exit 1
+          fi
+          echo "Release target matches current main: $RELEASE_SHA"
       - name: Verify authorized Namecheap production connection
         env:
           PUBLIC_URL: ${{ vars.LANDSHOP_SUPABASE_URL || 'https://iwkfagzkogzidrbbezds.supabase.co' }}
