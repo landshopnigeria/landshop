@@ -1,8 +1,7 @@
 'use client';
 import Link from 'next/link';
 import {useRef,useState} from 'react';
-import LandshopVideo from './LandshopVideo';
-import {landshopProductCards} from '../lib/landshop-brand-media';
+import LandshopPrimeFilm from './LandshopPrimeFilm';
 import {useCarouselPlayback} from './useCarouselPlayback';
 import type {FeaturedProperty} from './LandshopHome';
 
@@ -112,7 +111,7 @@ export default function LandshopApprovedSections({featured}:{featured:FeaturedPr
    </div>
    <p className="ls33-collection-note">Collection visuals are authentic archive references. Verify individual estate classification and availability on the property detail page.</p>
   </div></section>
-  <section className="ls33-section ls33-prime-film" id="prime" aria-labelledby="ls33-prime-title"><div className="ls33-container ls33-film-grid"><div><span className="ls33-kicker">LANDSHOP PRIME</span><h2 className="ls33-title" id="ls33-prime-title"><span>Prime</span> Estates<i>.</i></h2><p>Explore the Prime collection through a closer look at the places, designs and property options that fit your plans. Every current estate listing is separately verified before publication.</p><Link href="/collections/prime" className="ls33-button">Explore Prime Estates <SmallArrow/></Link></div><div className="ls33-film-card"><LandshopVideo video="prime"/></div></div></section>
+  <section className="ls33-section ls33-prime-film" id="prime" aria-labelledby="ls33-prime-title"><div className="ls33-container ls33-film-grid"><div><span className="ls33-kicker">LANDSHOP PRIME</span><h2 className="ls33-title" id="ls33-prime-title"><span>Prime</span> Estates<i>.</i></h2><p>Explore the Prime collection through a closer look at the places, designs and property options that fit your plans. Every current estate listing is separately verified before publication.</p><Link href="/collections/prime" className="ls33-button">Explore Prime Estates <SmallArrow/></Link></div><div className="ls33-film-card"><LandshopPrimeFilm/></div></div></section>
   <section className="ls33-section ls33-projects" id="projects" aria-labelledby="ls33-projects-title"><div className="ls33-container">
    <SectionTitle eyebrow="OUR" description="Our current sales focus, alongside the places that have shaped our story." href="/projects" cta="View all projects"><span>Projects</span></SectionTitle>
    <div className="ls33-project-grid">
