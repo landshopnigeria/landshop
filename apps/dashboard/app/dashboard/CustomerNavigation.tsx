@@ -17,7 +17,17 @@ function Icon({name}:{name:string}){
  }
 }
 
-const links=[['Overview','/dashboard','home'],['Applications','/dashboard/applications','file'],['KYC','/dashboard/kyc','check'],['Properties','https://www.landshopnigeria.com/properties','search'],['Wallet','#referrals','wallet'],['Profile','/dashboard/account','users']];
+const links=[
+ ['Dashboard','/dashboard','home'],
+ ['My Investments','/dashboard#investor-portfolio','chart'],
+ ['Payments & Timeline','/dashboard#payment-timeline','wallet'],
+ ['ROI Forecast','/dashboard#roi-forecast','chart'],
+ ['Documents & Forms','/dashboard#investment-documents','file'],
+ ['Mortgage Calculator','/dashboard#mortgage-calculator','wallet'],
+ ['Support & Contact','https://portal.landshopnigeria.com/support','support'],
+ ['My Profile & KYC','/dashboard/kyc','check'],
+ ['Settings','/dashboard/account','users']
+];
 
 export default function CustomerNavigation(){
  const [compact,setCompact]=useState(false),[open,setOpen]=useState(false);
@@ -27,7 +37,7 @@ export default function CustomerNavigation(){
   {open&&<button type="button" className="cd-nav-scrim" aria-label="Close customer navigation" onClick={()=>setOpen(false)}/>}
   <aside className={'dc-side cd-sidebar '+(compact?'cd-nav-compact ':'')+(open?'cd-nav-open':'')}>
    <div className="cd-nav-brand-row"><a className="dc-side-brand" href="https://www.landshopnigeria.com" aria-label="Landshop homepage"><img src="/media/logo.webp" alt="Landshop" width={128} height={60}/></a><button type="button" className="cd-nav-collapse" aria-label={compact?'Expand sidebar':'Collapse sidebar'} onClick={()=>setCompact(v=>!v)}>{compact?'»':'«'}</button></div>
-   <nav aria-label="Customer dashboard">{links.map(([label,to,icon])=><Link key={label} title={label} href={to} className={pathname===to?'active':''} onClick={()=>setOpen(false)}><Icon name={icon}/>{!compact&&<span>{label}</span>}</Link>)}</nav>
+   <nav aria-label="Customer dashboard">{links.map(([label,to,icon])=><Link key={label} title={label} href={to} className={(pathname===to||(pathname==='/dashboard'&&to.startsWith('/dashboard#')&&typeof window!=='undefined'&&window.location.hash===to.split('#')[1]))?'active':''} onClick={()=>setOpen(false)}><Icon name={icon}/>{!compact&&<span>{label}</span>}</Link>)}</nav>
    {!compact&&<div className="cd-side-help"><strong>Landshop Support</strong><p>Questions about your property journey?</p><a href="https://portal.landshopnigeria.com/support">Contact our team →</a></div>}
   </aside>
  </>;
