@@ -13,7 +13,7 @@ export default function MortgageCalculator(){
   return p*r/(1-Math.pow(1+r,-n));
  },[principal,rate,tenorMonths]);
  const money=(n:number)=>new Intl.NumberFormat('en-NG',{style:'currency',currency:'NGN',maximumFractionDigits:0}).format(n);
- return <section className="ls26-panel ls26-mortgage" aria-labelledby="ls26-calc-title">
+ return <section id="mortgage-calculator" className="ls26-panel ls26-mortgage" aria-labelledby="ls26-calc-title">
   <div className="ls26-panel-heading"><h3 id="ls26-calc-title"><span aria-hidden="true">▦</span> Mortgage Calculator</h3></div>
   <div className="ls26-switch" role="group" aria-label="Calculator type">
    <button type="button" aria-pressed={mode==='loan'} className={mode==='loan'?'active':''} onClick={()=>setMode('loan')}>Loan</button>
