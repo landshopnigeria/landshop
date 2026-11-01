@@ -1,3 +1,4 @@
+import CommandSideNavigation from './CommandSideNavigation';
 import {cookies} from 'next/headers';
 import {redirect} from 'next/navigation';
 import {createServerClient} from '@supabase/ssr';
@@ -51,10 +52,7 @@ export default async function Admin(){
  const {data:recentAudits}=await db.from('audit_events').select('id,event_type,created_at').order('created_at',{ascending:false}).limit(6);
  const statList=[['Total Properties',properties,'⌂'],['Published Properties',published,'▦'],['Applications',apps,'▣'],['Support Tickets',tickets,'☏'],['Website Enquiries',enquiries,'✉'],['Staff Records',staff,'♙'],['Import Batches',imports,'⇧'],['Referrals',referrals,'♧'],['Automations',workflows,'⌘']];
  return <div className="command-shell">
-  <aside className="command-side"><div className="command-brand"><img src="/media/logo.webp" alt="Landshop official logo" width={139} height={65}/><small>GLOBAL COMMAND CENTER</small></div>
-   <nav aria-label="Global Command Center navigation">{links.map(([name,url,icon])=><Link href={url} className={url==='/admin'?'active':''} key={url}><span aria-hidden="true">{icon}</span> {name}</Link>)}</nav>
-   <div className="command-side-note"><strong>{isOwner?'Landshop Owner · Full Command Access':'Landshop Enterprise'}</strong><p>Develop · Incubate · Grow</p><small>Permissions enforced for every operation.</small><Link href="/staff" className="command-staff-back">← Back to Staff Dashboard</Link></div>
-  </aside>
+  <CommandSideNavigation links={links} isOwner={isOwner}/>
   <div className="command-main"><header className="command-top"><div><strong>Global Command Center</strong><small>{isOwner?'Verified Owner · Full Enterprise Control':'Manage · Monitor · Automate · Grow'}</small></div><span>Landshop Nigeria</span><div><Link href="/staff">Staff Dashboard</Link> · {user.email||'Authenticated employee'}</div></header>
    <main className="command-content">
     <section className="command-banner"><div><span>{isOwner?'Owner access · All Command Center modules':'Welcome to the'}</span><h1>Landshop Global Command Center</h1><p>Complete control. Greater visibility. Accelerated growth.</p></div><blockquote className="command-quote">Turning documented property decisions into opportunity across Africa.</blockquote></section>
