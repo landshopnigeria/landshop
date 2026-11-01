@@ -1,8 +1,9 @@
 import {cookies} from 'next/headers';
 import {createServerClient} from '@supabase/ssr';
 import {redirect} from 'next/navigation';
-import AutomationStudio from './AutomationStudio';
-import './automation.css';
+import NexusHost from './NexusHost';
+import {NEXUS_WORKSPACE_HTML} from './NexusWorkspaceHTML';
+import './nexus-host.css';
 export const dynamic='force-dynamic';
 export default async function Page(){
  const url=process.env.NEXT_PUBLIC_SUPABASE_URL,key=process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
@@ -23,5 +24,5 @@ export default async function Page(){
   .select('id,name,description,version,state,draft_graph')
   .order('name',{ascending:true});
  if(flowError)return <main>Workflow definitions could not be loaded.</main>;
- return <AutomationStudio initial={(data||[]) as any}/>;
+ return <NexusHost initial={(data||[]) as any} html={NEXUS_WORKSPACE_HTML}/>;
 }
