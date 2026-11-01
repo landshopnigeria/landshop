@@ -21,6 +21,7 @@ PAGES=(
     ("/develop","data-product-journey",".lp-pathway-card"),
     ("/incubate","data-product-journey",".lp-pathway-card"),
     ("/grow","data-product-journey",".lp-pathway-card"),
+    ("/properties","mk-property-grid",".mk-tools"),
 )
 UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/156.0.0.0 Safari/537.36"
 
@@ -83,6 +84,7 @@ def check(host,path,marker,css_class):
         raise AssertionError(f"{host}{path} lacks Next.js stylesheet or JavaScript references")
     found=False
     footer_css_found=False
+    marketplace_toolbar_found=False
     css_ok=0
     for relative in parser.css[:10]:
         asset=urljoin(f"https://{host}",relative)
@@ -93,10 +95,14 @@ def check(host,path,marker,css_class):
         css_text=content.decode("utf-8","replace")
         if css_class in css_text:
             found=True
+        if ".mk-tools form>.ls-branded-select" in css_text and "148px" in css_text:
+            marketplace_toolbar_found=True
         if ".ls24-glass-area" in css_text and "landshop-footer-cris6882.svg" in css_text:
             footer_css_found=True
     if not found:
         raise AssertionError(f"New CSS selector {css_class} absent from live stylesheets on {host}{path}")
+    if path=="/properties" and not marketplace_toolbar_found:
+        raise AssertionError("Current compact marketplace toolbar CSS absent from live build")
     if not footer_css_found:
         raise AssertionError("V24 global glass-footer CSS or approved photo background absent from compiled styles")
     if 'class="ls24-global-footer"' not in html or 'class="ls24-newsletter-section"' not in html:
