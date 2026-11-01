@@ -366,6 +366,10 @@ jobs:
           LANDSHOP_EXPECTED_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
         run: python3 scripts/check-landshop-live-assets.py
 
+      - name: Verify guest sign-in, email confirmation and Command Center authorization redirects
+        shell: bash
+        run: python3 scripts/check-landshop-auth-redirects.py
+
       - name: Automatically restore previous application snapshots if release verification fails
         if: ${{ failure() }}
         shell: bash
