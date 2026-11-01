@@ -80,7 +80,7 @@ begin
  if p_project not in ('green-island','merit-park','maiyegun-beach-estate','famous-gardens')
  then raise exception 'Unknown historical project';end if;
  v_path_pattern:='^'||v_user::text||'/'||p_project||
- '/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\\.(jpg|jpeg|png|webp)$';
+ '/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.(jpg|jpeg|png|webp)$';
  if p_path is null or p_path !~ v_path_pattern then raise exception 'Invalid private photo path';end if;
  if p_captured_on is null or p_captured_on>current_date or p_captured_on<date '1990-01-01'
  then raise exception 'Enter a credible date for the original photograph';end if;
