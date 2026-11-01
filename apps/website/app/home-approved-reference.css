@@ -125,3 +125,13 @@
 @media(max-width:650px){.lsap-home .lsap-container{width:calc(100% - 32px)}.lsap-home .lsap-head{align-items:flex-start;flex-direction:column;gap:14px}.lsap-home .lsap-section{padding:58px 0}.lsap-home .lsap-about-images{height:350px}.lsap-home .lsap-product-grid,.lsap-home .lsap-estate-grid,.lsap-home .lsap-collection-grid,.lsap-home .lsap-project-grid,.lsap-home .lsap-insight-grid{grid-template-columns:1fr}.lsap-home .lsap-product-image{height:215px}.lsap-home .lsap-collection{height:350px}.lsap-home .lsap-location{flex-basis:86%;height:300px}.lsap-home .lsap-method-grid,.lsap-home .lsap-why-grid{grid-template-columns:1fr}.lsap-home .lsap-promise,.lsap-home .lsap-testimonials{padding:60px 0}.lsap-home .lsap-promise-photo{height:250px}.lsap-home .lsap-project{height:315px}.lsap-home .lsap-insight-image{height:205px}.lsap-home .lsap-quote{padding:22px}.lsap-home .lsap-quote blockquote{min-height:0}}
 @media(max-width:340px){.lsap-home .lsap-container{width:calc(100% - 22px)}.lsap-home .lsap-about-images{height:295px;gap:7px}.lsap-home .lsap-about-image{border-width:2px}.lsap-home .lsap-head h2{font-size:28px}.lsap-home .lsap-quote>div{flex-wrap:wrap}.lsap-home .lsap-location{flex-basis:92%}}
 @media(prefers-reduced-motion:reduce){.lsap-home *{scroll-behavior:auto!important;transition:none!important}}
+
+/* Homepage products: single-row, three visible cards at desktop; swipe and auto-scroll. */
+.lsap-home .lsap-product-grid{display:flex;gap:18px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;scrollbar-width:none;overscroll-behavior-x:contain;align-items:stretch}
+.lsap-home .lsap-product-grid::-webkit-scrollbar{display:none}
+.lsap-home .lsap-product-grid .lsap-product{flex:0 0 calc((100% - 36px)/3);scroll-snap-align:start}
+.lsap-home .lsap-product-grid .lsap-product-image{height:190px}
+@media(max-width:900px){.lsap-home .lsap-product-grid .lsap-product{flex-basis:calc((100% - 18px)/2)}}
+@media(max-width:650px){.lsap-home .lsap-product-grid .lsap-product{flex-basis:86%}.lsap-home .lsap-product-grid .lsap-product-image{height:215px}}
+@media(max-width:340px){.lsap-home .lsap-product-grid .lsap-product{flex-basis:94%}}
+@media(prefers-reduced-motion:reduce){.lsap-home .lsap-product-grid{scroll-behavior:auto}}
