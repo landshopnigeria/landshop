@@ -1,14 +1,34 @@
 import Link from 'next/link';
 import {notFound} from 'next/navigation';
 const past={
- 'merit-park':{name:'Merit Park',story:'Take a look at Merit Park through project videos and updates. For questions about an existing subscription, our customer team can help you find the right next step.'},
- 'green-island':{name:'Green Island',story:'Watch the available Green Island project videos and updates. Existing subscribers can contact the customer team for information about their own next step.'},
+ 'merit-park':{name:'Merit Park',story:'Explore the historical Merit Park project record, including original co-branded site advertising and published reports of Landshop allocation activity in 2020. The archive does not establish the current condition or availability of any plot.'},
+ 'green-island':{name:'Green Island',story:'Green Island appears in an older property listing published by Landshop LTD for Ibeju-Lekki. That listing is no longer active. Confirm current project records, allocation and ownership information directly with Landshop.'},
  'maiyegun-beach-estate':{name:'Maiyegun Beach Estate',story:'See Maiyegun Beach Estate through its project history and verified updates. Existing subscribers can contact Landshop about individual enquiries.'}
 } as const;
 /** Only evidence-backed project associations belong here.
  * Other historical projects deliberately have no photograph until matched.
  */
+const historicalEvidence:Record<string,{year:number;label:string;href:string;context:string}>={
+ 'merit-park':{
+  year:2020,
+  label:'Merit Park and Famous Garden allocation ceremony reported in 2020',
+  href:'https://thenationonlineng.net/firm-unveils-affordable-purchase-of-land-and-property/',
+  context:'An independent 2020 news report documents historical Landshop allocation activity. It does not verify the condition or ownership rights of any plot today.'
+ },
+ 'green-island':{
+  year:2024,
+  label:'Archived Green Island land listing published by Landshop LTD in 2024',
+  href:'https://nigeriapropertycentre.com/for-sale/land/mixed-use-land/lagos/lekki-ibeju/2622661-prime-plots-of-land',
+  context:'This former Ibeju-Lekki listing is marked no longer available. Historical descriptions, plans and prices should not be treated as current offers.'
+ }
+};
 const historicalMedia:Record<string,{src:string;alt:string;caption:string}>={
+ 'merit-park':{
+   src:'/owner/2026/merit-park-archival-signage.jpg',
+   alt:'Original owner-supplied historical billboard photographed near a road, visibly naming Merit Park alongside Famous Gardens. This does not prove current project completion or available plots',
+   caption:'Original archived photograph of a billboard carrying the Merit Park and Famous Gardens names. The sign documents historical marketing identity, not a confirmed view of a currently available Merit Park plot.'
+ },
+
  'maiyegun-beach-estate':{
    src:'/media/maiyegun0.webp',
    alt:'Owner-provided Maiyegun Beach Estate project archive depicting historical site or event activity, not verified construction progress or an available home',
@@ -40,6 +60,7 @@ export default async function Project({params}:{params:Promise<{slug:string}>}){
  </section>
  <section className="ls26-section"><h2>Understand the whole plan.</h2><p>Check the current stage, permitted use, title information, specifications and full written payment terms before you decide. No online enquiry reserves a unit.</p><div className="ls26-hero-actions"><Link href="/offers/plot-your-future" className="ls26-button">Explore the offer →</Link><Link href="/mortgage-review" className="ls26-outline">Review payment options →</Link></div></section></div></main>;
  const historical=historicalMedia[slug];
+ const historicalSource=historicalEvidence[slug];
  return <main className="ls26-page"><div className="ls26-container"><nav className="ls26-crumb"><Link href="/">Home</Link> / <Link href="/projects">Projects</Link> / {p.name}</nav><div className="ls26-intro"><span className="ls26-eyebrow">PAST PROJECT · PROJECT STATUS ON ENQUIRY</span><h1>Explore {p.name}.</h1><p>{p.story}</p></div>
  {historical&&<section className="ls26-section ls-owner-historical-media" aria-label="Historical project photograph">
   <span className="ls26-eyebrow">ORIGINAL LANDSHOP PROJECT ARCHIVE</span>
@@ -47,5 +68,12 @@ export default async function Project({params}:{params:Promise<{slug:string}>}){
   <p>Historical evidence belongs to the project's story, but cannot confirm today's construction status or ownership. For a specific plot, subscription or allocation, please request current verified records from Landshop.</p>
   <figure><img src={historical.src} alt={historical.alt} loading="lazy" decoding="async"/><figcaption>{historical.caption}</figcaption></figure>
  </section>}
- <section className="ls26-section"><h2>Watch the project story.</h2><p>Dated project videos, availability, allocation and construction status will appear when verified. Historical sales status does not confirm completion or handover.</p><div className="ls26-hero-actions"><Link className="ls26-button" href={'/contact?topic=Customer%20Support&project='+slug}>Get support for {p.name} →</Link><Link className="ls26-outline" href="/coming-soon">Explore future opportunities →</Link></div></section></div></main>;
+ {historicalSource&&<section className="ls26-section ls-owner-historical-evidence" aria-label="Historical project source">
+  <span className="ls26-eyebrow">PROJECT HISTORY AND ORIGINAL RECORDS</span>
+  <h2>Explore the available historical evidence.</h2>
+  <p>{historicalSource.context}</p>
+  <p><a href={historicalSource.href} target="_blank" rel="noopener noreferrer" className="ls26-outline">{historicalSource.label}</a></p>
+  <p>Before relying on older marketing materials, request an updated location record, title verification, project photographs, allocation details and written confirmation of any current offer.</p>
+ </section>}
+ <section className="ls26-section"><h2>Review the project record.</h2><p>Dated videos, current photographs, allocation and construction status will appear when independently verified. Past advertising is not proof of completion or handover.</p><div className="ls26-hero-actions"><Link className="ls26-button" href={'/contact?topic=Customer%20Support&project='+slug}>Get support for {p.name} →</Link><Link className="ls26-outline" href="/coming-soon">Explore future opportunities →</Link></div></section></div></main>;
 }
