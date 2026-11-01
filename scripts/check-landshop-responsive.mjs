@@ -183,17 +183,17 @@ try{
   // V33 interactive regression: hovering over a carousel freezes its slide,
   // leaving it resumes timer-based advancement without clicking controls.
   await motionPage.goto(root+'/',{waitUntil:'domcontentloaded',timeout:30000});
-  await motionPage.waitForSelector('.v22-quote blockquote');
-  await motionPage.hover('.v22-quote');
+  await motionPage.waitForSelector('.lsap-quote blockquote');
+  await motionPage.hover('.lsap-quote');
   await motionPage.waitForTimeout(650);
-  const quoteBefore=await motionPage.locator('.v22-quote blockquote').textContent();
+  const quoteBefore=await motionPage.locator('.lsap-quote blockquote').textContent();
   await motionPage.waitForTimeout(7600);
-  const quoteWhileHovered=await motionPage.locator('.v22-quote blockquote').textContent();
+  const quoteWhileHovered=await motionPage.locator('.lsap-quote blockquote').textContent();
   if(quoteBefore!==quoteWhileHovered)
-   errors.push('V33 testimonial carousel advanced while mouse was hovering');
+   errors.push('Approved-home testimonial carousel advanced while mouse was hovering');
   await motionPage.mouse.move(0,0);
   try{
-   await motionPage.waitForFunction(before=>document.querySelector('.v22-quote blockquote')?.textContent!==before,quoteBefore,{timeout:10000});
+   await motionPage.waitForFunction(before=>document.querySelector('.lsap-quote blockquote')?.textContent!==before,quoteBefore,{timeout:10000});
   }catch{
    errors.push('V33 testimonial carousel did not resume automatic advance after mouse exit');
   }
