@@ -87,6 +87,7 @@ def check(host,path,marker,css_class):
     footer_css_found=False
     marketplace_toolbar_found=False
     correct_icon_css_found=False
+    correct_arrow_css_found=False
     css_ok=0
     for relative in parser.css[:10]:
         asset=urljoin(f"https://{host}",relative)
@@ -99,6 +100,8 @@ def check(host,path,marker,css_class):
             found=True
         if "--ls-public-icon-size:27px" in css_text:
             correct_icon_css_found=True
+        if "ls-icon-directional" in css_text and "width:23px!important" in css_text:
+            correct_arrow_css_found=True
         if ".mk-tools form>.ls-branded-select" in css_text and "148px" in css_text:
             marketplace_toolbar_found=True
         if ".ls24-glass-area" in css_text and "landshop-footer-cris6882.svg" in css_text:
@@ -107,6 +110,8 @@ def check(host,path,marker,css_class):
         raise AssertionError(f"New CSS selector {css_class} absent from live stylesheets on {host}{path}")
     if path=="/" and not correct_icon_css_found:
         raise AssertionError("Current 27px public icon stylesheet absent from fresh HTML asset links")
+    if path=="/" and not correct_arrow_css_found:
+        raise AssertionError("Current 23px directional arrow CSS absent from fresh HTML asset links")
     if path=="/properties" and not marketplace_toolbar_found:
         raise AssertionError("Current compact marketplace toolbar CSS absent from live build")
     if not footer_css_found:
