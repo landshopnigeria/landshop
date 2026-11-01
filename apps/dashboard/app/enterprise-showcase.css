@@ -211,3 +211,11 @@
 }
 @media(max-width:380px){.ls26-command-metrics{grid-template-columns:1fr}.ls26-command-metric-title{grid-column:auto}.ls26-kpis{grid-template-columns:1fr 1fr}.ls26-score-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.ls26-investor{padding-inline:10px}}
 @media(prefers-reduced-motion:reduce){.ls26-panel,.ls26-ring{transition:none}}
+
+/* Attendance session readout: actual server clock events only. */
+.ls26-attendance-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:14px 0}
+.ls26-attendance-summary>div{background:#f3faf5;border:1px solid #e0eee5;border-radius:11px;padding:10px;min-width:0}
+.ls26-attendance-summary small,.ls26-attendance-summary span{font-size:10px;color:#648276;display:block;line-height:1.4}
+.ls26-attendance-summary strong{font-size:clamp(16px,1.55vw,23px);color:#13392e;display:block;margin:5px 0;overflow-wrap:anywhere}
+.ls26-attendance-summary div:nth-child(2){background:#fff5eb}
+@media(max-width:480px){.ls26-attendance-summary{grid-template-columns:1fr 1fr}.ls26-attendance-summary>div:last-child{grid-column:span 2}}
