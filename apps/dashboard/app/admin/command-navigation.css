@@ -1,0 +1,25 @@
+.command-shell:has(.command-side.is-collapsed){grid-template-columns:80px minmax(0,1fr)}
+.command-side{transition:width .24s ease}
+.command-side.is-collapsed{width:80px;min-width:80px}
+.command-side.is-collapsed .command-brand{padding:12px 8px;gap:5px}
+.command-side.is-collapsed .command-brand img{width:55px;height:48px;object-fit:contain}
+.command-side.is-collapsed nav a{padding:12px 8px;justify-content:center}
+.command-side.is-collapsed nav a>span:first-child{font-size:25px;min-width:30px;text-align:center}
+.command-side nav a .command-link-label{font-size:14px;line-height:1.35}
+.command-nav-collapse{background:#fff1;color:#fff;border:1px solid #fff5;border-radius:9px;min-width:39px;min-height:39px;font-size:24px;cursor:pointer}
+.command-nav-collapse:hover{background:#f26b10}
+.command-side .command-brand{grid-template-columns:1fr auto;align-items:center}
+.command-side .command-brand img{grid-column:1}
+.command-side .command-brand small{grid-column:1}
+.command-side .command-brand .command-nav-collapse{grid-column:2;grid-row:1 / span 2}
+.command-nav-mobile,.command-nav-overlay{display:none}
+@media(max-width:900px){
+ .command-shell,.command-shell:has(.command-side.is-collapsed){grid-template-columns:minmax(0,1fr)}
+ .command-nav-mobile{display:flex;align-items:center;justify-content:center;gap:9px;position:fixed;left:14px;bottom:18px;z-index:110;background:#073f34;color:#fff;border:0;border-radius:12px;padding:12px 15px;box-shadow:0 8px 30px #002b2480;font-size:16px;font-weight:700}
+ .command-nav-mobile:first-letter{font-size:22px}
+ .command-side,.command-side.is-collapsed{position:fixed;z-index:112;left:0;top:0;bottom:0;width:min(310px,86vw);max-width:86vw;min-width:0;height:100dvh;transform:translateX(-105%);transition:transform .22s ease}
+ .command-side.is-mobile-open{transform:translateX(0)}
+ .command-nav-overlay{display:block;position:fixed;inset:0;z-index:111;background:#001e17a6;border:0}
+ .command-content{padding-bottom:85px}
+}
+@media(prefers-reduced-motion:reduce){.command-side{transition:none}}
