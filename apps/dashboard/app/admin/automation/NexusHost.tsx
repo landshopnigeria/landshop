@@ -10,6 +10,7 @@ type CanvasEdge={id?:string;from:string;to:string};
 type CanvasDraft={name:string;nodes:CanvasNode[];edges:CanvasEdge[]};
 type Run={id:string;status:string;started_at:string;context:{mode?:string;current_node?:string|null;step_count?:number;graph_snapshot?:Graph}};
 type RunEvent={id:number;node_id:string;event_type:string;created_at:string;details:Record<string,unknown>};
+type RuntimeJob={id:string;run_id:string;status:string;attempts:number;available_at:string;created_at:string;last_error_code:string|null};
 const API_TYPES=new Set<NodeType>(['trigger','condition','notification','wait','approval','task','webhook','end']);
 const OUTBOUND=new Set(['facebook','instagram','groups','comments','linkedin','youtube','tiktok','pinterest','whatsapp','email','gmail','googleads','meta','telegram','slack','api','webhook','grpc','mqtt','opcua','modbus','openai','canva']);
 const BLOCKED_KEYS=/password|private.?key|secret|access.?token|refresh.?token|authorization|api.?key|credential/i;
@@ -132,6 +133,8 @@ export default function NexusHost({initial,html}:{initial:Flow[];html:string}){
  const [runEvents,setRunEvents]=useState<RunEvent[]>([]);
  const [currentRun,setCurrentRun]=useState<Run|null>(null);
  const [nextChoice,setNextChoice]=useState('');
+ const [runtimeOpen,setRuntimeOpen]=useState(false);
+ const [runtimeJobs,setRuntimeJobs]=useState<RuntimeJob[]>([]);
  const iframe=useRef<HTMLIFrameElement>(null);
  const busyRef=useRef(false);
  const flowsRef=useRef(initial);
@@ -197,6 +200,35 @@ export default function NexusHost({initial,html}:{initial:Flow[];html:string}){
   window.addEventListener('message',onMessage);
   return()=>window.removeEventListener('message',onMessage);
  },[post,save]);
+ const refreshRuntime=useCallback(async()=>{
+  const {data,error}=await db.from('automation_runtime_jobs')
+   .select('id,run_id,status,attempts,available_at,created_at,last_error_code')
+   .order('created_at',{ascending:false}).limit(50);
+  if(error){setStatus('Runtime monitoring unavailable: '+error.message);return;}
+  setRuntimeJobs((data||[]) as RuntimeJob[]);
+ },[db]);
+ useEffect(()=>{
+  if(!runtimeOpen)return;
+  void refreshRuntime();
+  const timer=window.setInterval(()=>void refreshRuntime(),4500);
+  return()=>window.clearInterval(timer);
+ },[runtimeOpen,refreshRuntime]);
+ const queueRuntimePreview=async()=>{
+  const id=activeRef.current;const draft=flowsRef.current.find(f=>f.id===id);
+  if(!draft||busyRef.current){setStatus('Save a valid workflow before queueing a safe preview.');return;}
+  setBusy(true);busyRef.current=true;
+  try{
+   const key=crypto.randomUUID().replaceAll('-','');
+   const {data,error}=await db.rpc('landshop_nexus_queue_preview',{
+    p_workflow:draft.id,p_expected_version:draft.version,p_idempotency_key:key
+   });
+   if(error||!data)throw Error(error?.message||'Safe preview was not accepted');
+   setRuntimeOpen(true);setHistoryOpen(false);
+   await refreshRuntime();
+   setStatus('Durable preview queued: '+String(data).slice(0,8)+'. No external publishing or hardware actions.');
+  }catch(error){setStatus(error instanceof Error?error.message:'Queue preview failed');}
+  finally{setBusy(false);busyRef.current=false;}
+ };
  const startRehearsal=async()=>{
   const id=activeRef.current;const f=flowsRef.current.find(x=>x.id===id);
   if(!f||busyRef.current){setStatus('Save a draft before recording a rehearsal.');return;}
@@ -237,12 +269,30 @@ export default function NexusHost({initial,html}:{initial:Flow[];html:string}){
    </label>
    <button type="button" onClick={()=>choose('')}>New draft</button>
    <button type="button" onClick={()=>void startRehearsal()} disabled={!active||busy}>Record rehearsal</button>
-   <button type="button" onClick={()=>{setHistoryOpen(v=>!v);if(!historyOpen)void refreshRuns(activeRef.current)}} disabled={!active}>Run history</button>
+   <button type="button" onClick={()=>void queueRuntimePreview()} disabled={!active||busy}>Queue safe preview</button>
+   <button type="button" onClick={()=>{setRuntimeOpen(v=>!v);setHistoryOpen(false)}}>Runtime monitor</button>
+   <button type="button" onClick={()=>{setHistoryOpen(v=>!v);setRuntimeOpen(false);if(!historyOpen)void refreshRuns(activeRef.current)}} disabled={!active}>Run history</button>
    <span className="nexus-host-status" role="status" title={status}>{status}</span>
    <span className="nexus-host-locked">External publishing locked</span>
   </div>
   <iframe ref={iframe} title="Landshop NEXUS visual automation workflow studio" className="nexus-host-frame"
    sandbox="allow-scripts allow-downloads" srcDoc={html} onLoad={()=>post('hello')}/>
+  {runtimeOpen&&<aside className="nexus-run-drawer nexus-runtime-monitor" aria-label="NEXUS durable execution queue">
+   <header><div><small>ATOMIC QUEUE & RECOVERY</small><strong>Runtime Monitor</strong></div>
+    <button type="button" onClick={()=>setRuntimeOpen(false)} aria-label="Close runtime monitor">×</button></header>
+   <p>Durable, version-snapshotted preview jobs only. The worker requires separate deployment. No external posts, email, social group actions, payments or device commands are executed by this engine.</p>
+   <div className="nexus-runtime-stats">
+    {['queued','leased','waiting','completed','dead'].map(label=><div key={label}><strong>{runtimeJobs.filter(j=>j.status===label).length}</strong><small>{label}</small></div>)}
+   </div>
+   <button type="button" onClick={()=>void refreshRuntime()}>Refresh queue now</button>
+   <h3>Latest durable jobs</h3>
+   {runtimeJobs.length===0?<p>No runtime previews have been queued yet.</p>:<ul>
+    {runtimeJobs.map(job=><li key={job.id}><strong>{job.status.toUpperCase()} · {job.run_id.slice(0,8)}</strong>
+     <small>{new Date(job.created_at).toLocaleString()} · Attempt {job.attempts}</small>
+     {job.last_error_code&&<small>Review code: {job.last_error_code}</small>}
+    </li>)}
+   </ul>}
+  </aside>}
   {historyOpen&&<aside className="nexus-run-drawer" aria-label="Audited rehearsal history">
    <header><div><small>SERVER-RECORDED EXECUTION</small><strong>Workflow Rehearsal</strong></div><button onClick={()=>setHistoryOpen(false)} aria-label="Close run history">×</button></header>
    <p>Real database run records and immutable step events. External services, devices, payments and communication actions are never invoked by a rehearsal.</p>
