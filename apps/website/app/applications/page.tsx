@@ -1,3 +1,4 @@
+import ApprovedArrow from '../../components/ApprovedArrow';
 import Link from 'next/link';
 import {editorialImages,type EditorialPhoto} from '../../lib/editorial-imagery';
 import './application-center.css';
@@ -23,7 +24,7 @@ export default async function ApplicationsCenter({searchParams}:{searchParams:Pr
   <section className="lc-hero"><div className="lc-herotext"><div className="lc-eyebrow">Welcome to Landshop Applications</div>
    <h1>Your property journey <span>starts here.</span></h1>
    <p>Choose the correct Develop, Incubate or Grow application. Complete a guided multi-step form, save your progress and track the review in your secure account.</p>
-   <a href={portal+'/applications'}>Open Secure Applications Center →</a></div></section>
+   <a href={portal+'/applications'}>Open Secure Applications Center <ApprovedArrow /></a></div></section>
   <div className="lc-body"><span className="lc-tag">Develop · Incubate · Grow</span><h2>Choose your application</h2>
    <p className="lc-intro">These product subscription and inspection forms are separate from account Sign In and Sign Up. All financing and investment terms require official confirmation.</p>
    <div className="lc-steps"><span className="lc-step"><strong>01</strong> Select product</span><span className="lc-step"><strong>02</strong> Enter information</span><span className="lc-step"><strong>03</strong> Save and review</span><span className="lc-step"><strong>04</strong> Submit securely</span></div>
@@ -31,8 +32,8 @@ export default async function ApplicationsCenter({searchParams}:{searchParams:Pr
    <div className="lc-grid">{ordered.map(item=><article className={'lc-card '+(focus===item.product.toLowerCase()?'featured':'')} key={item.slug}>
      <img className="lc-photo" src={formVisuals[item.slug].src} alt={formVisuals[item.slug].alt} loading="lazy"/>
      <div className="lc-cardbody"><span className="lc-tag">{item.product}</span><span className="lc-icon-chip"><IconChip name={item.product==='Grow'?'calculator':item.product==='Inspection'?'calendar':item.product==='Incubate'?'chart':'home'}/></span><h3>{item.title}</h3><p className="lc-sub">{item.sub}</p><p>{item.summary}</p><p className="lc-small">{item.steps} guided stages · private draft saving</p>
-      <a href={portal+'/applications/'+item.slug}>Start {item.title} →</a></div>
+      <a href={portal+'/applications/'+item.slug}>Start {item.title} <ApprovedArrow /></a></div>
     </article>)}</div>
-   <div className="lc-footnote"><h3>Need to calculate affordability first?</h3><p>Use Landshop's indicative calculator to compare deposits and repayments. Mortgage rates, equity percentages and investment outcomes are estimates until supported by approved contracts.</p><a href={portal+'/calculator'}>Open Mortgage Calculator →</a></div>
+   <div className="lc-footnote"><h3>Need to calculate affordability first?</h3><p>Use Landshop's indicative calculator to compare deposits and repayments. Mortgage rates, equity percentages and investment outcomes are estimates until supported by approved contracts.</p><a href={portal+'/calculator'}>Open Mortgage Calculator <ApprovedArrow /></a></div>
   </div></main>
 }

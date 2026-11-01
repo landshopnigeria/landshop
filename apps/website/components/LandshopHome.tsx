@@ -1,4 +1,6 @@
 'use client';
+import ApprovedArrow from './ApprovedArrow';
+
 import {useEffect,useState,useRef} from 'react';
 import Link from 'next/link';
 import V22HomeSections from './V22HomeSections';
@@ -72,8 +74,8 @@ export default function Homepage({featured}:{featured:FeaturedProperty[]}){
      </h1>
      <p className="hero-v16-copy ls-v23-hero-description">{current.copy}</p>
      <div className="hero-v16-actions ls-v23-hero-actions">
-      <Link className="primary" href={current.href}>{current.primary} <span aria-hidden="true">→</span></Link>
-      <Link className="hero-v16-secondary" href={current.secondaryHref}>{current.secondary} <span aria-hidden="true">→</span></Link>
+      <Link className="primary" href={current.href}>{current.primary} <span aria-hidden="true"><ApprovedArrow /></span></Link>
+      <Link className="hero-v16-secondary" href={current.secondaryHref}>{current.secondary} <span aria-hidden="true"><ApprovedArrow /></span></Link>
      </div>
     </div>
     <div className="hero-v16-controls ls-v23-hero-controls" aria-label="Choose a Landshop product slide">
@@ -81,8 +83,8 @@ export default function Homepage({featured}:{featured:FeaturedProperty[]}){
       <button key={item.name} type="button" aria-label={'Show '+item.name+' slide'}
        aria-current={slide===i?'true':undefined} className={slide===i?'selected':''}
        onClick={()=>goToSlide(i)}><span className="ls-v23-control-dot" aria-hidden="true"/></button>)}</div>
-     <div className="hero-v16-arrows"><button type="button" aria-label="Previous slide" onClick={()=>goToSlide(slide-1)}>←</button>
-      <button type="button" aria-label="Next slide" onClick={()=>goToSlide(slide+1)}>→</button></div>
+     <div className="hero-v16-arrows"><button type="button" aria-label="Previous slide" onClick={()=>goToSlide(slide-1)}><ApprovedArrow direction="left" /></button>
+      <button type="button" aria-label="Next slide" onClick={()=>goToSlide(slide+1)}><ApprovedArrow /></button></div>
     </div>
    </div>
   </section>
@@ -98,7 +100,7 @@ export default function Homepage({featured}:{featured:FeaturedProperty[]}){
     </div>
     {purpose==='Sell'?<div className="landshop-sell-panel ls-v23-sell-panel">
       <div><strong>Ready to sell or list a property?</strong><p>Sign in to the secure Landshop portal to submit a property for identity and title verification before publication.</p></div>
-      <a className="primary" href="https://portal.landshopnigeria.com">Start Selling →</a>
+      <a className="primary" href="https://portal.landshopnigeria.com">Start Selling <ApprovedArrow /></a>
     </div>:<>
     <div className="ls-v23-form-grid">
      <label>Location or keyword<input name="query" placeholder="Estate, location or keyword" maxLength={80}/></label>

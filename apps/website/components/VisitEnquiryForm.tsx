@@ -1,4 +1,6 @@
 'use client';
+import ApprovedArrow from './ApprovedArrow';
+
 import {useState,type FormEvent} from 'react';
 export default function VisitEnquiryForm({home,project}:{home?:string,project?:string}){
  const [status,setStatus]=useState<'idle'|'sending'|'saved'|'error'>('idle');const [message,setMessage]=useState('');
@@ -8,5 +10,5 @@ export default function VisitEnquiryForm({home,project}:{home?:string,project?:s
  const today=new Date().toLocaleDateString('en-CA',{timeZone:'Africa/Lagos'});return <form className="ls26-visit-form ls26-loan" onSubmit={submit}><span className="ls26-eyebrow">REQUEST A VISIT</span><h2>Choose a convenient time.</h2><p>Request an inspection or live virtual tour. We will confirm availability and access details before you travel or join online.</p>
  <label>Full name *<input name="full_name" minLength={2} maxLength={120} required placeholder="Your name"/></label><label>Email *<input name="email" type="email" required placeholder="you@example.com"/></label><label>Phone (optional)<input name="phone" type="tel" placeholder="+234…"/></label>
  <label>Tour type *<select name="mode" required><option value="physical">Physical inspection</option><option value="virtual">Live virtual tour</option></select></label><label>Preferred date *<input type="date" name="date" min={today} required/></label><label>Preferred time (WAT) *<input type="time" name="time" min="08:00" max="17:00" required/></label><label>Notes (optional)<textarea name="notes" rows={3} maxLength={700} placeholder="Tell us what you want to see"/></label>
- <label><input type="checkbox" name="consent" value="yes" required/> I agree that Landshop may use these details to respond to my viewing request.</label><input type="text" name="website" tabIndex={-1} style={{display:'none'}} autoComplete="off" aria-hidden="true"/><button type="submit" className="ls26-button" disabled={status==='sending'}>{status==='sending'?'Saving request…':'Request my viewing →'}</button>
+ <label><input type="checkbox" name="consent" value="yes" required/> I agree that Landshop may use these details to respond to my viewing request.</label><input type="text" name="website" tabIndex={-1} style={{display:'none'}} autoComplete="off" aria-hidden="true"/><button type="submit" className="ls26-button" disabled={status==='sending'}>{status==='sending'?'Saving request…':'Request my viewing'} <ApprovedArrow /></button>
  {message&&<p role={status==='error'?'alert':'status'} className="ls26-note">{message}</p>}<p className="ls26-note">This form does not reserve property or confirm an appointment.</p></form>}

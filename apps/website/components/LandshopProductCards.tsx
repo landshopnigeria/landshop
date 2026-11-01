@@ -1,3 +1,4 @@
+import ApprovedArrow from './ApprovedArrow';
 import Link from 'next/link';
 import {landshopProductCards} from '../lib/landshop-brand-media';
 export default function LandshopProductCards({homepageOnly=false}:{homepageOnly?:boolean}){
@@ -9,7 +10,7 @@ export default function LandshopProductCards({homepageOnly=false}:{homepageOnly?
   {item.photo&&<Link className="ls-owner-product-visual" href={item.href} aria-label={"Learn about "+item.name}><img src={item.photo} alt={item.photoAlt} loading="lazy" decoding="async"/></Link>}
   <div className="v22-product-body ls27-product-copy">
    <small>{item.category}</small><h3>{item.name}</h3><p>{item.description}</p>
-   <Link href={item.href} className="v22-text-link">Explore More <span aria-hidden="true">→</span></Link>
+   <Link href={item.href} className="v22-text-link">Explore More <span aria-hidden="true"><ApprovedArrow /></span></Link>
   </div>
  </article>)}
  </div>;

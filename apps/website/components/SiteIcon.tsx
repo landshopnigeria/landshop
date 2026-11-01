@@ -20,9 +20,9 @@ const paths:Record<SiteIconName,string>={
  search:'M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16z m6-2 5 5',
  menu:'M4 7h16 M4 12h16 M4 17h16',
  close:'M5 5l14 14 M19 5 5 19',
- chevron:'m6 9 6 6 6-6',
- arrow:'M4 12h16 m-6-6 6 6-6 6',
- external:'M4 12h16 m-6-6 6 6-6 6',
+ chevron:'M2.5 12h19 M14.5 5l7 7-7 7',
+ arrow:'M2.5 12h19 M14.5 5l7 7-7 7',
+ external:'M2.5 12h19 M14.5 5l7 7-7 7',
  book:'M4 4h7a3 3 0 0 1 3 3v14a3 3 0 0 0-3-3H4z M20 4h-4a3 3 0 0 0-3 3v14a3 3 0 0 1 3-3h4z',
  heart:'M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8z',
  sparkles:'m12 2 2.2 6.8L21 11l-6.8 2.2L12 20l-2.2-6.8L3 11l6.8-2.2z M19 17l.8 2.2L22 20l-2.2.8L19 23l-.8-2.2L16 20l2.2-.8z',
@@ -36,7 +36,7 @@ const paths:Record<SiteIconName,string>={
  copy:'M8 4h12v16H8z M4 8v12a2 2 0 0 0 2 2h10',
  settings:'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z M19 13v-2l2-2-2-4-3 1-2-3h-4L8 6 5 5 3 9l2 2v2l-2 2 2 4 3-1 2 3h4l2-3 3 1 2-4z'
 };
-export default function SiteIcon({name,size=24,className='',...props}:{name:SiteIconName,size?:number,className?:string}&Omit<SVGProps<SVGSVGElement>,'name'>){
- return <svg aria-hidden="true" focusable="false" className={'ls-icon '+className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.15" strokeLinecap="round" strokeLinejoin="round" {...props}><path d={paths[name]}/></svg>;
+export default function SiteIcon({name,size=27,className='',...props}:{name:SiteIconName,size?:number,className?:string}&Omit<SVGProps<SVGSVGElement>,'name'>){
+ return <svg aria-hidden="true" focusable="false" className={'ls-icon '+(name==='chevron'?'ls-icon-chevron ':'')+className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.15" strokeLinecap="round" strokeLinejoin="round" {...props}><path d={paths[name]}/></svg>;
 }
 export function IconChip({name}:{name:SiteIconName}){return <span className="ls-icon-chip"><SiteIcon name={name} size={27}/></span>}

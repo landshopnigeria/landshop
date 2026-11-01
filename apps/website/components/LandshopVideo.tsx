@@ -1,3 +1,4 @@
+import ApprovedArrow from './ApprovedArrow';
 /** Privacy-enhanced YouTube embed, lazy-loaded when the player approaches the viewport; no autoplay. */
 const options={
  prime:{id:'xRGG6aZq120',title:'Explore Landshop Prime Estates',external:'https://www.youtube.com/watch?v=xRGG6aZq120'},
@@ -9,6 +10,6 @@ export default function LandshopVideo({video}:{video:keyof typeof options}){
   <div className="ls27-video-landscape">
    <iframe src={'https://www.youtube-nocookie.com/embed/'+item.id+'?rel=0'} title={item.title} loading="lazy" referrerPolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; web-share" allowFullScreen/>
   </div>
-  <a className="ls27-video-fallback" href={item.external} target="_blank" rel="noopener noreferrer">Watch {video==='prime'?'Landshop Prime':'About Landshop'} on YouTube <span aria-hidden="true">→</span></a>
+  <a className="ls27-video-fallback" href={item.external} target="_blank" rel="noopener noreferrer">Watch {video==='prime'?'Landshop Prime':'About Landshop'} on YouTube <span aria-hidden="true"><ApprovedArrow /></span></a>
  </div>;
 }

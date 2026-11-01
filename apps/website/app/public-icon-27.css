@@ -1,18 +1,18 @@
-/* Landshop public website: standard icon and arrow size 35px.
+/* Landshop public website: all interface icons and the one approved short arrow are 27px.
  * This file replaces the former 70px public-icon treatment.
  * Keep all existing header, footer, property filter and card structures intact.
  */
-:root{--ls-public-icon-size:35px}
+:root{--ls-public-icon-size:27px}
 body :is(.ls-site-chrome,.v22-root,.ls26-page,.content-page,.mk-layout,.ls-v23-hero,.ls24-global-footer,.ls24-newsletter-section,.landshop-product) svg:not([class*="logo"]):not([class*="chart"]):not([class*="graph"]):not([class*="brand"]),
 body :is(.ls-site-chrome,.v22-root,.ls26-page,.content-page,.mk-layout,.ls-v23-hero,.ls24-global-footer,.ls24-newsletter-section,.landshop-product) .ls-icon{
- width:35px!important;
- height:35px!important;
- max-width:35px;
+ width:27px!important;
+ height:27px!important;
+ max-width:27px;
  flex-shrink:0;
  vertical-align:middle;
 }
 body :is(.ls-site-chrome,.v22-root,.ls26-page,.content-page,.mk-layout,.ls-v23-hero,.ls24-global-footer,.ls24-newsletter-section,.landshop-product) :is(a,button) > span[aria-hidden="true"]:not([class*="avatar"]):not([class*="badge"]){
- font-size:35px!important;
+ font-size:27px!important;
  line-height:1!important;
 }
 body .ls-site-chrome .ls-icon-chip,
@@ -40,10 +40,30 @@ body .ls-site-chrome .ls-glass-header{min-height:64px}
  body .ls-site-chrome .ls-glass-header{min-height:64px}
 }
 @media(max-width:700px){
- :root{--ls-public-icon-size:35px}
+ :root{--ls-public-icon-size:27px}
  body .ls-site-chrome .ls-menu-button{width:46px!important;height:46px!important}
  body .ls-site-chrome .ls30-hamburger{transform:none}
  body .ls24-social-links{max-width:100%;min-width:0;flex-wrap:wrap}
  body .mk-layout .mk-title-row{min-width:0}
 }
 @media(prefers-reduced-motion:reduce){body .ls-site-chrome .ls30-hamburger{transition:none}}
+
+/* Final override: preserve accessible 44px+ button targets and approved layouts. */
+body .ls-icon,
+body .ls-approved-arrow,
+body :is(.ls-site-chrome,.v22-root,.ls26-page,.content-page,.mk-layout,.ls-v23-hero,.ls24-global-footer,.ls24-newsletter-section,.landshop-product) svg:not([class*="logo"]):not([class*="chart"]):not([class*="graph"]):not([class*="brand"]),
+body :is(a,button,select,label,.ls-icon-chip,.ls24-contact-line,.ls24-social-links) > svg:not([class*="logo"]):not([class*="chart"]):not([class*="graph"]):not([class*="brand"]) {
+  width:27px!important;height:27px!important;min-width:27px;max-width:27px;flex-shrink:0;vertical-align:middle;
+}
+body .ls-approved-arrow {display:inline-block;stroke:currentColor;stroke-width:2.3;vertical-align:middle;min-width:27px;max-width:27px;flex:none;margin-inline-start:.22em}
+body .ls-approved-arrow--left {transform:rotate(180deg)!important;margin-inline-start:0;margin-inline-end:.22em}
+body .ls-icon-chevron {transform:rotate(90deg)}
+body .ld-gallery-prev .ls-approved-arrow {transform:rotate(180deg)!important}
+body .ld-gallery-next .ls-approved-arrow {transform:none!important}
+body .ls24-carousel-arrows button {min-width:43px;min-height:43px}
+body .ls24-carousel-arrows svg, body .ls24-newsletter-form button svg, body .ls24-contact-line svg, body .ls24-social-links svg {width:27px!important;height:27px!important}
+
+/* Keep the property-page call to action inside even a 240px viewport. */
+@media(max-width:280px){
+ body .mk-layout .mk-btn{max-width:100%;min-width:0;box-sizing:border-box;padding-inline:10px;gap:7px;white-space:normal}
+}

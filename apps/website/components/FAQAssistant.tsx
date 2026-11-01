@@ -1,4 +1,6 @@
 'use client';
+import ApprovedArrow from './ApprovedArrow';
+
 import {useMemo,useState} from 'react';
 import type {Product,FAQ} from '../lib/landshop-faq';
 import {productFAQs} from '../lib/landshop-faq';
@@ -23,7 +25,7 @@ export default function FAQAssistant({product}:{product:Product}){
   <form onSubmit={e=>{e.preventDefault();setAnswer(match(question,options))}} style={{display:'flex',flexWrap:'wrap',gap:10,margin:'22px 0'}}>
    <input value={question} onChange={e=>setQuestion(e.target.value)} placeholder="e.g., Can I pay in instalments?" aria-label="Ask a question about this product" required maxLength={240}
     style={{flex:'1 1 260px',padding:'15px 16px',border:'1px solid #b9d8cb',borderRadius:12,fontSize:15}}/>
-   <button type="submit" style={{border:0,borderRadius:12,background:'#067e63',color:'#fff',padding:'15px 23px',fontWeight:800}}>Find an Answer →</button>
+   <button type="submit" style={{border:0,borderRadius:12,background:'#067e63',color:'#fff',padding:'15px 23px',fontWeight:800}}>Find an Answer <ApprovedArrow /></button>
   </form>
   {answer!==undefined&&<section aria-live="polite" role="status" style={{background:'#e8f7ef',padding:20,border:'1px solid #b8e1cd',borderRadius:14,marginBottom:24}}>
    {answer?<><strong>{answer.question}</strong><p style={{lineHeight:1.7,marginBottom:0}}>{answer.answer}</p></>:

@@ -1,3 +1,4 @@
+import ApprovedArrow from '../../components/ApprovedArrow';
 import Link from 'next/link';
 import ContentShell from '../../components/ContentShell';
 import {editorialImages} from '../../lib/editorial-imagery';
@@ -24,7 +25,7 @@ export default function About(){return <ContentShell eyebrow="WHO WE ARE" title=
     <span className="v22-eyebrow ls26-faded-eyebrow">WHO WE ARE</span><h2>About <span className="ls26-heading-green">Us</span><span className="v22-accent">.</span></h2>
     <p>Landshop is a co-investment real estate brand focused on simplifying property acquisition and making ownership more accessible to Nigerians.</p>
     <p>Through property acquisition, shared ownership interest, mortgage guidance and estate development support, we help people take clearer steps toward ownership.</p>
-    <Link className="v22-btn" href="/contact">Speak to Landshop →</Link>
+    <Link className="v22-btn" href="/contact">Speak to Landshop <ApprovedArrow /></Link>
    </div>
    <LandshopAboutCollage/>
   </div>
@@ -47,9 +48,9 @@ export default function About(){return <ContentShell eyebrow="WHO WE ARE" title=
    <img src={landshopEditorialTeam.src} alt={landshopEditorialTeam.alt} loading="lazy" decoding="async" className="ls27-team-photo"/>
    <div><span className="v22-eyebrow ls26-faded-eyebrow">OUR PEOPLE</span><h2>Better <span className="ls26-heading-green">property decisions</span> begin with people<span className="v22-accent">.</span></h2>
    <p>Every enquiry deserves clear communication, proper information and a thoughtful next step. Our brand-led team visuals support that story; they do not represent verified employee identification.</p>
-   <Link className="v22-btn" href="/careers">Explore Landshop Careers →</Link></div>
+   <Link className="v22-btn" href="/careers">Explore Landshop Careers <ApprovedArrow /></Link></div>
  </div></section>
- <section className="v22-section"><div className="v22-container v22-two"><div><span className="v22-eyebrow">RELATIONSHIPS & RECOGNITION</span><h2>Trust is earned through the work.</h2><p>The original Landshop Product Deck records partner relationships, professional association references and recognition awards. Current partner and certification claims should be checked against authoritative records before public promotion.</p><Link className="v22-btn" href="/partners">Explore our partners →</Link></div><img className="v22-cover-photo" src={editorialImages.officeTower.src} alt={editorialImages.officeTower.alt} loading="lazy"/></div></section>
- <section className="v22-section v22-final"><div className="v22-container v22-two"><div><span className="v22-eyebrow">OUR COMMITMENT</span><h2>Your next property decision deserves the right information.</h2><p>Whether you are exploring ownership, financing or property investment enquiries, our goal is to guide you towards a clear and responsible next action.</p></div><div className="v22-action-panel"><h3>Start with the right pathway.</h3><p>Explore available properties, submit a guided application or speak with our team.</p><div className="v22-actions"><Link className="v22-btn" href="/properties">Explore properties →</Link><Link className="v22-text-link" href="/contact">Contact Landshop →</Link></div></div></div></section>
+ <section className="v22-section"><div className="v22-container v22-two"><div><span className="v22-eyebrow">RELATIONSHIPS & RECOGNITION</span><h2>Trust is earned through the work.</h2><p>The original Landshop Product Deck records partner relationships, professional association references and recognition awards. Current partner and certification claims should be checked against authoritative records before public promotion.</p><Link className="v22-btn" href="/partners">Explore our partners <ApprovedArrow /></Link></div><img className="v22-cover-photo" src={editorialImages.officeTower.src} alt={editorialImages.officeTower.alt} loading="lazy"/></div></section>
+ <section className="v22-section v22-final"><div className="v22-container v22-two"><div><span className="v22-eyebrow">OUR COMMITMENT</span><h2>Your next property decision deserves the right information.</h2><p>Whether you are exploring ownership, financing or property investment enquiries, our goal is to guide you towards a clear and responsible next action.</p></div><div className="v22-action-panel"><h3>Start with the right pathway.</h3><p>Explore available properties, submit a guided application or speak with our team.</p><div className="v22-actions"><Link className="v22-btn" href="/properties">Explore properties <ApprovedArrow /></Link><Link className="v22-text-link" href="/contact">Contact Landshop <ApprovedArrow /></Link></div></div></div></section>
  </div>
  </ContentShell>}

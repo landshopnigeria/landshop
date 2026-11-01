@@ -1,3 +1,4 @@
+import ApprovedArrow from '../../../components/ApprovedArrow';
 
 import ContentShell from '../../../components/ContentShell';
 import Link from 'next/link';
@@ -16,10 +17,10 @@ export default async function MortgageProduct({params}:{params:Promise<{product:
  return <ContentShell eyebrow={'Grow / '+p.name} title={p.title} intro={p.intro} image={p.image}>
   <section><h2>What to expect</h2><div className="content-grid">{p.items.map((v,i)=><div className="content-tile" key={v}><span className="number">0{i+1}</span><h3>{['Prepare','Apply','Review'][i]}</h3><p>{v}</p></div>)}</div></section>
   <div className="content-grid two">
-   <article className="content-tile"><h3>Estimate affordability</h3><p>Explore deposit, principal, repayment term and indicative monthly payment before applying.</p><a href="https://portal.landshopnigeria.com/calculator">Open Mortgage Calculator →</a></article>
-   <article className="content-tile"><h3>Apply securely</h3><p>Use the separate, multi-step {p.name} form for a structured and reviewable application.</p><a href={'https://portal.landshopnigeria.com/applications/'+p.form}>Start {p.name} application →</a></article>
+   <article className="content-tile"><h3>Estimate affordability</h3><p>Explore deposit, principal, repayment term and indicative monthly payment before applying.</p><a href="https://portal.landshopnigeria.com/calculator">Open Mortgage Calculator <ApprovedArrow /></a></article>
+   <article className="content-tile"><h3>Apply securely</h3><p>Use the separate, multi-step {p.name} form for a structured and reviewable application.</p><a href={'https://portal.landshopnigeria.com/applications/'+p.form}>Start {p.name} application <ApprovedArrow /></a></article>
   </div>
   <aside className="content-aside"><strong>Important:</strong> Mortgage rates, lender approval, equity amounts, credit availability and repayment obligations are not guaranteed by this page. Obtain the latest written terms.</aside>
-  <Link className="content-link" href="/grow">← All Grow products</Link>
+  <Link className="content-link" href="/grow"><ApprovedArrow direction="left" /> All Grow products</Link>
  </ContentShell>
 }

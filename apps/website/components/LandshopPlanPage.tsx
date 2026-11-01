@@ -1,3 +1,4 @@
+import ApprovedArrow from './ApprovedArrow';
 import Link from 'next/link';
 import LoanIllustrator from './LoanIllustrator';
 import {landshopProductCards} from '../lib/landshop-brand-media';
@@ -15,10 +16,10 @@ export default function LandshopPlanPage({product}:{product:PlanName}){
  const brandLogo=landshopProductCards.find(p=>p.slug===product)?.logo||'/brand/'+product+'.svg';
  return <main className="ls26-page"><div className="ls26-container">
   <nav className="ls26-crumb" aria-label="Breadcrumb"><Link href="/">Home</Link><span>/</span><Link href="/products">Products</Link><span>/</span>{item.name}</nav>
-  <section className="ls26-plan-hero"><div><span className="ls26-eyebrow">{item.label}</span><img className="ls26-brand-image" src={brandLogo} alt={item.name+' brand mark'}/><h1>{item.title}</h1><p className="ls26-lead">{item.intro}</p><div className="ls26-hero-actions"><Link className="ls26-button" href={item.href}>{item.action} <span>→</span></Link><Link className="ls26-outline" href={item.secondary}>{item.second} →</Link></div></div>
+  <section className="ls26-plan-hero"><div><span className="ls26-eyebrow">{item.label}</span><img className="ls26-brand-image" src={brandLogo} alt={item.name+' brand mark'}/><h1>{item.title}</h1><p className="ls26-lead">{item.intro}</p><div className="ls26-hero-actions"><Link className="ls26-button" href={item.href}>{item.action} <span><ApprovedArrow /></span></Link><Link className="ls26-outline" href={item.secondary}>{item.second} <ApprovedArrow /></Link></div></div>
   <div className="ls26-hero-photo"><span className="ls26-photo-number">0{Object.keys(content).indexOf(product)+1}</span><div><span>LANDSHOP PRODUCTS</span><strong>{item.name}</strong><small>{item.availability}</small></div></div></section>
   <section className="ls26-two"><div className="ls26-prose"><span className="ls26-eyebrow">UNDERSTAND THE PRODUCT</span><h2>Clearer choices. A confident next step.</h2><p>{item.body}</p><div className="ls26-steps">{item.details.map((detail,i)=><article key={detail}><span>{String(i+1).padStart(2,'0')}</span><p>{detail}</p></article>)}</div></div>
-   {(product==='devpro'||product==='estatepro')?<LoanIllustrator kind={product}/>:<div className="ls26-aside"><span>EXPLORE YOUR OPTIONS</span><h3>What comes next?</h3><p>Your first enquiry is an opportunity to understand the facts before deciding.</p><Link href={item.href} className="ls26-button">{item.action} →</Link></div>}
+   {(product==='devpro'||product==='estatepro')?<LoanIllustrator kind={product}/>:<div className="ls26-aside"><span>EXPLORE YOUR OPTIONS</span><h3>What comes next?</h3><p>Your first enquiry is an opportunity to understand the facts before deciding.</p><Link href={item.href} className="ls26-button">{item.action} <ApprovedArrow /></Link></div>}
   </section>
  </div></main>;
 }

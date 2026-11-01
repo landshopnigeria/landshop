@@ -1,3 +1,4 @@
+import ApprovedArrow from '../../../components/ApprovedArrow';
 
 import ContentShell from '../../../components/ContentShell';
 import Link from 'next/link';
@@ -20,6 +21,6 @@ export default async function ServicePage({params}:{params:Promise<{slug:string}
  const svc=services[slug as Slug];
  return <ContentShell eyebrow={'Our Services / '+svc.title} title={svc.tagline} intro={svc.description} image={svc.image}>
   <section><h2>How to approach {svc.title.toLowerCase()}</h2><div className="content-grid">{svc.steps.map((step,i)=><div className="content-tile" key={step}><span className="number">0{i+1}</span><h3>{['Discover','Verify','Proceed'][i]}</h3><p>{step}</p></div>)}</div></section>
-  <aside className="content-band"><h2>Take the next step with Landshop.</h2><p>Availability, pricing, financing and eligibility require formal confirmation. A website enquiry does not create a financial commitment or guarantee approval.</p><Link className="content-cta" href={svc.target}>Continue →</Link></aside>
+  <aside className="content-band"><h2>Take the next step with Landshop.</h2><p>Availability, pricing, financing and eligibility require formal confirmation. A website enquiry does not create a financial commitment or guarantee approval.</p><Link className="content-cta" href={svc.target}>Continue <ApprovedArrow /></Link></aside>
  </ContentShell>
 }

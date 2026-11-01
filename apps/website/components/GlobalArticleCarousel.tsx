@@ -1,4 +1,6 @@
 'use client';
+import ApprovedArrow from './ApprovedArrow';
+
 import Link from 'next/link';
 import {usePathname} from 'next/navigation';
 import {useState} from 'react';
@@ -21,19 +23,19 @@ export default function GlobalArticleCarousel(){
  if(pathname==='/'||articles.length===0)return null;
  const step=(delta:number)=>setIndex(v=>(v+delta+articles.length)%articles.length);
  return <section className="v22-root v22-section ls27-journal ls29-global-articles" aria-labelledby="ls29-global-articles-title"><div className="v22-container">
-  <div className="v22-heading"><div><span className="v22-eyebrow">LANDSHOP INSIGHTS</span><h2 id="ls29-global-articles-title"><span className="ls26-heading-green">Insights</span> &amp; Updates<span className="v22-accent">.</span></h2></div><Link href="/insights" className="v22-text-link">Explore all articles →</Link></div>
+  <div className="v22-heading"><div><span className="v22-eyebrow">LANDSHOP INSIGHTS</span><h2 id="ls29-global-articles-title"><span className="ls26-heading-green">Insights</span> &amp; Updates<span className="v22-accent">.</span></h2></div><Link href="/insights" className="v22-text-link">Explore all articles <ApprovedArrow /></Link></div>
   <div role="region" aria-label="Explore the published Landshop articles" aria-roledescription="carousel"
     {...playback.handlers}>
    <div className="ls27-articles" aria-live="off">{[0,1,2].map(offset=>{
     const article=articles[(index+offset)%articles.length];
     return <article className="ls27-article" key={article.slug+'-'+offset}>
      <Link className="ls27-article-photo" href={article.href}><img src={article.image} alt={article.imageAlt||'Real property photograph for '+article.title} loading="lazy" decoding="async"/></Link>
-     <div className="ls27-article-body"><span>{article.category}</span><h3>{article.title}</h3><p>{article.summary}</p><Link className="v22-text-link" href={article.href}>Read article →</Link></div>
+     <div className="ls27-article-body"><span>{article.category}</span><h3>{article.title}</h3><p>{article.summary}</p><Link className="v22-text-link" href={article.href}>Read article <ApprovedArrow /></Link></div>
     </article>})}</div>
    <div className="ls27-article-actions"><div className="v22-carousel-buttons">
-    <button type="button" onClick={()=>step(-1)} aria-label="Previous Landshop articles">←</button>
+    <button type="button" onClick={()=>step(-1)} aria-label="Previous Landshop articles"><ApprovedArrow direction="left" /></button>
     <span aria-label={'Starting article '+(index+1)+' of '+articles.length}>{index+1} / {articles.length}</span>
-    <button type="button" onClick={()=>step(1)} aria-label="Next Landshop articles">→</button>
-   </div><Link href="/insights" className="v22-btn">View All Articles →</Link></div>
+    <button type="button" onClick={()=>step(1)} aria-label="Next Landshop articles"><ApprovedArrow /></button>
+   </div><Link href="/insights" className="v22-btn">View All Articles <ApprovedArrow /></Link></div>
   </div></div></section>;
 }
