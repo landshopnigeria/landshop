@@ -42,6 +42,7 @@ jobs:
           SSH_HOST: ${{ secrets.LANDSHOP_SSH_HOST || secrets.NAMECHEAP_SSH_HOST || vars.LANDSHOP_SSH_HOST }}
           SSH_PORT: ${{ vars.LANDSHOP_SSH_PORT || secrets.LANDSHOP_SSH_PORT || secrets.NAMECHEAP_SSH_PORT || '21098' }}
           SSH_USER: ${{ secrets.LANDSHOP_SSH_USER || secrets.NAMECHEAP_SSH_USER || vars.LANDSHOP_SSH_USER }}
+          CONFIG_PATH: ${{ vars.LANDSHOP_NEXUS_CONFIG_PATH }}
         run: |
           set -euo pipefail
           test -n "$SSH_HOST" && test -n "$SSH_USER"
@@ -53,13 +54,14 @@ jobs:
             services/document-worker/nexus_runtime_worker.py \
             services/document-worker/nexus_namecheap_once.sh \
             "$remote:landshop-nexus-runtime/"
-          ssh "${opts[@]}" "$remote" bash -s <<'REMOTE'
+          ssh "${opts[@]}" "$remote" bash -s -- "$CONFIG_PATH" <<'REMOTE'
           set -euo pipefail
           umask 077
           root="$HOME/landshop-nexus-runtime"
           chmod 600 "$root/nexus_runtime_worker.py"
           chmod 700 "$root/nexus_namecheap_once.sh"
-          config="$HOME/.config/landshop/nexus-worker.env"
+          config="${1:-$HOME/.config/landshop/nexus-worker.env}"
+          case "$config" in "$HOME"/*) ;; *) echo '::error::NEXUS_CONFIG_PATH_UNSAFE';exit 3;; esac
           if pgrep -f '[n]exus_runtime_worker.py --loop' >/dev/null; then
             echo 'NEXUS_EXISTING_LOOP_PROCESS_PRESENT; not installing duplicate scheduled execution'
             exit 0
@@ -79,6 +81,7 @@ jobs:
             echo '::error::NEXUS_CONFIG_MISSING: worker-specific protected config must be provisioned by a credential administrator'
             exit 3
           fi
+          test "$(stat -c %u "$config")" = "$(id -u)" || { echo '::error::NEXUS_CONFIG_OWNER_INVALID';exit 3; }
           case "$(stat -c %a "$config")" in 600|400) ;; *)
             echo '::error::NEXUS_CONFIG_PERMISSIONS_INVALID';exit 3;;
           esac
@@ -86,15 +89,16 @@ jobs:
             echo '::error::NEXUS_PROCESS_CONTROLS_MISSING'; exit 3
           fi
           # Preflight credentials and project with no network calls or secret output.
-          bash -c 'set -a; source "$HOME/.config/landshop/nexus-worker.env"; set +a;
+          NEXUS_PREFLIGHT_CONFIG="$config" bash -c 'set -a; source "$NEXUS_PREFLIGHT_CONFIG"; set +a;
             test "${LANDSHOP_NEXUS_RUNTIME_ENABLED:-}" = 1 &&
             test "${LANDSHOP_SUPABASE_URL:-}" = https://iwkfagzkogzidrbbezds.supabase.co &&
             test -n "${LANDSHOP_SUPABASE_SERVICE_ROLE_KEY:-}"' ||
             { echo '::error::NEXUS_PROTECTED_ENV_NOT_READY'; exit 3; }
           existing="$(crontab -l 2>/dev/null || true)"
           printf '%s\n' "$existing" | sed '/# LANDSHOP_NEXUS_SAFE_PREVIEW/d' > "$root/cron.next"
-          printf '%s\n' '* * * * * /usr/bin/flock -n "$HOME/landshop-nexus-runtime/worker.lock" /usr/bin/timeout 45 "$HOME/landshop-nexus-runtime/nexus_namecheap_once.sh" >> "$HOME/landshop-nexus-runtime/worker.log" 2>&1 # LANDSHOP_NEXUS_SAFE_PREVIEW' >> "$root/cron.next"
-          /usr/bin/flock -n "$root/worker.lock" /usr/bin/timeout 45 "$root/nexus_namecheap_once.sh" >/dev/null
+          printf -v config_escaped '%q' "$config"
+          printf '%s\n' "* * * * * LANDSHOP_NEXUS_CONFIG_PATH=$config_escaped /usr/bin/flock -n \"\$HOME/landshop-nexus-runtime/worker.lock\" /usr/bin/timeout 45 \"\$HOME/landshop-nexus-runtime/nexus_namecheap_once.sh\" >> \"\$HOME/landshop-nexus-runtime/worker.log\" 2>&1 # LANDSHOP_NEXUS_SAFE_PREVIEW" >> "$root/cron.next"
+          LANDSHOP_NEXUS_CONFIG_PATH="$config" /usr/bin/flock -n "$root/worker.lock" /usr/bin/timeout 45 "$root/nexus_namecheap_once.sh" >/dev/null
           echo 'NEXUS_ONE_SHOT_QUEUE_CLAIM_SUCCEEDED'
           crontab "$root/cron.next"
           rm -f "$root/cron.next"
