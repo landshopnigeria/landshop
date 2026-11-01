@@ -81,8 +81,9 @@ try{
       layout.navBottom>=layout.heroBottom||
       layout.headlineTop<layout.navBottom+15)
     errors.push('V31 overlay '+width+'px: header must be on hero with separate headline: '+JSON.stringify(layout));
-   if(layout.titleSize!=='33px')
-    errors.push('V32 hero title at '+width+'px must be 33px, got '+layout.titleSize);
+   const heroSize=Number.parseFloat(layout.titleSize);
+   if(!Number.isFinite(heroSize)||heroSize<36||heroSize>70)
+    errors.push('Approved homepage hero title should scale between 36–70px, got '+layout.titleSize+' at '+width+'px');
    const heroPresentation=await motionPage.evaluate(()=>{
     const heading=document.querySelector('.ls-v23-hero-title');
     const outer=heading?.getBoundingClientRect();
@@ -130,17 +131,17 @@ try{
   // V33 interactive regression: hovering over a carousel freezes its slide,
   // leaving it resumes timer-based advancement without clicking controls.
   await motionPage.goto(root+'/',{waitUntil:'domcontentloaded',timeout:30000});
-  await motionPage.waitForSelector('.v22-quote blockquote');
-  await motionPage.hover('.v22-quote');
+  await motionPage.waitForSelector('.ls33-review-card blockquote');
+  await motionPage.hover(' .ls33-review-card');
   await motionPage.waitForTimeout(650);
-  const quoteBefore=await motionPage.locator('.v22-quote blockquote').textContent();
+  const quoteBefore=await motionPage.locator('.ls33-review-card blockquote').textContent();
   await motionPage.waitForTimeout(7600);
-  const quoteWhileHovered=await motionPage.locator('.v22-quote blockquote').textContent();
+  const quoteWhileHovered=await motionPage.locator('.ls33-review-card blockquote').textContent();
   if(quoteBefore!==quoteWhileHovered)
    errors.push('V33 testimonial carousel advanced while mouse was hovering');
   await motionPage.mouse.move(0,0);
   try{
-   await motionPage.waitForFunction(before=>document.querySelector('.v22-quote blockquote')?.textContent!==before,quoteBefore,{timeout:10000});
+   await motionPage.waitForFunction(before=>document.querySelector('.ls33-review-card blockquote')?.textContent!==before,quoteBefore,{timeout:10000});
   }catch{
    errors.push('V33 testimonial carousel did not resume automatic advance after mouse exit');
   }
