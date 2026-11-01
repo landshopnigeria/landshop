@@ -17,7 +17,7 @@ function browser(){
  if(!u||!k)throw Error('Secure employee database unavailable');
  return createBrowserClient(u,k,{cookieOptions:{domain:'.landshopnigeria.com',path:'/',sameSite:'lax',secure:true}});
 }
-export default function StaffWorkspace({userId,initialProfile,initialTasks,role,initialVerified,selfServiceAccess,ownerAccess,metadata,userEmail}:{userId:string;initialProfile:Profile|null;initialTasks:Task[];role:string|null;initialVerified:boolean;selfServiceAccess:boolean;ownerAccess:boolean;metadata:Record<string,unknown>;userEmail:string}){
+export default function StaffWorkspace({userId,initialProfile,initialTasks,role,initialVerified,selfServiceAccess,ownerAccess,metadata,userEmail,workPanel,reportPanel}:{workPanel?:React.ReactNode;reportPanel?:React.ReactNode;userId:string;initialProfile:Profile|null;initialTasks:Task[];role:string|null;initialVerified:boolean;selfServiceAccess:boolean;ownerAccess:boolean;metadata:Record<string,unknown>;userEmail:string}){
  const [profile,setProfile]=useState(initialProfile),[tasks,setTasks]=useState(initialTasks);
  const [approvedRole,setApprovedRole]=useState<string|null>(role);
  const [verifiedAccess,setVerifiedAccess]=useState(initialVerified);
@@ -144,7 +144,7 @@ export default function StaffWorkspace({userId,initialProfile,initialTasks,role,
  const todayAttendance=attendance.filter(a=>new Date(a.occurred_at).toLocaleDateString('en-CA',{timeZone:'Africa/Lagos'})===new Date().toLocaleDateString('en-CA',{timeZone:'Africa/Lagos'}));
  const lastClock=attendance[0];
 
- const nav=[['dashboard','Dashboard','home'],['overview','Overview','bar-chart'],['profile','My Profile','user'],['attendance','Attendance','clock'],['tasks','Tasks','clipboard'],['daily','Daily Routine','file'],['performance','Performance','trending']] as const;
+ const nav=[['dashboard','Dashboard','home'],['overview','Overview','bar-chart'],['profile','My Profile','user'],['attendance','Attendance','clock'],['tasks','Tasks','clipboard'],['daily','Reports','file'],['performance','Performance','trending']] as const;
  const circle=(label:string,key:string,color:string)=>{
   const item=scoreSet[key];const valid=typeof item?.score_percent==='number'&&Number.isFinite(item.score_percent);const value=valid?Math.min(100,Math.max(0,Number(item?.score_percent))):0;
   return <div className="ls25-score" key={key} aria-label={valid?label+' '+value.toFixed(0)+' percent':label+' not yet scored'}>
@@ -207,7 +207,7 @@ export default function StaffWorkspace({userId,initialProfile,initialTasks,role,
   <label><span><StaffGlyph name="clock" size={19} color="#287eea"/> Delays / dependencies</span><textarea maxLength={3000} value={blockers} onChange={e=>setBlockers(e.target.value)} placeholder="Anything that delayed a task, instructions awaited, approvals needed..."/><small>{blockers.length}/3000</small></label></form>
   {!verified&&<p className="ls25-disclaimer">Submitting daily activity reports requires an approved employee identity.</p>}
  </section>;
- const menuName:Record<string,string>={dashboard:'Staff Dashboard',overview:'Work Overview',profile:'My Profile',attendance:'Attendance',tasks:'Assigned Tasks',daily:'Daily Routine',performance:'My Performance'};
+ const menuName:Record<string,string>={dashboard:'Staff Dashboard',overview:'Work Overview',profile:'My Profile',attendance:'Attendance',tasks:'Assigned Tasks',daily:'Work Reports',performance:'My Performance'};
  // Until both identity verification and an active Landshop membership are present,
  // show only onboarding and approval status—not the employee command dashboard.
  if(!dashboardActive)return <StaffAuthShell><section className="ls25-applicant" aria-labelledby="staff-onboarding-title">
@@ -251,6 +251,9 @@ export default function StaffWorkspace({userId,initialProfile,initialTasks,role,
     {message&&<div role="status" aria-live="polite" className="ls25-toast">{message}<button type="button" aria-label="Dismiss notice" onClick={()=>setMessage('')}>×</button></div>}
     {ownerActive&&<section className="ls25-owner-access" aria-labelledby="owner-command-title"><div className="ls25-owner-access-icon"><StaffGlyph name="briefcase" size={29}/></div><div className="ls25-owner-access-copy"><p>VERIFIED LANDSHOP OWNER</p><h2 id="owner-command-title">Your Global Command Center</h2><span>Manage properties, people, customers, applications, approvals, automation, operations and reports.</span></div><Link href="/admin" className="ls25-owner-access-cta">Open Global Command Center <span aria-hidden="true">↗</span></Link></section>}
     {!verified&&!ownerActive&&<div className="ls25-account-active" role="status"><StaffGlyph name="shield" size={22}/><div><strong>Staff dashboard activated automatically</strong><p>Email confirmation gives immediate dashboard access. Internal task execution, attendance, employee ID and management functions require separate company authorization.</p></div></div>}
+    {(activeTab==='dashboard'||activeTab==='overview')&&<section className="ls26-welcome ls26-staff-welcome">
+      <div><small>LANDSHOP PEOPLE & MANAGEMENT</small><h2>Good day, {profile?.username||username||'team member'}</h2><p>Manage your work, attendance, reports and performance at a glance.</p><span className="ls26-pill">{verified?'Verified staff access':'Personal dashboard active'}</span></div>
+    </section>}
     {(activeTab==='dashboard'||activeTab==='overview')&&<div className="ls25-stats">
      <div className="ls25-stat"><span className="ls25-stat-icon green"><StaffGlyph name="user" size={27}/></span><div><small>Your Role</small><strong>{roleLabel}</strong></div></div>
      <div className="ls25-stat"><span className="ls25-stat-icon orange"><StaffGlyph name="shield" size={27}/></span><div><small>KYC Status</small><strong>{kycLabel}</strong><small>Employment: {profile?.employment_state||'Pending'}</small></div></div>
@@ -258,12 +261,33 @@ export default function StaffWorkspace({userId,initialProfile,initialTasks,role,
      <div className="ls25-stat"><span className="ls25-stat-icon purple"><StaffGlyph name="clipboard" size={27}/></span><div><small>Assigned Tasks</small><strong>{tasks.length}</strong><small>Tasks assigned</small></div></div>
      <div className="ls25-stat"><span className="ls25-stat-icon green"><StaffGlyph name="clock" size={27}/></span><div><small>Attendance Status</small><strong>{lastClock?.action==='clock_in'?'Clocked in':'Not clocked in'}</strong><small>{new Date().toLocaleDateString('en-NG',{timeZone:'Africa/Lagos',dateStyle:'medium'})}</small></div></div>
     </div>}
-    <div className={'ls25-top-grid'+(activeTab!=='dashboard'&&activeTab!=='overview'?' ls25-single-view':'')}>
-     {view('profile')&&profileCard}{view('attendance')&&attendanceCard}{view('performance')&&performanceCard}
-    </div>
-    <div className={'ls25-bottom-grid'+(activeTab!=='dashboard'&&activeTab!=='overview'?' ls25-single-view':'')}>
-     {view('tasks')&&taskCard}{view('daily')&&dailyCard}
-    </div>
+    {(activeTab==='dashboard'||activeTab==='overview')&&<>
+      <div className="ls26-staff-overview-grid">{performanceCard}{attendanceCard}</div>
+      <section className="ls26-kpi-strip"><div className="ls26-panel-heading"><h2>KPI Summary</h2><button type="button" onClick={()=>go('performance')}>View performance <span aria-hidden="true">→</span></button></div>
+       <div className="ls26-kpis">
+        <div><strong>{tasks.filter(t=>['reviewed','completed','accepted'].includes(t.status)).length}</strong><span>Tasks completed</span></div>
+        <div><strong>{tasks.filter(t=>['assigned','returned','in_progress'].includes(t.status)).length}</strong><span>Open tasks</span></div>
+        <div><strong>{attendance.filter(a=>a.action==='clock_in').length}</strong><span>Recorded clock-ins</span></div>
+        <div><strong>{typeof scoreSet.month?.score_percent==='number'?Math.round(scoreSet.month.score_percent)+'%':'—'}</strong><span>Monthly reviewed score</span></div>
+       </div>
+      </section>
+      <div className="ls26-staff-lower">
+       <section className="ls26-panel ls26-report-panel"><div className="ls26-panel-heading"><h3>Reports</h3></div>
+        <button type="button" onClick={()=>go('daily')}>▤ Daily Report <span aria-hidden="true">→</span></button>
+        <button type="button" onClick={()=>go('daily')}>▥ Weekly / Monthly Report <span aria-hidden="true">→</span></button>
+        <button type="button" onClick={()=>go('performance')}>◉ Performance Review <span aria-hidden="true">→</span></button>
+       </section>
+       {taskCard}
+       <section className="ls26-panel ls26-activity-panel"><div className="ls26-panel-heading"><h3>Recent Activity</h3><button type="button" onClick={()=>go('attendance')}>View all <span aria-hidden="true">→</span></button></div>
+        {attendance.length?attendance.slice(0,5).map(a=><div className="ls26-activity-item" key={a.id}><span aria-hidden="true">●</span><div><strong>{a.action.replace('_',' ')}</strong><small>{new Date(a.occurred_at).toLocaleString('en-NG',{timeZone:'Africa/Lagos'})}</small></div></div>):<p>No attendance actions recorded yet. Submitted reports and task reviews will appear in your workspace as they are processed.</p>}
+       </section>
+      </div>
+    </>}
+    {activeTab==='profile'&&profileCard}
+    {activeTab==='attendance'&&attendanceCard}
+    {activeTab==='performance'&&performanceCard}
+    {activeTab==='tasks'&&<>{taskCard}{workPanel}</>}
+    {activeTab==='daily'&&<>{dailyCard}{workPanel}{reportPanel}</>}
     <footer className="ls25-footer">© {new Date().getFullYear()} Landshop · Staff workspace · Records are private and audit-controlled</footer>
    </main>
   </div>
