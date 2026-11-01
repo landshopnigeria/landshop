@@ -53,7 +53,7 @@ for route,reference in [
 url="https://www.landshopnigeria.com/owner/2026/merit-park-archival-signage.jpg?release="+sha[:12]
 with urlopen(Request(url,headers={"Cache-Control":"no-store"}),timeout=22) as response:
  first=response.read(3)
- if response.status!=200 or first!=b'\\xff\\xd8\\xff':
+ if response.status!=200 or first!=bytes.fromhex("ffd8ff"):
   raise SystemExit("Approved historical Merit Park JPEG missing or corrupted on live website")
 print("IMAGE_OK merit-park-archival-signage.jpg",flush=True)
 for route in ("/projects","/projects/merit-park"):
