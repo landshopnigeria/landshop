@@ -27,6 +27,8 @@ jobs:
           node-version: '22'
       - name: Install dependencies
         run: npm install --no-audit --no-fund
+      - name: Block high or critical production dependency advisories
+        run: npm audit --omit=dev --audit-level=high
       - name: Verify real Nigerian editorial photo licenses and CDN availability
         run: python3 scripts/validate-genuine-photos.py
       - name: Prepare faithful transparent Landshop PNG logo
