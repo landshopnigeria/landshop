@@ -6,7 +6,7 @@ export const metadata={title:'Staff, Attendance & Performance | Landshop Command
 export default async function Workforce(){
  const {db,user}=await requireLandshopStaff(['owner','ceo','founder','admin','technology_officer','technology_consultant']);
  const [profiles,tasks,daily,member]=await Promise.all([
-  db.from('landshop_staff_profiles').select('user_id,username,requested_role,employment_state,kyc_state,photo_path,staff_number,review_note').order('created_at',{ascending:false}).limit(500),
+  db.from('landshop_staff_profiles').select('user_id,username,requested_role,employment_state,kyc_state,photo_path,staff_number,review_note,verification_provider,verification_session_id').order('created_at',{ascending:false}).limit(500),
   db.from('staff_tasks').select('id,assignee_id,assigned_by,title,status,due_at,planned_minutes,delay_allowance_minutes,score,assignee_report,review_comment').order('created_at',{ascending:false}).limit(500),
   db.from('landshop_staff_daily_reports').select('id,staff_id,report_date,summary,blockers,updated_at').order('report_date',{ascending:false}).limit(200),
   db.from('organization_members').select('role').eq('user_id',user.id).eq('status','active').limit(1).maybeSingle()
