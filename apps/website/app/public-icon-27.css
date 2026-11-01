@@ -1,4 +1,4 @@
-/* Landshop public website: all interface icons and the one approved short arrow are 27px.
+/* Landshop public website: interface icons stay 27px; directional arrows are 23px.
  * This file replaces the former 70px public-icon treatment.
  * Keep all existing header, footer, property filter and card structures intact.
  */
@@ -102,3 +102,19 @@ body .ls-site-chrome .ls30-hamburger i:nth-child(2){width:20px!important}
 body .ls-site-chrome .ls30-hamburger i:nth-child(3){width:24px!important}
 body .ls-site-chrome .ls30-hamburger-open i:nth-child(1){width:27px!important;transform:translateY(8px) rotate(45deg)}
 body .ls-site-chrome .ls30-hamburger-open i:nth-child(3){width:27px!important;transform:translateY(-8px) rotate(-45deg)}
+
+/* Owner-approved 23px arrows. Limit the override to directional icons:
+   all other interface icons remain 27px and navbar V indicators stay compact. */
+body svg.ls-icon-directional,
+body svg.ls-approved-arrow,
+body .ls-site-chrome svg.ls-icon-directional,
+body .ls24-carousel-arrows svg {
+  width:23px!important;
+  height:23px!important;
+  min-width:23px!important;
+  min-height:23px!important;
+  max-width:23px!important;
+  max-height:23px!important;
+  flex:0 0 23px;
+}
+body .ls-approved-arrow {min-width:23px!important;max-width:23px!important}
