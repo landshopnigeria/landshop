@@ -4,10 +4,15 @@ import Link from 'next/link';
 import {createBrowserClient} from '@supabase/ssr';
 import StaffWorkActions from './StaffWorkActions';
 import StaffReportHistory from './StaffReportHistory';
+import './basic-staff-dashboard.css';
 type Task={id:string;title:string;status:string;due_at:string;details:string|null};
 type Profile={username:string;kyc_state:string;staff_number:string|null;employment_state:string};
 export default function BasicStaffWorkspace({profile,tasks,email,userId}:{profile:Profile;tasks:Task[];email:string;userId:string}){
  const [notice,setNotice]=useState(''),[busy,setBusy]=useState(false);
+ const [section,setSection]=useState<'overview'|'kyc'|'tasks'|'reports'|'attendance'>('overview');
+ const [sidebarOpen,setSidebarOpen]=useState(false);
+ const menu=[['overview','Overview'],['kyc','My Profile & KYC'],['tasks','Tasks'],['reports','Work Reports'],['attendance','Attendance']] as const;
+ const navigate=(next:typeof section)=>{setSection(next);setSidebarOpen(false)};
  function client(){
   const url=process.env.NEXT_PUBLIC_SUPABASE_URL,key=process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
   if(!url||!key)throw Error('Staff database configuration is missing');
@@ -31,25 +36,28 @@ export default function BasicStaffWorkspace({profile,tasks,email,userId}:{profil
  async function signOut(){
   setBusy(true);try{await client().auth.signOut();window.location.replace('/staff/sign-in')}catch(e){setNotice(e instanceof Error?e.message:'Unable to sign out');setBusy(false)}
  }
- return <main style={{minHeight:'100vh',background:'#f3f8f5',fontFamily:'Arial,sans-serif',color:'#153e30'}}>
-  <header style={{background:'#073f34',padding:'18px clamp(16px,4vw,48px)',color:'white',display:'flex',alignItems:'center',justifyContent:'space-between',gap:12,flexWrap:'wrap'}}>
-   <div><small style={{color:'#fb9e60',letterSpacing:2}}>LANDSHOP PEOPLE & MANAGEMENT</small><h1 style={{margin:'6px 0',fontSize:'clamp(23px,4vw,34px)'}}>My Staff Dashboard</h1></div>
-   <button type="button" disabled={busy} onClick={signOut} style={{padding:'12px 16px',background:'#f26b10',color:'white',border:0,borderRadius:10,cursor:'pointer'}}>Log Out</button>
-  </header>
-  <section style={{margin:'20px auto',maxWidth:1200,padding:'0 18px'}}>
-   <div style={{background:'white',border:'1px solid #d5e5dc',borderRadius:16,padding:22}}>
-    <h2 style={{margin:'0 0 8px'}}>Welcome, {profile.username}</h2>
-    <p>{email} · Basic Staff Access Active · Employment: {profile.employment_state}</p>
-    <p>You can accept assigned work and send daily or monthly reports from your first active day. Management and payroll permissions require separate authorization.</p>
-    <div style={{display:'flex',gap:15,flexWrap:'wrap',alignItems:'center'}}>
-     <label style={{display:'grid',gap:7}}>Upload identity portrait for staff ID verification
-      <input type="file" accept="image/jpeg,image/png,image/webp" disabled={busy} onChange={e=>void photo(e.target.files?.[0]||null)}/></label>
-     <span>KYC: {profile.kyc_state.replaceAll('_',' ')}</span>
-     <Link href="https://www.landshopnigeria.com">Landshop website</Link>
-    </div>
-    {notice&&<p role="status" aria-live="polite" style={{padding:10,background:'#eff6f0',borderRadius:9}}>{notice}</p>}
+ return <div className="ls-basic-shell">
+  <aside className={'ls-basic-side '+(sidebarOpen?'is-open':'')} aria-label="Staff dashboard sections">
+   <div className="ls-basic-brand"><img src="/media/logo.webp" alt="Landshop" /><strong>People & Management</strong><button type="button" aria-label="Close navigation" onClick={()=>setSidebarOpen(false)} className="ls-basic-close">×</button></div>
+   <nav>{menu.map(([key,title])=><button type="button" key={key} className={section===key?'active':''} aria-current={section===key?'page':undefined} onClick={()=>navigate(key)}><span className="ls-basic-marker" aria-hidden="true">{key==='overview'?'⌂':key==='kyc'?'♙':key==='tasks'?'☑':key==='reports'?'▤':'◷'}</span>{title}<span aria-hidden="true" className="ls-basic-chevron">›</span></button>)}</nav>
+   <p className="ls-basic-side-note">Your personal dashboard is available after email verification. Sensitive operations require their own approvals.</p>
+  </aside>
+  {sidebarOpen&&<button type="button" className="ls-basic-backdrop" aria-label="Close navigation" onClick={()=>setSidebarOpen(false)}/>}
+  <div className="ls-basic-main">
+   <header className="ls-basic-top"><button className="ls-basic-menu" type="button" aria-label="Open dashboard navigation" aria-expanded={sidebarOpen} onClick={()=>setSidebarOpen(!sidebarOpen)}>☰</button><div><small>LANDSHOP PEOPLE & MANAGEMENT</small><h1>My Staff Dashboard</h1></div><button className="ls-basic-logout" type="button" disabled={busy} onClick={signOut}>Log Out</button></header>
+   <div className="ls-basic-content">
+    <div className="ls-basic-section-heading"><div><small>MY WORKSPACE</small><h2>{menu.find(([key])=>key===section)?.[1]}</h2></div><span>Staff access · {profile.employment_state}</span></div>
+    {notice&&<p role="status" aria-live="polite" className="ls-basic-message">{notice}</p>}
+    {section==='overview'&&<div className="ls-basic-cards">
+      <section className="ls-basic-card"><h3>Welcome, {profile.username}</h3><p>{email}</p><p>Start with your identity profile, then use the sidebar to manage assignments and reports. Only one workspace section stays open at a time.</p><div className="ls-basic-actions"><button onClick={()=>navigate('kyc')}>Complete My KYC <span aria-hidden="true">→</span></button><button onClick={()=>navigate('tasks')}>My Tasks <span aria-hidden="true">→</span></button></div></section>
+      <section className="ls-basic-card"><h3>Account status</h3><dl><dt>Email verification</dt><dd>Confirmed</dd><dt>Employment</dt><dd>{profile.employment_state}</dd><dt>Identity review</dt><dd>{profile.kyc_state.replaceAll('_',' ')}</dd><dt>Staff number</dt><dd>{profile.staff_number||'Pending issuance'}</dd></dl></section>
+    </div>}
+    {section==='kyc'&&<section className="ls-basic-card"><h3>My Profile & Identity Verification</h3><p>Upload your identity portrait securely from your dashboard. Identity approval is completed by authorized reviewers, not automatically by uploading a photograph.</p><div className="ls-basic-cards"><div><strong>{profile.username}</strong><p>{email}</p><p>Staff ID: {profile.staff_number||'Pending'}</p></div><div><label className="ls-basic-file">Identity portrait <input type="file" accept="image/jpeg,image/png,image/webp" disabled={busy} onChange={e=>void photo(e.target.files?.[0]||null)}/></label><p>KYC status: <strong>{profile.kyc_state.replaceAll('_',' ')}</strong></p></div></div></section>}
+    {section==='tasks'&&<StaffWorkActions active initialTasks={tasks}/>}
+    {section==='reports'&&<><StaffWorkActions active initialTasks={tasks}/><StaffReportHistory userId={userId}/></>}
+    {section==='attendance'&&<section className="ls-basic-card"><h3>Staff Attendance</h3><p>Your personal dashboard is active, but GPS-based clock-in and clock-out require verified employee identity and authorized attendance access.</p><p><strong>Identity review:</strong> {profile.kyc_state.replaceAll('_',' ')}</p><button type="button" onClick={()=>navigate('kyc')}>View verification requirements <span aria-hidden="true">→</span></button><p>Once your identity is approved, attendance, history and performance controls become available in your full staff workspace.</p></section>}
+    <footer className="ls-basic-footer"><Link href="https://www.landshopnigeria.com">Landshop website <span aria-hidden="true">↗</span></Link><span>© {new Date().getFullYear()} Landshop</span></footer>
    </div>
-  </section>
-  <div style={{maxWidth:1240,margin:'auto'}}><StaffWorkActions active initialTasks={tasks}/><StaffReportHistory userId={userId}/></div>
- </main>;
+  </div>
+ </div>;
 }
