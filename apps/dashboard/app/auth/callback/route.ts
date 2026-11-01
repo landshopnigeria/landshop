@@ -1,6 +1,11 @@
 import {NextRequest,NextResponse} from 'next/server';
 import {createServerClient} from '@supabase/ssr';
 
+function callbackFailure(reason:string){
+ return NextResponse.redirect('https://app.landshopnigeria.com/staff/sign-in?error='+reason,
+  {headers:{'Cache-Control':'private, no-store, max-age=0'}});
+}
+
 // Staff-specific verified-email entrypoint, registered as an allowed Supabase redirect.
 // Auth cookies use the same .landshopnigeria.com scope as the staff application.
 export async function GET(request:NextRequest){
@@ -8,10 +13,10 @@ export async function GET(request:NextRequest){
  const code=request.nextUrl.searchParams.get('code');
  const tokenHash=request.nextUrl.searchParams.get('token_hash');
  const type=request.nextUrl.searchParams.get('type')||'signup';
- if(!code&&!tokenHash)return NextResponse.redirect(origin+'/staff/sign-in?error=missing_confirmation');
+ if(!code&&!tokenHash)return callbackFailure('missing_confirmation');
  const url=process.env.NEXT_PUBLIC_SUPABASE_URL;
  const key=process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
- if(!url||!key)return NextResponse.redirect(origin+'/staff/sign-in?error=configuration');
+ if(!url||!key)return callbackFailure('configuration');
  const response=NextResponse.redirect(origin+'/staff');
  response.headers.set('Cache-Control','private, no-store');
  const supabase=createServerClient(url,key,{
@@ -30,10 +35,10 @@ export async function GET(request:NextRequest){
  }else if(tokenHash&&['signup','invite','email_change','magiclink','recovery'].includes(type)){
   const result=await supabase.auth.verifyOtp({token_hash:tokenHash,type:type as 'signup'|'invite'|'email_change'|'magiclink'|'recovery'});
   error=result.error;
- }else return NextResponse.redirect(origin+'/staff/sign-in?error=invalid_confirmation');
- if(error)return NextResponse.redirect(origin+'/staff/sign-in?error=verification_failed');
+ }else return callbackFailure('invalid_confirmation');
+ if(error)return callbackFailure('verification_failed');
  const {data:{user}}=await supabase.auth.getUser();
- if(!user)return NextResponse.redirect(origin+'/staff/sign-in?error=session_unavailable');
+ if(!user)return callbackFailure('session_unavailable');
  // Initialize verified staff personal profile; no employment, KYC or role elevation.
  if(type!=='recovery'&&user.email_confirmed_at&&user.user_metadata?.staff_signup===true){
   const fields=user.user_metadata,age=fields.age_at_registration;
