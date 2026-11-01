@@ -20,7 +20,7 @@ const paths:Record<SiteIconName,string>={
  search:'M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16z m6-2 5 5',
  menu:'M4 7h16 M4 12h16 M4 17h16',
  close:'M5 5l14 14 M19 5 5 19',
- chevron:'M2.5 12h19 M14.5 5l7 7-7 7',
+ chevron:'M5.5 9l6.5 6.5L18.5 9',
  arrow:'M2.5 12h19 M14.5 5l7 7-7 7',
  external:'M2.5 12h19 M14.5 5l7 7-7 7',
  book:'M4 4h7a3 3 0 0 1 3 3v14a3 3 0 0 0-3-3H4z M20 4h-4a3 3 0 0 0-3 3v14a3 3 0 0 1 3-3h4z',

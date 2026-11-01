@@ -53,8 +53,14 @@ try{
       return {width:parseFloat(style.width),height:parseFloat(style.height)};
      };
      const icons=[...document.querySelectorAll('svg.ls-icon')].filter(visible);
-     const wrongIconSizes=icons.map(icon=>({className:icon.getAttribute('class'),...dimensions(icon)}))
+     // The navigation dropdown has a separately approved compact V marker.
+     // Every action icon and directional arrow must still be exactly 27px.
+     const navChevrons=icons.filter(icon=>icon.matches('.ls-site-chrome .ls-primary-nav .ls-nav-toggle .ls-icon-chevron'));
+     const actionIcons=icons.filter(icon=>!navChevrons.includes(icon));
+     const wrongIconSizes=actionIcons.map(icon=>({className:icon.getAttribute('class'),...dimensions(icon)}))
       .filter(icon=>Math.abs(icon.width-27)>.1||Math.abs(icon.height-27)>.1).slice(0,8);
+     const wrongChevrons=navChevrons.map(icon=>({...dimensions(icon),path:icon.querySelector('path')?.getAttribute('d')}))
+      .filter(icon=>Math.abs(icon.width-17)>.1||Math.abs(icon.height-17)>.1||icon.path!=='M5.5 9l6.5 6.5L18.5 9').slice(0,8);
      const approvedPath='M2.5 12h19 M14.5 5l7 7-7 7';
      const wrongArrows=[...document.querySelectorAll('svg.ls-approved-arrow')].filter(visible)
       .filter(icon=>icon.querySelector('path')?.getAttribute('d')!==approvedPath).slice(0,8)
@@ -65,9 +71,9 @@ try{
       .map(element=>(element.textContent||'').trim().slice(0,90));
      const menu=document.querySelector('.ls30-hamburger');
      const mobileMenu=menu&&visible(menu)?dimensions(menu):null;
-     return {iconCount:icons.length,wrongIconSizes,wrongArrows,legacyArrowActions,mobileMenu};
+     return {iconCount:actionIcons.length,dropdownCount:navChevrons.length,wrongIconSizes,wrongChevrons,wrongArrows,legacyArrowActions,mobileMenu};
     });
-    if(!iconAudit.iconCount||iconAudit.wrongIconSizes.length||iconAudit.wrongArrows.length||iconAudit.legacyArrowActions.length||
+    if(!iconAudit.iconCount||!iconAudit.dropdownCount||iconAudit.wrongIconSizes.length||iconAudit.wrongChevrons.length||iconAudit.wrongArrows.length||iconAudit.legacyArrowActions.length||
        !iconAudit.mobileMenu||Math.abs(iconAudit.mobileMenu.width-27)>.1||Math.abs(iconAudit.mobileMenu.height-27)>.1)
      errors.push(path+' @375px: 27px icon / canonical arrow runtime audit failed '+JSON.stringify(iconAudit));
     console.log('APPROVED ICON RUNTIME',path,JSON.stringify(iconAudit));

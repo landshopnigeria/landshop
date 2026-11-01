@@ -216,6 +216,16 @@ def verify_source() -> None:
     """Check routes for client-only carousel slides in source, not SSR initial-slide HTML."""
     homepage = Path("apps/website/components/LandshopHome.tsx").read_text(encoding="utf-8")
     product = Path("apps/website/components/ProductPage.tsx").read_text(encoding="utf-8")
+    nav = Path("apps/website/components/SiteHeader.tsx").read_text(encoding="utf-8")
+    icons = Path("apps/website/components/SiteIcon.tsx").read_text(encoding="utf-8")
+    nav_css = Path("apps/website/app/public-icon-27.css").read_text(encoding="utf-8")
+    if '<SiteIcon name="chevron" size={19}/>' not in nav:
+        raise AssertionError("Public dropdown navigation V chevrons are missing")
+    if "chevron:'M5.5 9l6.5 6.5L18.5 9'" not in icons:
+        raise AssertionError("Navbar V icon has been replaced with a long directional arrow")
+    if 'body .ls-site-chrome .ls-primary-nav .ls-nav-toggle .ls-icon-chevron' not in nav_css:
+        raise AssertionError("Compact V chevron scaling is missing from responsive navbar")
+
     required = (
         "secondaryHref:'/projects/famous-gardens'",
         "secondaryHref:'/visit?project=famous-gardens'",
