@@ -56,7 +56,22 @@ function SectionHead({kicker,title,accent,href,linkLabel}:{kicker:string;title:s
  return <div className="lsap-head"><div><p className="lsap-kicker">{kicker}</p><h2>{title}<span>{accent||'.'}</span></h2></div>{href&&<Link className="lsap-view" href={href}>{linkLabel||'Explore More'} <ApprovedArrow/></Link>}</div>;
 }
 export default function ApprovedHomepageContent({featured}:{featured:FeaturedProperty[]}){
- const [guideStart,setGuideStart]=useState(0),[reviewIndex,setReviewIndex]=useState(0),[locationIndex,setLocationIndex]=useState(0);
+ const [guideStart,setGuideStart]=useState(0),[reviewIndex,setReviewIndex]=useState(0),[locationIndex,setLocationIndex]=useState(0),[productIndex,setProductIndex]=useState(0);
+ const productTrack=useRef<HTMLDivElement>(null);
+ const changeProduct=(index:number)=>{
+  const next=(index+landshopProductCards.length)%landshopProductCards.length;
+  setProductIndex(next);
+  const track=productTrack.current;
+  const cards=track?.querySelectorAll<HTMLElement>('.lsap-product');
+  if(track&&cards?.length){track.scrollTo({left:cards[next].offsetLeft-cards[0].offsetLeft,behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});}
+ };
+ const productPlayback=useCarouselPlayback({count:landshopProductCards.length,delay:5200,onAdvance:()=>setProductIndex(previous=>{
+  const next=(previous+1)%landshopProductCards.length;
+  const track=productTrack.current;
+  const cards=track?.querySelectorAll<HTMLElement>('.lsap-product');
+  if(track&&cards?.length)track.scrollTo({left:cards[next].offsetLeft-cards[0].offsetLeft,behavior:'smooth'});
+  return next;
+ })});
  const locTrack=useRef<HTMLDivElement>(null);
  const changeLocation=(index:number)=>{
   const track=locTrack.current;
@@ -78,12 +93,13 @@ export default function ApprovedHomepageContent({featured}:{featured:FeaturedPro
     {landshopAboutImages.map((img,i)=><figure className={'lsap-about-image '+(i===0?'lsap-tall':'')} key={img.src}><img src={img.src} alt={img.alt} loading="lazy" decoding="async"/></figure>)}
    </div></div></section>
 
-  <section className="lsap-section lsap-products" id="products"><div className="lsap-container">
+  <section className="lsap-section lsap-products" id="products" {...productPlayback.handlers}><div className="lsap-container">
    <SectionHead kicker="OUR PRODUCTS" title="Products" href="/products" linkLabel="Explore all products"/>
-   <div className="lsap-product-grid">{landshopProductCards.map((item,index)=><article className="lsap-product" key={item.slug}>
+   <div className="lsap-product-grid" ref={productTrack} role="region" aria-roledescription="carousel" aria-label="Landshop products">{landshopProductCards.map((item,index)=><article className="lsap-product" key={item.slug}>
     <Link className="lsap-product-image" href={item.href}><img src={photos[item.slug]} alt={item.photoAlt||'Landshop owner-provided construction photography, editorial reference'} loading="lazy" decoding="async"/><small>{String(index+1).padStart(2,'0')} / 05</small></Link>
     <div className="lsap-product-text"><img src={item.logo} className="lsap-product-logo" alt={item.name+' product identity'} loading="lazy"/><p className="lsap-product-tag">{item.category}</p><h3>{item.name}</h3><p>{item.description}</p><Link href={item.href}>Explore More <ApprovedArrow/></Link></div>
    </article>)}</div>
+   <div className="lsap-carousel-foot lsap-product-controls"><span>{String(productIndex+1).padStart(2,'0')} / {String(landshopProductCards.length).padStart(2,'0')}</span><div><button type="button" onClick={()=>changeProduct(productIndex-1)} aria-label="Previous product"><ApprovedArrow direction="left"/></button><button type="button" onClick={()=>changeProduct(productIndex+1)} aria-label="Next product"><ApprovedArrow/></button></div></div>
    <p className="lsap-provenance">Product photography is drawn from the owner-supplied Landshop archive. Project-specific eligibility and offers require confirmation.</p>
   </div></section>
 
