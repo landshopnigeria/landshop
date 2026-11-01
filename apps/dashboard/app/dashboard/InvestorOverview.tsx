@@ -34,7 +34,7 @@ export default function InvestorOverview({firstname,kyc,applications,payments,do
  return <div className="ls26-investor">
   <section className="ls26-welcome ls26-investor-welcome"><div><small>MY LANDSHOP INVESTMENT DASHBOARD</small><h1>Good day, {firstname}</h1><p>Track submitted investment decisions, verified payments, documents and property opportunities in one place.</p></div></section>
   <div className="ls26-investor-upper">
-   <section className="ls26-panel ls26-invest-scores" aria-label="Investment progress rings"><div className="ls26-score-grid">
+   <section id="roi-forecast" className="ls26-panel ls26-invest-scores" aria-label="Investment progress rings"><div className="ls26-score-grid">
     {ring('Paid',percent,percent===null?'Not yet calculated':'Of requested amount')}
     {ring('ROI',null,'No approved forecast')}
     {ring('Progress',percent,percent===null?'No approved schedule':'Payment progress')}
@@ -51,10 +51,10 @@ export default function InvestorOverview({firstname,kyc,applications,payments,do
      <div className="ls26-kpis ls26-invest-kpis"><div><strong>{requestKobo?money(requestKobo):'—'}</strong><span>Latest requested investment</span></div><div><strong>{money(paid)}</strong><span>Verified payments</span></div><div><strong>{requestKobo?money(Math.max(0,requestKobo-paid)):'—'}</strong><span>Difference vs. requested amount</span></div><div><strong>—</strong><span>Contractual ROI</span></div></div>
      <p className="ls26-note">A requested amount does not establish an amount owed. The balance and ROI shown in an executed investment contract are authoritative.</p>
     </section>
-    <section className="ls26-panel"><div className="ls26-panel-heading"><h3>Payment Timeline</h3><Link href="/dashboard/applications">My Applications <span aria-hidden="true">→</span></Link></div>
+    <section id="payment-timeline" className="ls26-panel"><div className="ls26-panel-heading"><h3>Payment Timeline</h3><Link href="/dashboard/applications">My Applications <span aria-hidden="true">→</span></Link></div>
      {verifiedPayments.length?<div className="ls26-transaction-list">{verifiedPayments.slice(0,4).map(p=><div key={p.id}><span aria-hidden="true">●</span><div><strong>{money(p.amount_kobo)} verified</strong><small>{readable(p.purpose)} · {date(p.verified_at||p.created_at)}</small></div></div>)}</div>:<p className="ls26-empty">No verified payment events are recorded yet. An approved payment schedule will show future installments once available.</p>}
     </section>
-    <section className="ls26-panel"><div className="ls26-panel-heading"><h3>My Portfolio & Applications</h3><Link href="/dashboard/applications">View All <span aria-hidden="true">→</span></Link></div>
+    <section id="investor-portfolio" className="ls26-panel"><div className="ls26-panel-heading"><h3>My Portfolio & Applications</h3><Link href="/dashboard/applications">View All <span aria-hidden="true">→</span></Link></div>
      {applications.length?<div className="ls26-portfolio-table"><table><thead><tr><th>Application / Investment Type</th><th>Submitted</th><th>Status</th><th>Details</th></tr></thead><tbody>{applications.map(a=><tr key={a.id}><td><strong>{readable(a.kind)}</strong></td><td>{date(a.created_at)}</td><td><span className="ls26-pill">{readable(a.status)}</span></td><td><Link href="/dashboard/applications">Open <span aria-hidden="true">→</span></Link></td></tr>)}</tbody></table></div>:<div className="ls26-empty"><p>Your investment portfolio will appear when you submit or acquire a documented investment.</p><Link href="https://www.landshopnigeria.com/properties">Explore real estate opportunities <span aria-hidden="true">→</span></Link></div>}
     </section>
     <section className="ls26-panel"><div className="ls26-panel-heading"><h3>Recent Transactions</h3><span>Verified activity</span></div>
@@ -65,7 +65,7 @@ export default function InvestorOverview({firstname,kyc,applications,payments,do
     <section className="ls26-panel"><div className="ls26-panel-heading"><h3>Investment Details</h3><Link href="/dashboard/applications">Forms <span aria-hidden="true">→</span></Link></div>
      <dl className="ls26-detail-list"><div><dt>Investment / Application Type</dt><dd>{latest?readable(latest.kind):'—'}</dd></div><div><dt>Selected project / property</dt><dd>{property||'Not submitted'}</dd></div><div><dt>Preferred location</dt><dd>{location||'Not submitted'}</dd></div><div><dt>Requested duration</dt><dd>{tenor||'Not specified'}</dd></div><div><dt>Application status</dt><dd>{latest?readable(latest.status):'No application'}</dd></div><div><dt>Identity verification</dt><dd>{readable(kyc)}</dd></div></dl>
     </section>
-    <section className="ls26-panel"><div className="ls26-panel-heading"><h3>Documents & Forms</h3><Link href="/dashboard/applications">All Applications <span aria-hidden="true">→</span></Link></div>
+    <section id="investment-documents" className="ls26-panel"><div className="ls26-panel-heading"><h3>Documents & Forms</h3><Link href="/dashboard/applications">All Applications <span aria-hidden="true">→</span></Link></div>
      {documents.length?<div className="ls26-docs">{documents.map(d=><div key={d.id}><span aria-hidden="true">▤</span><div><strong>{readable(d.document_type)}</strong><small>Submitted {date(d.created_at)}</small></div><Link href="/dashboard/applications">View <span aria-hidden="true">→</span></Link></div>)}</div>:<p className="ls26-empty">No application documents uploaded yet. Submit documents through the secure applications and KYC sections.</p>}
     </section>
     <section className="ls26-panel"><div className="ls26-panel-heading"><h3>Customer Activity</h3></div>
