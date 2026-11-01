@@ -60,7 +60,7 @@ export default async function Page(){
   .select('id,title,details,status,starts_at,due_at,planned_minutes,delay_allowance_minutes,viewed_at,started_at,submitted_at,score,review_comment,assigned_by')
   .eq('assignee_id',user.id).order('created_at',{ascending:false}).limit(100):{data:[]};
  if(verified&&profile?.kyc_state!=='approved'&&!verifiedOwner){
-  return <BasicStaffWorkspace profile={profile as {username:string;kyc_state:string;staff_number:string|null;employment_state:string}} tasks={(tasks||[]) as {id:string;title:string;status:string;due_at:string;details:string|null}[]} email={user.email||''} userId={user.id}/>;
+  return <BasicStaffWorkspace profile={profile as {username:string;kyc_state:string;staff_number:string|null;employment_state:string;photo_path:string|null}} tasks={(tasks||[]) as {id:string;title:string;status:string;due_at:string;details:string|null}[]} email={user.email||''} userId={user.id}/>;
  }
  return <StaffWorkspace workPanel={<StaffWorkActions active={verified} initialTasks={(tasks||[]) as {id:string;title:string;status:string;due_at:string;details:string|null}[]}/>} reportPanel={verified?<StaffReportHistory userId={user.id}/>:null} userId={user.id} initialProfile={profile||null} initialTasks={tasks||[]}
   role={member?.role||null} initialVerified={verified}
