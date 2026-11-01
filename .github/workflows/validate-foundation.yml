@@ -116,6 +116,22 @@ jobs:
               fi
               echo "SSR/route smoke passed: $app $route"
             done
+            if [ "$app" = "portal" ] || [ "$app" = "dashboard" ]; then
+              # Missing verification tokens must never create a session or cache a redirect.
+              result=$(curl -sS --max-time 15 -D /tmp/landshop-auth-headers -o /dev/null \
+                -w '%{http_code}' "http://127.0.0.1:39519/auth/callback")
+              if [ "$result" != 307 ]; then
+                echo "::error::$app signed-out callback returned HTTP $result instead of 307"
+                kill "$pid" || true
+                exit 1
+              fi
+              if ! grep -iq '^cache-control:.*no-store' /tmp/landshop-auth-headers; then
+                echo "::error::$app verification redirect is cacheable"
+                kill "$pid" || true
+                exit 1
+              fi
+              echo "Verified safe uncached $app callback recovery redirect"
+            fi
             if [ "$app" = "dashboard" ]; then
               # Assert approved staff copy and controls in actual server-rendered HTML.
               curl -fsS --max-time 15 "http://127.0.0.1:39519/staff/sign-in" -o /tmp/landshop-staff-signin.html
