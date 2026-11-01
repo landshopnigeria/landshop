@@ -1,3 +1,4 @@
+import CommandOverview from './CommandOverview';
 import CommandSideNavigation from './CommandSideNavigation';
 import {cookies} from 'next/headers';
 import {redirect} from 'next/navigation';
@@ -46,6 +47,16 @@ export default async function Admin(){
   count(db,'support_tickets'),count(db,'contact_enquiries'),count(db,'referral_edges'),count(db,'automation_workflows'),
   db.from('properties').select('*',{count:'exact',head:true}).eq('status','published').then(result=>result.error?null:result.count)
  ]);
+ const [customerCount,taskCount,submissionsRes,draftRes,reviewRes,payRes,scoreRes]=await Promise.all([
+  count(db,'profiles'),count(db,'staff_tasks'),
+  db.from('landshop_staff_submissions').select('*',{count:'exact',head:true}).eq('status','submitted'),
+  db.from('properties').select('*',{count:'exact',head:true}).eq('status','draft'),
+  db.from('kyc_submissions').select('*',{count:'exact',head:true}).in('status',['submitted','pending','under_review']),
+  db.from('landshop_payment_intents').select('id,status,amount_kobo,currency,verified_at').not('verified_at','is',null).limit(2000),
+  db.from('staff_tasks').select('score,reviewed_at').not('score','is',null).order('reviewed_at',{ascending:false}).limit(500)
+ ]);
+ const paymentRecords=payRes.error?null:(payRes.data||[]).filter(x=>x.currency==='NGN'&&['successful','success','paid','completed','confirmed'].includes((x.status||'').toLowerCase()));
+ const paymentKobo=paymentRecords===null?null:paymentRecords.reduce((sum,x)=>sum+Number(x.amount_kobo||0),0);
  const {data:recent}=await db.from('properties').select('id,title,status,property_type,created_at').order('created_at',{ascending:false}).limit(8);
  const {data:latestApplications}=await db.from('applications').select('id,kind,status,created_at').order('created_at',{ascending:false}).limit(8);
  const {data:recentTickets}=await db.from('support_tickets').select('id,subject,priority,status,updated_at').order('updated_at',{ascending:false}).limit(6);
@@ -55,9 +66,23 @@ export default async function Admin(){
   <CommandSideNavigation links={links} isOwner={isOwner}/>
   <div className="command-main"><header className="command-top"><div><strong>Global Command Center</strong><small>{isOwner?'Verified Owner · Full Enterprise Control':'Manage · Monitor · Automate · Grow'}</small></div><span>Landshop Nigeria</span><div><Link href="/staff">Staff Dashboard</Link> · {user.email||'Authenticated employee'}</div></header>
    <main className="command-content">
-    <section className="command-banner"><div><span>{isOwner?'Owner access · All Command Center modules':'Welcome to the'}</span><h1>Landshop Global Command Center</h1><p>Complete control. Greater visibility. Accelerated growth.</p></div><blockquote className="command-quote">Turning documented property decisions into opportunity across Africa.</blockquote></section>
-    <p className="command-micro">These are live access-controlled database records. No illustrative sales, property or revenue figures are shown.</p>
-    <div className="command-stats">{statList.map(([title,value,icon])=><article key={title as string}><div className="command-icon">{icon}</div><small>{title}</small><h2>{value===null?'—':String(value)}</h2><p>{value===null?'Restricted or not available':'Live database count'}</p></article>)}</div>
+    <CommandOverview
+     metrics={[
+      {label:'Total Staff',value:staff,icon:'♙',url:'/admin/staff'},
+      {label:'Customers',value:customerCount,icon:'♧',url:'/admin/customer-activity'},
+      {label:'Properties',value:properties,icon:'▦',url:'/admin/properties'},
+      {label:'Applications',value:apps,icon:'▤',url:'/admin/applications'},
+      {label:'Support Cases',value:tickets,icon:'☏',url:'/admin/support'},
+      {label:'Attendance Records',value:await count(db,'attendance_events'),icon:'◷',url:'/admin/staff'}
+     ]}
+     tasks={taskCount} reports={submissionsRes.error?null:submissionsRes.count}
+     drafts={draftRes.error?null:draftRes.count}
+     pendingKyc={reviewRes.error?null:reviewRes.count}
+     scores={(scoreRes.error?[]:(scoreRes.data||[]).filter(x=>x.reviewed_at)).map(x=>({score:x.score,date:x.reviewed_at!}))}
+     recentProperties={(recent||[]).map(x=>({id:x.id,title:x.title,status:x.status,created_at:x.created_at}))}
+     verifiedPayments={paymentRecords?.length??null} verifiedPaymentKobo={paymentKobo}
+    />
+    <h2 className="ls26-operational-detail-title">Operational Management Modules</h2>
     <div className="command-panels">
      <section className="command-panel"><div className="panel-top"><h2>Property inventory</h2><Link href="/admin/properties">View all →</Link></div>
       <div className="command-table"><table><thead><tr><th>Property</th><th>Type</th><th>Status</th></tr></thead><tbody>{(recent||[]).map(x=><tr key={x.id}><td><Link href={'/admin/properties/'+x.id}>{x.title}</Link></td><td>{x.property_type}</td><td>{x.status}</td></tr>)}</tbody></table>{!recent?.length&&<p className="empty-note">No verified property records available yet.</p>}</div>
