@@ -1,19 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 
+const portalOrigin='https://portal.landshopnigeria.com';
+function callbackFailure(reason:string){
+ return NextResponse.redirect(new URL('/?error='+reason,portalOrigin),
+  {headers:{'Cache-Control':'private, no-store, max-age=0'}});
+}
+
 export async function GET(request:NextRequest) {
  const code=request.nextUrl.searchParams.get('code');
  const tokenHash=request.nextUrl.searchParams.get('token_hash');
  const type=request.nextUrl.searchParams.get('type');
  const staffFlow=request.nextUrl.searchParams.get('flow')==='staff';
  const origin='https://portal.landshopnigeria.com';
- if(!code && !tokenHash)return NextResponse.redirect(new URL('/?error=missing_code',origin));
+ if(!code && !tokenHash)return callbackFailure('missing_code');
  // Keep the response object that receives authentication cookies.
  const response=NextResponse.redirect('https://app.landshopnigeria.com/dashboard');
  response.headers.set('Cache-Control','no-store');
  const url=process.env.NEXT_PUBLIC_SUPABASE_URL;
  const key=process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
- if(!url||!key)return NextResponse.redirect(new URL('/?error=configuration',origin));
+ if(!url||!key)return callbackFailure('configuration');
  const supabase=createServerClient(url,key,{
    cookieOptions:{domain:'.landshopnigeria.com',path:'/',sameSite:'lax',secure:true},
    cookies:{
@@ -29,12 +35,13 @@ export async function GET(request:NextRequest) {
  else if(tokenHash && (type==='signup'||type==='recovery'||type==='invite'||type==='email_change'||type==='magiclink')){
    const result=await supabase.auth.verifyOtp({token_hash:tokenHash,type:type==='magiclink'?'magiclink':type});
    error=result.error;
- }else{return NextResponse.redirect(new URL('/?error=invalid_callback',origin))}
- if(error)return NextResponse.redirect(new URL('/?error=auth_callback',origin));
+ }else{return callbackFailure('invalid_callback')}
+ if(error)return callbackFailure('auth_callback');
  if(type==='recovery')response.headers.set('Location',origin+'/update-password');
  else{
   // Metadata controls UX routing only, never permissions.
-  const {data:{user}}=await supabase.auth.getUser();
+  const {data:{user},error:userError}=await supabase.auth.getUser();
+  if(userError||!user)return callbackFailure('session_unavailable');
   // A Google OAuth invite can arrive via the callback URL. Attribution is
   // one-time, server-validated and never grants rewards or privileges.
   const invite=(request.nextUrl.searchParams.get('ref')||'').trim().toUpperCase();
