@@ -43,6 +43,13 @@ try{
    // Validate the computed icon treatment, not only the CSS source.
    // Run once per route at a typical phone width to catch runtime regressions.
    if(width===375){
+    // Open the mobile menu to measure its real rendered V dropdown indicators.
+    // An ancestor with display:none would otherwise leave SVG intrinsic widths
+    // at 27px even though the live dropdown caret style is 17px.
+    try{
+     await page.locator('.ls-menu-button').click({timeout:5000});
+     await page.locator('.ls-primary-nav.ls-nav-mobile-open').waitFor({state:'visible',timeout:5000});
+    }catch(error){errors.push(path+' @375px: mobile navigation did not open '+String(error))}
     const iconAudit=await page.evaluate(()=>{
      const visible=element=>{
       const style=getComputedStyle(element);
