@@ -1,7 +1,7 @@
 /** Privacy-enhanced YouTube embed, lazy-loaded when the player approaches the viewport; no autoplay. */
 const options={
  prime:{id:'xRGG6aZq120',title:'Explore Landshop Prime Estates',external:'https://www.youtube.com/watch?v=xRGG6aZq120'},
- about:{id:'Q29UrjaqAJU',title:'About Landshop — Company Introduction',external:'https://www.youtube.com/watch?v=Q29UrjaqAJU'}
+ about:{id:'Q29UrjaqAJU',title:'About Landshop: Company Introduction',external:'https://www.youtube.com/watch?v=Q29UrjaqAJU'}
 } as const;
 export default function LandshopVideo({video}:{video:keyof typeof options}){
  const item=options[video];
