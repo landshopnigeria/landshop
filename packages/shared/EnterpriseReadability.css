@@ -26,3 +26,10 @@
  :root{--landshop-icon-size:22px}
  .command-shell .command-side nav a,.dc-shell .dc-side nav a{min-height:46px}
 }
+
+/* Minimum readable operational text without making compact labels dominate. */
+.ls25-shell,.dc-shell,.command-shell{font-size:15px}
+:is(.ls25-shell,.dc-shell,.command-shell) :is(p,li,label,dd,dt,td,th){line-height:1.55}
+:is(.ls25-shell,.dc-shell,.command-shell) :is(.ls25-card p,.ls25-stat small,.cd-panel p,.cd-summary-card small,.command-panel p,.command-micro,.command-readout span){font-size:clamp(13px,0.95rem,16px)}
+:is(.ls25-shell,.dc-shell,.command-shell) :is(.ls25-icon-button,.cd-action-icon,.command-icon) svg{width:25px;height:25px}
+:is(.ls25-shell,.dc-shell,.command-shell,.mk-layout) :is(a,button):focus-visible{outline:3px solid #f26b10;outline-offset:3px}
