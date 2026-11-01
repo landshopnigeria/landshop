@@ -95,7 +95,7 @@ export default function Contact() {
           <a className="lc-map-directions" href={directions} target="_blank" rel="noopener noreferrer"><SiteIcon name="compass" size={20}/> Get directions</a>
         </div>
       </div>
-      <div className="lc-map-landscape"><iframe src={mapEmbed} title="Google Maps — Landshop HQ, King's Deck, Chevron Drive, Lekki, Lagos" loading="lazy" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen/></div>
+      <div className="lc-map-landscape"><iframe src={mapEmbed} title="Google Maps: Landshop HQ, King's Deck, Chevron Drive, Lekki, Lagos" loading="lazy" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen/></div>
       <p className="lc-map-note">Google Maps directions open in a separate tab. Please confirm your appointment before visiting.</p>
     </section>
 

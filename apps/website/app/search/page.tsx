@@ -6,9 +6,9 @@ import '../properties/property-market.css';
 export const dynamic='force-dynamic';
 export const metadata={title:'Search Landshop | Properties, Products and Guides',description:'Search real Landshop public pages, approved properties and educational resources.',robots:{index:false,follow:true}};
 const pages=[
- {title:'Develop — Land and House Ownership',url:'/develop',description:'Discover documented property development and acquisition options.'},
- {title:'Incubate — Property Investment Enquiries',url:'/incubate',description:'Learn about documented property-linked investment opportunities.'},
- {title:'Grow — Homeownership & Mortgages',url:'/grow',description:'Explore mortgage guidance, Beta Mortgage and Mortgage Xtra.'},
+ {title:'Develop: Land and House Ownership',url:'/develop',description:'Discover documented property development and acquisition options.'},
+ {title:'Incubate: Property Investment Enquiries',url:'/incubate',description:'Learn about documented property-linked investment opportunities.'},
+ {title:'Grow: Homeownership & Mortgages',url:'/grow',description:'Explore mortgage guidance, Beta Mortgage and Mortgage Xtra.'},
  {title:'Property Marketplace',url:'/properties',description:'Search management-published properties by location and budget.'},
  {title:'About Landshop',url:'/about',description:'Who We Are, Vision, Mission and Values.'},
  {title:'Landshop Insights & Real Estate Guides',url:'/insights',description:'Property due diligence, inspections and mortgage guidance.'},

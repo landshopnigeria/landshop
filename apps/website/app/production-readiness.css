@@ -105,7 +105,7 @@ html{scroll-padding-top:96px;-webkit-text-size-adjust:100%;text-size-adjust:100%
 }
 
 
-/* Browser-diagnosed intrinsic sizing issues at 240–280px:
+/* Browser-diagnosed intrinsic sizing issues at 240 to 280px:
  * oversized subtitle min-content, About film grid, market article, editorial form input.
  */
 @media(max-width:310px){

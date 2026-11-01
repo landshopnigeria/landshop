@@ -33,7 +33,7 @@ export default function PropertyActions({propertyId,title,slug}:{propertyId:stri
   <button type="button" disabled={busy} onClick={toggle}><SiteIcon name="heart" size={20}/>{saved?'Saved':'Save property'}</button>
   <button type="button" onClick={share}><SiteIcon name="share" size={20}/>Share</button>
   <button type="button" onClick={copy}><SiteIcon name="copy" size={20}/>Copy link</button>
-  <a href={'https://wa.me/?text='+encodeURIComponent(title+' — '+url)} target="_blank" rel="noopener noreferrer"><SiteIcon name="external" size={20}/>WhatsApp</a>
+  <a href={'https://wa.me/?text='+encodeURIComponent(title+': '+url)} target="_blank" rel="noopener noreferrer"><SiteIcon name="external" size={20}/>WhatsApp</a>
   {message&&<span className="ld-action-feedback" role="status">{message}{message.startsWith('Sign in')&&<a href={home}>Open portal</a>}</span>}
  </div>;
 }

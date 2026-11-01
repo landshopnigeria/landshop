@@ -21,7 +21,7 @@ export async function generateMetadata({params}:{params:Promise<{id:string}>}){
  return {title:data?data.title+' | Landshop Properties':'Landshop Properties',
   description:data?'Explore the official published details, gallery and pricing for this Landshop '+data.property_type+'.':'Verified property opportunities at Landshop.',
   alternates:data?{canonical:'https://www.landshopnigeria.com'+propertyHref(data)}:undefined,
-  openGraph:data?{title:data.title,description:'Verified Landshop '+data.property_type+' listing — view official media, features and prices.',url:'https://www.landshopnigeria.com'+propertyHref(data),type:'website' as const}:undefined};
+  openGraph:data?{title:data.title,description:'Verified Landshop '+data.property_type+' listing. View official media, features and prices.',url:'https://www.landshopnigeria.com'+propertyHref(data),type:'website' as const}:undefined};
 }
 export default async function PropertyDetails({params}:{params:Promise<{id:string}>}){
  const {id:routeId}=await params;
@@ -44,7 +44,7 @@ export default async function PropertyDetails({params}:{params:Promise<{id:strin
  const gallery=photos.length?photos:fallback,plans=media.filter(x=>x.kind==='floorplan');
  const locationShort=[property.estates?.area,property.estates?.city,property.estates?.state].filter(Boolean).join(', ')||'Location available on enquiry';
  const address=profile.location_verified?propertyAddress(profile):'Exact property address is available once independently confirmed.';
- const q=new URLSearchParams({subject:'Landshop property enquiry — '+property.title+' / '+id.slice(0,8).toUpperCase(),body:'Hello Landshop,\n\nPlease confirm the availability, property details, inspection options and current pricing for '+property.title+'.\n\nProperty reference: '+id+'\n\nThank you.'});
+ const q=new URLSearchParams({subject:'Landshop property enquiry: '+property.title+' / '+id.slice(0,8).toUpperCase(),body:'Hello Landshop,\n\nPlease confirm the availability, property details, inspection options and current pricing for '+property.title+'.\n\nProperty reference: '+id+'\n\nThank you.'});
  const mail='mailto:care@landshopnigeria.com?'+q.toString();
  const spec:FeatureRow[]=[
   {label:'Property type',value:property.property_type[0].toUpperCase()+property.property_type.slice(1)},
@@ -66,7 +66,7 @@ export default async function PropertyDetails({params}:{params:Promise<{id:strin
  return <main className="mk-layout ld-page">
   <div className="ld-shell">
    <nav className="ld-breadcrumb" aria-label="Breadcrumb"><Link href="/">Home</Link><SiteIcon name="chevron" size={16}/><Link href="/properties">Properties</Link><SiteIcon name="chevron" size={16}/><span>{property.title}</span></nav>
-   <div className="ld-heading"><div><span className="ld-eyebrow">LANDSHOP VERIFIED INVENTORY <span className="ld-dot">·</span> {property.property_type.toUpperCase()}</span><h1>{property.title}</h1><p className="ld-location"><SiteIcon name="pin" size={20}/>{locationShort}<span>Reference: {id.slice(0,8).toUpperCase()}</span></p><PropertyActions propertyId={property.id} title={property.title} slug={property.slug||property.id}/></div><div className="ld-heading-price"><small>{property.price_is_starting_at?'From — approved minimum price':'Published price'}</small><strong>{propertyPrice(property)}</strong><span>Confirm current terms before payment</span></div></div>
+   <div className="ld-heading"><div><span className="ld-eyebrow">LANDSHOP VERIFIED INVENTORY <span className="ld-dot">·</span> {property.property_type.toUpperCase()}</span><h1>{property.title}</h1><p className="ld-location"><SiteIcon name="pin" size={20}/>{locationShort}<span>Reference: {id.slice(0,8).toUpperCase()}</span></p><PropertyActions propertyId={property.id} title={property.title} slug={property.slug||property.id}/></div><div className="ld-heading-price"><small>{property.price_is_starting_at?'Starting at the approved minimum price':'Published price'}</small><strong>{propertyPrice(property)}</strong><span>Confirm current terms before payment</span></div></div>
    <PropertyMediaCarousel title={property.title} images={gallery} videos={profile.videos}/>
    <nav className="ld-section-nav" aria-label="Property sections"><a href="#overview">Overview</a><a href="#features">Features</a><a href="#pricing">Pricing</a><a href="#inspection">Inspection</a><a href="#videos">Videos</a><a href="#layout">Layout</a><a href="#map">Map</a></nav>
    <div className="ld-main-grid">

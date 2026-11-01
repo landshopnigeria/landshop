@@ -3,7 +3,7 @@ export const dynamic='force-dynamic';
 const body=`# Landshop Nigeria
 
 Official website: https://www.landshopnigeria.com/
-Business: Landshop Limited — Nigerian real estate acquisition, estate development, mortgage guidance and shared-ownership enquiries.
+Business: Landshop Limited: Nigerian real estate acquisition, estate development, mortgage guidance and shared-ownership enquiries.
 Contact: https://www.landshopnigeria.com/contact
 Primary market: Nigeria
 

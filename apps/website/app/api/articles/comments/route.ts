@@ -42,7 +42,7 @@ export async function POST(request:NextRequest){
  const slug=typeof payload.slug==='string'?payload.slug.trim():'';
  const body=typeof payload.body==='string'?payload.body.trim():'';
  if(!findGuide(slug))return json({ok:false,message:'Article not found'},404);
- if(body.length<12||body.length>3000)return json({ok:false,message:'Your comment must be 12–3,000 characters'},400);
+ if(body.length<12||body.length>3000)return json({ok:false,message:'Your comment must be 12 to 3,000 characters'},400);
  try{
   const supabase=await authenticatedClient();
   const {data:{user},error:authError}=await supabase.auth.getUser();
