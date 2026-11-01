@@ -1,6 +1,12 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
+function privateRedirect(request:NextRequest,path:string){
+ const redirect=NextResponse.redirect(new URL(path,request.url));
+ redirect.headers.set('Cache-Control','private, no-store, max-age=0');
+ return redirect;
+}
+
 export async function middleware(request: NextRequest) {
  let response = NextResponse.next({request});
  const url=process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -21,9 +27,9 @@ export async function middleware(request: NextRequest) {
  });
  const {data:{user},error}=await supabase.auth.getUser();
  if(request.nextUrl.pathname==='/admin'||request.nextUrl.pathname.startsWith('/admin/')){
-  if(error||!user)return NextResponse.redirect(new URL('/staff/sign-in',request.url));
+  if(error||!user)return privateRedirect(request,'/staff/sign-in');
   const {data:manager,error:accessError}=await supabase.rpc('landshop_is_management',{p_user:user.id});
-  if(accessError||manager!==true)return NextResponse.redirect(new URL('/staff',request.url));
+  if(accessError||manager!==true)return privateRedirect(request,'/staff');
   response.headers.set('Cache-Control','private, no-store');
  }
  return response;
