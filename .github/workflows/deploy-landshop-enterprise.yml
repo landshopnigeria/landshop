@@ -8,12 +8,12 @@ permissions:
   contents: read
   actions: read
   statuses: write
-concurrency:
-  group: landshop-enterprise-release
-  cancel-in-progress: false
 jobs:
   build_and_release:
-    if: (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') || (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main')
+    if: (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') || (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main' && github.event.workflow_run.event != 'pull_request')
+    concurrency:
+      group: landshop-enterprise-release
+      cancel-in-progress: false
     runs-on: ubuntu-latest
     environment: landshop-production
     timeout-minutes: 40
