@@ -3,7 +3,7 @@
 .ld-shell{max-width:1510px;padding:26px clamp(17px,4.4vw,70px) 75px;margin:auto}
 .ld-breadcrumb{display:flex;align-items:center;gap:8px;flex-wrap:wrap;color:#6f8378;font-size:12px;margin:11px 0 30px}
 .ld-breadcrumb a{color:#08775e}.ld-breadcrumb .ls-icon{transform:rotate(-90deg);color:#96a99e}
-.ld-heading{display:flex;justify-content:space-between;align-items:end;gap:32px;margin-bottom:24px}
+.ld-heading{display:flex;justify-content:space-between;align-items:flex-end;gap:32px;margin-bottom:24px}
 .ld-eyebrow,.ld-overline{font-size:11px;letter-spacing:.15em;font-weight:850;color:#188a6c}
 .ld-dot{color:var(--ld-orange);padding:0 5px}
 .ld-heading h1{font-size:clamp(34px,4vw,59px);line-height:1.08;letter-spacing:-.045em;margin:12px 0 14px;font-weight:690}
@@ -30,7 +30,7 @@
 .ld-section-nav{display:flex;gap:25px;overflow:auto;white-space:nowrap;border-bottom:1px solid var(--ld-border);padding:23px 0;margin:8px 0 26px}
 .ld-section-nav a{font-size:13px;font-weight:750;color:#45675a;min-height:25px}
 .ld-section-nav a:hover{color:#08775e}
-.ld-main-grid{display:grid;grid-template-columns:minmax(0,1fr) 328px;gap:27px;align-items:start}
+.ld-main-grid{display:grid;grid-template-columns:minmax(0,1fr) 328px;gap:27px;align-items:flex-start}
 .ld-main-content{min-width:0;display:grid;gap:22px}
 .ld-panel,.ld-sidebar,.ld-bottom-section{border:1px solid var(--ld-border);border-radius:19px;padding:clamp(22px,2.6vw,34px);background:#fff;box-shadow:0 10px 30px #0c503307}
 .ld-panel,.ld-bottom-section{scroll-margin-top:140px}
@@ -78,8 +78,8 @@
 .ld-footer-wrap{max-width:1440px;margin:0 auto}.ld-footer-wrap .mk-footer{margin:0;padding:45px 5% 25px}
 @keyframes ld-appear{from{opacity:.5}to{opacity:1}}
 @media(max-width:1100px){.ld-main-grid{grid-template-columns:minmax(0,1fr) 295px;gap:17px}.ld-sidebars{top:120px}.ld-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:840px){.ld-main-grid{grid-template-columns:1fr}.ld-sidebars{position:static;grid-template-columns:repeat(2,minmax(0,1fr))}.ld-sidebar-primary{grid-row:span 2}.ld-heading{align-items:start}}
-@media(max-width:610px){.ld-shell{padding:20px 14px 45px}.ld-breadcrumb{margin-bottom:22px}.ld-heading{display:block}.ld-heading-price{margin-top:17px;text-align:left;padding:15px}.ld-gallery-stage{height:340px;min-height:260px}.ld-gallery-stage>button{width:40px;height:40px}.ld-gallery-prev{left:8px}.ld-gallery-next{right:8px}.ld-gallery-thumbs button{width:76px;height:65px;flex-basis:76px}.ld-section-nav{gap:18px}.ld-sidebars,.ld-video-grid,.ld-floorplans{grid-template-columns:1fr}.ld-stats{grid-template-columns:1fr 1fr}.ld-panel,.ld-bottom-section{padding:21px}.ld-address{align-items:start;flex-wrap:wrap}.ld-address a{margin-left:35px}.ld-map-iframe{height:330px}.ld-gallery-expanded{inset:5vh 2vw}}
+@media(max-width:840px){.ld-main-grid{grid-template-columns:1fr}.ld-sidebars{position:static;grid-template-columns:repeat(2,minmax(0,1fr))}.ld-sidebar-primary{grid-row:span 2}.ld-heading{align-items:flex-start}}
+@media(max-width:610px){.ld-shell{padding:20px 14px 45px}.ld-breadcrumb{margin-bottom:22px}.ld-heading{display:block}.ld-heading-price{margin-top:17px;text-align:left;padding:15px}.ld-gallery-stage{height:340px;min-height:260px}.ld-gallery-stage>button{width:40px;height:40px}.ld-gallery-prev{left:8px}.ld-gallery-next{right:8px}.ld-gallery-thumbs button{width:76px;height:65px;flex-basis:76px}.ld-section-nav{gap:18px}.ld-sidebars,.ld-video-grid,.ld-floorplans{grid-template-columns:1fr}.ld-stats{grid-template-columns:1fr 1fr}.ld-panel,.ld-bottom-section{padding:21px}.ld-address{align-items:flex-start;flex-wrap:wrap}.ld-address a{margin-left:35px}.ld-map-iframe{height:330px}.ld-gallery-expanded{inset:5vh 2vw}}
 @media(prefers-reduced-motion:reduce){.ld-gallery-image{animation:none!important}}
 
 /* Persisted property-specific inspection booking. */
