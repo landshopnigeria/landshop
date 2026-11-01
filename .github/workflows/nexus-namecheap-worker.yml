@@ -9,6 +9,7 @@ on:
       - 'services/document-worker/nexus_namecheap_once.sh'
 permissions:
   contents: read
+  statuses: write
 jobs:
   namecheap-nexus:
     if: github.ref == 'refs/heads/main'
@@ -88,3 +89,32 @@ jobs:
           rm -f "$root/cron.next"
           echo 'NEXUS_SAFE_PREVIEW_SCHEDULE_INSTALLED'
           REMOTE
+      - name: Report exact-commit NEXUS activation status
+        if: ${{ always() }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ACTIVATION_RESULT: ${{ job.status }}
+          COMMIT_SHA: ${{ github.sha }}
+        run: |
+          python3 - <<'PY'
+          import json, os, urllib.request
+          passed = os.environ['ACTIVATION_RESULT'] == 'success'
+          body = {
+              'state': 'success' if passed else 'failure',
+              'context': 'landshop/nexus-worker',
+              'description': ('Namecheap worker activation or existing process verified'
+                              if passed else 'Namecheap NEXUS worker activation not verified'),
+              'target_url': f"https://github.com/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{os.environ['GITHUB_RUN_ID']}"
+          }
+          req = urllib.request.Request(
+              f"https://api.github.com/repos/{os.environ['GITHUB_REPOSITORY']}/statuses/{os.environ['COMMIT_SHA']}",
+              data=json.dumps(body).encode(),
+              headers={'Authorization': 'Bearer ' + os.environ['GH_TOKEN'],
+                       'Accept':'application/vnd.github+json','Content-Type':'application/json'},
+              method='POST'
+          )
+          with urllib.request.urlopen(req, timeout=20) as response:
+              if response.status != 201:
+                  raise RuntimeError('NEXUS activation status could not be recorded')
+          print('NEXUS activation status published: ' + body['state'])
+          PY
