@@ -89,7 +89,7 @@
 .lc-v24-detail{
   display:grid;
   grid-template-columns:46px minmax(0,1fr);
-  align-items:start;
+  align-items:flex-start;
   gap:18px;
   border-top:1px solid var(--lc-border);
   padding:19px 0;
@@ -284,7 +284,7 @@
 .lc-v24 .lc-map-intro{
   display:flex;
   justify-content:space-between;
-  align-items:end;
+  align-items:flex-end;
   gap:25px;
   flex-wrap:wrap;
   margin-bottom:22px;
