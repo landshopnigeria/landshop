@@ -18,7 +18,7 @@ jobs:
     environment: landshop-production
     timeout-minutes: 40
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       - name: Skip obsolete release commits before building
@@ -61,9 +61,10 @@ jobs:
             exit 1
           fi
           [[ "$PUBLIC_URL" == https://iwkfagzkogzidrbbezds.supabase.co ]] || { echo '::error::Incorrect Landshop Supabase project'; exit 1; }
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: '22'
+          package-manager-cache: false
       - name: Confirm V4 original assets committed
         run: |
           set -euo pipefail
