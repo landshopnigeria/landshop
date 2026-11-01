@@ -4,6 +4,7 @@ import Link from 'next/link';
 import {createBrowserClient} from '@supabase/ssr';
 import StaffWorkActions from './StaffWorkActions';
 import StaffReportHistory from './StaffReportHistory';
+import StaffFaceCapture from './StaffFaceCapture';
 import './basic-staff-dashboard.css';
 type Task={id:string;title:string;status:string;due_at:string;details:string|null};
 type Profile={username:string;kyc_state:string;staff_number:string|null;employment_state:string};
@@ -11,6 +12,7 @@ export default function BasicStaffWorkspace({profile,tasks,email,userId}:{profil
  const [notice,setNotice]=useState(''),[busy,setBusy]=useState(false);
  const [section,setSection]=useState<'overview'|'kyc'|'tasks'|'reports'|'attendance'>('overview');
  const [sidebarOpen,setSidebarOpen]=useState(false);
+ const [kycState,setKycState]=useState(profile.kyc_state);
  const menu=[['overview','Overview'],['kyc','My Profile & KYC'],['tasks','Tasks'],['reports','Work Reports'],['attendance','Attendance']] as const;
  const navigate=(next:typeof section)=>{setSection(next);setSidebarOpen(false)};
  function client(){
@@ -30,7 +32,8 @@ export default function BasicStaffWorkspace({profile,tasks,email,userId}:{profil
    if(uploadError)throw uploadError;
    const {error}=await db.rpc('landshop_staff_submit_photo',{p_path:path});
    if(error)throw error;
-   setNotice('Portrait submitted securely. Management will verify identity separately. Your basic work access remains active.');
+   setKycState('submitted');
+   setNotice('Portrait securely submitted. Your staff account remains active. Identity approval is pending a genuine verification check.');
   }catch(e){setNotice(e instanceof Error?e.message:'Unable to upload portrait')}finally{setBusy(false)}
  }
  async function signOut(){
@@ -38,13 +41,13 @@ export default function BasicStaffWorkspace({profile,tasks,email,userId}:{profil
  }
  return <div className="ls-basic-shell">
   <aside className={'ls-basic-side '+(sidebarOpen?'is-open':'')} aria-label="Staff dashboard sections">
-   <div className="ls-basic-brand"><img src="/media/logo.webp" alt="Landshop" /><strong>People & Management</strong><button type="button" aria-label="Close navigation" onClick={()=>setSidebarOpen(false)} className="ls-basic-close">×</button></div>
+   <div className="ls-basic-brand"><img src="/media/logo-transparent.png" onError={e=>{e.currentTarget.src="/media/logo.webp"}} alt="Landshop" /><button type="button" aria-label="Close navigation" onClick={()=>setSidebarOpen(false)} className="ls-basic-close">×</button></div>
    <nav>{menu.map(([key,title])=><button type="button" key={key} className={section===key?'active':''} aria-current={section===key?'page':undefined} onClick={()=>navigate(key)}><span className="ls-basic-marker" aria-hidden="true">{key==='overview'?'⌂':key==='kyc'?'♙':key==='tasks'?'☑':key==='reports'?'▤':'◷'}</span>{title}<span aria-hidden="true" className="ls-basic-chevron">›</span></button>)}</nav>
    <p className="ls-basic-side-note">Your personal dashboard is available after email verification. Sensitive operations require their own approvals.</p>
   </aside>
   {sidebarOpen&&<button type="button" className="ls-basic-backdrop" aria-label="Close navigation" onClick={()=>setSidebarOpen(false)}/>}
   <div className="ls-basic-main">
-   <header className="ls-basic-top"><button className="ls-basic-menu" type="button" aria-label="Open dashboard navigation" aria-expanded={sidebarOpen} onClick={()=>setSidebarOpen(!sidebarOpen)}>☰</button><div><small>LANDSHOP PEOPLE & MANAGEMENT</small><h1>My Staff Dashboard</h1></div><button className="ls-basic-logout" type="button" disabled={busy} onClick={signOut}>Log Out</button></header>
+   <header className="ls-basic-top"><button className="ls-basic-menu" type="button" aria-label="Open dashboard navigation" aria-expanded={sidebarOpen} onClick={()=>setSidebarOpen(!sidebarOpen)}>☰</button><div><small>LANDSHOP STAFF PORTAL</small><h1>My Staff Dashboard</h1></div><button className="ls-basic-logout" type="button" disabled={busy} onClick={signOut}>Log Out</button></header>
    <div className="ls-basic-content">
     <div className="ls-basic-section-heading"><div><small>MY WORKSPACE</small><h2>{menu.find(([key])=>key===section)?.[1]}</h2></div><span>Staff access · {profile.employment_state}</span></div>
     {notice&&<p role="status" aria-live="polite" className="ls-basic-message">{notice}</p>}
@@ -73,12 +76,12 @@ export default function BasicStaffWorkspace({profile,tasks,email,userId}:{profil
     </div>}
     {section==='overview'&&<div className="ls-basic-cards">
       <section className="ls-basic-card"><h3>Welcome, {profile.username}</h3><p>{email}</p><p>Start with your identity profile, then use the sidebar to manage assignments and reports. Only one workspace section stays open at a time.</p><div className="ls-basic-actions"><button onClick={()=>navigate('kyc')}>Complete My KYC <span aria-hidden="true">→</span></button><button onClick={()=>navigate('tasks')}>My Tasks <span aria-hidden="true">→</span></button></div></section>
-      <section className="ls-basic-card"><h3>Account status</h3><dl><dt>Email verification</dt><dd>Confirmed</dd><dt>Employment</dt><dd>{profile.employment_state}</dd><dt>Identity review</dt><dd>{profile.kyc_state.replaceAll('_',' ')}</dd><dt>Staff number</dt><dd>{profile.staff_number||'Pending issuance'}</dd></dl></section>
+      <section className="ls-basic-card"><h3>Account status</h3><dl><dt>Email verification</dt><dd>Confirmed</dd><dt>Employment</dt><dd>{profile.employment_state}</dd><dt>Identity review</dt><dd>{kycState.replaceAll('_',' ')}</dd><dt>Staff number</dt><dd>{profile.staff_number||'Pending issuance'}</dd></dl></section>
     </div>}
-    {section==='kyc'&&<section className="ls-basic-card"><h3>My Profile & Identity Verification</h3><p>Upload your identity portrait securely from your dashboard. Identity approval is completed by authorized reviewers, not automatically by uploading a photograph.</p><div className="ls-basic-cards"><div><strong>{profile.username}</strong><p>{email}</p><p>Staff ID: {profile.staff_number||'Pending'}</p></div><div><label className="ls-basic-file">Identity portrait <input type="file" accept="image/jpeg,image/png,image/webp" disabled={busy} onChange={e=>void photo(e.target.files?.[0]||null)}/></label><p>KYC status: <strong>{profile.kyc_state.replaceAll('_',' ')}</strong></p></div></div></section>}
+    {section==='kyc'&&<section className="ls-basic-card"><h3>My Profile & Identity Verification</h3><p>Submit your staff portrait from an existing photo, directly from your camera, or through a guided live camera capture. Your basic account remains active while identity review is pending.</p><div className="ls-basic-cards"><div><strong>{profile.username}</strong><p>{email}</p><p>Staff ID: {profile.staff_number||'Pending'}</p></div><div><p>KYC status: <strong>{kycState.replaceAll('_',' ')}</strong></p><p>Staff access: <strong>{profile.employment_state}</strong></p></div></div><StaffFaceCapture busy={busy} status={kycState} onSubmit={photo}/></section>}
     {section==='tasks'&&<StaffWorkActions active initialTasks={tasks}/>}
     {section==='reports'&&<><StaffWorkActions active initialTasks={tasks}/><StaffReportHistory userId={userId}/></>}
-    {section==='attendance'&&<section className="ls-basic-card"><h3>Staff Attendance</h3><p>Your personal dashboard is active, but GPS-based clock-in and clock-out require verified employee identity and authorized attendance access.</p><p><strong>Identity review:</strong> {profile.kyc_state.replaceAll('_',' ')}</p><button type="button" onClick={()=>navigate('kyc')}>View verification requirements <span aria-hidden="true">→</span></button><p>Once your identity is approved, attendance, history and performance controls become available in your full staff workspace.</p></section>}
+    {section==='attendance'&&<section className="ls-basic-card"><h3>Staff Attendance</h3><p>Your personal dashboard is active, but GPS-based clock-in and clock-out require verified employee identity and authorized attendance access.</p><p><strong>Identity review:</strong> {kycState.replaceAll('_',' ')}</p><button type="button" onClick={()=>navigate('kyc')}>View verification requirements <span aria-hidden="true">→</span></button><p>Once your identity is approved, attendance, history and performance controls become available in your full staff workspace.</p></section>}
     <footer className="ls-basic-footer"><Link href="https://www.landshopnigeria.com">Landshop website <span aria-hidden="true">↗</span></Link><span>© {new Date().getFullYear()} Landshop</span></footer>
    </div>
   </div>
