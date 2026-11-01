@@ -132,7 +132,7 @@ try{
   // leaving it resumes timer-based advancement without clicking controls.
   await motionPage.goto(root+'/',{waitUntil:'domcontentloaded',timeout:30000});
   await motionPage.waitForSelector('.ls33-review-card blockquote');
-  await motionPage.hover(' .ls33-review-card');
+  await motionPage.hover('.ls33-review-card');
   await motionPage.waitForTimeout(650);
   const quoteBefore=await motionPage.locator('.ls33-review-card blockquote').textContent();
   await motionPage.waitForTimeout(7600);
