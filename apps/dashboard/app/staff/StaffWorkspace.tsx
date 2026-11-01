@@ -1,7 +1,7 @@
 'use client';
 import BrandedSelect from '../../components/BrandedSelect';
 
-import {useEffect,useState,type FormEvent} from 'react';
+import {useEffect,useState,type FormEvent,type ReactNode} from 'react';
 import Link from 'next/link';
 import StaffAuthShell from './StaffAuthShell';
 import './staff-dashboard.css';
@@ -17,8 +17,10 @@ function browser(){
  if(!u||!k)throw Error('Secure employee database unavailable');
  return createBrowserClient(u,k,{cookieOptions:{domain:'.landshopnigeria.com',path:'/',sameSite:'lax',secure:true}});
 }
-export default function StaffWorkspace({userId,initialProfile,initialTasks,role,initialVerified,selfServiceAccess,ownerAccess,metadata,userEmail,workPanel,reportPanel}:{workPanel?:React.ReactNode;reportPanel?:React.ReactNode;userId:string;initialProfile:Profile|null;initialTasks:Task[];role:string|null;initialVerified:boolean;selfServiceAccess:boolean;ownerAccess:boolean;metadata:Record<string,unknown>;userEmail:string}){
+export default function StaffWorkspace({userId,initialProfile,initialTasks,role,initialVerified,selfServiceAccess,ownerAccess,metadata,userEmail,workPanel,reportPanel}:{workPanel?:ReactNode;reportPanel?:ReactNode;userId:string;initialProfile:Profile|null;initialTasks:Task[];role:string|null;initialVerified:boolean;selfServiceAccess:boolean;ownerAccess:boolean;metadata:Record<string,unknown>;userEmail:string}){
  const [profile,setProfile]=useState(initialProfile),[tasks,setTasks]=useState(initialTasks);
+ const [now,setNow]=useState<number>(()=>Date.now());
+ useEffect(()=>{const timer=window.setInterval(()=>setNow(Date.now()),60000);return()=>window.clearInterval(timer)},[]);
  const [approvedRole,setApprovedRole]=useState<string|null>(role);
  const [verifiedAccess,setVerifiedAccess]=useState(initialVerified);
  const [ownerActive,setOwnerActive]=useState(ownerAccess);
@@ -143,6 +145,17 @@ export default function StaffWorkspace({userId,initialProfile,initialTasks,role,
  const kycLabel=(profile?.kyc_state||'not_started').replaceAll('_',' ');
  const todayAttendance=attendance.filter(a=>new Date(a.occurred_at).toLocaleDateString('en-CA',{timeZone:'Africa/Lagos'})===new Date().toLocaleDateString('en-CA',{timeZone:'Africa/Lagos'}));
  const lastClock=attendance[0];
+ const monthlyClockDays=new Set(attendance.filter(a=>a.action==='clock_in'&&new Date(a.occurred_at).toLocaleString('en-CA',{timeZone:'Africa/Lagos',year:'numeric',month:'2-digit'})===new Date(now).toLocaleString('en-CA',{timeZone:'Africa/Lagos',year:'numeric',month:'2-digit'})).map(a=>new Date(a.occurred_at).toLocaleDateString('en-CA',{timeZone:'Africa/Lagos'}))).size;
+ const todaySorted=[...todayAttendance].sort((a,b)=>new Date(a.occurred_at).getTime()-new Date(b.occurred_at).getTime());
+ let sessionStart:number|null=null,dutyMs=0;
+ for(const event of todaySorted){
+  const stamp=new Date(event.occurred_at).getTime();
+  if(event.action==='clock_in'&&sessionStart===null)sessionStart=stamp;
+  if(event.action==='clock_out'&&sessionStart!==null){dutyMs+=Math.max(0,stamp-sessionStart);sessionStart=null}
+ }
+ if(sessionStart!==null)dutyMs+=Math.max(0,now-sessionStart);
+ const dutyHours=Math.floor(dutyMs/3600000)+'h '+String(Math.floor((dutyMs%3600000)/60000)).padStart(2,'0')+'m';
+
 
  const nav=[['dashboard','Dashboard','home'],['overview','Overview','bar-chart'],['profile','My Profile','user'],['attendance','Attendance','clock'],['tasks','Tasks','clipboard'],['daily','Reports','file'],['performance','Performance','trending']] as const;
  const circle=(label:string,key:string,color:string)=>{
@@ -177,6 +190,7 @@ export default function StaffWorkspace({userId,initialProfile,initialTasks,role,
   <div className="ls25-info"><StaffGlyph name="info" size={21}/><span>Your GPS is requested only when you clock in or out. The location, device accuracy and server time are saved in your private attendance history.</span></div>
   <div className="ls25-attendance-actions"><button type="button" disabled={busy||!verified} className="ls25-action" onClick={()=>clock('clock_in')}><StaffGlyph name="play" size={19}/> Clock In</button>
   <button type="button" disabled={busy||!verified} className="ls25-action ls25-out" onClick={()=>clock('clock_out')}><StaffGlyph name="stop" size={17}/> Clock Out</button></div>
+  <div className="ls26-attendance-summary" aria-live="polite"><div><small>Today's Hours</small><strong>{dutyHours}</strong><span>Recorded duty events</span></div><div><small>Present this month</small><strong>{monthlyClockDays}</strong><span>Days with clock-in</span></div><div><small>Duty status</small><strong>{lastClock?.action==='clock_in'?'On duty':'Off duty'}</strong><span>Server-recorded activity</span></div></div>
   <h3 className="ls25-section-subhead"><StaffGlyph name="calendar" accent size={21}/> Today's Attendance</h3>
   <div className="ls25-attendance-today"><span className="ls25-clock-mark"><StaffGlyph name="clock" size={25}/></span><div><strong>{lastClock?.action==='clock_in'?'Clocked in':lastClock?.action==='clock_out'?'Clocked out':'Not clocked in yet'}</strong><p>{todayAttendance.length?todayAttendance.length+' attendance events recorded today':'Your attendance for today will appear here.'}</p></div></div>
   {activeTab==='attendance'&&<div className="ls25-history">
@@ -185,7 +199,7 @@ export default function StaffWorkspace({userId,initialProfile,initialTasks,role,
  </section>;
  const performanceCard=<section id="staff-performance" className="ls25-card ls25-performance">
   <div className="ls25-card-head"><h2><StaffGlyph name="trending" accent/> My Performance</h2><BrandedSelect aria-label="Reporting period" value={period} onChange={e=>setPeriod(e.target.value)}><option value="day">Today</option><option value="week">This week</option><option value="month">This month</option><option value="year">This year</option></BrandedSelect></div>
-  <div className="ls25-rings">{circle('Daily Score','day','#12a877')}{circle('Weekly Score','week','#f26b10')}{circle('Monthly Score','month','#287eea')}{circle('Annual Score','year','#7b43d4')}</div>
+  <div className="ls25-rings">{circle('Daily Score','day','#12a877')}{circle('Weekly Score','week','#12a877')}{circle('Monthly Score','month','#12a877')}{circle('Yearly Score','year','#f26b10')}</div>
   <p className="ls25-disclaimer">Scores are calculated from actual reviewed tasks. No tasks scored means no score—not zero. Low scores prompt coaching review, never automatic salary deductions.</p>
   {activeTab==='performance'&&<div className="ls25-performance-details"><strong>{(report?.recommendation||'insufficient_reviewed_tasks').replaceAll('_',' ')}</strong><div>Assigned: {report?.assigned_tasks||0} · Reviewed: {report?.reviewed_tasks||0}</div><div>Planned: {report?.planned_minutes||0} min · Tracked: {report?.tracked_work_minutes||0} min</div></div>}
  </section>;
