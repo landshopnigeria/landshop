@@ -1,3 +1,4 @@
+import ApprovedArrow from '../../components/ApprovedArrow';
 
 import ContentShell from '../../components/ContentShell';
 import Link from 'next/link';
@@ -9,5 +10,5 @@ export default function Thrift(){return <ContentShell eyebrow="Thrift & Cooperat
  <div className="content-tile"><span className="number">02</span><h3>Contributions and protection</h3><p>Confirm the contribution schedule, fees, custody of funds, documentation, and the written rules for withdrawals and refunds.</p></div>
  <div className="content-tile"><span className="number">03</span><h3>Property and allocation</h3><p>Check the specific estate or product, title documentation, eligibility for allocation and the obligations of all parties.</p></div>
  </div></section>
- <aside className="content-band"><h2>Request the latest approved programme details.</h2><p>Do not make contributions based on a website description alone. Landshop will need to provide verified current terms and a suitable customer application pathway.</p><Link className="content-cta" href="/contact">Ask about cooperatives →</Link></aside>
+ <aside className="content-band"><h2>Request the latest approved programme details.</h2><p>Do not make contributions based on a website description alone. Landshop will need to provide verified current terms and a suitable customer application pathway.</p><Link className="content-cta" href="/contact">Ask about cooperatives <ApprovedArrow /></Link></aside>
  </ContentShell>}

@@ -3,6 +3,7 @@ import {useEffect,useRef,useState} from 'react';
 import type {PublicMedia} from '../lib/property-showcase';
 import type {SupportedVideo} from '../lib/property-video';
 import SiteIcon,{IconChip} from './SiteIcon';
+import ApprovedArrow from './ApprovedArrow';
 import {useCarouselPlayback} from './useCarouselPlayback';
 type Props={title:string;images:PublicMedia[];videos:SupportedVideo[]};
 export default function PropertyMediaCarousel({title,images,videos}:Props){
@@ -28,7 +29,7 @@ export default function PropertyMediaCarousel({title,images,videos}:Props){
   <div className="ld-gallery-stage" tabIndex={0} aria-label="Property media, use left and right arrows to navigate" onKeyDown={e=>{if(e.key==="ArrowLeft"){e.preventDefault();move(-1)}if(e.key==="ArrowRight"){e.preventDefault();move(1)}if(e.key==="Escape")setExpanded(false)}} onTouchStart={e=>{touch.current=e.touches[0]?.clientX??null}} onTouchEnd={e=>{if(touch.current===null||!items.length)return;const delta=e.changedTouches[0].clientX-touch.current;if(Math.abs(delta)>55)move(delta<0?1:-1);touch.current=null}}>
    {current.type==='image'?<img key={current.src} src={current.src} alt={title+': '+current.title} className={"ld-gallery-image "+(zoom?"ld-gallery-zoom":"")} onClick={()=>setExpanded(true)} title="Click to enlarge" fetchPriority={active===0?'high':'auto'} decoding="async"/>:
     <iframe key={current.src} title={current.title} src={current.src} loading="lazy" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowFullScreen referrerPolicy="strict-origin-when-cross-origin"/>}
-   {items.length>1&&<><button type="button" className="ld-gallery-prev" aria-label="Previous media" onClick={()=>move(-1)}><SiteIcon name="chevron" size={25}/></button><button type="button" className="ld-gallery-next" aria-label="Next media" onClick={()=>move(1)}><SiteIcon name="chevron" size={25}/></button></>}
+   {items.length>1&&<><button type="button" className="ld-gallery-prev" aria-label="Previous media" onClick={()=>move(-1)}><ApprovedArrow direction="left"/></button><button type="button" className="ld-gallery-next" aria-label="Next media" onClick={()=>move(1)}><ApprovedArrow/></button></>}
    {current.type==="image"&&expanded&&<button type="button" className="ld-gallery-zoom-control" onClick={()=>setZoom(v=>!v)}>{zoom?"Zoom out":"Zoom in"}</button>}
    <div className="ld-gallery-counter">{String(active+1).padStart(2,'0')} / {String(items.length).padStart(2,'0')}</div>
    {current.type==='image'&&<button type="button" className="ld-gallery-full" onClick={()=>{setExpanded(v=>!v);setZoom(false)}} aria-label={expanded?'Exit enlarged gallery':'Enlarge gallery'}>{expanded?'Close':'Full screen'}</button>}

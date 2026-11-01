@@ -1,3 +1,4 @@
+import ApprovedArrow from './ApprovedArrow';
 
 import Link from 'next/link';
 import type {ReactNode} from 'react';
@@ -7,7 +8,7 @@ export default function ContentShell({eyebrow,title,intro,image,imageAlt,childre
   <section className="content-hero"><div className="content-hero-inner">
    <div><nav className="content-breadcrumb" aria-label="Breadcrumb"><Link href="/">Home</Link> / {eyebrow}</nav>
     <span className="content-kicker">{eyebrow}</span><h1>{title}</h1><p>{intro}</p>
-    <div className="content-actions"><Link className="content-cta" href="/applications">Explore Landshop Applications →</Link><Link className="content-link" href="/contact">Speak with our team</Link></div>
+    <div className="content-actions"><Link className="content-cta" href="/applications">Explore Landshop Applications <ApprovedArrow /></Link><Link className="content-link" href="/contact">Speak with our team</Link></div>
    </div>
    {image&&<img src={image} alt={imageAlt||"Editorial photograph illustrating this page; not a verified property listing"} loading="eager"/>}
   </div></section>

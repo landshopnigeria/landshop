@@ -1,6 +1,7 @@
 'use client';
 import {useRef,useState,type FormEvent} from 'react';
 import Link from 'next/link';
+import ApprovedArrow from './ApprovedArrow';
 import {useCarouselPlayback} from './useCarouselPlayback';
 
 export type FooterSlide={
@@ -30,7 +31,7 @@ export function NewsletterSignup(){
     <label className="ls24-sr-only" htmlFor="ls24-email">Email address</label>
     <input id="ls24-email" type="email" autoComplete="email" name="email" value={email} onChange={e=>setEmail(e.target.value)} maxLength={254} placeholder="Enter your email address" required/>
     <input value={trap} onChange={e=>setTrap(e.target.value)} name="website" type="text" tabIndex={-1} aria-hidden="true" className="ls24-honeypot" autoComplete="off"/>
-    <button type="submit" disabled={busy}>{busy?'Subscribing…':'Subscribe'} <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14m-6-6 6 6-6 6" strokeLinecap="round" strokeLinejoin="round"/></svg></button>
+    <button type="submit" disabled={busy}>{busy?'Subscribing…':'Subscribe'} <ApprovedArrow /></button>
    </form>
    {status&&<output role={error?'alert':'status'} aria-live="polite" className={'ls24-newsletter-result '+(error?'is-error':'')}>{status}</output>}
   </div>
@@ -44,7 +45,7 @@ export function FooterCarousel({slides}:{slides:FooterSlide[]}){
   count,delay:6500,disabled:videoPlaying,
   onAdvance:()=>setActive(i=>(i+1)%count)
  });
- if(!count)return <div className="ls24-carousel-empty"><Link href="/insights">Explore Landshop insights →</Link></div>;
+ if(!count)return <div className="ls24-carousel-empty"><Link href="/insights">Explore Landshop insights <ApprovedArrow /></Link></div>;
  const current=slides[active%count];
  const go=(n:number)=>{setVideoPlaying(false);setActive((n+count)%count)};
  return <div ref={carouselRef} className="ls24-carousel-shell" role="region" aria-roledescription="carousel" aria-label="Landshop testimonials and insights"
@@ -57,11 +58,11 @@ export function FooterCarousel({slides}:{slides:FooterSlide[]}){
   <div className="ls24-carousel-bottom">
    <p className={'ls24-carousel-headline '+(current.kind==='testimonial'?'is-quote':'')}>{current.kind==='testimonial'?'“'+current.heading+'”':current.heading}</p>
    <span className="ls24-carousel-byline">{current.byline}</span>
-   {current.href&&<Link className="ls24-carousel-link" href={current.href}>{current.kind==='article'?'Read article →':'View experience →'}</Link>}
+   {current.href&&<Link className="ls24-carousel-link" href={current.href}>{current.kind==='article'?'Read article':'View experience'} <ApprovedArrow /></Link>}
   </div>
   <div className="ls24-carousel-controls">
    <div className="ls24-carousel-dots" role="group" aria-label="Choose a slide">{slides.map((slide,i)=><button type="button" key={slide.id} className={active===i?'active':''} onClick={()=>go(i)} aria-current={active===i?'true':undefined} aria-label={'Show '+slide.type.toLowerCase()+' '+(i+1)}/>)}</div>
-   <div className="ls24-carousel-arrows"><button type="button" onClick={()=>go(active-1)} aria-label="Previous testimonial or article"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="m15 18-6-6 6-6"/></svg></button><button type="button" onClick={()=>go(active+1)} aria-label="Next testimonial or article"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="m9 18 6-6-6-6"/></svg></button></div>
+   <div className="ls24-carousel-arrows"><button type="button" onClick={()=>go(active-1)} aria-label="Previous testimonial or article"><ApprovedArrow direction="left" /></button><button type="button" onClick={()=>go(active+1)} aria-label="Next testimonial or article"><ApprovedArrow /></button></div>
   </div>
   {!playback.paused&&count>1&&<div className="ls24-carousel-progress" aria-hidden="true" key={active}/>}
  </div>;

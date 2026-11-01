@@ -1,4 +1,6 @@
 'use client';
+import ApprovedArrow from './ApprovedArrow';
+
 import {useState,type FormEvent} from 'react';
 import Link from 'next/link';
 export default function UnsubscribeForm({token}:{token:string}){
@@ -24,6 +26,6 @@ export default function UnsubscribeForm({token}:{token:string}){
   {!valid?<p role="alert" style={{marginTop:27,color:'#ae4237'}}>This unsubscribe link is invalid. Please use the link provided in your Landshop newsletter, or <Link href="/contact">contact us</Link>.</p>:null}
   {message&&<p role={done?'status':'alert'} style={{marginTop:20,color:done?'#137450':'#b42318'}}>{message}</p>}
   <p style={{marginTop:26,fontSize:13,color:'#678274'}}>For assistance, email <a href="mailto:care@landshopnigeria.com">care@landshopnigeria.com</a>.</p>
-  <Link href="/insights" style={{color:'#177a56',fontSize:13,fontWeight:700}}>Explore Landshop insights →</Link>
+  <Link href="/insights" style={{color:'#177a56',fontSize:13,fontWeight:700}}>Explore Landshop insights <ApprovedArrow /></Link>
  </section>;
 }
