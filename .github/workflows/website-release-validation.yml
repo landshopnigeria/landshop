@@ -1,0 +1,42 @@
+name: Website release validation
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/website/**'
+      - 'packages/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/website-release-validation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: website-release-validation-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-website:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      NEXT_TELEMETRY_DISABLED: '1'
+      CI: 'true'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install workspace dependencies
+        run: npm install --workspaces --include-workspace-root --no-audit --no-fund
+      - name: Typecheck website
+        run: npx tsc --noEmit -p apps/website/tsconfig.json
+      - name: Build website
+        run: npm run build --workspace @landshop/website
+      - name: Check production build artifact
+        run: test -f apps/website/.next/BUILD_ID && test -d apps/website/.next/standalone
