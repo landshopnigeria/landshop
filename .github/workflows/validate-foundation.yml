@@ -17,7 +17,8 @@ on:
   workflow_dispatch:
 concurrency:
   group: landshop-validation-${{ github.ref }}
-  cancel-in-progress: true
+  # Keep mainline release validation alive; PR runs may still supersede each other.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 permissions:
   contents: read
   statuses: write
@@ -110,6 +111,7 @@ jobs:
             # Verify source-aligned product/application pages render, not just the health route.
             if [ "$app" = "website" ]; then
               routes=(/ /develop /incubate /grow /applications /properties /search /about /contact /insights
+                /projects/blue-diamonds /properties/blue-diamonds
                 /company/team /thrift /services/property-acquisition /services/advisory
                 /services/mortgage /services/construction-credit /grow/beta-mortgage /grow/mortgage-xtra)
             elif [ "$app" = "portal" ]; then
