@@ -72,5 +72,5 @@ export async function POST(request:Request){
    if(updateError)return new Response(null,{status:503,headers});
   }
  }
- return new Response(null,{status:204,headers});
+ return new Response(null,{status:200,headers});
 }
