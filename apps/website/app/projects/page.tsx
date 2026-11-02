@@ -9,6 +9,7 @@ const projects:Project[]=[
  ...estatePortfolio.map(e=>({name:e.name,slug:e.slug,kind:'ESTATE PORTFOLIO',place:e.location,description:e.summary,photo:e.images[0].src,photoAlt:e.images[0].caption,photoNotice:'Estate archive / check current availability'})),
 ];
 const scenes=[
+ ['/media/maiyegun0.webp','Original historical Maiyegun Beach Estate archival photography; does not show current plot availability'],
  ['/owner/2026/garden-building-workers.webp','Construction work documented at Famous Gardens'],
  ['/owner/2026/estate-architecture.webp','Completed Nigerian residential buildings from the Landshop owner archive'],
  ['/owner/2026/famous-living.webp','Real photographed living room from the supplied property archive']

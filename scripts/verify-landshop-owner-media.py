@@ -71,6 +71,24 @@ for body in (project_card,detail):
   raise SystemExit("Merit Park photo must be labelled historical")
 if "nigeriapropertycentre.com/for-sale/land" not in detail:
  raise SystemExit("Green Island historical listing attribution missing")
-if "slug:'green-island'" not in project_card or "awaiting verification" not in project_card.lower():
- raise SystemExit("Green Island unverified imagery must remain unclaimed")
+# Owner has now supplied actual Green Island images. Ensure genuine archive photos are
+# distinguished from architectural concepts and the public site uses that source.
+portfolio=(site/"lib/estate-portfolio.ts").read_text()
+if "slug:'green-island'" not in portfolio or "slug:'blue-diamonds'" not in portfolio or "slug:'maiyegun-beach-estate'" not in portfolio:
+ raise SystemExit("One of the three owner-supplied estate portfolio records is missing")
+if "estatePortfolio.map(" not in project_card or "portfolioDetails" not in detail:
+ raise SystemExit("Owner estate records are not wired to project cards and details")
+if "'archive-photo'" not in portfolio or "'architectural-visual'" not in portfolio:
+ raise SystemExit("Real site photographs must remain distinguishable from conceptual renderings")
+for filename in set(re.findall(r"/estates/([a-z0-9-]+/[a-z0-9-]+\\.webp)",portfolio)):
+ candidate=site/"public/estates"/filename
+ if not candidate.is_file():
+  raise SystemExit(f"New estate portfolio photo missing: {candidate}")
+ if not 8000<=candidate.stat().st_size<=1500000:
+  raise SystemExit(f"Estate photo missing or not optimized: {candidate}")
+if "/estates/green-island/site-progress-1.webp" not in portfolio:
+ raise SystemExit("Historical Green Island site image is not preserved")
+if "Current availability" not in portfolio and "current availability" not in portfolio:
+ raise SystemExit("No truthful availability statement present")
+
 print(f"Owner photography verified: {len(photos)} WebP files, {len(slugs)} article mappings, 3 slides and 3 featured product cards")
