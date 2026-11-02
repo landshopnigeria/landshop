@@ -1,11 +1,10 @@
 import ApprovedArrow from '../../components/ApprovedArrow';
 import Link from 'next/link';
-import ContentShell from '../../components/ContentShell';
 import {editorialImages} from '../../lib/editorial-imagery';
 import LandshopAboutCollage from '../../components/LandshopAboutCollage';
 import LandshopProductCards from '../../components/LandshopProductCards';
 import LandshopVideo from '../../components/LandshopVideo';
-import {landshopAboutImages,landshopEditorialTeam} from '../../lib/landshop-brand-media';
+import {landshopEditorialTeam} from '../../lib/landshop-brand-media';
 export const metadata={
  title:'About Landshop | Purpose, Vision, People & Real Estate in Nigeria',
  description:'Discover Landshop, our Nigerian real estate story, five property products, mission and vision, genuine construction media and company introduction film.',
@@ -16,10 +15,9 @@ const milestones=[
  ['Property pathways','A clearer structure','Distinct acquisition, investment enquiry and mortgage guidance journeys evolved around customer needs.'],
  ['Today','Develop · Incubate · Grow','Three separate product experiences with guided application processes.']
 ];
-export default function About(){return <ContentShell eyebrow="WHO WE ARE" title="About Us." intro="Landshop is a co-investment real estate brand helping Nigerians make property ownership simpler, clearer and more accessible." image={landshopAboutImages[2].src} imageAlt={landshopAboutImages[2].alt}>
+export default function About(){return <main className="content-page ls-about-page"><div className="content-main">
  <div className="v22-root v22-interior">
- {/* The ContentShell hero is section 1; eight intentional sections follow. */}
- <section className="v22-section ls27-about-intro" id="who-we-are">
+  <section className="v22-section ls27-about-intro" id="who-we-are">
   <div className="v22-container v22-two">
    <div>
     <span className="v22-eyebrow ls26-faded-eyebrow">WHO WE ARE</span><h2>About <span className="ls26-heading-green">Us</span><span className="v22-accent">.</span></h2>
@@ -53,4 +51,4 @@ export default function About(){return <ContentShell eyebrow="WHO WE ARE" title=
  <section className="v22-section ls-about-recognition"><div className="v22-container v22-two"><div><span className="v22-eyebrow">RELATIONSHIPS & RECOGNITION</span><h2>Trust is earned through the work.</h2><p>The original Landshop Product Deck records partner relationships, professional association references and recognition awards. Current partner and certification claims should be checked against authoritative records before public promotion.</p><Link className="v22-btn" href="/partners">Explore our partners <ApprovedArrow /></Link></div><img className="v22-cover-photo" src={editorialImages.officeTower.src} alt={editorialImages.officeTower.alt} loading="lazy"/></div></section>
  <section className="v22-section v22-final"><div className="v22-container v22-two"><div><span className="v22-eyebrow">OUR COMMITMENT</span><h2>Your next property decision deserves the right information.</h2><p>Whether you are exploring ownership, financing or property investment enquiries, our goal is to guide you towards a clear and responsible next action.</p></div><div className="v22-action-panel"><h3>Start with the right pathway.</h3><p>Explore available properties, submit a guided application or speak with our team.</p><div className="v22-actions"><Link className="v22-btn" href="/properties">Explore properties <ApprovedArrow /></Link><Link className="v22-text-link" href="/contact">Contact Landshop <ApprovedArrow /></Link></div></div></div></section>
  </div>
- </ContentShell>}
+ </div></main>}
