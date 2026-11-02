@@ -21,7 +21,7 @@ export const estatePortfolio:PortfolioEstate[]=[
   access:'Iba-Oloja via the Lekki-Epe / Ibeju-Lekki road corridor',
   amenities:['Gated estate access (proposed)','Internal roads (planned)','Landscaping and green spaces (planned)','Recreation and community amenities (proposed)'],
   facts:[['Estate location','Iba-Oloja, Ibeju-Lekki'],['Plot sizes','300 m² / 600 m² historically'],['Developer','Landshop'],['Current availability','Confirm with Landshop'],['Title documentation','Independent verification required'],['Pricing','Current official quotation required']],
-  pricing:[['600 m² · 2024 advertised offer','₦8,000,000','Expired historical advertisement; not a current Landshop offer'],['600 m² · 2026 third-party listings','₦15,000,000-₦20,000,000','Indicative third-party asking prices; not confirmed Landshop inventory'],['Official Landshop selling price','On request','Obtain an authorized quotation and availability confirmation']],
+  pricing:[['600 m² · 2024 advertised offer','₦8,000,000','Expired historical advertisement; not a current Landshop offer'],['600 m² · Recent third-party listings','₦15,000,000-₦18,000,000','Indicative third-party asking prices; not confirmed Landshop inventory'],['Official Landshop selling price','On request','Obtain an authorized quotation and availability confirmation']],
   images:[
    {src:'/estates/green-island/site-progress-1.webp',caption:'Owner-supplied historical site view showing estate signage; current condition not established',kind:'archive-photo'},
    {src:'/estates/green-island/site-progress-2.webp',caption:'Owner-supplied aerial site archive; not a current land survey',kind:'archive-photo'},
@@ -30,7 +30,7 @@ export const estatePortfolio:PortfolioEstate[]=[
    {src:'/estates/green-island/community-render.webp',caption:'Architectural illustration of possible community facilities',kind:'architectural-visual'}
   ],
   highlights:['Located in the Ibeju-Lekki growth corridor','Landshop development history and historical plot options','Proposed green spaces, estate access and community facilities','Project archive includes real site documentation and clearly marked renderings'],
-  milestones:[['Historical project','Green Island entered the Landshop estate portfolio'],['2024 offer archive','Public advertisements referenced 600 m² plots at ₦8 million'],['2026 market references','Independent resale asking prices vary; no official Landshop price verified'],['Next verification','Request title, survey, progress update and an approved sales schedule']],
+  milestones:[['Historical project','Green Island entered the Landshop estate portfolio'],['2024 offer archive','Public advertisements referenced 600 m² plots at ₦8 million'],['2026 market references','Third-party resale asking prices vary; no official Landshop price verified'],['Next verification','Request title, survey, progress update and an approved sales schedule']],
   videos:[{url:'https://youtu.be/oObXJQPZG9o',title:'Green Island Estate  -  Owner-provided project video'}],
   disclaimer:'Pictures include dated site images and conceptual architectural renders. Planned features, title, allocation, exact location, selling price and current availability must be checked with Landshop and independent advisers before payment.'
  },

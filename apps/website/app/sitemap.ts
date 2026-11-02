@@ -5,7 +5,8 @@ import {landshopLocations} from '../lib/v22-locations';
 export const dynamic='force-dynamic';
 const base='https://www.landshopnigeria.com';
 const high=['','about','contact','properties','estates','projects','projects/famous-gardens','products','plans/develop','plans/incubate','plans/grow','plans/devpro','plans/estatepro','insights','locations'];
-const mid=['collections/prime','collections/luxury','projects/merit-park','projects/green-island','projects/maiyegun-beach-estate','services',
+const mid=['collections/prime','collections/luxury','projects/merit-park','projects/green-island','projects/maiyegun-beach-estate','projects/blue-diamonds',
+ 'properties/green-island','properties/maiyegun-beach-estate','properties/blue-diamonds','services',
  'services/property-acquisition','services/advisory','services/mortgage','services/construction-credit',
  'investment-calculator','mortgage-calculator','loan-calculator','mortgage-review','visit','get-ready','diaspora','learn','plotwise','webinars',
  'careers','careers/programs','company/team','partners','partner-with-us','refer-and-earn','testimonials','support',
