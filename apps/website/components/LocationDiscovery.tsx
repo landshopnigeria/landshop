@@ -62,7 +62,7 @@ export default function LocationDiscovery({initial,initialGoal='browse'}:Props){
      <label>Minimum price (₦)<input type="number" name="min" min="0" max="1000000000000" step="1" inputMode="numeric" defaultValue={initial.min||''} placeholder="Minimum budget"/></label>
      <label>Maximum price (₦)<input type="number" name="max" min="0" max="1000000000000" step="1" inputMode="numeric" defaultValue={initial.max||''} placeholder="Maximum budget"/></label>
     </div>
-    <button type="button" className="lsloc-advanced-toggle" aria-expanded={advanced} onClick={()=>setAdvanced(x=>!x)}>{advanced?'Hide advanced filters':'More property filters'} <span aria-hidden="true">{advanced?'−':'+'}</span></button>
+    <button type="button" className="lsloc-advanced-toggle" aria-expanded={advanced} onClick={()=>setAdvanced(x=>!x)}>{advanced?'Hide advanced filters':'More property filters'} <span aria-hidden="true">{advanced?'↑':'↓'}</span></button>
     <div className={'lsloc-advanced'+(advanced?' is-open':'')} hidden={!advanced}>
      <label>City<input name="city" defaultValue={initial.city} maxLength={60} placeholder="City or town"/></label>
      <label>Local government<input name="lga" defaultValue={initial.lga} maxLength={60} placeholder="LGA"/></label>
