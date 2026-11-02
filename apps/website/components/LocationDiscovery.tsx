@@ -42,8 +42,8 @@ export default function LocationDiscovery({initial,initialGoal='browse'}:Props){
   if(purpose!=='Buy')query.set('purpose',purpose);
   else query.delete('purpose');
   if(purpose==='Sell'){window.location.assign('https://portal.landshopnigeria.com');return;}
-  const selected=query.get('state')||'';
-  if(goal!=='browse'&&!selected){setHint('Select a state or choose one of the location cards below to continue.');return;}
+  // Location refines the request but never blocks an illustrative calculator.
+  // Users may estimate costs before deciding which state to explore.
   setHint('');
   const path=goal==='browse'?'/properties':destinations[goal];
   router.push(path+'?'+query.toString());
@@ -79,13 +79,13 @@ export default function LocationDiscovery({initial,initialGoal='browse'}:Props){
      {goals.map(item=><button key={item.value} type="button" className={goal===item.value?'selected':''} aria-pressed={goal===item.value} onClick={()=>{setGoal(item.value);setHint('');}}><strong>{item.label}</strong><small>{item.note}</small></button>)}
     </div>
     <div className="lsloc-bottom">
-     <span>Selections carry through when you choose a state below.</span>
+     <span>Continue directly, or choose a state below to include its location in your next step.</span>
      <button type="submit" className="lsloc-submit">{goal==='browse'?'Search properties':goal==='investment'?'Open investment calculator':goal==='mortgage'?'Open mortgage calculator':'Open loan calculator'} <span aria-hidden="true"><ApprovedArrow/></span></button>
     </div>
     {hint&&<p className="lsloc-hint" role="status">{hint}</p>}
    </form>
    <section className="lsloc-states" aria-labelledby="lsloc-states-title">
-    <div className="lsloc-state-heading"><h2 id="lsloc-states-title">Locations.</h2><span>Choose a state to apply your filters and continue.</span></div>
+    <div className="lsloc-state-heading"><h2 id="lsloc-states-title">Locations.</h2><span>Choose a state to continue with your selected criteria.</span></div>
     <div className="lsloc-state-grid">
      {landshopLocations.map(location=><button type="button" className={'lsloc-state'+(state===location.state?' chosen':'')} key={location.slug} onClick={()=>destination(location.state)} aria-label={'Use selected filters for '+location.name}>
       <small>PROPERTY LOCATION</small><strong>{location.name}</strong><span>{goal==='browse'?'View matching properties':goal==='investment'?'Investment estimate':goal==='mortgage'?'Mortgage estimate':'Loan estimate'} <b aria-hidden="true"><ApprovedArrow/></b></span>

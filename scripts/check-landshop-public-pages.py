@@ -269,6 +269,12 @@ def verify_source() -> None:
             raise AssertionError("Missing routed financial planning goal: " + goal)
     if ".lsloc-filter" not in location_style:
         raise AssertionError("Location filter layout styling is missing")
+    if "if(goal!=='browse'&&!selected)" in location_finder or "Select a state or choose one of the location cards below" in location_finder:
+        raise AssertionError("Loan, mortgage and investment calculators must not require a state")
+    if "const path=goal==='browse'?'/properties':destinations[goal];" not in location_finder:
+        raise AssertionError("Calculator navigation must still use the selected purpose")
+    if "if(chosenState){query.set('state',chosenState)" not in location_finder:
+        raise AssertionError("State cards must still preserve the selected state")
     if 'className="lsap-location-track"' not in approved_body or 'className="lsap-location"' not in approved_body:
         raise AssertionError("Approved homepage location carousel JSX is missing")
     if 'flex:0 0 calc((100% - 40px)/3)' not in approved_css:
