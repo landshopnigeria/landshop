@@ -57,6 +57,8 @@ jobs:
         run: python3 scripts/verify-landshop-privileged-rpc-migrations.py
       - name: Verify no-cost compromised-password screening in customer and staff auth
         run: python3 scripts/verify-landshop-free-password-protection.py
+      - name: Verify public auth email flood protection and safe recovery routing
+        run: python3 scripts/verify-landshop-auth-email-security.py
       - name: Verify communication dispatcher without customer sends
         run: |
           node scripts/landshop-communication-dispatch.mjs --self-test
@@ -131,6 +133,25 @@ jobs:
               fi
               echo "SSR/route smoke passed: $app $route"
             done
+            if [ "$app" = "portal" ]; then
+              # No emails are sent: ensure unauthenticated cross-site requests
+              # and invalid payloads are rejected by the real compiled API.
+              result=$(curl -sS --max-time 10 -o /dev/null -w '%{http_code}' \
+                -H 'Origin: https://attacker.example' -H 'Content-Type: application/json' \
+                --data '{"action":"recovery","email":"unused@example.invalid"}' \
+                "http://127.0.0.1:39519/api/auth/email-action")
+              [ "$result" = "403" ] || { echo "::error::Cross-origin auth email request was not rejected: $result"; exit 1; }
+              result=$(curl -sS --max-time 10 -o /dev/null -w '%{http_code}' \
+                -H 'Origin: https://portal.landshopnigeria.com' -H 'Content-Type: text/plain' \
+                --data 'bad' "http://127.0.0.1:39519/api/auth/email-action")
+              [ "$result" = "415" ] || { echo "::error::Auth email API accepted invalid content type: $result"; exit 1; }
+              result=$(curl -sS --max-time 10 -o /dev/null -w '%{http_code}' \
+                -H 'Origin: https://portal.landshopnigeria.com' -H 'Content-Type: application/json' \
+                --data '{"action":"unknown","email":"unused@example.invalid"}' \
+                "http://127.0.0.1:39519/api/auth/email-action")
+              [ "$result" = "400" ] || { echo "::error::Auth email API accepted unknown action: $result"; exit 1; }
+              echo "Verified bounded, origin-controlled public auth email API (no emails sent)"
+            fi
             if [ "$app" = "portal" ] || [ "$app" = "dashboard" ]; then
               # Missing verification tokens must never create a session or cache a redirect.
               result=$(curl -sS --max-time 15 -D /tmp/landshop-auth-headers -o /dev/null \

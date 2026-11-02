@@ -1,6 +1,5 @@
 'use client';
 import { useState } from 'react';
-import { browserSupabase } from '../../lib/supabase-browser';
 
 export default function ResetPassword(){
   const [email,setEmail]=useState('');
@@ -9,13 +8,17 @@ export default function ResetPassword(){
   async function submit(event:React.FormEvent<HTMLFormElement>){
     event.preventDefault();setBusy(true);setMessage('');
     try{
-      const {error}=await browserSupabase().auth.resetPasswordForEmail(email,{
-        redirectTo:'https://portal.landshopnigeria.com/auth/callback?type=recovery'
+      const response=await fetch('/api/auth/email-action',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        cache:'no-store',
+        body:JSON.stringify({action:'recovery',email:email.trim().toLowerCase()})
       });
-      if(error) throw error;
-      setMessage('If this address is registered, a recovery email will arrive shortly.');
-    }catch{
-      setMessage('Unable to request password recovery. Please try again later.');
+      const result=await response.json() as {ok?:boolean;message?:string};
+      if(!response.ok||!result.ok)throw new Error(result.message||'Unable to request password recovery.');
+      setMessage(result.message||'If this address is registered, a recovery email will arrive shortly.');
+    }catch(error){
+      setMessage(error instanceof Error?error.message:'Unable to request password recovery. Please try again later.');
     }finally{setBusy(false)}
   }
   return <main className="authScene"><form className="authCard" onSubmit={submit}>

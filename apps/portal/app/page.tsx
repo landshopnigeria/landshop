@@ -88,8 +88,13 @@ export default function Portal(){
  async function resend(){
   if(!email.trim())return setMessage('Enter your email address to resend confirmation.');
   setBusy(true);setMessage('');
-  try{const {error}=await browserSupabase().auth.resend({type:'signup',email:email.trim().toLowerCase(),options:{emailRedirectTo:portalOrigin+'/auth/callback'}});if(error)throw error;setMessage('If this address is awaiting confirmation, a fresh email has been requested.')}
-  catch{setMessage('Unable to send another confirmation email. Please try again.')}
+  try{
+   const response=await fetch('/api/auth/email-action',{method:'POST',headers:{'Content-Type':'application/json'},cache:'no-store',body:JSON.stringify({action:'resend',email:email.trim().toLowerCase()})});
+   const result=await response.json() as {ok?:boolean;message?:string};
+   if(!response.ok||!result.ok)throw new Error(result.message||'Unable to resend confirmation.');
+   setMessage(result.message||'If this address is awaiting confirmation, a fresh email has been requested.');
+  }
+  catch(error){setMessage(error instanceof Error?error.message:'Unable to send another confirmation email. Please try again.')}
   finally{setBusy(false)}
  }
  const topLinks=[['Home','https://www.landshopnigeria.com'],['Properties','https://www.landshopnigeria.com/properties'],['About','https://www.landshopnigeria.com/about'],['Resources','https://www.landshopnigeria.com/insights']];
