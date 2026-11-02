@@ -1,4 +1,4 @@
-/* Landshop public website: interface icons stay 27px; directional arrows are 23px.
+/* Landshop public website: interface icons stay 27px; directional arrows are 22px.
  * This file replaces the former 70px public-icon treatment.
  * Keep all existing header, footer, property filter and card structures intact.
  */
@@ -103,18 +103,32 @@ body .ls-site-chrome .ls30-hamburger i:nth-child(3){width:24px!important}
 body .ls-site-chrome .ls30-hamburger-open i:nth-child(1){width:27px!important;transform:translateY(8px) rotate(45deg)}
 body .ls-site-chrome .ls30-hamburger-open i:nth-child(3){width:27px!important;transform:translateY(-8px) rotate(-45deg)}
 
-/* Owner-approved 23px arrows. Limit the override to directional icons:
+/* Owner-approved 22px arrows. Limit the override to directional icons:
    all other interface icons remain 27px and navbar V indicators stay compact. */
 body svg.ls-icon-directional,
 body svg.ls-approved-arrow,
 body .ls-site-chrome svg.ls-icon-directional,
 body .ls24-carousel-arrows svg {
-  width:23px!important;
-  height:23px!important;
-  min-width:23px!important;
-  min-height:23px!important;
-  max-width:23px!important;
-  max-height:23px!important;
-  flex:0 0 23px;
+  width:22px!important;
+  height:22px!important;
+  min-width:22px!important;
+  min-height:22px!important;
+  max-width:22px!important;
+  max-height:22px!important;
+  flex:0 0 22px;
 }
-body .ls-approved-arrow {min-width:23px!important;max-width:23px!important}
+body .ls-approved-arrow {min-width:22px!important;max-width:22px!important}
+
+/* Search bar: only the magnifier and submit arrow are 22px; preserve the full input and button hit areas. */
+body .ls-site-chrome .ls-global-search svg.ls-icon {
+ width:22px!important;
+ height:22px!important;
+ min-width:22px!important;
+ min-height:22px!important;
+ max-width:22px!important;
+ max-height:22px!important;
+ flex:0 0 22px;
+ font-size:22px!important;
+}
+/* Directional SVGs share the 22px visible size; menu V carets stay at their approved compact size. */
+body svg.ls-icon-directional,body svg.ls-approved-arrow {font-size:22px!important}

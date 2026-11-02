@@ -92,7 +92,7 @@ export default function SiteHeader(){
   <div className="ls-utility-bar"><div className="ls-utility-inner">
    <span className="ls-tagline">Everyone Deserves Affordable Property.</span>
    <form role="search" action="/search" method="get" className="ls-global-search">
-    <SiteIcon name="search" size={20}/><input name="q" type="search" placeholder="Search properties, products, guides…" maxLength={90} aria-label="Search Landshop"/><button type="submit" aria-label="Submit search"><SiteIcon name="arrow" size={18}/></button>
+    <SiteIcon name="search" size={22}/><input name="q" type="search" placeholder="Search properties, products, guides…" maxLength={90} aria-label="Search Landshop"/><button type="submit" aria-label="Submit search"><SiteIcon name="arrow" size={22}/></button>
    </form>
    <div className="ls-utility-links">{topLinks.map(x=><a href={x.url} key={x.text}><SiteIcon name={x.icon} size={19}/>{x.text}</a>)}</div>
   </div></div>
