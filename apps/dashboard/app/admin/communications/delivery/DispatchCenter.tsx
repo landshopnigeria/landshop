@@ -26,7 +26,7 @@ export default function DispatchCenter({channels:initialChannels,rules:initialRu
  const [newPurpose,setNewPurpose]=useState('transactional'),[delay,setDelay]=useState(0),[waName,setWaName]=useState('');
  const filtered=useMemo(()=>messages.filter(m=>(channelFilter==='all'||m.channel===channelFilter)&&(statusFilter==='all'||m.status===statusFilter)),[messages,channelFilter,statusFilter]);
  const approved=useMemo(()=>new Map(templates.map(t=>[t.id,t.state==='approved'])),[templates]);
- const eventCounts=useMemo(()=>{const m=new Map<string,number>();events.forEach(e=>m.set(e.event_name,(m.get(e.event_name)||0)+1));return m},[events]);
+ const eventCounts=useMemo(()=>{const m=new Map<string,number>();events.forEach(e=>m.set(e.outbox_id,(m.get(e.outbox_id)||0)+1));return m},[events]);
  async function changeChannel(channel:string,enabled:boolean){
   if(enabled&&!window.confirm('Enable '+channel+' only after verifying the provider credentials and sender approval in the protected production environment. Continue?'))return;
   setBusy(channel);setNotice('');
