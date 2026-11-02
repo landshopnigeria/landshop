@@ -1,0 +1,2255 @@
+{
+  "templates": [
+    {
+      "id": "C01",
+      "title": "Application received and welcome",
+      "flow": "Both",
+      "stage": "Application submitted",
+      "intent": "Transactional",
+      "timing": "Immediately after validated submission",
+      "gate": "Verified email + application ID",
+      "subject": "Your Landshop {{plan}} application has been received",
+      "body": "Hello {{first_name}},\n\nThank you for choosing Landshop and taking a meaningful step towards property ownership. We have received your application for {{property}} under {{plan}}.\n\nYour reference is {{application_ref}}. Our team will review your information and send an update through your preferred contact channel. The historical template proposed an assessment window of 10 days; the final SLA will be confirmed before launch.\n\nYou can securely check progress, review requirements and upload additional information from your application dashboard.\n\nNo approval or availability is confirmed by this acknowledgment.\n\nWarm regards,\nLandshop Client Experience Team",
+      "wa": "Hello {{first_name}}, Landshop has received application {{application_ref}} for {{plan}}. Check your secure dashboard for updates. This is an acknowledgment, not an approval.",
+      "sms": "Landshop: Application {{application_ref}} received. Check your dashboard for updates. Approval is pending.",
+      "source": "Word: automated welcome mail (adapted)",
+      "channels": [
+        "Email",
+        "WhatsApp",
+        "SMS"
+      ],
+      "critical": true
+    },
+    {
+      "id": "C02",
+      "title": "Assessment approved",
+      "flow": "Both",
+      "stage": "Qualification approved",
+      "intent": "Transactional",
+      "timing": "Immediately after verified approval event",
+      "gate": "Authorised credit/qualification decision; no frontend-only approval",
+      "subject": "Your {{plan}} assessment is approved",
+      "body": "Hello {{first_name}},\n\nCongratulations. Your {{plan}} assessment for {{property}} has been approved following a completed review.\n\nYour approved terms, eligibility conditions, interest information where applicable, and next steps are available in your secure account. Please review the documents before accepting any financial obligation.\n\nA Landshop adviser will contact you regarding the next stage. Any approval is subject to the exact written terms and validity period in your notice.\n\nThank you for trusting Landshop.\nLandshop Client Experience Team",
+      "wa": "Good news, {{first_name}}. Your {{plan}} assessment has been approved. Review the official terms in your secure Landshop dashboard. Do not pay from an unverified link.",
+      "sms": "Landshop: {{plan}} assessment approved for ref {{application_ref}}. Review the official terms in your dashboard.",
+      "source": "Word: assessment / evaluation status update (adapted)",
+      "channels": [
+        "Email",
+        "WhatsApp",
+        "SMS"
+      ],
+      "critical": true
+    },
+    {
+      "id": "C03",
+      "title": "Inspection confirmation",
+      "flow": "Both",
+      "stage": "Inspection booked",
+      "intent": "Transactional",
+      "timing": "When an authorised booking is confirmed",
+      "gate": "Appointment confirmed + timezone + property verified",
+      "subject": "Your Landshop property inspection is confirmed",
+      "body": "Hello {{first_name}},\n\nYour inspection for {{property}} is confirmed for {{inspection_date}} at {{inspection_time}} (West Africa Time).\n\nInspection type: {{inspection_type}}. Your booking reference is {{booking_ref}}.\n\nFor a physical inspection, your confirmed adviser will share the verified meeting point and arrival instructions. For a virtual inspection, you will receive a secure session link.\n\nPlease use your booking page to reschedule or cancel. We look forward to helping you evaluate the property carefully.\n\nLandshop Client Experience Team",
+      "wa": "Landshop inspection confirmed: {{property}}, {{inspection_date}} at {{inspection_time}} WAT. Ref {{booking_ref}}. Manage or reschedule via your secure booking page.",
+      "sms": "Landshop inspection: {{inspection_date}} {{inspection_time}} WAT. Ref {{booking_ref}}. View booking details in your dashboard.",
+      "source": "Word: scheduled inspection notice (adapted)",
+      "channels": [
+        "Email",
+        "WhatsApp",
+        "SMS"
+      ],
+      "critical": true
+    },
+    {
+      "id": "C04",
+      "title": "Offer letter ready",
+      "flow": "Both",
+      "stage": "Offer issued",
+      "intent": "Transactional",
+      "timing": "Only after approved offer document exists",
+      "gate": "Verified signed document + authorised offer record",
+      "subject": "Your offer letter for {{property}} is ready to review",
+      "body": "Hello {{first_name}},\n\nYour offer letter for {{property}} has been prepared and is available securely in your Landshop account.\n\nPlease review the stated price, payment schedule, property description, conditions, and validity period carefully before signing. You may ask questions or obtain independent legal advice before proceeding.\n\nWhen ready, review and sign through the secure document portal. Never send signed documents to an unverified address.\n\nLandshop Transactions Team",
+      "wa": "Hello {{first_name}}, your Landshop offer letter for {{property}} is ready. Please sign in to your secure dashboard to review the terms before signing.",
+      "sms": "Landshop: Offer letter for {{property}} is ready in your secure dashboard. Review all terms before signing.",
+      "source": "Word: notice of offer letter (adapted)",
+      "channels": [
+        "Email",
+        "WhatsApp",
+        "SMS"
+      ],
+      "critical": true
+    },
+    {
+      "id": "C05",
+      "title": "Instalment payment received",
+      "flow": "Both",
+      "stage": "Instalment reconciled",
+      "intent": "Transactional",
+      "timing": "After payment-provider webhook AND ledger reconciliation",
+      "gate": "Verified payment ID; no confirmation from button click",
+      "subject": "Payment received: {{payment_amount}} for {{property}}",
+      "body": "Hello {{first_name}},\n\nWe confirm receipt of your instalment payment towards {{property}}.\n\nAmount: {{payment_amount}}\nPayment date: {{payment_date}}\nPayment reference: {{payment_ref}}\nOutstanding balance: {{balance_due}}\n\nYour updated payment statement is available in your secure dashboard. Any development charges or additional obligations will appear only where supported by your signed agreement.\n\nThank you for your commitment.\nLandshop Accounts Team",
+      "wa": "Landshop confirms a reconciled instalment of {{payment_amount}} for {{property}} (ref {{payment_ref}}). View your receipt and balance in your secure dashboard.",
+      "sms": "Landshop receipt: {{payment_amount}} received. Ref {{payment_ref}}. View updated statement in your account.",
+      "source": "Word: payment confirmation (instalment), 2023 sample made dynamic",
+      "channels": [
+        "Email",
+        "WhatsApp",
+        "SMS"
+      ],
+      "critical": true
+    },
+    {
+      "id": "C06",
+      "title": "Full payment received",
+      "flow": "Both",
+      "stage": "Outright payment reconciled",
+      "intent": "Transactional",
+      "timing": "After verified full settlement and zero-balance confirmation",
+      "gate": "Reconciled full ledger; authorised document milestone",
+      "subject": "Your full payment for {{property}} is confirmed",
+      "body": "Hello {{first_name}},\n\nThank you. We confirm that the agreed purchase amount for {{property}} has been paid in full and reconciled.\n\nAmount received: {{payment_amount}}\nReceipt reference: {{payment_ref}}\nSettlement date: {{payment_date}}\n\nThe next phase is document processing and the appropriate ownership-transfer workflow, subject to the verified title, signed agreement and applicable requirements. Your dashboard will show the next milestone.\n\nLandshop Accounts Team",
+      "wa": "Hello {{first_name}}, your full payment for {{property}} has been confirmed (ref {{payment_ref}}). Check your dashboard for documentation updates.",
+      "sms": "Landshop: Full payment recorded, ref {{payment_ref}}. Next document steps are available in your dashboard.",
+      "source": "Word: payment confirmation (outright), adapted",
+      "channels": [
+        "Email",
+        "WhatsApp",
+        "SMS"
+      ],
+      "critical": true
+    },
+    {
+      "id": "C07",
+      "title": "Contract of sale ready",
+      "flow": "Both",
+      "stage": "Contract document approved",
+      "intent": "Transactional",
+      "timing": "When verified contract is approved for client review",
+      "gate": "Authorised PDF + secure document portal, no unverified office address",
+      "subject": "Your contract of sale for {{property}} is ready",
+      "body": "Hello {{first_name}},\n\nYour contract of sale for {{property}} is now available for review in your secure Landshop account.\n\nIt sets out the property information, purchase terms, payment obligations and other important provisions. Please read the document carefully, ask us about any unclear item and seek independent legal advice if necessary.\n\nYou can review the document and follow the verified signing instructions from your dashboard. Collection details will be confirmed individually where a physical appointment is necessary.\n\nLandshop Documentation Team",
+      "wa": "Landshop: Your contract of sale for {{property}} is ready. Review it securely in your dashboard. Contact our documentation team with questions.",
+      "sms": "Landshop contract ready for {{property}}. Review it in your secure account before signing.",
+      "source": "Word: communication of document readiness (adapted)",
+      "channels": [
+        "Email",
+        "WhatsApp",
+        "SMS"
+      ],
+      "critical": true
+    },
+    {
+      "id": "C08",
+      "title": "Your requested mortgage estimate",
+      "flow": "Both",
+      "stage": "Calculation saved",
+      "intent": "Transactional",
+      "timing": "Immediately after visitor explicitly requests emailed result",
+      "gate": "Email entered and verified; requested estimate, separate marketing consent",
+      "subject": "Your Landshop mortgage estimate is ready",
+      "body": "Hello {{first_name}},\n\nHere is the mortgage estimate you asked Landshop to send you.\n\nSelected property or budget: {{property}}\nSelected plan: {{plan}}\nEstimated repayment: {{estimate}}\n\nThis is an illustration, not approval, an interest-rate offer or a binding payment schedule. Final figures depend on verified lender criteria, documents and current terms.\n\nYou can continue the calculator or request a consultation whenever you are ready.\n\nLandshop Mortgage Support",
+      "wa": "Your requested Landshop estimate is ready. View it in your secure link or dashboard. This is an illustration only, not mortgage approval.",
+      "sms": "Landshop: Your requested estimate is ready. Check your email or dashboard. Figures are indicative.",
+      "source": "Proposed: calculator delivery",
+      "channels": [
+        "Email",
+        "WhatsApp",
+        "SMS"
+      ],
+      "critical": true
+    },
+    {
+      "id": "C09",
+      "title": "Welcome to Landshop insights",
+      "flow": "Both",
+      "stage": "Marketing contact opted in",
+      "intent": "Marketing",
+      "timing": "Immediately after positive newsletter/updates opt-in",
+      "gate": "Recorded email marketing consent; unsubscribe enabled",
+      "subject": "Welcome to Landshop, {{first_name}}",
+      "body": "Hello {{first_name}},\n\nThanks for exploring Landshop. Whether you are comparing mortgages, considering shared ownership, or researching a property, we are pleased to help you make a more informed decision.\n\nYou can explore our property guides, compare ownership options and book an adviser when it suits you. We will share relevant insights, not a stream of unnecessary messages.\n\nManage your preferences or unsubscribe at any time.\n\nLandshop Client Experience Team",
+      "wa": "Welcome to Landshop, {{first_name}}. Thanks for opting in to property insights and mortgage guidance. Reply STOP to opt out.",
+      "sms": "Welcome to Landshop updates. Reply STOP to opt out.",
+      "source": "Proposed: opted-in welcome, not anonymous-exit email",
+      "channels": [
+        "Email",
+        "WhatsApp",
+        "SMS"
+      ],
+      "critical": false
+    },
+    {
+      "id": "C10",
+      "title": "Calculator follow-up after 24 hours",
+      "flow": "Both",
+      "stage": "Calculator estimate requested",
+      "intent": "Marketing",
+      "timing": "24 hours after requested estimate if no application",
+      "gate": "Separate marketing opt-in; no application; frequency cap",
+      "subject": "Would you like help interpreting your mortgage estimate?",
+      "body": "Hello {{first_name}},\n\nYou recently explored mortgage options with Landshop. A calculator is a starting point, but the numbers are easier to understand when you know what changes the total cost.\n\nIf you would like, we can explain eligibility documents, deposit options, repayment assumptions and the next steps before you make any commitment.\n\nContinue from where you stopped or book a no-obligation consultation.\n\nLandshop Mortgage Support",
+      "wa": "Hello {{first_name}}, would you like help understanding your Landshop mortgage estimate? Choose a convenient time in your account. Reply STOP to opt out.",
+      "sms": "Landshop: Need help with your mortgage estimate? Book an adviser in your account. STOP to opt out.",
+      "source": "Proposed: opt-in nurture",
+      "channels": [
+        "Email",
+        "WhatsApp",
+        "SMS"
+      ],
+      "critical": false
+    },
+    {
+      "id": "C11",
+      "title": "Incomplete application reminder",
+      "flow": "Both",
+      "stage": "Application draft inactive",
+      "intent": "Marketing",
+      "timing": "48 hours after incomplete draft",
+      "gate": "Contact provided, permitted reminder, not already submitted",
+      "subject": "Your Landshop application draft is saved",
+      "body": "Hello {{first_name}},\n\nYour Landshop {{plan}} application for {{property}} is still saved as a draft. No assessment has started yet.\n\nWhen you are ready, return securely to complete the missing details. If your priorities have changed, you can simply leave the draft or adjust your communication preferences.\n\nLandshop Client Experience Team",
+      "wa": "Hi {{first_name}}, your {{plan}} application is saved but not submitted. Resume securely in your Landshop account. Reply STOP to opt out.",
+      "sms": "",
+      "source": "Proposed: incomplete application",
+      "channels": [
+        "Email",
+        "WhatsApp"
+      ],
+      "critical": false
+    },
+    {
+      "id": "C12",
+      "title": "More information requested",
+      "flow": "Both",
+      "stage": "Assessment requires documents",
+      "intent": "Transactional",
+      "timing": "When an assessor requests specific items",
+      "gate": "Authorised case reviewer + secure upload link",
+      "subject": "Action needed: {{application_ref}} requires information",
+      "body": "Hello {{first_name}},\n\nTo continue reviewing application {{application_ref}}, our assessment team needs additional information.\n\nPlease log in to see the exact requested items and submit them through the secure document uploader. Do not send identity or financial documents in ordinary email or WhatsApp chats.\n\nThe review will resume when the outstanding items have been received and checked.\n\nLandshop Assessments Team",
+      "wa": "Landshop needs an update for application {{application_ref}}. Sign in to view the outstanding documents and upload securely.",
+      "sms": "Landshop application {{application_ref}}: additional documents requested. See dashboard.",
+      "source": "Proposed: assessment workflow",
+      "channels": [
+        "Email",
+        "WhatsApp",
+        "SMS"
+      ],
+      "critical": false
+    },
+    {
+      "id": "C13",
+      "title": "Application not approved with next steps",
+      "flow": "Both",
+      "stage": "Application declined",
+      "intent": "Transactional",
+      "timing": "After verified declined decision",
+      "gate": "Approved decision + reason category suitable for disclosure",
+      "subject": "An update on your Landshop application {{application_ref}}",
+      "body": "Hello {{first_name}},\n\nThank you for applying for {{plan}}. After reviewing the information available, we are unable to approve your application at this time.\n\nPlease log in to review the next steps available for your case. Where appropriate, you may correct information, submit new documents, request a review or explore an alternative plan.\n\nThis message is not a judgment about your future ability to own property. We remain available to explain the process.\n\nLandshop Assessments Team",
+      "wa": "Hello {{first_name}}, your application {{application_ref}} was not approved at this stage. Please see your dashboard for review or reapplication options.",
+      "sms": "Landshop {{application_ref}}: application not approved at this stage. Secure next steps in dashboard.",
+      "source": "Xtra + Beta diagrams: failed / reapplication",
+      "channels": [
+        "Email",
+        "WhatsApp",
+        "SMS"
+      ],
+      "critical": true
+    },
+    {
+      "id": "C14",
+      "title": "Inspection reminder",
+      "flow": "Both",
+      "stage": "Inspection tomorrow",
+      "intent": "Transactional",
+      "timing": "24 hours before confirmed inspection",
+      "gate": "Confirmed active booking; suppression if cancelled",
+      "subject": "Reminder: your property inspection is tomorrow",
+      "body": "Hello {{first_name}},\n\nA reminder that your inspection of {{property}} is scheduled for {{inspection_date}} at {{inspection_time}} WAT.\n\nPlease check the confirmed meeting point or virtual link and allow enough time to join. Need to change the appointment? Use your secure booking page.\n\nWe look forward to seeing you.\nLandshop Client Experience Team",
+      "wa": "Landshop reminder: {{property}} inspection is {{inspection_date}} at {{inspection_time}} WAT. See secure booking details or reschedule.",
+      "sms": "Landshop inspection reminder: {{inspection_date}} {{inspection_time}} WAT. Booking {{booking_ref}}.",
+      "source": "Mortgage Xtra diagram: inspection reminder",
+      "channels": [
+        "Email",
+        "WhatsApp",
+        "SMS"
+      ],
+      "critical": false
+    },
+    {
+      "id": "C15",
+      "title": "After-inspection follow-up",
+      "flow": "Both",
+      "stage": "Inspection completed",
+      "intent": "Marketing",
+      "timing": "1 business day after confirmed inspection",
+      "gate": "Sales follow-up permission and no open complaint",
+      "subject": "Thank you for inspecting {{property}}",
+      "body": "Hello {{first_name}},\n\nThank you for taking the time to explore {{property}} with our team. We hope the inspection gave you a clearer picture of the location, development status and next steps.\n\nIf you would like a property fact sheet, clarification on the title documentation or assistance with an offer, we can help. There is no pressure to commit before you have reviewed the information.\n\nLandshop Property Advisory",
+      "wa": "Hello {{first_name}}, thank you for inspecting {{property}}. Questions about documents or next steps? Reply to speak with your adviser. STOP to opt out.",
+      "sms": "",
+      "source": "Proposed: post-inspection nurture",
+      "channels": [
+        "Email",
+        "WhatsApp"
+      ],
+      "critical": false
+    },
+    {
+      "id": "C16",
+      "title": "Offer reminder",
+      "flow": "Both",
+      "stage": "Unsigned offer approaching expiry",
+      "intent": "Transactional",
+      "timing": "48 hours before verified offer expiry",
+      "gate": "Offer still valid and unsigned; clear actual expiry",
+      "subject": "Reminder: review your Landshop offer before {{due_date}}",
+      "body": "Hello {{first_name}},\n\nYour offer letter for {{property}} is awaiting your review or signature, and its stated validity period ends {{due_date}}.\n\nPlease read all terms carefully and use your secure account to respond. If you need clarification or more time, contact your adviser before the deadline.\n\nLandshop Transactions Team",
+      "wa": "Landshop: Your offer for {{property}} has a stated deadline of {{due_date}}. Review securely or speak with your adviser.",
+      "sms": "",
+      "source": "Proposed: offer lifecycle",
+      "channels": [
+        "Email",
+        "WhatsApp"
+      ],
+      "critical": false
+    },
+    {
+      "id": "C17",
+      "title": "Secure account and funding information",
+      "flow": "Both",
+      "stage": "Funding account approved",
+      "intent": "Transactional",
+      "timing": "When verified account instructions are published",
+      "gate": "Finance-approved bank details; no bank instructions from untrusted text",
+      "subject": "Your verified Landshop payment instructions are available",
+      "body": "Hello {{first_name}},\n\nYour payment schedule and verified funding instructions for {{property}} are available in your secure Landshop account.\n\nPlease verify the beneficiary details inside the portal before making a transfer. Landshop will never ask you to redirect payment based solely on an email, chat or unsolicited phone call.\n\nPayment reference: {{application_ref}}\nYour next due date and amount appear in the approved schedule.\n\nLandshop Accounts Team",
+      "wa": "Landshop: Verified funding instructions for {{property}} are available in your secure account. Confirm details there before paying.",
+      "sms": "Landshop: Check your secure account for approved payment instructions. Ref {{application_ref}}.",
+      "source": "Mortgage Xtra + Beta diagrams: account creation/funding",
+      "channels": [
+        "Email",
+        "WhatsApp",
+        "SMS"
+      ],
+      "critical": true
+    },
+    {
+      "id": "C18",
+      "title": "Document milestone update",
+      "flow": "Both",
+      "stage": "Document milestone changed",
+      "intent": "Transactional",
+      "timing": "When document processing status changes",
+      "gate": "Verified document state",
+      "subject": "An update on your {{property}} documents",
+      "body": "Hello {{first_name}},\n\nThere is a new update to the documentation process for {{property}}.\n\nCurrent stage: {{document_stage}}\nReference: {{application_ref}}\n\nPlease sign in to see the exact requirement, any appointment that needs confirming, and the current expected timeline.\n\nLandshop Documentation Team",
+      "wa": "Landshop documentation update for {{property}}: {{document_stage}}. Review details in your account.",
+      "sms": "",
+      "source": "Proposed: document status",
+      "channels": [
+        "Email",
+        "WhatsApp"
+      ],
+      "critical": false
+    },
+    {
+      "id": "C19",
+      "title": "Preference-based check-in",
+      "flow": "Both",
+      "stage": "Lead inactive after opt-in",
+      "intent": "Marketing",
+      "timing": "7 days after previous opted-in contact, only if idle",
+      "gate": "Consent + no sale + no open support issue + frequency cap",
+      "subject": "Still exploring property options? We can help",
+      "body": "Hello {{first_name}},\n\nYou may still be weighing up locations, mortgage terms or the right time to buy. If so, we can help you compare relevant choices at your own pace.\n\nOur advisers can explain available plans and the documents needed before a decision. If now is not the right time, you can change your preferences or unsubscribe.\n\nLandshop Property Advisory",
+      "wa": "Hi {{first_name}}, still exploring property options? Landshop can help you compare your choices. Reply STOP to opt out.",
+      "sms": "",
+      "source": "Proposed: limited nurture; not perpetual messaging",
+      "channels": [
+        "Email",
+        "WhatsApp"
+      ],
+      "critical": false
+    },
+    {
+      "id": "X01",
+      "title": "Xtra customer service introduction",
+      "flow": "Xtra",
+      "stage": "Customer service assigned",
+      "intent": "Transactional",
+      "timing": "After application accepted for follow-up",
+      "gate": "Assigned staff role and application consent",
+      "subject": "Meet your Landshop Mortgage Xtra support team",
+      "body": "Hello {{first_name}},\n\nYour Mortgage Xtra application {{application_ref}} has moved to client service review. A verified Landshop adviser will help you understand your next steps and the information needed before inspection.\n\nYou can see your assigned case contact in your secure dashboard. Do not share banking passwords or one-time passwords with anyone.\n\nLandshop Client Experience Team",
+      "wa": "Hello {{first_name}}, Mortgage Xtra case {{application_ref}} has been assigned to Client Service. Please check your account for the next steps.",
+      "sms": "",
+      "source": "Mortgage Xtra diagram: customer service",
+      "channels": [
+        "Email",
+        "WhatsApp"
+      ],
+      "critical": false
+    },
+    {
+      "id": "X02",
+      "title": "Xtra alternative property options",
+      "flow": "Xtra",
+      "stage": "Prospect needs alternative",
+      "intent": "Marketing",
+      "timing": "2 business days after adviser marks unsuitable original option",
+      "gate": "Contact consent, sales representative approved actual alternatives",
+      "subject": "Other property options that may suit your plan",
+      "body": "Hello {{first_name}},\n\nThank you for discussing your Mortgage Xtra priorities with our adviser. Based on the information you shared, there may be other property or payment options worth exploring.\n\nYour adviser can share a verified comparison of currently available alternatives, including key documents and costs, so you can decide without pressure.\n\nOnly published and verified property options will be included.\n\nLandshop Property Advisory",
+      "wa": "Hi {{first_name}}, your adviser has alternative verified property options for Mortgage Xtra. Would you like the comparison? Reply STOP to opt out.",
+      "sms": "",
+      "source": "Mortgage Xtra diagram: prospect alternatives / incentives",
+      "channels": [
+        "Email",
+        "WhatsApp"
+      ],
+      "critical": false
+    },
+    {
+      "id": "X03",
+      "title": "Xtra equity payment due",
+      "flow": "Xtra",
+      "stage": "Equity milestone approaching",
+      "intent": "Transactional",
+      "timing": "14 days before a contract-confirmed equity due date",
+      "gate": "Signed agreement confirms 30% threshold and date",
+      "subject": "Mortgage Xtra: your equity milestone is approaching",
+      "body": "Hello {{first_name}},\n\nA reminder about the equity payment milestone in your signed Mortgage Xtra agreement for {{property}}.\n\nAgreed equity requirement: {{equity_rate}}\nAmount due: {{payment_amount}}\nDue date: {{due_date}}\n\nPlease verify the schedule and approved banking details through your account. If you need support, contact your assigned adviser before the deadline.\n\nLandshop Accounts Team",
+      "wa": "Landshop Mortgage Xtra: equity milestone of {{payment_amount}} is due {{due_date}} under your signed agreement. Verify in your dashboard.",
+      "sms": "Landshop Xtra equity due {{due_date}}: {{payment_amount}}. Verify payment details in your dashboard.",
+      "source": "Mortgage Xtra diagram: payment of 30% equity",
+      "channels": [
+        "Email",
+        "WhatsApp",
+        "SMS"
+      ],
+      "critical": true
+    },
+    {
+      "id": "X04",
+      "title": "Xtra equity payment confirmation",
+      "flow": "Xtra",
+      "stage": "30% equity verified",
+      "intent": "Transactional",
+      "timing": "After reconciled equity transaction",
+      "gate": "Payment verified, contractual equity milestone met",
+      "subject": "Your Mortgage Xtra equity payment has been confirmed",
+      "body": "Hello {{first_name}},\n\nWe confirm that your verified payment has satisfied the equity milestone recorded in your Mortgage Xtra agreement for {{property}}.\n\nPayment reference: {{payment_ref}}\nAmount received: {{payment_amount}}\n\nYour updated statement and next project milestone are now available in your account. Any approval or handover timeline will be provided only when formally confirmed.\n\nLandshop Accounts Team",
+      "wa": "Landshop: Your Mortgage Xtra equity milestone is confirmed ({{payment_ref}}). View your updated statement and next stage in your dashboard.",
+      "sms": "",
+      "source": "Mortgage Xtra diagram: payment confirmation and approval notice",
+      "channels": [
+        "Email",
+        "WhatsApp"
+      ],
+      "critical": true
+    },
+    {
+      "id": "X05",
+      "title": "Xtra approval / handover timeline notice",
+      "flow": "Xtra",
+      "stage": "Handover timeframe approved",
+      "intent": "Transactional",
+      "timing": "When project team authorises an actual milestone date",
+      "gate": "Project completion and contractual timeline verified",
+      "subject": "Your Mortgage Xtra property progress update",
+      "body": "Hello {{first_name}},\n\nWe have an update about the next milestone for {{property}} under Mortgage Xtra.\n\nConfirmed milestone: {{document_stage}}\nExpected date: {{due_date}}\n\nYour signed agreement and the current project record govern the timeline. The source diagram mentions a 90-day approval notice; this duration must be verified for the specific transaction before communicating a date.\n\nLandshop Client Experience Team",
+      "wa": "Landshop Mortgage Xtra update: {{document_stage}} is expected {{due_date}} subject to your verified agreement. See dashboard for details.",
+      "sms": "",
+      "source": "Mortgage Xtra diagram: notice of approval within 90 days",
+      "channels": [
+        "Email",
+        "WhatsApp"
+      ],
+      "critical": true
+    },
+    {
+      "id": "X06",
+      "title": "Xtra property handover confirmed",
+      "flow": "Xtra",
+      "stage": "Keys and documents ready",
+      "intent": "Transactional",
+      "timing": "After verified property readiness and approved handover booking",
+      "gate": "Ownership documents + handover checklist + payment reconciled",
+      "subject": "Your property handover appointment is ready",
+      "body": "Hello {{first_name}},\n\nWe are pleased to confirm that the handover process for {{property}} can proceed, subject to the checklist in your secure account.\n\nYour dashboard contains your document pack, approved handover date and instructions for collecting keys where applicable. Please check every item and tell us if anything needs clarification before the appointment.\n\nThank you for choosing Landshop.\nLandshop Handover Team",
+      "wa": "Congratulations {{first_name}}. Your property handover step for {{property}} is ready. Verify your appointment and documents in the Landshop portal.",
+      "sms": "Landshop: Property handover step ready for {{property}}. View secure dashboard for details.",
+      "source": "Mortgage Xtra diagram: handover of key and documents",
+      "channels": [
+        "Email",
+        "WhatsApp",
+        "SMS"
+      ],
+      "critical": true
+    },
+    {
+      "id": "X07",
+      "title": "Xtra annual payment notice",
+      "flow": "Xtra",
+      "stage": "Annual payment becomes due",
+      "intent": "Transactional",
+      "timing": "Contract-based yearly reminder, not automatic 15-year campaign without agreement",
+      "gate": "Signed 7% annual/rent obligation validated, due date and amount",
+      "subject": "Annual Mortgage Xtra payment reminder for {{property}}",
+      "body": "Hello {{first_name}},\n\nThis is your annual payment reminder for {{property}} under the terms recorded in your signed Mortgage Xtra agreement.\n\nApplicable contractual rate: {{annual_rate}}\nAmount due: {{payment_amount}}\nDue date: {{due_date}}\nContract year: {{contract_year}}\n\nPlease review the current statement and the basis for the charge before making payment. The source diagram refers to 7% yearly for 15 years; it will not be activated until those terms have been confirmed by Landshop Legal and Finance.\n\nLandshop Accounts Team",
+      "wa": "Landshop annual Mortgage Xtra notice: {{payment_amount}} due {{due_date}} for {{property}}, contract year {{contract_year}}. Verify agreement and account.",
+      "sms": "Landshop annual due {{due_date}}: {{payment_amount}}. Log in to verify contract and payment details.",
+      "source": "Mortgage Xtra diagram: 7% yearly for next 15 years",
+      "channels": [
+        "Email",
+        "WhatsApp",
+        "SMS"
+      ],
+      "critical": true
+    },
+    {
+      "id": "B01",
+      "title": "Beta Mortgage pre-application confirmation",
+      "flow": "Beta",
+      "stage": "Pre-application submitted",
+      "intent": "Transactional",
+      "timing": "Immediately after pre-application submitted",
+      "gate": "Verified email + pre-application reference",
+      "subject": "We have received your Beta Mortgage pre-application",
+      "body": "Hello {{first_name}},\n\nThank you for exploring Beta Mortgage with Landshop. We received your pre-application for {{property}} and created reference {{application_ref}}.\n\nOur team will review the information provided and request any additional documentation through your secure dashboard. A calculator result or pre-application is not an approval or binding offer.\n\nYou can follow progress and see the next steps from your account.\n\nLandshop Mortgage Support",
+      "wa": "Landshop: Beta Mortgage pre-application {{application_ref}} received. Follow your progress in the secure account.",
+      "sms": "Landshop Beta: Pre-application received, ref {{application_ref}}. Check account for next steps.",
+      "source": "Beta Mortgage diagram: automated welcome email",
+      "channels": [
+        "Email",
+        "WhatsApp",
+        "SMS"
+      ],
+      "critical": false
+    },
+    {
+      "id": "B02",
+      "title": "Beta Mortgage full qualification notice",
+      "flow": "Beta",
+      "stage": "Full qualification approved",
+      "intent": "Transactional",
+      "timing": "After human-reviewed lender/underwriter decision",
+      "gate": "Decision verified + signed applicable financing terms",
+      "subject": "Your Beta Mortgage qualification update",
+      "body": "Hello {{first_name}},\n\nYour Beta Mortgage assessment has reached the full qualification stage. The authorised decision and exact conditions for {{property}} are available in your dashboard.\n\nBefore proceeding, please review the lender's documented criteria, funding responsibilities, charges and repayment obligations. This notification does not override your signed approval documents.\n\nLandshop Mortgage Support",
+      "wa": "Landshop Beta Mortgage: A new qualification decision is available for {{application_ref}}. Review the approved terms in your secure account.",
+      "sms": "Landshop Beta: Qualification update for {{application_ref}}. Check official dashboard.",
+      "source": "Beta Mortgage diagram: full qualification",
+      "channels": [
+        "Email",
+        "WhatsApp",
+        "SMS"
+      ],
+      "critical": true
+    },
+    {
+      "id": "B03",
+      "title": "Beta Mortgage funding plan",
+      "flow": "Beta",
+      "stage": "Funding plan authorised",
+      "intent": "Transactional",
+      "timing": "After financing agreement and schedule approved",
+      "gate": "Finance/legal sign-off on 30%, 6 months, income-based condition and amounts",
+      "subject": "Your Beta Mortgage funding schedule is available",
+      "body": "Hello {{first_name}},\n\nYour Beta Mortgage funding schedule for {{property}} is available for review.\n\nEquity requirement: {{equity_rate}}\nPayment period: {{payment_period}}\nMonthly payment: {{payment_amount}}\nFirst due date: {{due_date}}\n\nThe source diagram mentions a 30% property-value requirement over six months, alongside a 2.5% monthly primary-income condition. These terms need an approved contract interpretation before they are shown to any customer as a payable obligation.\n\nPlease use only verified instructions inside your secure account.\n\nLandshop Accounts Team",
+      "wa": "Landshop Beta Mortgage: your verified funding schedule for {{property}} is available. Check your account for amounts, dates and terms.",
+      "sms": "Landshop Beta funding schedule available in dashboard. Check approved amounts and due dates.",
+      "source": "Beta Mortgage diagram: 30% / 6 months / 2.5% language",
+      "channels": [
+        "Email",
+        "WhatsApp",
+        "SMS"
+      ],
+      "critical": true
+    },
+    {
+      "id": "B04",
+      "title": "Beta Mortgage monthly payment confirmation",
+      "flow": "Beta",
+      "stage": "Recurring instalment reconciled",
+      "intent": "Transactional",
+      "timing": "Upon each reconciled scheduled payment",
+      "gate": "Verified payment ID and updated ledger",
+      "subject": "Beta Mortgage payment confirmation {{payment_ref}}",
+      "body": "Hello {{first_name}},\n\nWe have confirmed your latest Beta Mortgage payment for {{property}}.\n\nReceived: {{payment_amount}}\nPayment date: {{payment_date}}\nReference: {{payment_ref}}\nRemaining scheduled balance: {{balance_due}}\n\nYour payment history and upcoming instalments are available in your secure dashboard. Thank you for keeping your plan on track.\n\nLandshop Accounts Team",
+      "wa": "Landshop Beta: {{payment_amount}} received, ref {{payment_ref}}. View payment status and remaining schedule in dashboard.",
+      "sms": "Landshop Beta receipt {{payment_ref}}: {{payment_amount}} received. See account.",
+      "source": "Beta Mortgage diagram: recurring payment confirmations",
+      "channels": [
+        "Email",
+        "WhatsApp",
+        "SMS"
+      ],
+      "critical": true
+    },
+    {
+      "id": "B05",
+      "title": "Beta Mortgage instalment coming due",
+      "flow": "Beta",
+      "stage": "Scheduled instalment due",
+      "intent": "Transactional",
+      "timing": "7 days before verified contractual due date",
+      "gate": "Agreement valid; account not settled; duplicate send protection",
+      "subject": "Reminder: your Beta Mortgage payment is due {{due_date}}",
+      "body": "Hello {{first_name}},\n\nYour next scheduled Beta Mortgage payment for {{property}} is approaching.\n\nAmount due: {{payment_amount}}\nDue date: {{due_date}}\n\nPlease check your secure Landshop account for the approved schedule and payment instructions. If you expect difficulty meeting this payment, contact support early to discuss available options under your agreement.\n\nLandshop Accounts Team",
+      "wa": "Landshop Beta reminder: {{payment_amount}} due {{due_date}} for {{property}}. Verify payment details in your secure account.",
+      "sms": "Landshop Beta payment reminder: {{payment_amount}} due {{due_date}}. Check account.",
+      "source": "Beta Mortgage diagram: recurring payments",
+      "channels": [
+        "Email",
+        "WhatsApp",
+        "SMS"
+      ],
+      "critical": false
+    },
+    {
+      "id": "B06",
+      "title": "Beta Mortgage 90% equity milestone",
+      "flow": "Beta",
+      "stage": "Equity 90% threshold met",
+      "intent": "Transactional",
+      "timing": "After ledger reaches contract-defined milestone",
+      "gate": "Contractual 90% threshold validated; readiness timing approved",
+      "subject": "Your Beta Mortgage payment milestone has been reached",
+      "body": "Hello {{first_name}},\n\nWe have verified that your recorded payments for {{property}} have reached the contractual progress threshold shown in your account.\n\nConfirmed payment milestone: {{milestone}}\n\nThe project team will confirm the property-readiness window when the necessary development and documentation checks are complete. The source flow references notifying clients at 90% payment; this is not a completion guarantee.\n\nLandshop Client Experience Team",
+      "wa": "Landshop Beta update: your payment milestone for {{property}} is recorded. Check your account for the next verified readiness update.",
+      "sms": "",
+      "source": "Beta Mortgage diagram: at 90% or complete payment notify readiness",
+      "channels": [
+        "Email",
+        "WhatsApp"
+      ],
+      "critical": true
+    },
+    {
+      "id": "B07",
+      "title": "Beta Mortgage loan disbursement update",
+      "flow": "Beta",
+      "stage": "Loan issued to developer",
+      "intent": "Transactional",
+      "timing": "After lender and treasury verify disbursement",
+      "gate": "Verified lender settlement record + permitted disclosure",
+      "subject": "Your Beta Mortgage financing has progressed",
+      "body": "Hello {{first_name}},\n\nWe are writing with an update to the financing milestone for {{property}}.\n\nThe verified lender and transaction records show the following status: {{loan_status}}.\n\nPlease review the official financing summary in your dashboard. This message does not change any borrower repayment terms or guarantee immediate handover.\n\nLandshop Mortgage Support",
+      "wa": "Landshop Beta: Your financing milestone has changed to {{loan_status}}. View the verified details in your dashboard.",
+      "sms": "Landshop Beta financing status: {{loan_status}}. Check secure dashboard.",
+      "source": "Beta Mortgage diagram: loan issued to developer",
+      "channels": [
+        "Email",
+        "WhatsApp",
+        "SMS"
+      ],
+      "critical": true
+    },
+    {
+      "id": "B08",
+      "title": "Beta Mortgage property readiness notice",
+      "flow": "Beta",
+      "stage": "Readiness date authorised",
+      "intent": "Transactional",
+      "timing": "When property team approves an exact readiness estimate",
+      "gate": "Project status verified; contractual 90-day language reviewed",
+      "subject": "Update: expected readiness for {{property}}",
+      "body": "Hello {{first_name}},\n\nWe have an update on the expected readiness of {{property}}.\n\nVerified readiness stage: {{document_stage}}\nCurrent expected date: {{due_date}}\n\nThe historical workflow mentions a 90-day readiness notification after successful loan processing. We will only send a fixed date if the development team confirms it for this property and your signed documents support it.\n\nLandshop Project Updates",
+      "wa": "Landshop Beta: {{property}} readiness update is available, including the confirmed current timeline. View dashboard.",
+      "sms": "",
+      "source": "Beta Mortgage diagram: successful loan application ready in 90 days",
+      "channels": [
+        "Email",
+        "WhatsApp"
+      ],
+      "critical": true
+    },
+    {
+      "id": "B09",
+      "title": "Beta Mortgage payment overdue notice",
+      "flow": "Beta",
+      "stage": "Payment overdue verified",
+      "intent": "Transactional",
+      "timing": "After due date and reconciliation grace check",
+      "gate": "Contractual grace provision + payment search checked",
+      "subject": "Important: your Beta Mortgage payment needs attention",
+      "body": "Hello {{first_name}},\n\nOur verified records show that a scheduled payment for {{property}} has not yet been reconciled.\n\nPayment reference: {{application_ref}}\nAmount currently due: {{payment_amount}}\nOriginal due date: {{due_date}}\n\nIf you have already paid, upload your proof through the secure account so our team can reconcile it. If payment is still pending, please contact us to discuss the options in your agreement.\n\nNo additional charge is asserted in this notice without an approved contract calculation.\n\nLandshop Accounts Team",
+      "wa": "Landshop Beta: a payment is marked overdue for {{property}}. If already paid, upload proof securely; otherwise contact support to review options.",
+      "sms": "Landshop Beta payment alert: review your account for overdue status or reconciliation.",
+      "source": "Beta Mortgage diagram: notice of default",
+      "channels": [
+        "Email",
+        "WhatsApp",
+        "SMS"
+      ],
+      "critical": true
+    },
+    {
+      "id": "B10",
+      "title": "Beta Mortgage charge warning (legal review)",
+      "flow": "Beta",
+      "stage": "Grace period nearing end",
+      "intent": "Transactional",
+      "timing": "Before approved contractual grace period ends",
+      "gate": "Legal review of 1-month and 5% clauses before sending",
+      "subject": "Action required: please review your Beta Mortgage payment status",
+      "body": "Hello {{first_name}},\n\nWe are following up about the overdue payment shown in your Beta Mortgage account for {{property}}.\n\nYour agreement may specify a grace period and additional charges if the balance remains unpaid. Please review the exact clauses and figures in your secure dashboard and contact Landshop Accounts if a payment needs reconciliation.\n\nThe source workflow mentions a one-month post-default period and a 5% charge. No fee will be stated or applied automatically until Legal and Finance verify the applicable agreement and calculation.\n\nLandshop Accounts Team",
+      "wa": "Landshop Beta: please review the overdue payment notice in your secure dashboard. Contractual consequences require verification; contact Accounts.",
+      "sms": "",
+      "source": "Beta Mortgage diagram: 1-month grace and 5% charge, unapproved",
+      "channels": [
+        "Email",
+        "WhatsApp"
+      ],
+      "critical": true
+    },
+    {
+      "id": "B11",
+      "title": "Beta Mortgage formal breach notice",
+      "flow": "Beta",
+      "stage": "Legal notice authorised",
+      "intent": "Transactional",
+      "timing": "Only after human legal approval and prescribed delivery procedure",
+      "gate": "Documented breach + counsel sign-off + mandated notice method",
+      "subject": "Formal notice regarding your Beta Mortgage agreement",
+      "body": "Hello {{first_name}},\n\nA formal notice concerning your Beta Mortgage agreement for {{property}} has been made available through the approved secure channel.\n\nPlease review the signed notice carefully, including the alleged issue, any remedy period, how to contest or reconcile records, and contact details for the authorised case team.\n\nThis notification is an administrative alert. The legally operative notice must follow the agreement and applicable legal delivery requirements.\n\nLandshop Legal and Client Support",
+      "wa": "Landshop: A formal account notice requires your attention. Please securely access the signed document and contact the authorised support team.",
+      "sms": "",
+      "source": "Beta Mortgage diagram: notice of breach / contract violation",
+      "channels": [
+        "Email",
+        "WhatsApp"
+      ],
+      "critical": true
+    },
+    {
+      "id": "B12",
+      "title": "Beta Mortgage loan-status update",
+      "flow": "Beta",
+      "stage": "Loan status updated",
+      "intent": "Transactional",
+      "timing": "On meaningful verified changes; quarterly if terms require",
+      "gate": "Verified lender status and disclosure permission",
+      "subject": "Your Beta Mortgage account status update",
+      "body": "Hello {{first_name}},\n\nHere is your latest verified Beta Mortgage account status for {{property}}.\n\nFinancing status: {{loan_status}}\nNext recorded milestone: {{document_stage}}\nNext date requiring action: {{due_date}}\n\nIf no action is required, you do not need to respond. You can view the full timeline in your secure dashboard.\n\nLandshop Mortgage Support",
+      "wa": "Landshop Beta: your financing status is {{loan_status}}. Review timeline and next steps in your account.",
+      "sms": "",
+      "source": "Beta Mortgage diagram: recurring loan updates",
+      "channels": [
+        "Email",
+        "WhatsApp"
+      ],
+      "critical": false
+    },
+    {
+      "id": "I01",
+      "title": "Investment application welcome",
+      "flow": "Invest",
+      "stage": "Investment application submitted",
+      "intent": "Transactional",
+      "timing": "Immediately following a validated investment application",
+      "gate": "Identity and application record verified; no returns promised",
+      "subject": "Your Landshop investment application is received",
+      "body": "Hello {{first_name}},\n\nThank you for exploring a Landshop investment opportunity. We have received your application for {{property}}.\n\nApplication reference: {{application_ref}}\nSelected opportunity: {{plan}}\n\nOur team will review the submitted details. If you proceed, an authorised adviser will provide the approved prospectus, the relevant agreements, risk information and your verified account instructions before any payment is required.\n\nSubmitting this form does not mean an investment has been accepted or that returns are guaranteed.\n\nYou can review the full details securely in your Landshop account or contact your assigned adviser if you need assistance.\n\nWarm regards,\nLandshop Client Experience Team",
+      "wa": "Landshop: We received your Invest application {{application_ref}}. Please review the official next steps in your secure account. No returns are guaranteed.",
+      "sms": "Landshop Invest application {{application_ref}} received. Log in for verification and next steps.",
+      "source": "INVEST diagram: signup/walk-in → investment application and welcome",
+      "channels": [
+        "Email",
+        "WhatsApp",
+        "SMS"
+      ],
+      "critical": true
+    },
+    {
+      "id": "I02",
+      "title": "Investment funded: receipt and breakdown",
+      "flow": "Invest",
+      "stage": "Investment payment reconciled",
+      "intent": "Transactional",
+      "timing": "On confirmed receipt and signed investment allocation",
+      "gate": "Finance ledger + signed plan + approved payout schedule",
+      "subject": "Your Landshop investment has been recorded",
+      "body": "Hello {{first_name}},\n\nWe have verified receipt of your investment payment and recorded it against your signed agreement.\n\nInvestment: {{property}}\nAmount received: {{payment_amount}}\nReference: {{payment_ref}}\nAgreement reference: {{application_ref}}\n\nYour dashboard contains your payment receipt, contractual investment breakdown, fees where applicable, risks, and the approved payout timetable. Any projected return is a projection only unless the agreement expressly states otherwise.\n\nKeep this message for your records.\n\nYou can review the full details securely in your Landshop account or contact your assigned adviser if you need assistance.\n\nWarm regards,\nLandshop Investment Operations",
+      "wa": "Landshop Invest: {{payment_amount}} received and reconciled, ref {{payment_ref}}. Your official investment breakdown is in your secure account.",
+      "sms": "Landshop Invest receipt: {{payment_ref}}. Check dashboard for payment breakdown.",
+      "source": "INVEST diagram: automated welcome, payment confirmation and breakdown of investment and ROI",
+      "channels": [
+        "Email",
+        "WhatsApp",
+        "SMS"
+      ],
+      "critical": true
+    },
+    {
+      "id": "I03",
+      "title": "Monthly investment progress update",
+      "flow": "Invest",
+      "stage": "Monthly statement published",
+      "intent": "Transactional",
+      "timing": "Monthly, provided there is a current verified statement",
+      "gate": "Published portfolio update, eligible existing investor",
+      "subject": "Your monthly Landshop Invest update",
+      "body": "Hello {{first_name}},\n\nYour monthly update for {{property}} is ready.\n\nReporting period: {{reporting_period}}\nCurrent investment status: {{investment_status}}\nNext scheduled reporting date: {{due_date}}\n\nThe secure report includes verified activity, the relevant milestones, contractual disclosures and any material risks or changes. We will not describe unverified projections as realised performance.\n\nYou can review the full details securely in your Landshop account or contact your assigned adviser if you need assistance.\n\nWarm regards,\nLandshop Investment Operations",
+      "wa": "Landshop Invest monthly update for {{property}} is available. Review status and verified details securely.",
+      "sms": "",
+      "source": "INVEST diagram: monthly updates on investment status and breakdown",
+      "channels": [
+        "Email",
+        "WhatsApp"
+      ],
+      "critical": true
+    },
+    {
+      "id": "I04",
+      "title": "Quarterly return or distribution statement",
+      "flow": "Invest",
+      "stage": "Quarterly return statement approved",
+      "intent": "Transactional",
+      "timing": "After official quarterly statement or verified distribution",
+      "gate": "Approved actual amount / payout record; no assumed ROI",
+      "subject": "Your quarterly Landshop Invest statement is available",
+      "body": "Hello {{first_name}},\n\nThe quarterly investment statement for {{property}} has been published.\n\nStatement period: {{reporting_period}}\nReturn or distribution status: {{investment_status}}\nPayment amount, if applicable: {{payment_amount}}\n\nPlease refer to the statement for the actual performance, contractual basis, deductions and applicable risks. A notification does not guarantee a distribution.\n\nOptional recommendations will only be included where you have separately requested investment updates.\n\nYou can review the full details securely in your Landshop account or contact your assigned adviser if you need assistance.\n\nWarm regards,\nLandshop Investment Operations",
+      "wa": "Landshop Invest: your quarterly statement is available. Any payment is subject to the verified statement and agreement.",
+      "sms": "Landshop Invest quarterly report ready. Review the official statement securely.",
+      "source": "INVEST diagram: quarterly ROI payments notification and recommendations",
+      "channels": [
+        "Email",
+        "WhatsApp",
+        "SMS"
+      ],
+      "critical": true
+    },
+    {
+      "id": "I05",
+      "title": "Investment maturity: 90-day notice",
+      "flow": "Invest",
+      "stage": "Contract maturity approaching",
+      "intent": "Transactional",
+      "timing": "90 days before the *verified contractual maturity* if agreement requires notice",
+      "gate": "Signed maturity date + case review + investor status",
+      "subject": "Your Landshop investment is approaching maturity",
+      "body": "Hello {{first_name}},\n\nThis is an advance reminder that the contractual maturity of your investment in {{property}} is approaching.\n\nScheduled maturity date: {{due_date}}\nInvestment reference: {{application_ref}}\n\nYour secure account provides the maturity process, documentation requirements and applicable payment terms. The diagram proposes a 90-day notice; this timing will be used only when confirmed by the signed agreement.\n\nYou can review the full details securely in your Landshop account or contact your assigned adviser if you need assistance.\n\nWarm regards,\nLandshop Investment Operations",
+      "wa": "Landshop Invest: Your investment is approaching its verified maturity date {{due_date}}. Review next steps securely.",
+      "sms": "",
+      "source": "INVEST diagram: final payout notification (90 days prior)",
+      "channels": [
+        "Email",
+        "WhatsApp"
+      ],
+      "critical": true
+    },
+    {
+      "id": "I06",
+      "title": "Final investment payout confirmation",
+      "flow": "Invest",
+      "stage": "Final payout verified",
+      "intent": "Transactional",
+      "timing": "After bank transfer settles and ledger confirms payout",
+      "gate": "Verified payout and account reconciliation",
+      "subject": "Landshop Invest: your final payout has been confirmed",
+      "body": "Hello {{first_name}},\n\nWe are writing to confirm the reconciled final payout recorded for your investment in {{property}}.\n\nAmount paid: {{payment_amount}}\nPayment date: {{payment_date}}\nReference: {{payment_ref}}\n\nYour completion statement and any remaining documentation can be viewed securely in your account. This notice is generated only once our payment provider and financial records confirm settlement.\n\nYou can review the full details securely in your Landshop account or contact your assigned adviser if you need assistance.\n\nWarm regards,\nLandshop Investment Operations",
+      "wa": "Landshop Invest: Your final payout of {{payment_amount}} has been reconciled. Ref {{payment_ref}}. View your statement in your account.",
+      "sms": "Landshop Invest payout {{payment_ref}} confirmed. View your official completion statement.",
+      "source": "INVEST diagram: final payout",
+      "channels": [
+        "Email",
+        "WhatsApp",
+        "SMS"
+      ],
+      "critical": true
+    },
+    {
+      "id": "I07",
+      "title": "Investment communication opt-out confirmation",
+      "flow": "Invest",
+      "stage": "Marketing preference revoked",
+      "intent": "Transactional",
+      "timing": "Immediately upon opt-out request",
+      "gate": "Authenticated preference update; transaction notices retained only where necessary",
+      "subject": "Your Landshop communication preferences are updated",
+      "body": "Hello {{first_name}},\n\nWe have recorded your request to stop optional investment marketing updates.\n\nYou will no longer receive promotional investment recommendations through the opted-out channels. Important service communications about an active investment may still be delivered where necessary.\n\nPlease note: opting out of messages does not cancel or redeem an investment. Investment withdrawal or early-exit requests follow your signed agreement.\n\nYou can review the full details securely in your Landshop account or contact your assigned adviser if you need assistance.\n\nWarm regards,\nLandshop Privacy and Support",
+      "wa": "Landshop: Your optional Invest updates have been stopped. This does not change any active investment agreement.",
+      "sms": "Landshop Invest marketing preferences updated. See dashboard for details.",
+      "source": "INVEST diagram: opt out branch; adapted to separate communication preference and contract exit",
+      "channels": [
+        "Email",
+        "WhatsApp",
+        "SMS"
+      ],
+      "critical": true
+    },
+    {
+      "id": "I08",
+      "title": "Investment application not completed",
+      "flow": "Invest",
+      "stage": "Investment application abandoned",
+      "intent": "Marketing",
+      "timing": "48 hours after explicit opt-in, if no completed application",
+      "gate": "Marketing consent + no active support case + one-reminder cap",
+      "subject": "Would you like help completing your investment enquiry?",
+      "body": "Hello {{first_name}},\n\nYou recently began exploring a Landshop investment option but have not completed the application.\n\nIf you would like to continue, your saved information can help you resume your enquiry. Our team can also explain the risk disclosures and available documentation before you decide. There is no obligation to invest.\n\nYou can manage your marketing preferences or unsubscribe at any time.\n\nYou can review the full details securely in your Landshop account or contact your assigned adviser if you need assistance.\n\nWarm regards,\nLandshop Investment Advisory",
+      "wa": "Hi {{first_name}}, would you like help completing your Landshop Invest enquiry? There is no obligation. Reply STOP to opt out.",
+      "sms": "",
+      "source": "Proposed: abandoned investment application follow-up",
+      "channels": [
+        "Email",
+        "WhatsApp"
+      ],
+      "critical": false
+    },
+    {
+      "id": "I09",
+      "title": "Investment payment pending verification",
+      "flow": "Invest",
+      "stage": "Investment payment attempted",
+      "intent": "Transactional",
+      "timing": "When customer submitted a payment but no verified settlement exists",
+      "gate": "Never call payment confirmed until verified; no receipt",
+      "subject": "Your Landshop investment payment is being checked",
+      "body": "Hello {{first_name}},\n\nWe received a payment attempt linked to your investment application {{application_ref}}, but the payment is not yet confirmed as settled.\n\nPlease check your secure account for the current status. Do not repeat a transfer or use new bank details based only on a message. If the transaction remains pending, our Finance team will investigate.\n\nYou can review the full details securely in your Landshop account or contact your assigned adviser if you need assistance.\n\nWarm regards,\nLandshop Accounts Team",
+      "wa": "Landshop Invest: Payment is pending verification. Please check your secure dashboard before retrying.",
+      "sms": "",
+      "source": "Proposed: pending/failed funding path",
+      "channels": [
+        "Email",
+        "WhatsApp"
+      ],
+      "critical": true
+    },
+    {
+      "id": "E01",
+      "title": "Estate Pro onboarding welcome",
+      "flow": "Estate Pro",
+      "stage": "Website onboarding completed",
+      "intent": "Transactional",
+      "timing": "Immediately after a verified onboarding submission",
+      "gate": "Verified email address, enrolment reference, product eligibility",
+      "subject": "Welcome to Landshop Estate Pro, {{first_name}}",
+      "body": "Hello {{first_name}},\n\nThank you for your interest in Estate Pro. Your onboarding request has been received.\n\nReference: {{application_ref}}\n\nHere is what happens next: your details are reviewed, an account officer is assigned if appropriate, and you receive the current product documents and next-step instructions. Do not make a payment unless you have reviewed approved written terms.\n\nYou can review the full details securely in your Landshop account or contact your assigned adviser if you need assistance.\n\nWarm regards,\nLandshop Estate Pro Team",
+      "wa": "Welcome to Landshop Estate Pro. Your onboarding ref {{application_ref}} was received. Watch for your verified account-officer introduction.",
+      "sms": "Landshop Estate Pro onboarding received: {{application_ref}}.",
+      "source": "ESTATE PRO diagram: website onboarding and automated welcome",
+      "channels": [
+        "Email",
+        "WhatsApp",
+        "SMS"
+      ],
+      "critical": true
+    },
+    {
+      "id": "E02",
+      "title": "Estate Pro account officer assigned",
+      "flow": "Estate Pro",
+      "stage": "Day-three account officer assignment",
+      "intent": "Transactional",
+      "timing": "3 days after onboarding, or sooner if actual assignment occurs",
+      "gate": "Officer exists in CRM with public contact details; no fabricated identity",
+      "subject": "Your Estate Pro account officer has been assigned",
+      "body": "Hello {{first_name}},\n\nYour Estate Pro enquiry has progressed to the next step.\n\nAssigned account officer: {{account_officer}}\nOfficial contact: {{officer_contact}}\nReference: {{application_ref}}\n\nThe officer can help explain requirements, available materials, documentation and the next discussion. Please use only the verified details shown in your secure account.\n\nYou can review the full details securely in your Landshop account or contact your assigned adviser if you need assistance.\n\nWarm regards,\nLandshop Estate Pro Team",
+      "wa": "Landshop Estate Pro: your assigned account officer is {{account_officer}}. Confirm official contact details in your secure dashboard.",
+      "sms": "Landshop Estate Pro: account officer assigned. Sign in to view contact details.",
+      "source": "ESTATE PRO diagram: after waiting three days update prospect with account officer",
+      "channels": [
+        "Email",
+        "WhatsApp",
+        "SMS"
+      ],
+      "critical": false
+    },
+    {
+      "id": "E03",
+      "title": "Estate Pro contact confirmation",
+      "flow": "Estate Pro",
+      "stage": "Twenty-four-hour account officer follow-up",
+      "intent": "Transactional",
+      "timing": "24 hours after officer introduction if no response",
+      "gate": "Service follow-up appropriate to enquiry; verified contact/opt-in",
+      "subject": "Were you able to connect with your Estate Pro officer?",
+      "body": "Hello {{first_name}},\n\nWe are following up on your Estate Pro onboarding request.\n\nWere you able to connect with {{account_officer}}? If you still need assistance, reply to this message or select a convenient callback time from your secure account.\n\nIf your enquiry is complete, no additional action is required.\n\nYou can review the full details securely in your Landshop account or contact your assigned adviser if you need assistance.\n\nWarm regards,\nLandshop Estate Pro Team",
+      "wa": "Hello {{first_name}}, were you able to connect with your Estate Pro account officer? Reply here for assistance. Official details are in your dashboard.",
+      "sms": "",
+      "source": "ESTATE PRO diagram: wait 24 hours and follow-up by call/text",
+      "channels": [
+        "Email",
+        "WhatsApp"
+      ],
+      "critical": false
+    },
+    {
+      "id": "E04",
+      "title": "Estate Pro application needs information",
+      "flow": "Estate Pro",
+      "stage": "Onboarding incomplete",
+      "intent": "Transactional",
+      "timing": "After a validated missing-document or incomplete-data event",
+      "gate": "Customer has an active submitted request; minimal disclosure in message",
+      "subject": "A little more information is needed for Estate Pro",
+      "body": "Hello {{first_name}},\n\nThere is one additional step needed to continue your Estate Pro onboarding request {{application_ref}}.\n\nPlease review the outstanding requirements in your secure account. For your privacy, this message does not include identity documents or sensitive financial details.\n\nIf you did not submit this request, contact Landshop support.\n\nYou can review the full details securely in your Landshop account or contact your assigned adviser if you need assistance.\n\nWarm regards,\nLandshop Estate Pro Team",
+      "wa": "Landshop Estate Pro: More information is required for application {{application_ref}}. Please sign in securely.",
+      "sms": "",
+      "source": "Proposed: Estate Pro incomplete-information branch",
+      "channels": [
+        "Email",
+        "WhatsApp"
+      ],
+      "critical": false
+    },
+    {
+      "id": "D01",
+      "title": "Develop welcome: online or walk-in",
+      "flow": "Develop",
+      "stage": "Website sign-up or walk-in record created",
+      "intent": "Transactional",
+      "timing": "Immediately after verified lead registration",
+      "gate": "Contact voluntarily provided / walk-in details recorded with notice",
+      "subject": "Welcome to Landshop DEVELOP",
+      "body": "Hello {{first_name}},\n\nThank you for exploring Landshop DEVELOP. We have created a service enquiry for your property ownership interests.\n\nReference: {{application_ref}}\nProperty of interest: {{property}}\n\nOur Customer Service team will confirm the next available steps, including a property discussion and inspection where appropriate. This is not a reservation or confirmation of availability.\n\nYou can review the full details securely in your Landshop account or contact your assigned adviser if you need assistance.\n\nWarm regards,\nLandshop DEVELOP Client Service",
+      "wa": "Welcome to Landshop DEVELOP, {{first_name}}. Your enquiry {{application_ref}} was received. A verified adviser will share next steps.",
+      "sms": "Landshop DEVELOP enquiry {{application_ref}} received.",
+      "source": "DEVELOP diagram: website sign up / walk in and welcome message",
+      "channels": [
+        "Email",
+        "WhatsApp",
+        "SMS"
+      ],
+      "critical": true
+    },
+    {
+      "id": "D02",
+      "title": "Develop inspection confirmed",
+      "flow": "Develop",
+      "stage": "Property inspection booking confirmed",
+      "intent": "Transactional",
+      "timing": "When approved inspection date and time are saved",
+      "gate": "Verified booking, eligible site and assigned officer",
+      "subject": "Your Landshop DEVELOP inspection is booked",
+      "body": "Hello {{first_name}},\n\nYour inspection for {{property}} has been confirmed.\n\nDate: {{inspection_date}}\nTime: {{inspection_time}} WAT\nBooking reference: {{booking_ref}}\n\nReview the verified meeting point or virtual inspection link through your account. If your plans change, you can reschedule in advance.\n\nYou can review the full details securely in your Landshop account or contact your assigned adviser if you need assistance.\n\nWarm regards,\nLandshop DEVELOP Client Service",
+      "wa": "Landshop DEVELOP inspection confirmed: {{inspection_date}}, {{inspection_time}} WAT. Ref {{booking_ref}}. Manage appointment in your account.",
+      "sms": "Landshop inspection confirmed {{inspection_date}} {{inspection_time}} WAT. Ref {{booking_ref}}.",
+      "source": "DEVELOP diagram: inspection confirmation",
+      "channels": [
+        "Email",
+        "WhatsApp",
+        "SMS"
+      ],
+      "critical": true
+    },
+    {
+      "id": "D03",
+      "title": "Develop inspection reminder: six hours",
+      "flow": "Develop",
+      "stage": "Inspection six-hour reminder",
+      "intent": "Transactional",
+      "timing": "Six hours before confirmed appointment",
+      "gate": "Booking still active, unmodified and not completed",
+      "subject": "Your property inspection is in six hours",
+      "body": "Hello {{first_name}},\n\nA reminder that your confirmed inspection for {{property}} is scheduled for {{inspection_time}} WAT on {{inspection_date}}.\n\nPlease arrive at the verified meeting point or use your secure virtual inspection link. If you cannot attend, reschedule through the booking page to help us prepare appropriately.\n\nYou can review the full details securely in your Landshop account or contact your assigned adviser if you need assistance.\n\nWarm regards,\nLandshop DEVELOP Client Service",
+      "wa": "Reminder: Your Landshop inspection is in 6 hours on {{inspection_date}} at {{inspection_time}} WAT. Need to reschedule? Use your secure booking link.",
+      "sms": "Landshop inspection reminder: {{inspection_time}} WAT today. Reschedule via your booking page.",
+      "source": "DEVELOP diagram: inspection reminder (6hrs to inspection)",
+      "channels": [
+        "Email",
+        "WhatsApp",
+        "SMS"
+      ],
+      "critical": true
+    },
+    {
+      "id": "D04",
+      "title": "Develop missed inspection: easy rescheduling",
+      "flow": "Develop",
+      "stage": "Appointment marked no-show",
+      "intent": "Transactional",
+      "timing": "After confirmed no-show with attendance reconciled",
+      "gate": "No-show confirmed by agent and booking system; single follow-up",
+      "subject": "We missed you at your Landshop inspection",
+      "body": "Hello {{first_name}},\n\nIt looks like we did not meet at your scheduled inspection for {{property}}. We understand plans can change.\n\nIf you would still like to inspect the property, select another available time in your secure account. Your adviser can also discuss virtual inspection options where supported.\n\nYou can review the full details securely in your Landshop account or contact your assigned adviser if you need assistance.\n\nWarm regards,\nLandshop DEVELOP Client Service",
+      "wa": "Hi {{first_name}}, we missed you at the Landshop inspection. Would you like to reschedule? Use your secure booking link.",
+      "sms": "",
+      "source": "DEVELOP diagram: missed inspection and reschedule",
+      "channels": [
+        "Email",
+        "WhatsApp"
+      ],
+      "critical": false
+    },
+    {
+      "id": "D05",
+      "title": "Develop post-inspection follow-up",
+      "flow": "Develop",
+      "stage": "Inspection completed",
+      "intent": "Transactional",
+      "timing": "Within 24 hours of recorded completed inspection",
+      "gate": "Actual inspection attendance confirmed",
+      "subject": "Thank you for visiting {{property}}",
+      "body": "Hello {{first_name}},\n\nThank you for taking time to inspect {{property}} with Landshop.\n\nIf you would like to proceed, your adviser can explain the available property records, pricing, payment options and next steps. Please review verified documents before making a commitment. If you have questions, reply to this email.\n\nYou can review the full details securely in your Landshop account or contact your assigned adviser if you need assistance.\n\nWarm regards,\nLandshop DEVELOP Sales Team",
+      "wa": "Thank you for inspecting {{property}}. Would you like a verified property information pack or to discuss next steps with your Landshop adviser?",
+      "sms": "",
+      "source": "DEVELOP diagram: sales/customer journey after inspection",
+      "channels": [
+        "Email",
+        "WhatsApp"
+      ],
+      "critical": false
+    },
+    {
+      "id": "D06",
+      "title": "Develop alternative property suggestions",
+      "flow": "Develop",
+      "stage": "Prospect remains undecided",
+      "intent": "Marketing",
+      "timing": "After adviser-approved suitability review and explicit marketing permission",
+      "gate": "Opt-in + adviser approved real inventory; suppress on purchase",
+      "subject": "You may like these other Landshop property options",
+      "body": "Hello {{first_name}},\n\nThank you for explaining what you are looking for. If {{property}} is not the right fit, we can help you compare other verified Landshop options.\n\nOnly genuine, currently available projects with approved pricing and documentation will be recommended. You are welcome to discuss the options without obligation.\n\nYou can unsubscribe from property recommendations at any time.\n\nYou can review the full details securely in your Landshop account or contact your assigned adviser if you need assistance.\n\nWarm regards,\nLandshop Property Advisory",
+      "wa": "Hi {{first_name}}, Landshop has a few verified property alternatives you may wish to compare. Reply YES for details or STOP to opt out.",
+      "sms": "",
+      "source": "DEVELOP diagram: prospect alternatives/incentives and remarketing",
+      "channels": [
+        "Email",
+        "WhatsApp"
+      ],
+      "critical": false
+    },
+    {
+      "id": "D07",
+      "title": "Develop approved offer letter issued",
+      "flow": "Develop",
+      "stage": "Offer letter approved",
+      "intent": "Transactional",
+      "timing": "Only when signed offer document is published",
+      "gate": "Authorised property and terms; secure document access",
+      "subject": "Your Landshop DEVELOP offer letter is ready",
+      "body": "Hello {{first_name}},\n\nAn offer letter for {{property}} is available in your secure Landshop account.\n\nPlease review the agreed purchase price, payment options, stated fees, offer validity and all conditions before accepting or making any payment. Seek independent advice where appropriate.\n\nYou can review the full details securely in your Landshop account or contact your assigned adviser if you need assistance.\n\nWarm regards,\nLandshop DEVELOP Sales Team",
+      "wa": "Landshop DEVELOP: Your offer letter for {{property}} is ready in your dashboard. Review the terms before signing or paying.",
+      "sms": "",
+      "source": "DEVELOP diagram: Offer letter",
+      "channels": [
+        "Email",
+        "WhatsApp"
+      ],
+      "critical": true
+    },
+    {
+      "id": "D08",
+      "title": "Develop first payment confirmed",
+      "flow": "Develop",
+      "stage": "Initial payment reconciled",
+      "intent": "Transactional",
+      "timing": "After signed agreement and verified payment reconciliation",
+      "gate": "Finance ledger and payment gateway corroborate payment",
+      "subject": "We have received your initial DEVELOP payment",
+      "body": "Hello {{first_name}},\n\nWe confirm receipt of your initial reconciled payment towards {{property}}.\n\nAmount: {{payment_amount}}\nDate: {{payment_date}}\nReceipt: {{payment_ref}}\nRemaining balance: {{balance_due}}\n\nYour official receipt and approved instalment schedule are available in the secure account. The next legal/documentation milestones depend on the signed agreement.\n\nYou can review the full details securely in your Landshop account or contact your assigned adviser if you need assistance.\n\nWarm regards,\nLandshop Accounts Team",
+      "wa": "Landshop DEVELOP: Initial payment {{payment_amount}} confirmed. Ref {{payment_ref}}. Your receipt and schedule are in your account.",
+      "sms": "Landshop DEVELOP payment confirmed. Ref {{payment_ref}}. Check receipt and schedule.",
+      "source": "DEVELOP diagram: confirmation of initial payment",
+      "channels": [
+        "Email",
+        "WhatsApp",
+        "SMS"
+      ],
+      "critical": true
+    },
+    {
+      "id": "D09",
+      "title": "Develop scheduled instalment reminder",
+      "flow": "Develop",
+      "stage": "Payment milestone approaching",
+      "intent": "Transactional",
+      "timing": "Based on actual weekly, monthly or daily contract schedule",
+      "gate": "Approved schedule + balance, suppress after repayment",
+      "subject": "Reminder: your Landshop DEVELOP payment is due {{due_date}}",
+      "body": "Hello {{first_name}},\n\nYour next scheduled payment for {{property}} is approaching.\n\nAmount due: {{payment_amount}}\nDue date: {{due_date}}\nOutstanding balance: {{balance_due}}\n\nPlease confirm the amount and approved payment destination in your secure account. If you have already paid, disregard this reminder while reconciliation completes or contact Accounts.\n\nYou can review the full details securely in your Landshop account or contact your assigned adviser if you need assistance.\n\nWarm regards,\nLandshop Accounts Team",
+      "wa": "Landshop DEVELOP: {{payment_amount}} is due {{due_date}} for {{property}}. Review your approved schedule securely.",
+      "sms": "Landshop payment reminder: {{payment_amount}} due {{due_date}}. Check account.",
+      "source": "DEVELOP diagram: monthly/weekly/daily recurring payment obligation",
+      "channels": [
+        "Email",
+        "WhatsApp",
+        "SMS"
+      ],
+      "critical": true
+    },
+    {
+      "id": "D10",
+      "title": "Develop payment overdue: account review",
+      "flow": "Develop",
+      "stage": "Verified overdue payment",
+      "intent": "Transactional",
+      "timing": "After due date, grace check and failed reconciliation search",
+      "gate": "Actual contract/ledger arrears; no invented penalty",
+      "subject": "Your Landshop DEVELOP account needs attention",
+      "body": "Hello {{first_name}},\n\nOur records indicate that the scheduled payment for {{property}} has not yet been reconciled.\n\nDue date: {{due_date}}\nAmount shown outstanding: {{payment_amount}}\n\nIf you have paid, please submit your payment reference securely for review. If the payment is pending, contact Landshop Accounts to discuss the agreement and appropriate next steps. No penalty is applied or asserted by this template without contractual verification.\n\nYou can review the full details securely in your Landshop account or contact your assigned adviser if you need assistance.\n\nWarm regards,\nLandshop Accounts Team",
+      "wa": "Landshop DEVELOP account notice: an instalment is marked unpaid. Check your secure account or contact Accounts if already settled.",
+      "sms": "",
+      "source": "DEVELOP diagram: notice of default",
+      "channels": [
+        "Email",
+        "WhatsApp"
+      ],
+      "critical": true
+    },
+    {
+      "id": "D11",
+      "title": "Develop formal breach alert",
+      "flow": "Develop",
+      "stage": "Legal notice approved",
+      "intent": "Transactional",
+      "timing": "After documented breach and authorised legal review",
+      "gate": "Signed agreement + verified arrears + counsel approval and delivery method",
+      "subject": "Important legal correspondence is available in your account",
+      "body": "Hello {{first_name}},\n\nA formal document concerning your agreement for {{property}} is available for secure review.\n\nPlease read the exact allegations, any applicable response or remedy period, and instructions provided by the authorised Legal team. This email is a notification only; any legally effective notice must be issued according to the contract and applicable law.\n\nYou can review the full details securely in your Landshop account or contact your assigned adviser if you need assistance.\n\nWarm regards,\nLandshop Legal Team",
+      "wa": "Landshop: An important document concerning your property agreement requires review in your secure account. Contact Legal with questions.",
+      "sms": "",
+      "source": "DEVELOP diagram: notice of breach, human-approved",
+      "channels": [
+        "Email",
+        "WhatsApp"
+      ],
+      "critical": true
+    },
+    {
+      "id": "D12",
+      "title": "Develop contract of sale ready",
+      "flow": "Develop",
+      "stage": "Contract approved for signing",
+      "intent": "Transactional",
+      "timing": "When authorised document has been produced",
+      "gate": "Document state verified + legal sign-off",
+      "subject": "Your DEVELOP contract of sale is ready",
+      "body": "Hello {{first_name}},\n\nThe contract of sale for {{property}} is now ready for review and signature in your secure Landshop account.\n\nPlease review property identifiers, price, fees, obligations and signing requirements. You may consult your independent legal adviser before signing. Your account officer will assist with any questions.\n\nYou can review the full details securely in your Landshop account or contact your assigned adviser if you need assistance.\n\nWarm regards,\nLandshop Legal & Documentation Team",
+      "wa": "Landshop DEVELOP: Contract of sale ready for {{property}}. Review securely before signing.",
+      "sms": "",
+      "source": "DEVELOP diagram: Legal communication of document readiness",
+      "channels": [
+        "Email",
+        "WhatsApp"
+      ],
+      "critical": true
+    },
+    {
+      "id": "D13",
+      "title": "Develop deed / survey / plan pickup",
+      "flow": "Develop",
+      "stage": "Property documents ready",
+      "intent": "Transactional",
+      "timing": "After verification that specific documents are approved for release",
+      "gate": "Document inventory, client identity and collection requirements verified",
+      "subject": "Your Landshop property documents are ready for collection",
+      "body": "Hello {{first_name}},\n\nThe documentation team has updated the status of the property documents for {{property}}.\n\nDocuments ready: {{document_stage}}\nClient reference: {{application_ref}}\n\nYour secure account explains which approved deed, survey or plan documents are available and how to schedule collection or electronic delivery. Never rely on an unverified collection address.\n\nYou can review the full details securely in your Landshop account or contact your assigned adviser if you need assistance.\n\nWarm regards,\nLandshop Legal & Documentation Team",
+      "wa": "Landshop: Your documentation status for {{property}} has changed. Check the official pickup or secure delivery instructions in your dashboard.",
+      "sms": "",
+      "source": "DEVELOP diagram: document readiness / pickup of deed survey plan",
+      "channels": [
+        "Email",
+        "WhatsApp"
+      ],
+      "critical": true
+    },
+    {
+      "id": "D14",
+      "title": "Develop allocation confirmed",
+      "flow": "Develop",
+      "stage": "Allocation authorised",
+      "intent": "Transactional",
+      "timing": "After authenticated estate allocation record and payment/contract checks",
+      "gate": "Verified plot/unit mapping, signed records and authorised allocation event",
+      "subject": "Your Landshop property allocation update",
+      "body": "Hello {{first_name}},\n\nWe are pleased to confirm an allocation milestone for {{property}}, subject to the official documentation shown in your account.\n\nReference: {{application_ref}}\nAllocation record: {{allocation_ref}}\n\nPlease review the approved allocation notice, any remaining conditions and the next steps with Customer Service. Do not infer title or handover rights beyond what the signed documents establish.\n\nYou can review the full details securely in your Landshop account or contact your assigned adviser if you need assistance.\n\nWarm regards,\nLandshop Allocation & Customer Service",
+      "wa": "Landshop DEVELOP: An allocation update for {{property}} is available in your dashboard. Ref {{allocation_ref}}.",
+      "sms": "Landshop allocation update: {{allocation_ref}}. Review secure documents.",
+      "source": "DEVELOP diagram: allocation notice",
+      "channels": [
+        "Email",
+        "WhatsApp",
+        "SMS"
+      ],
+      "critical": true
+    },
+    {
+      "id": "D15",
+      "title": "Develop outright settlement confirmed",
+      "flow": "Develop",
+      "stage": "Outright payment fully settled",
+      "intent": "Transactional",
+      "timing": "After full reconciliation and authorised settlement event",
+      "gate": "Ledger zero balance + approved agreement",
+      "subject": "Your DEVELOP property purchase payment is complete",
+      "body": "Hello {{first_name}},\n\nCongratulations on reaching the full-payment milestone for {{property}}. Our records confirm that your contracted payment has been fully reconciled.\n\nSettlement reference: {{payment_ref}}\nSettlement date: {{payment_date}}\n\nYour account now displays the approved documentation and allocation steps. Ownership transfer remains governed by verified title documentation and your signed agreement.\n\nYou can review the full details securely in your Landshop account or contact your assigned adviser if you need assistance.\n\nWarm regards,\nLandshop Accounts Team",
+      "wa": "Landshop DEVELOP: Full payment for {{property}} confirmed. Review your approved document and allocation next steps securely.",
+      "sms": "",
+      "source": "DEVELOP diagram: outright payment branch and documentation",
+      "channels": [
+        "Email",
+        "WhatsApp"
+      ],
+      "critical": true
+    },
+    {
+      "id": "P01",
+      "title": "Dev Pro onboarding welcome",
+      "flow": "Dev Pro",
+      "stage": "Website onboarding completed",
+      "intent": "Transactional",
+      "timing": "Immediately after confirmed online onboarding",
+      "gate": "Submission validated, recipient email verified",
+      "subject": "Welcome to Landshop Dev Pro",
+      "body": "Hello {{first_name}},\n\nThank you for your interest in Dev Pro. We have received your onboarding request.\n\nReference: {{application_ref}}\n\nNext, our team will review your needs, confirm the appropriate programme information and introduce an assigned account officer where relevant. Any pricing and contractual terms will be provided through verified official channels.\n\nYou can review the full details securely in your Landshop account or contact your assigned adviser if you need assistance.\n\nWarm regards,\nLandshop Dev Pro Team",
+      "wa": "Welcome to Landshop Dev Pro. Your onboarding ref {{application_ref}} is received. We will share your next steps securely.",
+      "sms": "Landshop Dev Pro enquiry {{application_ref}} received.",
+      "source": "DEV PRO diagram: website onboarding and automated welcome",
+      "channels": [
+        "Email",
+        "WhatsApp",
+        "SMS"
+      ],
+      "critical": true
+    },
+    {
+      "id": "P02",
+      "title": "Dev Pro account officer introduction",
+      "flow": "Dev Pro",
+      "stage": "Three-day account officer update",
+      "intent": "Transactional",
+      "timing": "Three days after onboarding if assignment is confirmed",
+      "gate": "Officer identity and public contact verified",
+      "subject": "Meet your Dev Pro account officer",
+      "body": "Hello {{first_name}},\n\nYour Dev Pro enquiry has moved to account-officer review.\n\nAssigned officer: {{account_officer}}\nOfficial contact: {{officer_contact}}\n\nThe officer will clarify your requirements and guide you through the next appropriate step. You can verify their details within your secure account.\n\nYou can review the full details securely in your Landshop account or contact your assigned adviser if you need assistance.\n\nWarm regards,\nLandshop Dev Pro Team",
+      "wa": "Landshop Dev Pro: {{account_officer}} is your assigned account officer. Verify contact details in your secure dashboard.",
+      "sms": "Landshop Dev Pro account officer assigned. See secure dashboard.",
+      "source": "DEV PRO diagram: after waiting three days update prospect with account officer",
+      "channels": [
+        "Email",
+        "WhatsApp",
+        "SMS"
+      ],
+      "critical": false
+    },
+    {
+      "id": "P03",
+      "title": "Dev Pro 24-hour contact check",
+      "flow": "Dev Pro",
+      "stage": "Twenty-four-hour follow-up",
+      "intent": "Transactional",
+      "timing": "24 hours after officer information sent if no verified contact",
+      "gate": "Active request, no duplicate or opt-out conflict",
+      "subject": "Checking in on your Dev Pro enquiry",
+      "body": "Hello {{first_name}},\n\nWe recently shared the details of your assigned Dev Pro account officer.\n\nHave you been able to connect? If you would like a callback or need clarification, reply to this message or choose a suitable time through your account.\n\nYou can review the full details securely in your Landshop account or contact your assigned adviser if you need assistance.\n\nWarm regards,\nLandshop Dev Pro Team",
+      "wa": "Hello {{first_name}}, have you spoken with your Landshop Dev Pro account officer yet? Reply if you need assistance.",
+      "sms": "",
+      "source": "DEV PRO diagram: wait 24 hours and follow-up by text/call",
+      "channels": [
+        "Email",
+        "WhatsApp"
+      ],
+      "critical": false
+    },
+    {
+      "id": "P04",
+      "title": "Dev Pro enquiry paused / officer escalation",
+      "flow": "Dev Pro",
+      "stage": "No response after approved follow-up window",
+      "intent": "Transactional",
+      "timing": "After an assigned officer flags unresolved customer service request",
+      "gate": "Open case, contact preferences and fatigue cap",
+      "subject": "An update on your Dev Pro enquiry",
+      "body": "Hello {{first_name}},\n\nWe have not yet been able to complete the next discussion for your Dev Pro enquiry {{application_ref}}.\n\nYour request remains available in your secure account. If you would like help, please select a convenient time or contact Landshop Client Service. We will not keep sending repeated reminders without a valid reason and communication permission.\n\nYou can review the full details securely in your Landshop account or contact your assigned adviser if you need assistance.\n\nWarm regards,\nLandshop Dev Pro Team",
+      "wa": "Landshop Dev Pro: Your enquiry is ready whenever you are. Contact our verified team to continue.",
+      "sms": "",
+      "source": "Proposed: controlled escalation/suppression after onboarding",
+      "channels": [
+        "Email",
+        "WhatsApp"
+      ],
+      "critical": false
+    }
+  ],
+  "flows": {
+    "Xtra": [
+      {
+        "id": "xv",
+        "name": "Website / mortgage visit",
+        "phase": "Discover",
+        "type": "neutral",
+        "note": "Anonymous browsing stays anonymous. Show calculator; no outbound message until details are voluntarily submitted.",
+        "templates": [],
+        "next": "Calculator opened; optional lead form"
+      },
+      {
+        "id": "xc",
+        "name": "Loan calculation",
+        "phase": "Discover",
+        "type": "neutral",
+        "note": "On-screen estimate. Offer “Email me my calculation” and a separate marketing consent checkbox.",
+        "templates": [
+          "C08",
+          "C09",
+          "C10"
+        ],
+        "next": "Save estimate / Apply / Exit"
+      },
+      {
+        "id": "xs",
+        "name": "Application submitted",
+        "phase": "Apply",
+        "type": "good",
+        "note": "Send immediate acknowledgement; calculation alone never qualifies an applicant.",
+        "templates": [
+          "C01"
+        ],
+        "next": "Assessment approved / declined"
+      },
+      {
+        "id": "xf",
+        "name": "Assessment not approved",
+        "phase": "Apply",
+        "type": "bad",
+        "note": "Secure reason category, route to appeal/reapplication and optional advisory.",
+        "templates": [
+          "C13"
+        ],
+        "next": "Correct records / Reapply"
+      },
+      {
+        "id": "xa",
+        "name": "Assessment approved",
+        "phase": "Apply",
+        "type": "good",
+        "note": "Decision must come from a verified authorised review event, never browser-side logic.",
+        "templates": [
+          "C02",
+          "X01"
+        ],
+        "next": "Customer Service"
+      },
+      {
+        "id": "xcs",
+        "name": "Customer service",
+        "phase": "Engage",
+        "type": "blue",
+        "note": "Assign adviser and arrange an inspection. Escalate unresponsive or unsuitable prospects to authorised alternative-property follow-up.",
+        "templates": [
+          "X01",
+          "X02"
+        ],
+        "next": "Inspection booked / alternative review"
+      },
+      {
+        "id": "xi",
+        "name": "Inspection",
+        "phase": "Engage",
+        "type": "neutral",
+        "note": "Send booking confirmation and reminder; after completion send one useful follow-up.",
+        "templates": [
+          "C03",
+          "C14",
+          "C15"
+        ],
+        "next": "Offer letter / Prospect alternative"
+      },
+      {
+        "id": "xo",
+        "name": "Offer letter",
+        "phase": "Convert",
+        "type": "neutral",
+        "note": "Only send a secure signed/approved offer generated for a verified property and applicant.",
+        "templates": [
+          "C04",
+          "C16"
+        ],
+        "next": "Client accepts"
+      },
+      {
+        "id": "xbd",
+        "name": "Business development",
+        "phase": "Convert",
+        "type": "blue",
+        "note": "A business-development specialist confirms client readiness and hands off to Finance.",
+        "templates": [
+          "X02",
+          "C17"
+        ],
+        "next": "Funding schedule"
+      },
+      {
+        "id": "xe",
+        "name": "30% equity payment",
+        "phase": "Convert",
+        "type": "neutral",
+        "note": "Diagram’s 30% threshold is a proposed contractual condition, not a generic rule.",
+        "templates": [
+          "X03",
+          "X04",
+          "C05"
+        ],
+        "next": "Reconcile payment"
+      },
+      {
+        "id": "xp",
+        "name": "Approval / readiness notice",
+        "phase": "Own",
+        "type": "good",
+        "note": "Diagram references approval within 90 days. Use a property-specific date only after verification.",
+        "templates": [
+          "X05",
+          "C18"
+        ],
+        "next": "Handover"
+      },
+      {
+        "id": "xh",
+        "name": "Key and document handover",
+        "phase": "Own",
+        "type": "good",
+        "note": "Keys, title documents and actual handover date require authorised verification.",
+        "templates": [
+          "X06",
+          "C07"
+        ],
+        "next": "Annual servicing"
+      },
+      {
+        "id": "xr",
+        "name": "Annual 7% notice · 15 years",
+        "phase": "Own",
+        "type": "neutral",
+        "note": "Annual payment sequence only if a signed agreement validates rate, duration and charge basis.",
+        "templates": [
+          "X07"
+        ],
+        "next": "Reconcile each annual payment"
+      }
+    ],
+    "Beta": [
+      {
+        "id": "bv",
+        "name": "Pre-application",
+        "phase": "Discover",
+        "type": "neutral",
+        "note": "Capture only voluntarily submitted contact details. Provide privacy notice and optional marketing consent.",
+        "templates": [
+          "B01",
+          "C09"
+        ],
+        "next": "Calculator"
+      },
+      {
+        "id": "bc",
+        "name": "Loan calculation",
+        "phase": "Discover",
+        "type": "neutral",
+        "note": "Calculate illustrative affordability; allow the applicant to email their estimate.",
+        "templates": [
+          "C08",
+          "C10"
+        ],
+        "next": "Application submitted / incomplete"
+      },
+      {
+        "id": "bs",
+        "name": "Application submitted",
+        "phase": "Apply",
+        "type": "good",
+        "note": "Immediate welcome and application reference; source diagram has success branch.",
+        "templates": [
+          "C01"
+        ],
+        "next": "Assessment outcome"
+      },
+      {
+        "id": "bf",
+        "name": "Application unsuccessful",
+        "phase": "Apply",
+        "type": "bad",
+        "note": "Share secure next steps without implying an irrevocable rejection or failure to own property.",
+        "templates": [
+          "C13"
+        ],
+        "next": "Reapplication"
+      },
+      {
+        "id": "ba",
+        "name": "Application successful",
+        "phase": "Apply",
+        "type": "good",
+        "note": "Initial evaluation success is not full lender underwriting. Separate the two events.",
+        "templates": [
+          "C02"
+        ],
+        "next": "Business development"
+      },
+      {
+        "id": "bbd",
+        "name": "Business development",
+        "phase": "Engage",
+        "type": "blue",
+        "note": "Verify an account/funding route; allow contact and document requests.",
+        "templates": [
+          "C12",
+          "C17"
+        ],
+        "next": "Full qualification"
+      },
+      {
+        "id": "bq",
+        "name": "Full qualification",
+        "phase": "Engage",
+        "type": "good",
+        "note": "Final decision requires authorised review, financial eligibility and contract approval.",
+        "templates": [
+          "B02"
+        ],
+        "next": "Funding plan"
+      },
+      {
+        "id": "bp",
+        "name": "30% funding over 6 months",
+        "phase": "Convert",
+        "type": "neutral",
+        "note": "Diagram references 30% property value across six months and a 2.5% monthly-primary-income element. Legal/Finance must interpret.",
+        "templates": [
+          "B03",
+          "B05"
+        ],
+        "next": "Recurring payments / possible arrears"
+      },
+      {
+        "id": "br",
+        "name": "Recurring payment confirmations",
+        "phase": "Convert",
+        "type": "neutral",
+        "note": "Send only from reconciled ledger events, not from “Pay” button clicks.",
+        "templates": [
+          "B04",
+          "C05"
+        ],
+        "next": "90% milestone / full settlement"
+      },
+      {
+        "id": "b90",
+        "name": "90% / full-payment milestone",
+        "phase": "Convert",
+        "type": "good",
+        "note": "Notify on reconciled threshold and request current property-readiness estimate.",
+        "templates": [
+          "B06",
+          "C06"
+        ],
+        "next": "Loan to developer"
+      },
+      {
+        "id": "bloan",
+        "name": "Loan issued to developer",
+        "phase": "Own",
+        "type": "blue",
+        "note": "Independent verified lender-to-developer disbursement event.",
+        "templates": [
+          "B07"
+        ],
+        "next": "Readiness / recurring loan updates"
+      },
+      {
+        "id": "bready",
+        "name": "Property readiness within 90 days?",
+        "phase": "Own",
+        "type": "good",
+        "note": "Diagram references 90-day readiness communication, not a guaranteed deadline.",
+        "templates": [
+          "B08",
+          "C18",
+          "C07"
+        ],
+        "next": "Document collection and property delivery"
+      },
+      {
+        "id": "bstatus",
+        "name": "Recurring loan status",
+        "phase": "Own",
+        "type": "neutral",
+        "note": "Only meaningful events and consented/contractually necessary reminders; do not flood customers.",
+        "templates": [
+          "B12"
+        ],
+        "next": "Ongoing servicing"
+      },
+      {
+        "id": "boverdue",
+        "name": "Overdue payment / default",
+        "phase": "Exceptions",
+        "type": "bad",
+        "note": "Check reconciliation; notify, handle hardship and establish approved grace rules.",
+        "templates": [
+          "B09",
+          "B10"
+        ],
+        "next": "Resolved / legal review"
+      },
+      {
+        "id": "bbreach",
+        "name": "Breach notice",
+        "phase": "Exceptions",
+        "type": "bad",
+        "note": "Never issue a legal breach notice entirely autonomously. Legal authorises final notice and service method.",
+        "templates": [
+          "B11"
+        ],
+        "next": "Legal review / reconciliation"
+      }
+    ],
+    "Invest": [
+      {
+        "id": "iv",
+        "name": "Website sign-up / walk-in",
+        "phase": "Discover",
+        "type": "neutral",
+        "note": "Online or in-person contact is recorded only when the person actually provides information; anonymous visits are not identifiable.",
+        "templates": [
+          "C09"
+        ],
+        "next": "Investment application"
+      },
+      {
+        "id": "ia",
+        "name": "Investment application",
+        "phase": "Apply",
+        "type": "blue",
+        "note": "Validation, risk acknowledgement and identity checks; requested return scenarios are illustrative.",
+        "templates": [
+          "I01",
+          "I08"
+        ],
+        "next": "Sales / Business Development"
+      },
+      {
+        "id": "is",
+        "name": "Sales / customer service",
+        "phase": "Engage",
+        "type": "blue",
+        "note": "Account manager explains documents, verified investment terms and account funding steps.",
+        "templates": [
+          "I01"
+        ],
+        "next": "Payment confirmation or application pause"
+      },
+      {
+        "id": "if",
+        "name": "Investment funding verified",
+        "phase": "Invest",
+        "type": "good",
+        "note": "Ledger reconciliation and signed documents required before receipt/breakdown.",
+        "templates": [
+          "I02",
+          "I09"
+        ],
+        "next": "Active investment / monthly reports"
+      },
+      {
+        "id": "ip",
+        "name": "Monthly project updates",
+        "phase": "Service",
+        "type": "neutral",
+        "note": "Verified monthly investment status and breakdown (not guaranteed performance).",
+        "templates": [
+          "I03"
+        ],
+        "next": "Quarterly statements"
+      },
+      {
+        "id": "ir",
+        "name": "Quarterly ROI / distributions",
+        "phase": "Service",
+        "type": "neutral",
+        "note": "Send verified quarterly statement and any distribution confirmation. Opt-in required for recommendations.",
+        "templates": [
+          "I04"
+        ],
+        "next": "Next quarter or maturity"
+      },
+      {
+        "id": "io",
+        "name": "Opt out of marketing",
+        "phase": "Exception",
+        "type": "bad",
+        "note": "Diagram’s opt-out branch: unsubscribe marketing, do not automatically redeem or cancel an active investment.",
+        "templates": [
+          "I07"
+        ],
+        "next": "Keep mandatory service notifications if lawful"
+      },
+      {
+        "id": "im",
+        "name": "90-day maturity notice",
+        "phase": "Maturity",
+        "type": "neutral",
+        "note": "Advance maturity notice only where supported by the signed agreement.",
+        "templates": [
+          "I05"
+        ],
+        "next": "Payout confirmation"
+      },
+      {
+        "id": "iy",
+        "name": "Final payout confirmed",
+        "phase": "Maturity",
+        "type": "good",
+        "note": "Confirmation only after settled transfer and completed ledger reconciliation.",
+        "templates": [
+          "I06"
+        ],
+        "next": "Close investment / archive documents"
+      }
+    ],
+    "Estate Pro": [
+      {
+        "id": "ev",
+        "name": "Website onboarding",
+        "phase": "Enroll",
+        "type": "neutral",
+        "note": "Prospect submits information and requests Estate Pro details.",
+        "templates": [
+          "E01"
+        ],
+        "next": "Immediate welcome"
+      },
+      {
+        "id": "ew",
+        "name": "Welcome / onboarding instructions",
+        "phase": "Enroll",
+        "type": "good",
+        "note": "Acknowledgement and explanation of verification requirements.",
+        "templates": [
+          "E01",
+          "E04"
+        ],
+        "next": "Wait 3 days / early staff response"
+      },
+      {
+        "id": "ed",
+        "name": "Wait 3 days",
+        "phase": "Timing",
+        "type": "neutral",
+        "note": "Timer starts at confirmed onboarding. Cancel early if officer responds or the case closes.",
+        "templates": [],
+        "next": "Update prospect with officer details"
+      },
+      {
+        "id": "eo",
+        "name": "Assigned account officer details",
+        "phase": "Timing",
+        "type": "blue",
+        "note": "Only named, verified CRM officer details.",
+        "templates": [
+          "E02"
+        ],
+        "next": "Wait another 24 hours"
+      },
+      {
+        "id": "e24",
+        "name": "Wait 24 hours",
+        "phase": "Follow-up",
+        "type": "neutral",
+        "note": "No further contact if request is resolved, declined or suppressed.",
+        "templates": [],
+        "next": "Follow-up if active"
+      },
+      {
+        "id": "ef",
+        "name": "Did the prospect reach the officer?",
+        "phase": "Follow-up",
+        "type": "good",
+        "note": "Single status check by email and WhatsApp where permission exists; escalate to live account officer if needed.",
+        "templates": [
+          "E03"
+        ],
+        "next": "Complete / provide support"
+      }
+    ],
+    "Develop": [
+      {
+        "id": "dv",
+        "name": "Website sign-up / walk-in",
+        "phase": "Acquire",
+        "type": "neutral",
+        "note": "Lead from online form or consented walk-in record.",
+        "templates": [
+          "D01"
+        ],
+        "next": "Customer Service"
+      },
+      {
+        "id": "dcs",
+        "name": "Customer Service welcome",
+        "phase": "Acquire",
+        "type": "blue",
+        "note": "Send client-specific onboarding and initiate property conversation.",
+        "templates": [
+          "D01"
+        ],
+        "next": "Inspection booking"
+      },
+      {
+        "id": "dbook",
+        "name": "Inspection confirmation",
+        "phase": "Inspect",
+        "type": "neutral",
+        "note": "Send verified inspection details and book assigned staff.",
+        "templates": [
+          "D02"
+        ],
+        "next": "6-hour reminder / inspection"
+      },
+      {
+        "id": "drem",
+        "name": "Reminder 6 hours before",
+        "phase": "Inspect",
+        "type": "neutral",
+        "note": "Only for active appointments; skip cancelled or rescheduled bookings.",
+        "templates": [
+          "D03"
+        ],
+        "next": "Attend / miss"
+      },
+      {
+        "id": "dmiss",
+        "name": "Inspection missed",
+        "phase": "Inspect",
+        "type": "bad",
+        "note": "Record actual no-show and offer rescheduling.",
+        "templates": [
+          "D04"
+        ],
+        "next": "Rebook / wait"
+      },
+      {
+        "id": "ddone",
+        "name": "Inspection completed",
+        "phase": "Inspect",
+        "type": "good",
+        "note": "Follow up and record preference/status.",
+        "templates": [
+          "D05"
+        ],
+        "next": "Sales / Prospect"
+      },
+      {
+        "id": "dsales",
+        "name": "Sales assessment",
+        "phase": "Convert",
+        "type": "blue",
+        "note": "Separate interested client from prospect needing different options.",
+        "templates": [
+          "D05",
+          "D06"
+        ],
+        "next": "Finance / remarketing"
+      },
+      {
+        "id": "dpros",
+        "name": "Prospect alternatives",
+        "phase": "Convert",
+        "type": "neutral",
+        "note": "Real inventory, approved incentives and permission-based remarketing.",
+        "templates": [
+          "D06"
+        ],
+        "next": "Reinspect / nurture / opt out"
+      },
+      {
+        "id": "doffer",
+        "name": "Offer letter issued",
+        "phase": "Convert",
+        "type": "blue",
+        "note": "Approved terms before payment; secure signature and documents.",
+        "templates": [
+          "D07"
+        ],
+        "next": "Finance and agreement"
+      },
+      {
+        "id": "dfin",
+        "name": "Finance: initial payment",
+        "phase": "Pay",
+        "type": "neutral",
+        "note": "Choose outright or instalment according to signed agreement and actual ledger.",
+        "templates": [
+          "D08",
+          "D15"
+        ],
+        "next": "Instalment or outright path"
+      },
+      {
+        "id": "dinst",
+        "name": "Instalment schedule",
+        "phase": "Pay",
+        "type": "neutral",
+        "note": "Daily/weekly/monthly reminders only for the actual contractual schedule.",
+        "templates": [
+          "D09",
+          "D08"
+        ],
+        "next": "Paid / overdue"
+      },
+      {
+        "id": "dout",
+        "name": "Outright settlement",
+        "phase": "Pay",
+        "type": "good",
+        "note": "Only after verified full reconciliation.",
+        "templates": [
+          "D15"
+        ],
+        "next": "Legal"
+      },
+      {
+        "id": "ddef",
+        "name": "Overdue / default",
+        "phase": "Exception",
+        "type": "bad",
+        "note": "Reconciliation check, approved grace period, escalation to authorised Legal if needed.",
+        "templates": [
+          "D10",
+          "D11"
+        ],
+        "next": "Resolve / human legal review"
+      },
+      {
+        "id": "dlegal",
+        "name": "Legal: contract of sale",
+        "phase": "Documents",
+        "type": "blue",
+        "note": "Contract prepared and reviewed before customer signature.",
+        "templates": [
+          "D12",
+          "C07"
+        ],
+        "next": "Document readiness"
+      },
+      {
+        "id": "ddocs",
+        "name": "Deed / survey / plan ready",
+        "phase": "Documents",
+        "type": "neutral",
+        "note": "Confirm which physical or digital documents actually exist.",
+        "templates": [
+          "D13"
+        ],
+        "next": "Customer Service / collection"
+      },
+      {
+        "id": "dalloc",
+        "name": "Property allocation notice",
+        "phase": "Allocation",
+        "type": "good",
+        "note": "No allocation without real verified plot/unit and authorised property records.",
+        "templates": [
+          "D14"
+        ],
+        "next": "Client aftercare"
+      }
+    ],
+    "Dev Pro": [
+      {
+        "id": "pv",
+        "name": "Website onboarding",
+        "phase": "Enroll",
+        "type": "neutral",
+        "note": "Prospect enters the Dev Pro journey and voluntarily shares verified contact details.",
+        "templates": [
+          "P01"
+        ],
+        "next": "Immediate welcome"
+      },
+      {
+        "id": "pw",
+        "name": "Welcome / onboarding instructions",
+        "phase": "Enroll",
+        "type": "good",
+        "note": "Send next-step instructions; do not imply pricing/eligibility approval.",
+        "templates": [
+          "P01"
+        ],
+        "next": "3-day timer"
+      },
+      {
+        "id": "pd",
+        "name": "Wait 3 days",
+        "phase": "Timing",
+        "type": "neutral",
+        "note": "SLA clock cancels when the prospect receives early staff assistance.",
+        "templates": [],
+        "next": "Account officer update"
+      },
+      {
+        "id": "po",
+        "name": "Account officer details",
+        "phase": "Timing",
+        "type": "blue",
+        "note": "Publish only actual assigned officer information.",
+        "templates": [
+          "P02"
+        ],
+        "next": "Wait 24 hours"
+      },
+      {
+        "id": "p24",
+        "name": "Wait 24 hours",
+        "phase": "Follow-up",
+        "type": "neutral",
+        "note": "Pause on reply, consent withdrawal, closed case or sales conversion.",
+        "templates": [],
+        "next": "Contact check"
+      },
+      {
+        "id": "pf",
+        "name": "Contact confirmation follow-up",
+        "phase": "Follow-up",
+        "type": "good",
+        "note": "Send one friendly status check; route questions to staff.",
+        "templates": [
+          "P03",
+          "P04"
+        ],
+        "next": "Resolved / assisted / suppressed"
+      }
+    ]
+  },
+  "assumptions": [
+    [
+      "Mortgage Xtra",
+      "30% equity",
+      "Diagram says payment of 30% equity. Confirm basis, instalment schedule and exact project eligibility.",
+      "Legal + Finance"
+    ],
+    [
+      "Mortgage Xtra",
+      "90-day notice",
+      "Source labels payment confirmation and notice of approval within 90 days. Confirm the meaning and exact SLA.",
+      "Operations + Finance"
+    ],
+    [
+      "Mortgage Xtra",
+      "7% annually for 15 years",
+      "Diagram says yearly notification of 7% payment (rent) to be paid for the next 15 years. Verify legal basis and customer contracts.",
+      "Legal + Finance"
+    ],
+    [
+      "Beta Mortgage",
+      "30% in six months",
+      "Diagram describes funding of 30% of property value in six months. Verify exact schedule.",
+      "Legal + Finance"
+    ],
+    [
+      "Beta Mortgage",
+      "2.5% of monthly primary income",
+      "Diagram also references 2.5% monthly primary income for six months. Clarify how it interacts with the 30% obligation.",
+      "Finance + Product"
+    ],
+    [
+      "Beta Mortgage",
+      "One-month grace and 5%",
+      "Diagram says prospect has one month after default to offset payment, after which a 5% charge arises. Confirm actual contract and regulatory suitability.",
+      "Legal + Finance"
+    ],
+    [
+      "Beta Mortgage",
+      "90% and 90 days",
+      "Diagram connects 90% / full payment and a 90-day readiness communication. Verify separate triggering conditions.",
+      "Project + Operations"
+    ],
+    [
+      "Word template",
+      "10-day assessment",
+      "Uploaded welcome copy promises assessment in 10 days; confirm current SLA before any template uses it.",
+      "Operations"
+    ],
+    [
+      "Word template",
+      "2023 payment example and office address",
+      "Historic Alacrity City figures (₦550,000) and office-address details must never be sent as universal live values.",
+      "Accounts + Operations"
+    ],
+    [
+      "Invest",
+      "Product naming ambiguity",
+      "The uploaded file is named INCUBATE.png but the diagram reads INVEST; confirm whether Invest is a distinct Landshop product or the intended Incubate journey.",
+      "Product Owner"
+    ],
+    [
+      "Invest",
+      "Quarterly ROI / payouts",
+      "Verify actual legal entity, agreed yield/distribution type, tax treatment and whether quarterly payments are promised or merely reported.",
+      "Legal + Finance"
+    ],
+    [
+      "Invest",
+      "90 days prior to final payout",
+      "Confirm notice interval and any early exit/withdrawal provision from approved signed contracts.",
+      "Legal + Finance"
+    ],
+    [
+      "Invest",
+      "Opt out vs investment redemption",
+      "Opt out from promotional communication is not automatic cancellation/redemption of invested funds.",
+      "Legal + Compliance"
+    ],
+    [
+      "Estate Pro",
+      "Three-day + 24-hour cadence",
+      "Confirm whether timers are business days, when to cancel, and which roles own escalation.",
+      "Sales + Operations"
+    ],
+    [
+      "Dev Pro",
+      "Three-day + 24-hour cadence",
+      "Confirm programme eligibility, whether it differs from Estate Pro, and when a follow-up becomes intrusive.",
+      "Product + Operations"
+    ],
+    [
+      "Develop",
+      "Inspection reminder six hours before",
+      "Source depicts 6-hour reminder. Confirm cancellation/rescheduling rules and staff availability.",
+      "Customer Service"
+    ],
+    [
+      "Develop",
+      "Daily/weekly/monthly obligations",
+      "Only the agreed schedule for each customer; never all three cadences or uncontrolled reminders.",
+      "Finance"
+    ],
+    [
+      "Develop",
+      "Penalty/grace/default wording",
+      "Diagram suggests penalties and legal escalation without a clearly verifiable universal rate/duration. Require contract-level Legal approval.",
+      "Legal + Finance"
+    ],
+    [
+      "Develop",
+      "Documents and allocation",
+      "Never assert title/deed/survey availability, unit allocation or ownership solely because payment is attempted.",
+      "Legal + Allocations"
+    ]
+  ],
+  "sourceSummary": {
+    "Xtra diagram": "Online → calculation → approval/failure → customer service → inspection → prospect/offer → business development → 30% equity → handover → annual 7% notices for 15 years, with call/text/email annotations.",
+    "Beta diagram": "Pre-application → calculation → approval/failure → business development → full qualification → funding → recurring confirmations and 90% threshold → loan issued to developer → readiness/loan updates; default/breach branch.",
+    "Word document": "Seven email themes: application welcome, qualification approval, inspection confirmation, offer-letter notice, instalment receipt, outright receipt, and contract-of-sale readiness.",
+    "INVEST diagram (uploaded as INCUBATE.png)": "The graphic itself is labelled INVEST. Website signup/walk-in → investment application → sales / customer service → investment servicing → payout. Welcome / payment breakdown; monthly status; quarterly ROI notices; 90-day final payout notice; opt-out. INCUBATE is only the supplied filename, not a separately documented flow.",
+    "ESTATE PRO diagram": "Website onboarding → automated welcome → wait three days → prospect receives account-officer details → wait 24 hours → contact-confirmation follow-up by phone/text.",
+    "DEVELOP diagram (both copies)": "Online signup or walk-in → Customer Service → inspection/confirmation/six-hour reminder/missed appointment → Sales → prospect alternatives or Finance → instalment/out-right payment → default or Legal → document readiness → Customer Service → allocation.",
+    "DEV PRO diagram": "Website onboarding → automated welcome → wait three days → account-officer contact details → wait 24 hours → follow-up by phone/text. Similar to Estate Pro but treated as separate product journey."
+  },
+  "journeyLabels": {
+    "Xtra": "Mortgage Xtra",
+    "Beta": "Beta Mortgage",
+    "Invest": "Incubate / Invest (diagram titled INVEST)",
+    "Estate Pro": "Estate Pro",
+    "Develop": "Develop",
+    "Dev Pro": "Dev Pro"
+  }
+}
