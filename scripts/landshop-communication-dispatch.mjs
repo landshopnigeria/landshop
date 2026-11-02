@@ -28,7 +28,7 @@ function renderEmail(template,contact,purpose){
  const duplicated='Hello '+variables.first_name+',';
  if(body.slice(0,duplicated.length).toLowerCase()===duplicated.toLowerCase())body=body.slice(duplicated.length).trimStart();
  const photo=/^\/media\/[A-Za-z0-9_./-]+\.webp$/.test(template.image_url||'')?template.image_url:null;
- const logo=site+'/media/logo.webp';
+ const logo=site+'/media/logo-transparent.png';
  const bodyHTML=body.split(/\n\s*\n/).filter(Boolean).map(p=>'<p style="margin:0 0 14px;line-height:1.8;color:#385d51;font-size:15px">'+esc(p).replace(/\n/g,'<br>')+'</p>').join('');
  const image=photo?'<img src="'+site+photo+'" alt="Landshop property photograph" width="540" style="width:100%;max-height:220px;object-fit:cover;border-radius:12px;display:block;margin:20px auto 4px">':'';
  const html='<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>'+
@@ -118,7 +118,7 @@ async function previewTest(){
   body:'Thank you for contacting Landshop.\n\nOur team will respond soon.',sms:'Hello {{first_name}}, your request is received.',image_url:null};
  const contact={full_name:'Amina Bello',email:'test@example.invalid',phone:'2348000000000'};
  const m=renderEmail(template,contact,'transactional');
- if(!m.html.includes('Hello, Amina.')||!m.html.includes('#2dac80')||!m.html.includes('/media/logo.webp')||
+ if(!m.html.includes('Hello, Amina.')||!m.html.includes('#2dac80')||!m.html.includes('/media/logo-transparent.png')||
  !m.html.includes('Landshop Limited')||!m.html.includes('©')&&!m.html.includes('&copy;')||
  !m.subject.includes('Amina'))throw Error('Premium email rendering self-test failed');
  try{renderEmail({...template,body:'Hello {{unverified_payment}}'},contact,'transactional');throw Error('Unverified placeholder accepted')}catch(e){if(!String(e).includes('not verified'))throw e}
