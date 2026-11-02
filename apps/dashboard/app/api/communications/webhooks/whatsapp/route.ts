@@ -9,7 +9,7 @@ function eq(a:string,b:string){
  return x.length===y.length&&timingSafeEqual(x,y);
 }
 function client(){
- const url=process.env.LANDSHOP_SUPABASE_URL,secret=process.env.LANDSHOP_SUPABASE_SERVICE_ROLE_KEY;
+ const url=process.env.LANDSHOP_SUPABASE_URL,secret=process.env.LANDSHOP_SUPABASE_SECRET_KEY||process.env.LANDSHOP_SUPABASE_SERVICE_ROLE_KEY;
  if(!url||!secret||!/^https:\/\/[a-z0-9]+\.supabase\.co\/?$/.test(url))return null;
  return createClient(url,secret,{auth:{persistSession:false,autoRefreshToken:false}});
 }
