@@ -2,6 +2,7 @@
 import {useEffect,useState,type FormEvent,type ReactNode} from 'react';
 import BrandedSelect from '../components/BrandedSelect';
 import {browserSupabase} from '../lib/supabase-browser';
+import {assertLandshopPasswordSafe} from '../../../packages/shared/landshop-password-screen';
 import './auth-enterprise.css';
 
 type Mode='signin'|'signup'|'verify';
@@ -56,6 +57,7 @@ export default function Portal(){
     if(!age||Number(age)<18||Number(age)>120)throw Error('You must be at least 18 to register.');
     if(password.length<12||confirm!==password)throw Error('Use at least 12 password characters and confirm them correctly.');
     if(!accepted)throw Error('Please accept the terms and privacy notice.');
+    await assertLandshopPasswordSafe(password);
     const {error}=await db.auth.signUp({email:email.trim().toLowerCase(),password,options:{
      emailRedirectTo:portalOrigin+'/auth/callback',
      data:{full_name:[first,last].filter(Boolean).join(' ').trim(),username:username.trim().toLowerCase(),phone:phone.trim(),age:Number(age),gender, ...(refPattern.test(referral)?{referral_code:referral}:{})}

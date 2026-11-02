@@ -1,6 +1,7 @@
 'use client';
 import {useState} from 'react';
 import {browserSupabase} from '../../lib/supabase-browser';
+import {assertLandshopPasswordSafe} from '../../../../packages/shared/landshop-password-screen';
 
 export default function UpdatePassword(){
   const [password,setPassword]=useState('');
@@ -15,6 +16,7 @@ export default function UpdatePassword(){
     if(password!==confirmation){setMessage('Passwords do not match.');return}
     setBusy(true);
     try{
+      await assertLandshopPasswordSafe(password);
       const {data:{user},error:sessionError}=await browserSupabase().auth.getUser();
       if(sessionError || !user){setMessage('This reset link is invalid or expired. Request a new link.');return}
       const {error}=await browserSupabase().auth.updateUser({password});
@@ -22,7 +24,7 @@ export default function UpdatePassword(){
       // Routing is presentation-only: staff roles remain server-approved.
       setSignInHref(user.user_metadata?.staff_signup===true?'https://app.landshopnigeria.com/staff/sign-in':'/');
       setMessage('Password updated successfully. You may now sign in.');
-    }catch{setMessage('Password update failed. Request a fresh recovery email.')}
+    }catch(error){setMessage(error instanceof Error ? error.message : 'Password update failed. Request a fresh recovery email.')}
     finally{setBusy(false)}
   }
   return <main className="authScene"><form className="authCard" onSubmit={submit}>

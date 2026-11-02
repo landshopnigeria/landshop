@@ -1,6 +1,7 @@
 'use client';
 import StaffAuthShell,{StaffAuthLogo} from '../StaffAuthShell';
 import StaffPasswordField from '../StaffPasswordField';
+import {assertLandshopPasswordSafe} from '../../../../../packages/shared/landshop-password-screen';
 
 import {useEffect,useState,type FormEvent} from 'react';
 import Link from 'next/link';
@@ -46,6 +47,7 @@ export default function StaffSignUp(){
   if(!v.gender||!v.role)throw Error('Select your gender preference and requested staff role');
   if(v.password.length<12||v.password!==v.confirm)throw Error('Use matching passwords of at least 12 characters');
   if(!acknowledged)throw Error('Please read and accept the Terms and Conditions to continue');
+  await assertLandshopPasswordSafe(v.password);
   const url=process.env.NEXT_PUBLIC_SUPABASE_URL,key=process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
   if(!url||!key)throw Error('Authentication service unavailable');
   const db=createBrowserClient(url,key,{cookieOptions:{domain:'.landshopnigeria.com',secure:true,sameSite:'lax',path:'/'}});
