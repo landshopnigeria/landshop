@@ -2,6 +2,7 @@
 import {useEffect,useRef,useState,type FormEvent} from 'react';
 import Link from 'next/link';
 import LoanIllustrator from './LoanIllustrator';
+import ApprovedArrow from './ApprovedArrow';
 import {landshopProductCards} from '../lib/landshop-brand-media';
 import './product-detail-redesign.css';
 
@@ -143,15 +144,15 @@ export default function ProductDetailRedesign({page}:{page:PageId}){
  }
  function ActionButton({action,solid=false}:{action:Action;solid?:boolean}){
   const cls=solid?'lsp-primary':'lsp-outline';
-  return action.href?<Link className={cls} href={action.href}>{action.label}<span aria-hidden="true">→</span></Link>
-   :<button type="button" className={cls} onClick={()=>openModal(action.intent||action.label)}>{action.label}<span aria-hidden="true">→</span></button>;
+  return action.href?<Link className={cls} href={action.href}>{action.label}<ApprovedArrow /></Link>
+   :<button type="button" className={cls} onClick={()=>openModal(action.intent||action.label)}>{action.label}<ApprovedArrow /></button>;
  }
  const productCard=(slug:ProductId)=>{
   const product=landshopProductCards.find(x=>x.slug===slug);
   if(!product)return null;
   return <Link key={slug} href={'/plans/'+slug} className="lsp-product-card">
    <div className="lsp-product-card-media">{product.photo?<img src={product.photo} alt={product.photoAlt} loading="lazy"/>:<img src={pages[slug].photo} alt={pages[slug].photoAlt} loading="lazy"/>}</div>
-   <div className="lsp-product-card-body"><span className="lsp-kicker">{pages[slug].eyebrow}</span><img className="lsp-product-logo" src={product.logo} alt={product.name+' logo'} loading="lazy"/><p>{product.description}</p><strong>Explore {product.name} <span aria-hidden="true">→</span></strong></div>
+   <div className="lsp-product-card-body"><span className="lsp-kicker">{pages[slug].eyebrow}</span><img className="lsp-product-logo" src={product.logo} alt={product.name+' logo'} loading="lazy"/><p>{product.description}</p><strong>Explore {product.name} <ApprovedArrow /></strong></div>
   </Link>
  };
  return <main className="lsp-product">
@@ -165,10 +166,10 @@ export default function ProductDetailRedesign({page}:{page:PageId}){
     <div className="lsp-features">{d.features.map(([title,desc],i)=><article key={title} className="lsp-feature"><span className="lsp-index">0{i+1}</span><h3>{title}</h3><p>{desc}</p></article>)}</div>}
    </section>
    <section className="lsp-section lsp-process"><div className="lsp-heading"><span className="lsp-kicker">HOW IT WORKS</span><h2>Your next steps, clearly explained.</h2><p>Explore the information, verify the details and move at a pace that works for you.</p></div><div className="lsp-steps">{d.steps.map(([title,desc],i)=><article key={title}><strong>0{i+1}</strong><h3>{title}</h3><p>{desc}</p></article>)}</div></section>
-   {page!=='products'&&<section className="lsp-section lsp-pathways"><div className="lsp-heading"><span className="lsp-kicker">PRODUCT PATHWAYS</span><h2>Choose your next step.</h2><p>Follow the relevant link or open a secure enquiry popup to ask for further guidance.</p></div><div className="lsp-pathway-grid">{d.links.map((item,i)=><article className="lsp-pathway" key={item.title}><span className="lsp-index">0{i+1}</span><h3>{item.title}</h3><p>{item.description}</p>{item.href?<Link href={item.href}>Explore pathway <span aria-hidden="true">→</span></Link>:<button type="button" onClick={()=>openModal(item.intent||item.title)}>Open enquiry form <span aria-hidden="true">→</span></button>}</article>)}</div></section>}
+   {page!=='products'&&<section className="lsp-section lsp-pathways"><div className="lsp-heading"><span className="lsp-kicker">PRODUCT PATHWAYS</span><h2>Choose your next step.</h2><p>Follow the relevant link or open a secure enquiry popup to ask for further guidance.</p></div><div className="lsp-pathway-grid">{d.links.map((item,i)=><article className="lsp-pathway" key={item.title}><span className="lsp-index">0{i+1}</span><h3>{item.title}</h3><p>{item.description}</p>{item.href?<Link href={item.href}>Explore pathway <ApprovedArrow /></Link>:<button type="button" onClick={()=>openModal(item.intent||item.title)}>Open enquiry form <ApprovedArrow /></button>}</article>)}</div></section>}
    {(page==='devpro'||page==='estatepro')&&<section className="lsp-section lsp-calculator"><div className="lsp-heading"><span className="lsp-kicker">FINANCE PLANNER</span><h2>Explore a possible repayment scenario.</h2><p>Adjust your own amount, rate and term assumptions. This is not an offer or approval.</p></div><LoanIllustrator kind={page}/></section>}
    <section className="lsp-section lsp-faq"><div className="lsp-heading"><span className="lsp-kicker">FREQUENTLY ASKED QUESTIONS</span><h2>Questions worth asking.</h2></div><div className="lsp-faq-list">{d.faqs.map(([question,answer])=><details key={question}><summary>{question}<span aria-hidden="true">+</span></summary><p>{answer}</p></details>)}</div></section>
-   <section className="lsp-conversion"><div><span className="lsp-kicker">LANDSHOP IS HERE TO HELP</span><h2>Ready to take a more informed step?</h2><p>Ask the right questions and request the information you need before proceeding.</p></div><button type="button" className="lsp-primary" onClick={()=>openModal(d.name+' next-step consultation')}>Speak with Landshop <span aria-hidden="true">→</span></button></section>
+   <section className="lsp-conversion"><div><span className="lsp-kicker">LANDSHOP IS HERE TO HELP</span><h2>Ready to take a more informed step?</h2><p>Ask the right questions and request the information you need before proceeding.</p></div><button type="button" className="lsp-primary" onClick={()=>openModal(d.name+' next-step consultation')}>Speak with Landshop <ApprovedArrow /></button></section>
    <p className="lsp-disclosure"><strong>Please note:</strong> {d.note}</p>
   </div>
   {modal&&<div className="lsp-backdrop" role="presentation" onMouseDown={e=>{if(e.target===e.currentTarget)setModal(null)}}>
@@ -180,7 +181,7 @@ export default function ProductDetailRedesign({page}:{page:PageId}){
       <label className="lsp-consent"><input type="checkbox" name="consent" required/><span>I agree to be contacted about this enquiry and acknowledge the <Link href="/privacy" target="_blank" rel="noopener noreferrer">privacy notice</Link>.</span></label>
       <div className="lsp-honeypot" aria-hidden="true"><label>Website<input name="website" tabIndex={-1} autoComplete="off"/></label></div>
       {feedback&&!feedback.ok&&<p className="lsp-form-error" role="alert">{feedback.message}</p>}
-      <button className="lsp-primary lsp-submit" type="submit" disabled={busy}>{busy?'Submitting enquiry...':'Submit enquiry'} <span aria-hidden="true">→</span></button><p className="lsp-modal-note">Submitting an enquiry does not reserve a property, approve financing or create an ownership interest.</p>
+      <button className="lsp-primary lsp-submit" type="submit" disabled={busy}>{busy?'Submitting enquiry...':'Submit enquiry'} <ApprovedArrow /></button><p className="lsp-modal-note">Submitting an enquiry does not reserve a property, approve financing or create an ownership interest.</p>
      </form>}
    </div></div>}
  </main>;
