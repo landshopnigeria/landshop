@@ -179,13 +179,21 @@ def check(kind: str, route: str, expected: str | None):
             raise AssertionError("Approved homepage section subtitles are missing")
         if "Projects" not in visible or "Company" not in visible:
             raise AssertionError("Projects and Company header navigation must remain visible")
-        if 'class="lsap-product-grid"' not in html:
-            raise AssertionError("Five-product carousel track is missing")
+        product_start = html.find('class="lsap-product-grid"')
+        if product_start < 0 or 'class="lsap-product-track"' not in html:
+            raise AssertionError("Continuous five-product marquee track is missing")
+        product_end = html.find('class="lsap-promise"', product_start)
+        product_html = html[product_start:product_end if product_end >= 0 else product_start+30000]
         for product in ("Develop", "Incubate", "Grow", "DevPro", "EstatePro"):
             if product not in visible:
                 raise AssertionError("Homepage product carousel is missing " + product)
-        if 'aria-label="Previous product"' not in html or 'aria-label="Next product"' not in html:
-            raise AssertionError("Homepage product carousel navigation controls are missing")
+        for href in ("/plans/develop", "/plans/incubate", "/plans/grow", "/plans/devpro", "/plans/estatepro"):
+            if f'href="{href}"' not in product_html:
+                raise AssertionError("Product logo/title destination missing: " + href)
+        if 'class="lsap-product-logo-link"' not in product_html:
+            raise AssertionError("Product logos must remain clickable")
+        if "Explore More" in unescape(product_html):
+            raise AssertionError("Removed product card action/footer has returned")
         if 'data-landshop-hero="v16-separated-product-slides"' not in html:
             raise AssertionError("approved V16 distinct-slide homepage is missing")
         if 'data-active-product="LANDSHOP"' not in html:
@@ -259,12 +267,18 @@ def verify_source() -> None:
     for career_url in ("/careers", "/careers/programs"):
         if "href:'"+career_url+"'" not in company_group:
             raise AssertionError("Company dropdown is missing " + career_url)
-    if 'className="lsap-product-grid" ref={productTrack}' not in approved_body:
-        raise AssertionError("Product carousel track is not connected to scrolling controls")
-    if "productPlayback.handlers" not in approved_body:
-        raise AssertionError("Product carousel playback/pause handlers are missing")
-    if "flex:0 0 calc((100% - 36px)/3)" not in approved_css:
-        raise AssertionError("Product carousel must show three columns on desktop")
+    if 'className="lsap-product-grid"' not in approved_body or 'className="lsap-product-track"' not in approved_body:
+        raise AssertionError("Continuous product carousel track is missing")
+    if 'className="lsap-product-set"' not in approved_body or '[0,1].map(copy=>' not in approved_body:
+        raise AssertionError("Product carousel cannot loop seamlessly without repeated sets")
+    if 'className="lsap-product-logo-link"' not in approved_body:
+        raise AssertionError("Product logos must navigate to their respective detail pages")
+    if 'Explore More <ApprovedArrow/>' in approved_body.split('id="products"')[1].split('lsap-promise')[0]:
+        raise AssertionError("Unwanted Explore More footer remains inside product cards")
+    if "@keyframes lsap-product-marquee" not in approved_css or "animation-play-state:paused" not in approved_css:
+        raise AssertionError("Continuous motion or hover/focus pause is missing")
+    if "calc((100cqw - 36px)/3)" not in approved_css:
+        raise AssertionError("Product carousel must show three wider columns on desktop")
     if '<SiteIcon name="chevron" size={19}/>' not in nav:
         raise AssertionError("Public dropdown navigation V chevrons are missing")
     if "chevron:'M5.5 9l6.5 6.5L18.5 9'" not in icons:
