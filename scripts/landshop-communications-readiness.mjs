@@ -3,6 +3,7 @@
 // key content or provider response body is logged. No customer sends.
 import {createClient} from '@supabase/supabase-js';
 const e=process.env;
+const databaseKey=e.LANDSHOP_SUPABASE_SECRET_KEY?.trim()||e.LANDSHOP_SUPABASE_SERVICE_ROLE_KEY?.trim()||'';
 const yes=name=>e[name]==='true';
 const exists=name=>!!e[name]?.trim();
 const bool=v=>v?'READY':'MISSING';
@@ -10,7 +11,7 @@ const messages=[];
 function log(group,state){messages.push({group,state});console.log(group+': '+state)}
 log('Global send authorization',yes('LANDSHOP_COMM_LIVE_ENABLED')?'enabled':'disabled');
 log('Key rotation attestation',yes('LANDSHOP_COMM_ROTATION_CONFIRMED')?'confirmed':'not confirmed');
-log('Worker privileged database key',bool(exists('LANDSHOP_SUPABASE_SERVICE_ROLE_KEY')));
+log('Worker privileged database key',bool(Boolean(databaseKey)));
 log('Production database URL',bool(/^https:\/\/[a-z0-9]+\.supabase\.co\/?$/.test(e.LANDSHOP_SUPABASE_URL||'')));
 const from=e.LANDSHOP_POSTMARK_TRANSACTIONAL_FROM||'';
 const senderOk=/(^|<)[^\s<>@]+@landshopnigeria\.com(>|$)/i.test(from);
@@ -40,9 +41,9 @@ if(emailPresent){
  }catch{log('Postmark API authentication','could not verify connection')}
 }else log('Postmark API authentication','not tested (credentials incomplete)');
 
-if(exists('LANDSHOP_SUPABASE_SERVICE_ROLE_KEY')&&/^https:\/\/[a-z0-9]+\.supabase\.co\/?$/.test(e.LANDSHOP_SUPABASE_URL||'')){
+if(Boolean(databaseKey)&&/^https:\/\/[a-z0-9]+\.supabase\.co\/?$/.test(e.LANDSHOP_SUPABASE_URL||'')){
  try{
-  const db=createClient(e.LANDSHOP_SUPABASE_URL,e.LANDSHOP_SUPABASE_SERVICE_ROLE_KEY,{
+  const db=createClient(e.LANDSHOP_SUPABASE_URL,databaseKey,{
    auth:{persistSession:false,autoRefreshToken:false}
   });
   const [c,r]=await Promise.all([
