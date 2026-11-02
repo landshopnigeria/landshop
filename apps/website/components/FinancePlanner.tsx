@@ -2,7 +2,7 @@
 import {useMemo,useState} from 'react';
 import Link from 'next/link';
 type Kind='investment'|'mortgage'|'loan';
-type Props={kind:Kind;state?:string;propertyType?:string;budget?:number};
+type Props={kind:Kind;state?:string;propertyType?:string;budget?:number;criteriaQuery?:string};
 const money=(n:number)=>new Intl.NumberFormat('en-NG',{style:'currency',currency:'NGN',maximumFractionDigits:0}).format(n);
 const percent=(n:number)=>n.toLocaleString('en-NG',{maximumFractionDigits:2})+'%';
 const finite=(s:string)=>s.trim()!==''&&Number.isFinite(Number(s))?Number(s):null;
@@ -11,7 +11,7 @@ function monthlyRepayment(principal:number,annualRate:number,months:number){
  const r=annualRate/1200;
  return r===0?principal/months:principal*r/(1-Math.pow(1+r,-months));
 }
-export default function FinancePlanner({kind,state='',propertyType='',budget}:Props){
+export default function FinancePlanner({kind,state='',propertyType='',budget,criteriaQuery=''}:Props){
  const [purchase,setPurchase]=useState(budget&&budget>0?String(budget):'');
  const [equity,setEquity]=useState('20');
  const [principal,setPrincipal]=useState(budget&&budget>0?String(budget):'');
@@ -36,7 +36,7 @@ export default function FinancePlanner({kind,state='',propertyType='',budget}:Pr
    const netYield=netIncome===null?null:100*netIncome/price;
    const validHold=hold!==null&&Number.isInteger(hold)&&hold>=1&&hold<=50;
    const roi=validHold&&exit!==null&&exit>0&&netIncome!==null&&buy!==null&&sell!==null?
-    100*(netIncome*hold+exit-price-buy-sell)/(price+buy):null;
+    100*(netIncome*(hold||0)+exit-price-buy-sell)/(price+buy):null;
    return {kind,price,grossYield,netYield,netIncome,roi,hold:validHold?hold:null};
   }
   const base=kind==='mortgage'?safeMoney(purchase):safeMoney(principal);
@@ -52,11 +52,13 @@ export default function FinancePlanner({kind,state='',propertyType='',budget}:Pr
  const title=kind==='investment'?'Investment calculator':kind==='mortgage'?'Mortgage calculator':'Loan calculator';
  const description=kind==='investment'?'Model rental yield and a possible holding-period return using only the assumptions you enter.':kind==='mortgage'?'Estimate the equity contribution and monthly repayment for a property purchase.':'Estimate repayment instalments, total interest and overall loan costs.';
  const locationLabel=[state,propertyType&&propertyType.charAt(0).toUpperCase()+propertyType.slice(1)].filter(Boolean).join(' · ');
- const back=new URLSearchParams();
+ const back=new URLSearchParams(criteriaQuery);
  if(state)back.set('state',state);
  if(propertyType)back.set('type',propertyType);
  if(budget)back.set('max',String(budget));
  back.set('goal',kind);
+ const listingQuery=new URLSearchParams(back);
+ listingQuery.delete('goal');
  const input=(label:string,value:string,set:(v:string)=>void,opts:{placeholder?:string;min?:number;max?:number;step?:string}={})=>
   <label key={label}>{label}<input type="number" inputMode="decimal" min={opts.min??0} max={opts.max??1000000000000} step={opts.step||'any'} placeholder={opts.placeholder||''} value={value} onChange={event=>set(event.target.value)}/></label>;
  return <main className="lsfin-page"><div className="lsfin-shell">
@@ -106,7 +108,7 @@ export default function FinancePlanner({kind,state='',propertyType='',budget}:Pr
      <div className="lsfin-stat"><span>Upfront fees (excluded from monthly)</span><strong>{money(data.fees)}</strong></div>
     </>:<div className="lsfin-empty">Enter a valid amount, annual rate and repayment period to calculate.</div>}
     <p className="lsfin-disclaimer">{kind==='investment'?'Scenario only. Actual income, occupancy, expenses, resale prices and capital values may differ. No returns are guaranteed.':'Planning estimate only. This is not a lending offer, interest-rate quotation or eligibility decision. Confirm all terms directly with the lender.'}</p>
-    <Link href={'/properties?'+back.toString().replace(/(?:^|&)goal=[^&]*/,'')} className="lsfin-search">View verified properties →</Link>
+    <Link href={'/properties'+(listingQuery.size?'?'+listingQuery.toString():'')} className="lsfin-search">View verified properties →</Link>
    </section>
   </div>
   {kind==='mortgage'&&<p className="lsfin-portal">For a detailed amortisation schedule, use the <a href="https://portal.landshopnigeria.com/calculator">existing Landshop customer portal calculator</a>.</p>}
