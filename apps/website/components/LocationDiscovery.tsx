@@ -1,6 +1,7 @@
 'use client';
 import {useRef,useState,type FormEvent} from 'react';
 import {useRouter} from 'next/navigation';
+import ApprovedArrow from './ApprovedArrow';
 import {landshopLocations} from '../lib/v22-locations';
 import {NIGERIA_STATES} from '../lib/marketplace';
 
@@ -79,7 +80,7 @@ export default function LocationDiscovery({initial,initialGoal='browse'}:Props){
     </div>
     <div className="lsloc-bottom">
      <span>Selections carry through when you choose a state below.</span>
-     <button type="submit" className="lsloc-submit">{goal==='browse'?'Search properties':goal==='investment'?'Open investment calculator':goal==='mortgage'?'Open mortgage calculator':'Open loan calculator'} <span aria-hidden="true">→</span></button>
+     <button type="submit" className="lsloc-submit">{goal==='browse'?'Search properties':goal==='investment'?'Open investment calculator':goal==='mortgage'?'Open mortgage calculator':'Open loan calculator'} <span aria-hidden="true"><ApprovedArrow/></span></button>
     </div>
     {hint&&<p className="lsloc-hint" role="status">{hint}</p>}
    </form>
@@ -87,7 +88,7 @@ export default function LocationDiscovery({initial,initialGoal='browse'}:Props){
     <div className="lsloc-state-heading"><h2 id="lsloc-states-title">Locations.</h2><span>Choose a state to apply your filters and continue.</span></div>
     <div className="lsloc-state-grid">
      {landshopLocations.map(location=><button type="button" className={'lsloc-state'+(state===location.state?' chosen':'')} key={location.slug} onClick={()=>destination(location.state)} aria-label={'Use selected filters for '+location.name}>
-      <small>PROPERTY LOCATION</small><strong>{location.name}</strong><span>{goal==='browse'?'View matching properties':goal==='investment'?'Investment estimate':goal==='mortgage'?'Mortgage estimate':'Loan estimate'} <b aria-hidden="true">→</b></span>
+      <small>PROPERTY LOCATION</small><strong>{location.name}</strong><span>{goal==='browse'?'View matching properties':goal==='investment'?'Investment estimate':goal==='mortgage'?'Mortgage estimate':'Loan estimate'} <b aria-hidden="true"><ApprovedArrow/></b></span>
      </button>)}
     </div>
     <p className="lsloc-note">Search results include only approved published properties. Calculator estimates use your assumptions and are not financing offers or guaranteed returns.</p>
