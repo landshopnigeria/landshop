@@ -23,7 +23,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   dispatch:
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' && (github.event_name != 'schedule' || vars.LANDSHOP_COMM_LIVE_ENABLED == 'true')
     runs-on: ubuntu-latest
     environment: landshop-production
     timeout-minutes: 15
