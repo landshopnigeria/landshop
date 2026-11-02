@@ -25,6 +25,8 @@ PAGES=(
     ("/projects/famous-gardens","lde-gallery",".lde-thumbs"),
     ("/projects/merit-park","lde-gallery",".lde-thumbs"),
     ("/projects/maiyegun-beach-estate","lde-gallery",".lde-thumbs"),
+    ("/projects/green-island","lde-gallery",".lde-thumbs"),
+    ("/projects/blue-diamonds","lde-gallery",".lde-thumbs"),
     ("/properties","mk-property-grid",".mk-tools"),
 )
 UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/156.0.0.0 Safari/537.36"
