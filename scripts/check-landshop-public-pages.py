@@ -51,7 +51,7 @@ PUBLIC_PAGES = [
     ("website", "/properties", "Property Marketplace"),
     ("website", "/applications", "Your property journey"),
     ("website", "/search", "Search Landshop"),
-    ("website", "/about", "About Us."),
+    ("website", "/about", "Landshop is a co-investment real estate brand focused on simplifying property acquisition"),
     ("website", "/contact", "Contact Us"),
     ("website", "/insights", "Insights for better property decisions."),
     ("website", "/company/team", "The work behind every decision"),
@@ -161,7 +161,14 @@ def check(kind: str, route: str, expected: str | None):
             raise AssertionError("approved invest, refer and grow banner is missing")
         if 'One Account.' in visible:
             raise AssertionError("removed portal promotional heading has reappeared")
+    if kind == "website" and route == "/about":
+        if 'class="content-hero"' in html:
+            raise AssertionError("removed About Us hero has returned")
+        if 'id="who-we-are"' not in html:
+            raise AssertionError("approved Who We Are introduction is missing")
     if kind in ("website", "www") and route == "/":
+        if "Estate archival photography is not a current unit offer." in visible:
+            raise AssertionError("removed estate archival photography disclaimer has returned")
         # A successful Next.js page must not show stock estate photo archives as live properties.
         if "Explore genuine photographs from Landshop estate archives" in visible:
             raise AssertionError("obsolete estate archive is still substituted for public property listings")
