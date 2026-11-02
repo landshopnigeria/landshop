@@ -81,8 +81,8 @@ export const estatePortfolio:PortfolioEstate[]=[
    {src:'/estates/blue-diamonds/apartment-view-concept.webp',caption:'Alternative multi-unit concept elevation',kind:'architectural-visual'},
    {src:'/estates/blue-diamonds/architectural-layout.webp',caption:'Illustrative floor-plan layout, not a certified site survey',kind:'layout'}
   ],
-  highlights:['Ibeju-Lekki growth-corridor location','Estate entrance and home designs represented in concept renderings','Landshop-led land acquisition enquiries','Layout illustrations can support design discussions, subject to professional verification'],
-  milestones:[['Concept development','Entry gate and residential concepts prepared'],['Portfolio visuals','Architectural design studies provided by Landshop'],['Next verification','Confirm physical site progress, title, survey and officially approved offers']],
+  highlights:['Ibeju-Lekki growth-corridor location','Eight owner-provided architectural and layout visuals, clearly identified as concepts','Estate entrance, apartment and townhouse design studies','Inspection and documented title, plot and price verification available through Landshop enquiries'],
+  milestones:[['Concept development','Entry gate and residential concepts prepared'],['Portfolio visuals','Architectural design studies and illustrative layout supplied by Landshop'],['Virtual tour','Blue Diamonds virtual-tour media has been supplied separately; a verified hosted link is required before embedding'],['Next verification','Confirm physical site progress, title, survey and officially approved offers']],
   videos:[],
   disclaimer:'Blue Diamonds imagery comprises architectural renderings and a conceptual layout, not photographs of completed buildings. Historical promotional pricing has not been validated as a current official offer.'
  }
