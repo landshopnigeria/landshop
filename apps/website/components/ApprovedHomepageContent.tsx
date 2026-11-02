@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import {useRef,useState} from 'react';
 import ApprovedArrow from './ApprovedArrow';
+import {estatePortfolio} from '../lib/estate-portfolio';
 import SiteIcon from './SiteIcon';
 import LandshopVideo from './LandshopVideo';
 import {useCarouselPlayback} from './useCarouselPlayback';
@@ -11,16 +12,13 @@ import type {FeaturedProperty} from './LandshopHome';
 
 /** Approved reference homepage body. The existing global header, hero slider,
  * property filter, newsletter and global footer are rendered elsewhere untouched. */
-const archiveHomes=[
- {title:'Famous Gardens',kind:'ESTATE ARCHIVE',note:'Completed residences and documented estate photography from the Famous Gardens archive.',image:'/owner/2026/famous-completed-homes.webp',url:'/projects/famous-gardens'},
- {title:'Explore the Residences',kind:'RESIDENTIAL DESIGN',note:'See original exterior photographs of homes from our estate archive.',image:'/owner/2026/famous-exterior.webp',url:'/projects/famous-gardens'},
- {title:'Inside the Homes',kind:'INTERIOR GALLERY',note:'Explore authentic residential interiors from the Famous Gardens photo collection.',image:'/owner/2026/famous-living.webp',url:'/projects/famous-gardens'}
-];
+const archiveHomes=estatePortfolio.map(e=>({title:e.name,kind:'ESTATE PORTFOLIO',note:e.summary,image:e.images[0].src,url:'/properties/'+e.slug}));
 const projects=[
  {name:'Famous Gardens',status:'CURRENT PROJECT',sub:'Iberekodo, Ibeju-Lekki',image:'/owner/2026/famous-exterior.webp',slug:'famous-gardens',verified:true},
  {name:'Merit Park',status:'ARCHIVED PROJECT',sub:'Past Landshop project',image:'/owner/2026/merit-park-archival-signage.jpg',slug:'merit-park',verified:true},
- {name:'Green Island',status:'PROJECT ARCHIVE',sub:'Historical project information',image:'/owner/2026/garden-entrance-progress.webp',slug:'green-island',verified:false},
- {name:'Maiyegun Beach Estate',status:'ARCHIVED PROJECT',sub:'Past Landshop project',image:'/media/maiyegun0.webp',slug:'maiyegun-beach-estate',verified:true}
+ {name:'Green Island',status:'ESTATE ARCHIVE',sub:'Iba-Oloja, Ibeju-Lekki',image:'/estates/green-island/site-progress-1.webp',slug:'green-island',verified:true},
+ {name:'Maiyegun Beach Estate',status:'PARTNER PROJECT',sub:'Jakande, Lekki',image:'/estates/maiyegun-beach-estate/coastal-site.webp',slug:'maiyegun-beach-estate',verified:true},
+ {name:'Blue Diamonds Estate',status:'PROJECT CONCEPT',sub:'Ibeju-Lekki, Lagos',image:'/estates/blue-diamonds/entrance-concept.webp',slug:'blue-diamonds',verified:true}
 ];
 const locations=[
  {name:'Lagos',slug:'lagos',summary:'Explore estate opportunities and property guidance across Lagos.'},

@@ -12,6 +12,7 @@ export type DetailData={
  facts:[string,string][];overview:string;highlights:string[];
  milestones:[string,string][];disclaimer:string;related:DetailItem[];
  primaryHref:string;primaryLabel:string;secondaryHref?:string;secondaryLabel?:string;
+ videos?:{title:string;url:string;embed:string}[];
 };
 export default function DetailExperience({data:d}:{data:DetailData}){
  const [slide,setSlide]=useState(0),[tab,setTab]=useState('Overview'),[page,setPage]=useState(0),[expanded,setExpanded]=useState(false);
@@ -42,6 +43,7 @@ export default function DetailExperience({data:d}:{data:DetailData}){
      {tab==='Gallery'&&<><h2>Project photo record.</h2><p>Browse the photographs above. Archive photographs document earlier activity and do not confirm current availability or completion.</p><div className="lde-checks">{images.map(im=><div key={im.src}><span>✓</span>{im.caption}</div>)}</div></>}
      {tab==='FAQs'&&<><h2>Frequently asked questions.</h2><details><summary>Is the information current?</summary><p>{d.disclaimer}</p></details><details><summary>Can I request a consultation or inspection?</summary><p>Yes. Use the enquiry action to reach the official Landshop contact or inspection workflow. Requests require confirmation.</p></details><details><summary>How do I get project documents?</summary><p>Request an approved project-specific document pack before making any financial commitment.</p></details></>}
     </div>
+    {d.videos?.length?<section className="lde-project-videos" aria-label="Project videos" style={{padding:'24px 0'}}><h2>Project videos &amp; virtual tours</h2><p>Owner-provided videos confirmed for this estate.</p><div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(min(100%,300px),1fr))',gap:20}}>{d.videos.map(v=><article key={v.url}><div style={{position:'relative',aspectRatio:'16 / 9',background:'#122f27',borderRadius:14,overflow:'hidden'}}><iframe title={v.title} src={v.embed} loading="lazy" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowFullScreen style={{width:'100%',height:'100%',border:0}}/></div><p>{v.title}</p><a href={v.url} rel="noopener noreferrer" target="_blank">Watch on YouTube</a></article>)}</div></section>:null}
    </div>
    <aside className="lde-side"><div className="lde-sidecard"><h3>{d.kind} information</h3><dl><div><dt>Category</dt><dd>{d.category}</dd></div><div><dt>Location</dt><dd>{d.location}</dd></div><div><dt>Date / stage</dt><dd>{d.date}</dd></div><div><dt>Status</dt><dd>{d.status}</dd></div></dl><h4>Tags</h4><div className="lde-tags">{d.tags.map(tag=><span key={tag}>{tag}</span>)}</div></div>
     <div className="lde-sidecard lde-enquiry"><div className="lde-eyebrow">GET IN TOUCH</div><h3>Enquire about {d.title}.</h3><p>Ask about verified records, availability, documentation or a guided appointment.</p><Link className="lde-primary" href={d.primaryHref}>{d.primaryLabel} <ApprovedArrow /></Link>{d.secondaryHref&&<Link className="lde-secondary" href={d.secondaryHref}>{d.secondaryLabel||'Explore more'} <ApprovedArrow /></Link>}<small>Your enquiry is handled through Landshop's existing secure workflows.</small></div>

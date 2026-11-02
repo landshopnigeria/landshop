@@ -1,4 +1,6 @@
 import Link from 'next/link';
+import {getPortfolioEstate} from '../../../lib/estate-portfolio';
+import EditorialEstatePropertyDetails from '../../../components/EditorialEstatePropertyDetails';
 import {notFound,redirect} from 'next/navigation';
 import SiteIcon,{IconChip} from '../../../components/SiteIcon';
 import PropertyMediaCarousel from '../../../components/PropertyMediaCarousel';
@@ -16,6 +18,8 @@ const isUuid=(s:string)=>/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-
 const display=(n:number)=>new Intl.NumberFormat('en-NG',{style:'currency',currency:'NGN',maximumFractionDigits:0}).format(n);
 export async function generateMetadata({params}:{params:Promise<{id:string}>}){
  const {id}=await params,db=publicDb();
+ const portfolioEstate=getPortfolioEstate(id);
+ if(portfolioEstate)return {title:portfolioEstate.name+' | Landshop Estates & Properties',description:portfolioEstate.summary,alternates:{canonical:'https://www.landshopnigeria.com/properties/'+portfolioEstate.slug},openGraph:{title:portfolioEstate.name+' | Landshop',description:portfolioEstate.summary,images:[{url:'https://www.landshopnigeria.com'+portfolioEstate.images[0].src}]}};
  if(!db||(!isUuid(id)&&!/^[a-z0-9][a-z0-9-]{2,120}$/.test(id)))return {title:'Landshop Properties'};
  const {data}=await db.from('properties').select('id,slug,title,status,property_type').eq(isUuid(id)?'id':'slug',id).eq('status','published').maybeSingle();
  return {title:data?data.title+' | Landshop Properties':'Landshop Properties',
@@ -25,6 +29,8 @@ export async function generateMetadata({params}:{params:Promise<{id:string}>}){
 }
 export default async function PropertyDetails({params}:{params:Promise<{id:string}>}){
  const {id:routeId}=await params;
+ const estateRecord=getPortfolioEstate(routeId);
+ if(estateRecord)return <EditorialEstatePropertyDetails estate={estateRecord}/>;
  if(!isUuid(routeId)&&!/^[a-z0-9][a-z0-9-]{2,120}$/.test(routeId))notFound();
  const db=publicDb();if(!db)return <main className="mk-layout"><div className="mk-wrap"><h1>Property service unavailable</h1><Link href="/properties">Explore properties</Link></div></main>;
  const {data,error}=await db.from('properties')

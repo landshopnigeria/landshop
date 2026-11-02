@@ -1,12 +1,15 @@
 import Link from 'next/link';
 import {notFound} from 'next/navigation';
 import DetailExperience,{type DetailData} from '../../../components/DetailExperience';
+import {estatePortfolio} from '../../../lib/estate-portfolio';
+import {parsePropertyVideo} from '../../../lib/property-video';
 
 const related=[
  {slug:'famous-gardens',title:'Famous Gardens',href:'/projects/famous-gardens',image:'/media/famous0.webp',description:'Site activities and documented estate imagery'},
  {slug:'merit-park',title:'Merit Park',href:'/projects/merit-park',image:'/media/drone0.webp',description:'Historical drone survey and project records'},
  {slug:'maiyegun-beach-estate',title:'Maiyegun Beach Estate',href:'/projects/maiyegun-beach-estate',image:'/media/maiyegun0.webp',description:'Original estate and coastal-site photography'},
- {slug:'green-island',title:'Green Island',href:'/projects/green-island',description:'Archived listing and title enquiries'}
+ {slug:'green-island',title:'Green Island',href:'/projects/green-island',image:'/estates/green-island/site-progress-1.webp',description:'Site archive and residential concept'},
+ {slug:'blue-diamonds',title:'Blue Diamonds Estate',href:'/projects/blue-diamonds',image:'/estates/blue-diamonds/entrance-concept.webp',description:'Residential architecture and estate concept'}
 ];
 const data:Record<string,DetailData>={
  'merit-park':{
@@ -72,10 +75,20 @@ const data:Record<string,DetailData>={
  related:related.filter(x=>x.slug!=='green-island'),primaryHref:'/contact?topic=Customer%20Support&project=green-island',primaryLabel:'Request verified records',secondaryHref:'/projects',secondaryLabel:'Browse projects'
  }
 };
+const portfolioDetails:Record<string,DetailData>=Object.fromEntries(estatePortfolio.map(e=>{
+ const videos=e.videos.map(v=>parsePropertyVideo(v.url,v.title)).filter((v):v is NonNullable<typeof v>=>v!==null);
+ return [e.slug,{kind:'Project',title:e.name,eyebrow:'LANDSHOP ESTATE PORTFOLIO · '+e.location.toUpperCase(),description:e.summary,
+  status:e.status,category:e.category,location:e.location,date:'Owner-provided archival site media and concept visuals',tags:[e.name,e.category,'Estate portfolio'],
+  images:e.images.map(x=>({src:x.src,caption:x.caption})),facts:e.facts,overview:e.overview,highlights:e.highlights,
+  milestones:e.milestones,disclaimer:e.disclaimer,related:related.filter(x=>x.slug!==e.slug),
+  primaryHref:'/visit?project='+encodeURIComponent(e.slug),primaryLabel:'Request estate inspection',
+  secondaryHref:'/properties/'+e.slug,secondaryLabel:'View property overview',videos} as DetailData];
+}));
+const allDetails:Record<string,DetailData>={...data,...portfolioDetails};
 export const dynamicParams=false;
-export function generateStaticParams(){return Object.keys(data).map(slug=>({slug}));}
+export function generateStaticParams(){return Object.keys(allDetails).map(slug=>({slug}));}
 export async function generateMetadata({params}:{params:Promise<{slug:string}>}){
- const {slug}=await params;const d=data[slug];
+ const {slug}=await params;const d=allDetails[slug];
  if(!d)return {title:'Project not found'};
  const url='https://www.landshopnigeria.com/projects/'+slug;
  const image=new URL(d.images[0].src,'https://www.landshopnigeria.com').toString();
@@ -86,4 +99,4 @@ export async function generateMetadata({params}:{params:Promise<{slug:string}>})
   twitter:{card:'summary_large_image' as const,title:d.title+' | Landshop Projects',description:d.description,images:[image]}
  };
 }
-export default async function Project({params}:{params:Promise<{slug:string}>}){const {slug}=await params;const d=data[slug];if(!d)notFound();return <main className="ls26-page"><div className="ls26-container"><nav className="ls26-crumb"><Link href="/">Home</Link> / <Link href="/projects">Projects</Link> / {d.title}</nav></div><DetailExperience data={d}/>{slug==='merit-park'&&<section className="ls26-container" style={{paddingBottom:55}}><p>Historical source: <a href="https://thenationonlineng.net/firm-unveils-affordable-purchase-of-land-and-property/" target="_blank" rel="noopener noreferrer">Published report describing 2020 land allocation activity</a>. This reporting does not verify present-day ownership or construction status.</p></section>}</main>}
+export default async function Project({params}:{params:Promise<{slug:string}>}){const {slug}=await params;const d=allDetails[slug];if(!d)notFound();return <main className="ls26-page"><div className="ls26-container"><nav className="ls26-crumb"><Link href="/">Home</Link> / <Link href="/projects">Projects</Link> / {d.title}</nav></div><DetailExperience data={d}/>{slug==='merit-park'&&<section className="ls26-container" style={{paddingBottom:55}}><p>Historical source: <a href="https://thenationonlineng.net/firm-unveils-affordable-purchase-of-land-and-property/" target="_blank" rel="noopener noreferrer">Published report describing 2020 land allocation activity</a>. This reporting does not verify present-day ownership or construction status.</p></section>}</main>}
