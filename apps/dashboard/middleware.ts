@@ -8,6 +8,11 @@ function privateRedirect(request:NextRequest,path:string){
 }
 
 export async function middleware(request: NextRequest) {
+ // Public staff sign-in, registration, legal pages and callback run their own
+ // auth flow. Keep getUser() and authorization on every protected route.
+ if(['/', '/staff/sign-in', '/staff/sign-up', '/staff/terms', '/staff/privacy',
+     '/auth/callback', '/api/release-health'].includes(request.nextUrl.pathname))
+  return NextResponse.next({request});
  // Provider callbacks authenticate at their own handlers (Basic/HMAC). Do not
  // depend on an unrelated browser session or Supabase Auth network lookup.
  if(request.nextUrl.pathname.startsWith('/api/communications/webhooks/'))return NextResponse.next();
