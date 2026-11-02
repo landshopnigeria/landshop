@@ -1,0 +1,66 @@
+/* About page only. Never affects the global header, property filter or footer. */
+.ls-about-page .v22-root{overflow:clip}
+.ls-about-page .v22-section{padding:clamp(82px,8.5vw,124px) 0}
+.ls-about-page .v22-section+.v22-section{margin-top:clamp(24px,3.6vw,48px)}
+.ls-about-page .v22-section h2{font-size:28px!important;line-height:1.25;letter-spacing:-.025em;font-weight:750;max-width:100%;white-space:nowrap;margin-bottom:24px}
+.ls-about-page .v22-section p{max-width:62ch}
+.ls-about-page .v22-steps{gap:20px}
+.ls-about-page .v22-steps>article{border-top:2px solid #2ba47a;border-radius:0 0 14px 14px;padding:24px 21px;background:#fff;min-width:0}
+.ls-about-page .v22-steps h3{font-size:19px;white-space:nowrap}
+.ls-about-page .v22-vision{min-width:0}
+.ls-about-page .v22-vision p{font-size:16px;line-height:1.85;margin-bottom:0}
+.ls-about-page .v22-actions{display:flex;align-items:center;gap:12px;flex-wrap:nowrap;width:100%}
+.ls-about-page .v22-actions a{white-space:nowrap}
+.ls-about-page .v22-action-panel{min-width:0}
+.ls-about-page .ls-about-journey-title{font-size:clamp(19px,2.25vw,28px)!important}
+.ls-about-page .ls-about-carousel{min-width:0;margin-top:32px}
+.ls-about-page .ls-about-carousel-track{display:flex;gap:22px;overflow-x:auto;scroll-snap-type:x mandatory;overscroll-behavior-inline:contain;scrollbar-width:none;scroll-padding-inline:1px;padding:5px 2px 17px;outline-offset:3px}
+.ls-about-page .ls-about-carousel-track::-webkit-scrollbar{display:none}
+.ls-about-page .ls-about-carousel-card{flex:0 0 calc((100% - 44px)/3);scroll-snap-align:start;min-width:0;display:flex;flex-direction:column;border:1px solid #e0eae4;border-radius:20px;background:#fff;overflow:hidden;box-shadow:0 13px 34px rgba(7,63,52,.07);transition:transform .3s ease,box-shadow .3s ease,border-color .3s ease}
+.ls-about-page .ls-about-carousel-card:hover,.ls-about-page .ls-about-carousel-card:focus-within{transform:translateY(-4px);border-color:#f26b10;box-shadow:0 18px 42px rgba(7,63,52,.13)}
+.ls-about-page .ls-about-carousel-image{height:208px;display:block;overflow:hidden;background:#edf5ef}
+.ls-about-page .ls-about-carousel-image img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .45s ease}
+.ls-about-page .ls-about-carousel-card:hover .ls-about-carousel-image img{transform:scale(1.035)}
+.ls-about-page .ls-about-carousel-copy{min-width:0;flex:1;display:flex;flex-direction:column;align-items:flex-start;padding:22px 23px 24px}
+.ls-about-page .ls-about-product-logo{display:block;width:auto;max-width:175px;height:39px;object-fit:contain;object-position:left center;margin:0 0 13px}
+.ls-about-page .ls-about-carousel-category{letter-spacing:.09em;font-size:10px;font-weight:850;color:#258665}
+.ls-about-page .ls-about-carousel-card h3{margin:10px 0;font-size:21px;letter-spacing:-.024em;white-space:nowrap}
+.ls-about-page .ls-about-carousel-card h3 a{color:#073f34}
+.ls-about-page .ls-about-carousel-card p{line-height:1.6;font-size:13px;flex:1;margin:0 0 19px}
+.ls-about-page .ls-about-card-link{display:inline-flex;gap:9px;align-items:center;border-top:1px solid #e4eee6;padding-top:14px;width:100%;color:#147857;font-size:12px;font-weight:800}
+.ls-about-page .ls-about-card-link svg{flex-shrink:0}
+.ls-about-page .ls-about-carousel-controls{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:16px;color:#648574;font-size:12px;font-weight:800}
+.ls-about-page .ls-about-carousel-controls>div{display:flex;gap:9px}
+.ls-about-page .ls-about-carousel-controls button{width:46px;height:46px;display:grid;place-items:center;border-radius:50%;border:1px solid #cce0d3;background:#fff;color:#147857;cursor:pointer;transition:border-color .2s,color .2s}
+.ls-about-page .ls-about-carousel-controls button:hover,.ls-about-page .ls-about-carousel-controls button:focus-visible{border-color:#f26b10;color:#f26b10}
+@media(max-width:1000px){
+ .ls-about-page .ls-about-carousel-card{flex-basis:calc((100% - 22px)/2)}
+ .ls-about-page .v22-section{padding:78px 0}
+}
+@media(max-width:720px){
+ .ls-about-page .v22-section{padding:72px 0}
+ .ls-about-page .v22-section+.v22-section{margin-top:30px}
+ .ls-about-page .v22-section h2{font-size:clamp(16px,5.3vw,25px)!important}
+ .ls-about-page .v22-steps>article{padding:21px 18px}
+ .ls-about-page .v22-steps h3{font-size:17px}
+ .ls-about-page .ls-about-journey-title{font-size:clamp(10px,3vw,20px)!important;letter-spacing:-.025em}
+ .ls-about-page .v22-action-panel{width:100%;padding:21px 18px}
+ .ls-about-page .v22-actions{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}
+ .ls-about-page .v22-actions a{min-width:0;min-height:44px;display:inline-flex;justify-content:center;gap:4px;padding:10px 4px;font-size:clamp(9px,2.6vw,12px);line-height:1}
+ .ls-about-page .v22-actions a svg{width:19px;height:19px}
+}
+@media(max-width:640px){
+ .ls-about-page .ls-about-carousel-track{gap:14px}
+ .ls-about-page .ls-about-carousel-card{flex-basis:100%}
+ .ls-about-page .ls-about-carousel-image{height:210px}
+ .ls-about-page .ls-about-carousel-card h3{font-size:20px}
+}
+@media(max-width:360px){
+ .ls-about-page .v22-section h2{font-size:clamp(14px,4.9vw,18px)!important}
+ .ls-about-page .ls-about-journey-title{font-size:10px!important}
+ .ls-about-page .v22-steps h3{font-size:15px}
+}
+@media(prefers-reduced-motion:reduce){
+ .ls-about-page .ls-about-carousel-card,.ls-about-page .ls-about-carousel-image img{transition:none!important}
+ .ls-about-page .ls-about-carousel-track{scroll-behavior:auto!important}
+}
