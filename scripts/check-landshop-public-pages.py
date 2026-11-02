@@ -25,15 +25,16 @@ SITES = {
 PUBLIC_PAGES = [
     ("website", "/", "Everyone deserves affordable property."),
     ("www", "/", "Everyone deserves affordable property."),
-    ("website", "/develop", "DEVELOP"),
-    ("www", "/develop", "DEVELOP"),
-    ("website", "/incubate", "INCUBATE"),
-    ("website", "/grow", "GROW"),
-    ("website", "/plans/grow", "Grow into homeownership."),
-    ("website", "/plans/develop", "A place for the plans you are making."),
-    ("website", "/plans/incubate", "Explore a shared route into property."),
-    ("website", "/plans/devpro", "Support the development of your estate."),
-    ("website", "/plans/estatepro", "Move your building plans forward."),
+    ("website", "/products", "A property solution for every stage of your journey."),
+    ("website", "/develop", "Own the place where your next chapter begins."),
+    ("www", "/develop", "Own the place where your next chapter begins."),
+    ("website", "/incubate", "Explore property participation with greater clarity."),
+    ("website", "/grow", "A clearer path from home goals to financing."),
+    ("website", "/plans/grow", "A clearer path from home goals to financing."),
+    ("website", "/plans/develop", "Own the place where your next chapter begins."),
+    ("website", "/plans/incubate", "Explore property participation with greater clarity."),
+    ("website", "/plans/devpro", "Plan essential infrastructure with confidence."),
+    ("website", "/plans/estatepro", "Turn your building plan into a structured next step."),
     ("website", "/projects", "Explore the places behind Landshop."),
     ("website", "/projects/famous-gardens", "Famous Gardens"),
     ("website", "/projects/merit-park", "Merit Park"),
@@ -209,12 +210,15 @@ def check(kind: str, route: str, expected: str | None):
                       "Rent</button>","Shortlet</button>"):
             if label not in html:
                 raise AssertionError(f"required V16 slider control/action missing: {label}")
-    if kind in ("website","www") and route in ("/develop","/incubate","/grow"):
-        for marker in ('class="lde"', 'class="lde-gallery"', 'class="lde-side"', 'class="lde-tabs"', 'class="lde-related"'):
+    if kind in ("website","www") and route in ("/products","/develop","/incubate","/grow","/plans/develop","/plans/incubate","/plans/grow","/plans/devpro","/plans/estatepro"):
+        for marker in ('class="lsp-product"', 'class="lsp-hero"', 'class="lsp-stats"', 'lsp-faq'):
             if marker not in html:
-                raise AssertionError("approved image-led product details missing: "+marker)
-        if "portal.landshopnigeria.com/applications/" not in html:
-            raise AssertionError("secure guided product forms are not linked")
+                raise AssertionError("approved premium product layout is missing: "+marker)
+        if route != "/products" and 'class="lsp-pathway-grid"' not in html:
+            raise AssertionError("approved product-specific pathways missing")
+        if route in ("/develop","/incubate","/grow","/plans/develop","/plans/incubate","/plans/grow"):
+            if "portal.landshopnigeria.com/applications/" not in html:
+                raise AssertionError("secure guided product application links are missing")
     if kind in ("website","www") and (route.startswith("/projects/") or route.startswith("/services/")):
         for marker in ('class="lde"', 'class="lde-gallery"', 'class="lde-side"', 'class="lde-tabs"', 'class="lde-related"'):
             if marker not in html:
@@ -250,7 +254,7 @@ def check(kind: str, route: str, expected: str | None):
 def verify_source() -> None:
     """Check routes for client-only carousel slides in source, not SSR initial-slide HTML."""
     homepage = Path("apps/website/components/LandshopHome.tsx").read_text(encoding="utf-8")
-    product = Path("apps/website/components/ProductPage.tsx").read_text(encoding="utf-8")
+    product = Path("apps/website/components/ProductDetailRedesign.tsx").read_text(encoding="utf-8")
     nav = Path("apps/website/components/SiteHeader.tsx").read_text(encoding="utf-8")
     icons = Path("apps/website/components/SiteIcon.tsx").read_text(encoding="utf-8")
     nav_css = Path("apps/website/app/public-icon-27.css").read_text(encoding="utf-8")
@@ -324,8 +328,8 @@ def verify_source() -> None:
     for slug in ("develop-land","develop-house","develop-inspection",
                  "incubate-investment","beta-mortgage","mortgage-xtra",
                  "mortgage-xtra-inspection"):
-        if "portal+'/applications/"+slug+"'" not in product:
-            raise AssertionError("Product pathway has no approved secure form: " + slug)
+        if "slug:'"+slug+"'" not in product:
+            raise AssertionError("Product pathway has no approved secure application link: " + slug)
 
 
 def main() -> int:

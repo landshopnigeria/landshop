@@ -44,3 +44,13 @@
 @media(max-width:760px){.lsp-hero{grid-template-columns:1fr}.lsp-hero-photo{height:300px}.lsp-stats{margin:14px 0 15px;grid-template-columns:1fr 1fr}.lsp-features{grid-template-columns:1fr 1fr}.lsp-steps{grid-template-columns:1fr 1fr}.lsp-conversion{flex-direction:column;align-items:flex-start}.lsp-hero h1{font-size:clamp(30px,5vw,37px)}}
 @media(max-width:520px){.lsp-shell{padding:18px 18px 55px}.lsp-hero{padding:24px 18px;gap:25px}.lsp-hero h1{font-size:clamp(29px,7.3vw,34px);letter-spacing:-.8px}.lsp-hero-photo{height:235px}.lsp-hero-copy>p{font-size:14px}.lsp-stats,.lsp-features,.lsp-products-grid,.lsp-pathway-grid{grid-template-columns:1fr}.lsp-stats{gap:9px}.lsp-stat{padding:14px 16px}.lsp-process{padding:22px 15px}.lsp-steps{gap:9px}.lsp-steps article{padding:14px}.lsp-steps h3{font-size:14px}.lsp-steps p{font-size:11px}.lsp-section{padding-top:25px}.lsp-heading h2{font-size:26px}.lsp-conversion{padding:24px 19px}.lsp-conversion h2{font-size:24px}.lsp-form-grid{grid-template-columns:1fr}.lsp-modal{max-height:94vh}.lsp-modal h2{font-size:22px}}
 @media(prefers-reduced-motion:reduce){.lsp-product *, .lsp-backdrop *{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+
+/* Product-only formal application handoff, separate from fast enquiry modals. */
+.lsp-secure-panel{margin-top:24px;background:#f2faf6;border:1px solid #d8e8de;padding:24px;border-radius:15px;display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:25px}
+.lsp-secure-panel h3{font-size:19px;color:var(--lsp-deep);margin:9px 0 7px}
+.lsp-secure-panel p{font-size:12px;color:#65796c;line-height:1.7;margin:0}
+.lsp-secure-links{display:grid;gap:9px}
+.lsp-secure-links a{display:flex;justify-content:space-between;align-items:center;gap:15px;padding:12px 15px;border:1px solid #cddfd1;border-radius:10px;background:#fff;color:#174b39}
+.lsp-secure-links a:hover{border-color:var(--lsp-orange);color:var(--lsp-orange)}
+.lsp-secure-links strong,.lsp-secure-links small{display:block}.lsp-secure-links strong{font-size:13px}.lsp-secure-links small{font-size:11px;line-height:1.5;font-weight:400;color:#64786d;margin-top:4px}
+@media(max-width:760px){.lsp-secure-panel{grid-template-columns:1fr;padding:19px}}

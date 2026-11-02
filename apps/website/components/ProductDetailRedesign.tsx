@@ -15,6 +15,21 @@ type PageConfig={
  steps:[string,string][];faqs:[string,string][];links:{title:string;description:string;href?:string;intent?:string}[];
  primary:Action;secondary:Action;status:string;note:string;
 };
+const secureApplications:Partial<Record<ProductId,{name:string;slug:string;description:string}[]>>={
+ develop:[
+  {name:'Develop Land',slug:'develop-land',description:'Secure land acquisition application for a currently eligible offer.'},
+  {name:'Develop House',slug:'develop-house',description:'Secure house acquisition application for a documented available property.'},
+  {name:'Property Inspection',slug:'develop-inspection',description:'Request a confirmed inspection of an eligible property.'}
+ ],
+ incubate:[
+  {name:'Incubate Investment',slug:'incubate-investment',description:'Access the formal suitability review only where an approved programme is open.'}
+ ],
+ grow:[
+  {name:'Beta Mortgage',slug:'beta-mortgage',description:'Complete the approved off-plan mortgage assessment application.'},
+  {name:'Mortgage Xtra',slug:'mortgage-xtra',description:'Apply for an eligible completed-home financing assessment.'},
+  {name:'Mortgage Xtra Inspection',slug:'mortgage-xtra-inspection',description:'Request a confirmed mortgage-linked property visit.'}
+ ]
+};
 const pages:Record<PageId,PageConfig>={
  products:{
   name:'Products',eyebrow:'LANDSHOP PRODUCTS',title:'A property solution for every stage of your journey.',
@@ -102,6 +117,7 @@ const pages:Record<PageId,PageConfig>={
 
 export default function ProductDetailRedesign({page}:{page:PageId}){
  const d=pages[page];
+ const eligibleApplications=page==='products'?[]:(secureApplications[page]||[]);
  const [modal,setModal]=useState<string|null>(null);
  const [busy,setBusy]=useState(false);
  const [feedback,setFeedback]=useState<{ok:boolean;message:string;reference?:string}|null>(null);
@@ -166,7 +182,9 @@ export default function ProductDetailRedesign({page}:{page:PageId}){
     <div className="lsp-features">{d.features.map(([title,desc],i)=><article key={title} className="lsp-feature"><span className="lsp-index">0{i+1}</span><h3>{title}</h3><p>{desc}</p></article>)}</div>}
    </section>
    <section className="lsp-section lsp-process"><div className="lsp-heading"><span className="lsp-kicker">HOW IT WORKS</span><h2>Your next steps, clearly explained.</h2><p>Explore the information, verify the details and move at a pace that works for you.</p></div><div className="lsp-steps">{d.steps.map(([title,desc],i)=><article key={title}><strong>0{i+1}</strong><h3>{title}</h3><p>{desc}</p></article>)}</div></section>
-   {page!=='products'&&<section className="lsp-section lsp-pathways"><div className="lsp-heading"><span className="lsp-kicker">PRODUCT PATHWAYS</span><h2>Choose your next step.</h2><p>Follow the relevant link or open a secure enquiry popup to ask for further guidance.</p></div><div className="lsp-pathway-grid">{d.links.map((item,i)=><article className="lsp-pathway" key={item.title}><span className="lsp-index">0{i+1}</span><h3>{item.title}</h3><p>{item.description}</p>{item.href?<Link href={item.href}>Explore pathway <ApprovedArrow /></Link>:<button type="button" onClick={()=>openModal(item.intent||item.title)}>Open enquiry form <ApprovedArrow /></button>}</article>)}</div></section>}
+   {page!=='products'&&<section className="lsp-section lsp-pathways"><div className="lsp-heading"><span className="lsp-kicker">PRODUCT PATHWAYS</span><h2>Choose your next step.</h2><p>Follow the relevant link or open a secure enquiry popup to ask for further guidance.</p></div><div className="lsp-pathway-grid">{d.links.map((item,i)=><article className="lsp-pathway" key={item.title}><span className="lsp-index">0{i+1}</span><h3>{item.title}</h3><p>{item.description}</p>{item.href?<Link href={item.href}>Explore pathway <ApprovedArrow /></Link>:<button type="button" onClick={()=>openModal(item.intent||item.title)}>Open enquiry form <ApprovedArrow /></button>}</article>)}</div>
+    {eligibleApplications.length>0&&<div className="lsp-secure-panel"><div><span className="lsp-kicker">OFFICIAL CUSTOMER PORTAL</span><h3>Apply through a verified, secure process.</h3><p>These formal applications are separate from quick enquiries. Only apply after Landshop has confirmed current eligibility, availability and the relevant written offer. Submitting does not guarantee an allocation, loan or investment.</p></div><div className="lsp-secure-links">{eligibleApplications.map(item=><a key={item.slug} href={'https://portal.landshopnigeria.com/applications/'+item.slug} rel="noopener noreferrer"><span><strong>{item.name}</strong><small>{item.description}</small></span><ApprovedArrow /></a>)}</div></div>}
+   </section>}
    {(page==='devpro'||page==='estatepro')&&<section className="lsp-section lsp-calculator"><div className="lsp-heading"><span className="lsp-kicker">FINANCE PLANNER</span><h2>Explore a possible repayment scenario.</h2><p>Adjust your own amount, rate and term assumptions. This is not an offer or approval.</p></div><LoanIllustrator kind={page}/></section>}
    <section className="lsp-section lsp-faq"><div className="lsp-heading"><span className="lsp-kicker">FREQUENTLY ASKED QUESTIONS</span><h2>Questions worth asking.</h2></div><div className="lsp-faq-list">{d.faqs.map(([question,answer])=><details key={question}><summary>{question}<span aria-hidden="true">+</span></summary><p>{answer}</p></details>)}</div></section>
    <section className="lsp-conversion"><div><span className="lsp-kicker">LANDSHOP IS HERE TO HELP</span><h2>Ready to take a more informed step?</h2><p>Ask the right questions and request the information you need before proceeding.</p></div><button type="button" className="lsp-primary" onClick={()=>openModal(d.name+' next-step consultation')}>Speak with Landshop <ApprovedArrow /></button></section>
