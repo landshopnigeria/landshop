@@ -7,6 +7,8 @@ import {NextResponse,type NextRequest} from 'next/server';
  */
 type Entry={count:number,until:number};
 const BUCKETS=new Map<string,Entry>();
+// Independent process-wide ceiling survives eviction of spoofed client IP buckets.
+const GLOBAL_BUCKETS=new Map<string,Entry>();
 const MAX_KEYS=12_000;
 function hash(value:string){return createHash('sha256').update(value).digest('hex').slice(0,28)}
 function token(req:NextRequest){
@@ -24,10 +26,19 @@ function limit(key:string,cap:number,windowMs:number){
  existing.count+=1;
  return existing.count>cap?Math.max(1,Math.ceil((existing.until-now)/1000)):0;
 }
+function globalLimit(scope:string,cap:number,windowMs:number){
+ const now=Date.now(),entry=GLOBAL_BUCKETS.get(scope);
+ if(!entry||entry.until<=now){GLOBAL_BUCKETS.set(scope,{count:1,until:now+windowMs});return 0;}
+ entry.count+=1;
+ return entry.count>cap?Math.max(1,Math.ceil((entry.until-now)/1000)):0;
+}
 export function publicFormThrottle(req:NextRequest,scope:string,cap=24,windowMs=10*60_000){
  const retry=limit(scope+':ip:'+token(req),cap,windowMs);
- return retry?NextResponse.json({ok:false,message:'Too many requests. Please try again later.'},{
-  status:429,headers:{'Cache-Control':'no-store','Retry-After':String(retry),'X-Content-Type-Options':'nosniff'}
+ // Per-process 3,600/10m ceiling per form, even if the IP header changes.
+ const globalRetry=retry?0:globalLimit(scope,3600,windowMs);
+ const wait=Math.max(retry,globalRetry);
+ return wait?NextResponse.json({ok:false,message:'Too many requests. Please try again later.'},{
+  status:429,headers:{'Cache-Control':'no-store','Retry-After':String(wait),'X-Content-Type-Options':'nosniff'}
  }):null;
 }
 export function publicEmailThrottle(email:string,scope:string,cap=6,windowMs=10*60_000){

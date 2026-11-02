@@ -35,7 +35,12 @@ export async function POST(request:Request){
  const raw=await request.text();
  if(Buffer.byteLength(raw,'utf8')>16384)return new Response(null,{status:413,headers:noStore});
  let event:Record<string,unknown>;
- try{event=JSON.parse(raw)}catch{return new Response(null,{status:400,headers:noStore})}
+ try{
+  const parsed:unknown=JSON.parse(raw);
+  if(!parsed||typeof parsed!=='object'||Array.isArray(parsed))
+   return new Response(null,{status:400,headers:noStore});
+  event=parsed as Record<string,unknown>;
+ }catch{return new Response(null,{status:400,headers:noStore})}
  const msg=typeof event.MessageID==='string'?event.MessageID:'';
  const kind=typeof event.RecordType==='string'?event.RecordType:'';
  if(!/^[A-Za-z0-9-]{18,80}$/.test(msg))return new Response(null,{status:400,headers:noStore});

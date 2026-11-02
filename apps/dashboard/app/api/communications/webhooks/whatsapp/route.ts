@@ -35,24 +35,45 @@ export async function POST(request:Request){
  if(!eq(provided,calculated))return new Response(null,{status:401,headers});
  let body:unknown;
  try{body=JSON.parse(raw)}catch{return new Response(null,{status:400,headers})}
- if(!body||typeof body!=='object')return new Response(null,{status:400,headers});
+ if(!body||typeof body!=='object'||Array.isArray(body))return new Response(null,{status:400,headers});
  const db=client();
  if(!db)return new Response(null,{status:503,headers});
  type ProviderStatus={id?:string;status?:string;timestamp?:string};
  type ProviderPayload={entry?:{changes?:{value?:{statuses?:ProviderStatus[]}}[]}[]};
  const root=body as ProviderPayload;
- const statuses=root.entry?.flatMap(e=>e.changes?.flatMap(c=>c.value?.statuses||[])||[])||[];
- if(statuses.length>50)return new Response(null,{status:413,headers});
+ if(root.entry!==undefined&&!Array.isArray(root.entry))return new Response(null,{status:400,headers});
+ const entries=root.entry||[];
+ if(entries.length>20)return new Response(null,{status:413,headers});
+ const statuses:ProviderStatus[]=[];
+ for(const entry of entries){
+  if(!entry||typeof entry!=='object'||!Array.isArray(entry.changes))
+   return new Response(null,{status:400,headers});
+  if(entry.changes.length>25)return new Response(null,{status:413,headers});
+  for(const change of entry.changes){
+   const value=change?.value;
+   if(!value||typeof value!=='object')continue;
+   if(value.statuses===undefined)continue;
+   if(!Array.isArray(value.statuses))return new Response(null,{status:400,headers});
+   if(statuses.length+value.statuses.length>50)return new Response(null,{status:413,headers});
+   statuses.push(...value.statuses);
+  }
+ }
  for(const item of statuses){
-  const id=item.id||'',status=item.status||'';
+  if(!item||typeof item!=='object')continue;
+  const id=typeof item.id==='string'?item.id:'';
+  const status=typeof item.status==='string'?item.status:'';
   if(!/^wamid\.[A-Za-z0-9_=+/.-]{10,230}$/.test(id))continue;
   if(!['sent','delivered','read','failed'].includes(status))continue;
   const {data:outbox,error:lookupError}=await db.from('landshop_comm_outbox')
    .select('id,status').eq('channel','whatsapp').eq('provider_message_id',id).maybeSingle();
   if(lookupError)return new Response(null,{status:503,headers});
   if(!outbox)continue;
-  const when=item.timestamp&&/^[0-9]{9,14}$/.test(item.timestamp)
-   ?new Date(Number(item.timestamp)*1000).toISOString():new Date().toISOString();
+  const seconds=typeof item.timestamp==='string'&&/^[0-9]{9,14}$/.test(item.timestamp)
+   ?Number(item.timestamp):NaN;
+  const moment=Number.isSafeInteger(seconds)&&seconds>=946684800&&seconds<=253402300799
+   ?new Date(seconds*1000):null;
+  const when=moment&&!Number.isNaN(moment.valueOf())
+   ?moment.toISOString():new Date().toISOString();
   const event=status==='read'?'opened':status==='sent'?'accepted':status;
   const eventName=event==='failed'?'failed':event;
   const eventId=createHash('sha256').update(id+':'+status+':'+(item.timestamp||'')).digest('hex');
