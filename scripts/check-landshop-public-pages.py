@@ -242,8 +242,13 @@ def check(kind: str, route: str, expected: str | None):
             raise AssertionError("New owner-supplied Maiyegun coastal gallery missing")
         if route=="/projects/green-island" and "/estates/green-island/site-progress-1.webp" not in html:
             raise AssertionError("New owner-supplied Green Island historical site gallery missing")
-        if route=="/projects/blue-diamonds" and "/estates/blue-diamonds/entrance-concept.webp" not in html:
-            raise AssertionError("New owner-supplied Blue Diamonds concept gallery missing")
+        if route=="/projects/blue-diamonds":
+            if "/estates/blue-diamonds/entrance-concept.webp" not in html:
+                raise AssertionError("New owner-supplied Blue Diamonds concept gallery missing")
+            if "/estates/blue-diamonds/architectural-layout.webp" not in html:
+                raise AssertionError("Blue Diamonds owner-provided estate layout missing")
+            if "/properties/blue-diamonds" not in html:
+                raise AssertionError("Blue Diamonds project must link to the corresponding property overview")
     if kind == "website" and route == "/contact":
         if 'class="lc-v24-photo"' not in html or 'class="contact-enquiry-form"' not in html:
             raise AssertionError("approved Landshop reception image or secure enquiry form is missing")
