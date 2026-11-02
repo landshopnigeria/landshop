@@ -23,8 +23,18 @@ jobs:
           from html.parser import HTMLParser
           from urllib.error import URLError, HTTPError
 
-          expected=os.environ["EXPECTED_SHA"]
-          assert len(expected)==40, "Expected full main branch commit"
+          main_sha=os.environ["EXPECTED_SHA"]
+          assert len(main_sha)==40, "Expected full main branch commit"
+          # Non-release commits can advance main without changing production.
+          # Use the live website revision as baseline for cross-app parity.
+          req=urllib.request.Request("https://landshopnigeria.com/api/release-health",
+            headers={"User-Agent":"Landshop-Live-Health/1.0","Cache-Control":"no-store"})
+          with urllib.request.urlopen(req,timeout=18) as resp:
+            baseline=json.load(resp)
+          expected=baseline.get("commit","")
+          assert len(expected)==40 and all(c in "0123456789abcdef" for c in expected), "Invalid production release metadata"
+          if expected!=main_sha:
+            print("::warning::Production revision differs from main:",expected[:12],main_sha[:12])
           hosts={
             "website":"https://landshopnigeria.com",
             "www":"https://www.landshopnigeria.com",
