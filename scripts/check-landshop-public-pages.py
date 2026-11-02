@@ -39,6 +39,10 @@ PUBLIC_PAGES = [
     ("website", "/projects/famous-gardens", "Famous Gardens"),
     ("website", "/projects/merit-park", "Merit Park"),
     ("website", "/projects/maiyegun-beach-estate", "Maiyegun Beach Estate"),
+    ("website", "/projects/blue-diamonds", "Blue Diamonds Estate"),
+    ("website", "/properties/green-island", "Green Island Estate"),
+    ("website", "/properties/maiyegun-beach-estate", "Maiyegun Beach Estate"),
+    ("website", "/properties/blue-diamonds", "Blue Diamonds Estate"),
     ("website", "/projects/green-island", "Green Island"),
     ("website", "/collections/prime", "Prime Estates."),
     ("website", "/collections/luxury", "Luxury Estates."),
@@ -234,8 +238,12 @@ def check(kind: str, route: str, expected: str | None):
             raise AssertionError("Famous Gardens owner-supplied gallery missing")
         if route=="/projects/merit-park" and "/media/drone0.webp" not in html:
             raise AssertionError("Merit Park drone gallery missing")
-        if route=="/projects/maiyegun-beach-estate" and "/media/maiyegun0.webp" not in html:
-            raise AssertionError("Maiyegun site gallery missing")
+        if route=="/projects/maiyegun-beach-estate" and "/estates/maiyegun-beach-estate/coastal-site.webp" not in html:
+            raise AssertionError("New owner-supplied Maiyegun coastal gallery missing")
+        if route=="/projects/green-island" and "/estates/green-island/site-progress-1.webp" not in html:
+            raise AssertionError("New owner-supplied Green Island historical site gallery missing")
+        if route=="/projects/blue-diamonds" and "/estates/blue-diamonds/entrance-concept.webp" not in html:
+            raise AssertionError("New owner-supplied Blue Diamonds concept gallery missing")
     if kind == "website" and route == "/contact":
         if 'class="lc-v24-photo"' not in html or 'class="contact-enquiry-form"' not in html:
             raise AssertionError("approved Landshop reception image or secure enquiry form is missing")
