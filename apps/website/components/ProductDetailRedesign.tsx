@@ -13,7 +13,7 @@ type PageConfig={
  name:string;eyebrow:string;title:string;description:string;photo:string;photoAlt:string;photoLabel:string;
  highlights:[string,string][];heading:string;intro:string;features:[string,string][];
  steps:[string,string][];faqs:[string,string][];links:{title:string;description:string;href?:string;intent?:string}[];
- primary:Action;secondary:Action;status:string;note:string;
+ primary:Action;secondary:Action;status?:string;note?:string;
 };
 const secureApplications:Partial<Record<ProductId,{name:string;slug:string;description:string}[]>>={
  develop:[
@@ -54,8 +54,7 @@ const pages:Record<PageId,PageConfig>={
   faqs:[['Can I buy outright or through instalments?','The options depend on the property and the applicable written offer. Current Develop land releases are sold out; future releases require confirmation.'],['How do I verify ownership records?','Request the official property pack and seek independent legal verification before payment.']],
   links:[{title:'Prime collection',description:'Explore the existing Prime property collection and its published details.',href:'/collections/prime'},{title:'Luxury collection',description:'Review the Luxury collection and available property information.',href:'/collections/luxury'},{title:'Future Develop opportunities',description:'Ask to be informed when approved new land releases are announced.',intent:'Develop future release interest'}],
   primary:{label:'Explore properties',href:'/properties'},secondary:{label:'Enquire about Develop',intent:'Develop acquisition enquiry'},
-  status:'Current Develop releases sold out. Future releases subject to confirmation.',
-  note:'Any future January 2027 release date is indicative. Prices, title documents, inventory and payment terms must be reconfirmed for each offer.'
+
  },
  incubate:{
   name:'Incubate',eyebrow:'SHARED OWNERSHIP · INCUBATE',title:'Explore property participation with greater clarity.',
@@ -68,7 +67,7 @@ const pages:Record<PageId,PageConfig>={
   faqs:[['Are returns guaranteed?','No. Financial returns, appreciation and distributions are never guaranteed.'],['Does registering give me ownership rights?','No. Registration is free and does not allocate a share or establish ownership. Rights depend on a future approved written agreement.']],
   links:[{title:'Join the interest list',description:'Register your details for confirmed future programme updates.',intent:'Incubate future interest list'},{title:'Understand the programme',description:'Ask about ownership structures, eligibility and the planned process.',intent:'Incubate information and disclosures'}],
   primary:{label:'Register your interest',intent:'Incubate future interest list'},secondary:{label:'Request information',intent:'Incubate information and disclosures'},
-  status:'Concept-stage interest only. No current investment sale.',
+
   note:'Future opportunities planned from January 2027 are subject to approval and confirmation. This page is not an offer of securities or a promise of returns.'
  },
  grow:{
@@ -173,7 +172,7 @@ export default function ProductDetailRedesign({page}:{page:PageId}){
  };
  return <main className="lsp-product">
   <div className="lsp-shell"><nav className="lsp-crumb" aria-label="Breadcrumb"><Link href="/">Home</Link><span>/</span>{page!=='products'&&<><Link href="/products">Products</Link><span>/</span></>}{d.name}</nav>
-   <section className="lsp-hero" aria-labelledby="lsp-title"><div className="lsp-hero-copy"><span className="lsp-kicker">{d.eyebrow}</span><h1 id="lsp-title">{d.title}</h1><p>{d.description}</p><div className="lsp-actions"><ActionButton action={d.primary} solid/><ActionButton action={d.secondary}/></div><div className="lsp-status">{d.status}</div></div>
+   <section className="lsp-hero" aria-labelledby="lsp-title"><div className="lsp-hero-copy"><span className="lsp-kicker">{d.eyebrow}</span><h1 id="lsp-title">{d.title}</h1><p>{d.description}</p><div className="lsp-actions"><ActionButton action={d.primary} solid/><ActionButton action={d.secondary}/></div>{d.status&&<div className="lsp-status">{d.status}</div>}</div>
     <figure className="lsp-hero-photo"><img src={d.photo} alt={d.photoAlt}/><figcaption>{d.photoLabel}</figcaption></figure>
    </section>
    <div className="lsp-stats">{d.highlights.map(([title,desc])=><div className="lsp-stat" key={title}><strong>{title}</strong><span>{desc}</span></div>)}</div>
@@ -181,14 +180,14 @@ export default function ProductDetailRedesign({page}:{page:PageId}){
     {page==='products'?<div className="lsp-products-grid">{(['develop','incubate','grow','devpro','estatepro'] as ProductId[]).map(productCard)}</div>:
     <div className="lsp-features">{d.features.map(([title,desc],i)=><article key={title} className="lsp-feature"><span className="lsp-index">0{i+1}</span><h3>{title}</h3><p>{desc}</p></article>)}</div>}
    </section>
-   <section className="lsp-section lsp-process"><div className="lsp-heading"><span className="lsp-kicker">HOW IT WORKS</span><h2>Your next steps, clearly explained.</h2><p>Explore the information, verify the details and move at a pace that works for you.</p></div><div className="lsp-steps">{d.steps.map(([title,desc],i)=><article key={title}><strong>0{i+1}</strong><h3>{title}</h3><p>{desc}</p></article>)}</div></section>
+   <section className="lsp-section lsp-process"><div className="lsp-heading"><span className="lsp-kicker">HOW IT WORKS</span></div><div className="lsp-steps">{d.steps.map(([title,desc],i)=><article key={title}><strong>0{i+1}</strong><h3>{title}</h3><p>{desc}</p></article>)}</div></section>
    {page!=='products'&&<section className="lsp-section lsp-pathways"><div className="lsp-heading"><span className="lsp-kicker">PRODUCT PATHWAYS</span><h2>Choose your next step.</h2><p>Follow the relevant link or open a secure enquiry popup to ask for further guidance.</p></div><div className="lsp-pathway-grid">{d.links.map((item,i)=><article className="lsp-pathway" key={item.title}><span className="lsp-index">0{i+1}</span><h3>{item.title}</h3><p>{item.description}</p>{item.href?<Link href={item.href}>Explore pathway <ApprovedArrow /></Link>:<button type="button" onClick={()=>openModal(item.intent||item.title)}>Open enquiry form <ApprovedArrow /></button>}</article>)}</div>
-    {eligibleApplications.length>0&&<div className="lsp-secure-panel"><div><span className="lsp-kicker">OFFICIAL CUSTOMER PORTAL</span><h3>Apply through a verified, secure process.</h3><p>These formal applications are separate from quick enquiries. Only apply after Landshop has confirmed current eligibility, availability and the relevant written offer. Submitting does not guarantee an allocation, loan or investment.</p></div><div className="lsp-secure-links">{eligibleApplications.map(item=><a key={item.slug} href={'https://portal.landshopnigeria.com/applications/'+item.slug} rel="noopener noreferrer"><span><strong>{item.name}</strong><small>{item.description}</small></span><ApprovedArrow /></a>)}</div></div>}
+    {eligibleApplications.length>0&&<div className="lsp-secure-panel"><div><h3>Apply through a verified, secure process.</h3><p>These formal applications are separate from quick enquiries. Only apply after Landshop has confirmed current eligibility, availability and the relevant written offer. Submitting does not guarantee an allocation, loan or investment.</p></div><div className="lsp-secure-links">{eligibleApplications.map(item=><a key={item.slug} href={'https://portal.landshopnigeria.com/applications/'+item.slug} rel="noopener noreferrer"><span><strong>{item.name}</strong><small>{item.description}</small></span><ApprovedArrow /></a>)}</div></div>}
    </section>}
    {(page==='devpro'||page==='estatepro')&&<section className="lsp-section lsp-calculator"><div className="lsp-heading"><span className="lsp-kicker">FINANCE PLANNER</span><h2>Explore a possible repayment scenario.</h2><p>Adjust your own amount, rate and term assumptions. This is not an offer or approval.</p></div><LoanIllustrator kind={page}/></section>}
    <section className="lsp-section lsp-faq"><div className="lsp-heading"><span className="lsp-kicker">FREQUENTLY ASKED QUESTIONS</span><h2>Questions worth asking.</h2></div><div className="lsp-faq-list">{d.faqs.map(([question,answer])=><details key={question}><summary>{question}<span aria-hidden="true">+</span></summary><p>{answer}</p></details>)}</div></section>
    <section className="lsp-conversion"><div><span className="lsp-kicker">LANDSHOP IS HERE TO HELP</span><h2>Ready to take a more informed step?</h2><p>Ask the right questions and request the information you need before proceeding.</p></div><button type="button" className="lsp-primary" onClick={()=>openModal(d.name+' next-step consultation')}>Speak with Landshop <ApprovedArrow /></button></section>
-   <p className="lsp-disclosure"><strong>Please note:</strong> {d.note}</p>
+   {d.note&&<p className="lsp-disclosure">{d.note}</p>}
   </div>
   {modal&&<div className="lsp-backdrop" role="presentation" onMouseDown={e=>{if(e.target===e.currentTarget)setModal(null)}}>
    <div ref={dialogRef} className="lsp-modal" role="dialog" aria-modal="true" aria-labelledby="lsp-modal-title" aria-describedby="lsp-modal-desc">
