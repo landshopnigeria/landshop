@@ -93,7 +93,6 @@ export default function ApprovedHomepageContent({featured}:{featured:FeaturedPro
      </div>)}
     </div>
    </div>
-   <p className="lsap-provenance">Product photography is drawn from the owner-supplied Landshop archive. Project-specific eligibility and offers require confirmation.</p>
   </div></section>
 
   <section className="lsap-promise"><div className="lsap-container lsap-promise-grid"><div><p className="lsap-kicker">THE LANDSHOP PROMISE</p><h2>Everyone deserves <span>affordable property.</span></h2><p>Every property journey should begin with information you understand, choices you can compare and people who can guide the next step.</p><Link className="lsap-button lsap-light-button" href="/properties">Explore Properties <ApprovedArrow/></Link></div><div className="lsap-promise-photo"><img src="/owner/2026/estate-residential.webp" alt="Real Nigerian residential estate in Landshop's archival collection" loading="lazy"/></div></div></section>
