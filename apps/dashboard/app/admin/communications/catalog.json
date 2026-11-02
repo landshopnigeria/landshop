@@ -18,7 +18,12 @@
         "WhatsApp",
         "SMS"
       ],
-      "critical": true
+      "critical": true,
+      "premium": {
+        "headline": "Your journey starts here.",
+        "body": "We’ve received your {{plan}} application for {{property}}. Your reference is {{application_ref}}.\n\nWe’ll keep you informed as the team reviews the details. Track your progress securely, whenever it suits you.",
+        "cta": "View my application"
+      }
     },
     {
       "id": "C02",
@@ -38,7 +43,12 @@
         "WhatsApp",
         "SMS"
       ],
-      "critical": true
+      "critical": true,
+      "premium": {
+        "headline": "A lovely step forward.",
+        "body": "Your {{plan}} assessment has been approved. Congratulations on reaching this important milestone.\n\nYour official terms and any outstanding conditions are ready for careful review in your secure account.",
+        "cta": "Review my approval"
+      }
     },
     {
       "id": "C03",
@@ -58,7 +68,12 @@
         "WhatsApp",
         "SMS"
       ],
-      "critical": true
+      "critical": true,
+      "premium": {
+        "headline": "Your visit is confirmed.",
+        "body": "Your inspection of {{property}} is booked for {{inspection_date}} at {{inspection_time}} WAT.\n\nWe look forward to showing you around. Your meeting instructions and any rescheduling options are available in your booking.",
+        "cta": "See my inspection"
+      }
     },
     {
       "id": "C04",
@@ -78,7 +93,12 @@
         "WhatsApp",
         "SMS"
       ],
-      "critical": true
+      "critical": true,
+      "premium": {
+        "headline": "Your offer is ready.",
+        "body": "Your offer letter for {{property}} is available to review.\n\nPlease read the pricing, conditions and validity period before you sign. We’re here to answer any questions.",
+        "cta": "Review my offer"
+      }
     },
     {
       "id": "C05",
@@ -98,7 +118,12 @@
         "WhatsApp",
         "SMS"
       ],
-      "critical": true
+      "critical": true,
+      "premium": {
+        "headline": "Payment received. Thank you.",
+        "body": "Your instalment of {{payment_amount}} has been reconciled for {{property}}.\n\nYour receipt and updated balance are available in your account. We appreciate your commitment.",
+        "cta": "View my receipt"
+      }
     },
     {
       "id": "C06",
@@ -118,7 +143,12 @@
         "WhatsApp",
         "SMS"
       ],
-      "critical": true
+      "critical": true,
+      "premium": {
+        "headline": "A milestone worth celebrating.",
+        "body": "We’ve verified your full payment for {{property}}. Thank you for trusting Landshop.\n\nYour documentation and transfer steps will appear in your account as they are confirmed.",
+        "cta": "See next steps"
+      }
     },
     {
       "id": "C07",
@@ -138,7 +168,12 @@
         "WhatsApp",
         "SMS"
       ],
-      "critical": true
+      "critical": true,
+      "premium": {
+        "headline": "Your contract is ready.",
+        "body": "Your contract of sale for {{property}} is ready to review.\n\nTake your time with the details, ask questions and follow the secure signing instructions when you are comfortable.",
+        "cta": "Review my contract"
+      }
     },
     {
       "id": "C08",
@@ -158,7 +193,12 @@
         "WhatsApp",
         "SMS"
       ],
-      "critical": true
+      "critical": true,
+      "premium": {
+        "headline": "Your estimate, made simple.",
+        "body": "Here is the mortgage estimate you asked us to save.\n\nIt’s a helpful planning illustration, not a financing offer. You can revisit the figures or speak with an adviser at any time.",
+        "cta": "See my estimate"
+      }
     },
     {
       "id": "C09",
@@ -178,7 +218,12 @@
         "WhatsApp",
         "SMS"
       ],
-      "critical": false
+      "critical": false,
+      "premium": {
+        "headline": "Welcome to what’s possible.",
+        "body": "Thank you for joining Landshop Insights. We’re glad you’re here.\n\nLook forward to thoughtful property guidance, helpful ownership ideas and updates you can opt out of whenever you choose.",
+        "cta": "Explore Landshop"
+      }
     },
     {
       "id": "C10",
@@ -198,7 +243,12 @@
         "WhatsApp",
         "SMS"
       ],
-      "critical": false
+      "critical": false,
+      "premium": {
+        "headline": "Need a hand with the numbers?",
+        "body": "Your mortgage estimate is a starting point. If you’d like clarity on deposits, eligibility or repayments, our advisers can help.\n\nContinue at your pace, with no pressure to decide.",
+        "cta": "Book a conversation"
+      }
     },
     {
       "id": "C11",
@@ -217,7 +267,12 @@
         "Email",
         "WhatsApp"
       ],
-      "critical": false
+      "critical": false,
+      "premium": {
+        "headline": "Pick up where you left off.",
+        "body": "Your {{plan}} application for {{property}} is saved as a draft.\n\nContinue whenever you’re ready. No assessment has started until you submit it.",
+        "cta": "Resume application"
+      }
     },
     {
       "id": "C12",
@@ -237,7 +292,12 @@
         "WhatsApp",
         "SMS"
       ],
-      "critical": false
+      "critical": false,
+      "premium": {
+        "headline": "One more thing to complete.",
+        "body": "Your application {{application_ref}} needs a little more information before the review can continue.\n\nSign in to view the exact requirements and upload documents safely.",
+        "cta": "View requirements"
+      }
     },
     {
       "id": "C13",
@@ -257,7 +317,12 @@
         "WhatsApp",
         "SMS"
       ],
-      "critical": true
+      "critical": true,
+      "premium": {
+        "headline": "Your next steps are here.",
+        "body": "We’re unable to approve application {{application_ref}} at this stage. Thank you for taking the time to apply.\n\nYour secure account explains any available corrections, review options or alternatives.",
+        "cta": "Explore next steps"
+      }
     },
     {
       "id": "C14",
@@ -277,7 +342,12 @@
         "WhatsApp",
         "SMS"
       ],
-      "critical": false
+      "critical": false,
+      "premium": {
+        "headline": "See you tomorrow.",
+        "body": "A gentle reminder: your inspection of {{property}} is scheduled for {{inspection_date}} at {{inspection_time}} WAT.\n\nWe look forward to welcoming you. Need a different time? You can manage the booking securely.",
+        "cta": "View my booking"
+      }
     },
     {
       "id": "C15",
@@ -296,7 +366,12 @@
         "Email",
         "WhatsApp"
       ],
-      "critical": false
+      "critical": false,
+      "premium": {
+        "headline": "It was lovely to meet you.",
+        "body": "Thank you for inspecting {{property}} with our team.\n\nIf you’d like to review the documents, compare choices or ask another question, we’re happy to help.",
+        "cta": "Explore next steps"
+      }
     },
     {
       "id": "C16",
@@ -315,7 +390,12 @@
         "Email",
         "WhatsApp"
       ],
-      "critical": false
+      "critical": false,
+      "premium": {
+        "headline": "A gentle offer reminder.",
+        "body": "The current offer for {{property}} is awaiting your response and is scheduled to expire on {{due_date}}.\n\nPlease review every term before making your decision.",
+        "cta": "Review offer details"
+      }
     },
     {
       "id": "C17",
@@ -335,7 +415,12 @@
         "WhatsApp",
         "SMS"
       ],
-      "critical": true
+      "critical": true,
+      "premium": {
+        "headline": "Your payment details are ready.",
+        "body": "Verified funding instructions for {{property}} are now available in your Landshop account.\n\nAlways confirm the beneficiary and amount inside the secure portal before transferring funds.",
+        "cta": "See verified details"
+      }
     },
     {
       "id": "C18",
@@ -354,7 +439,12 @@
         "Email",
         "WhatsApp"
       ],
-      "critical": false
+      "critical": false,
+      "premium": {
+        "headline": "Your documents have progressed.",
+        "body": "There’s a new documentation update for {{property}}.\n\nYour account shows the verified stage, any outstanding action and the latest confirmed information.",
+        "cta": "View document update"
+      }
     },
     {
       "id": "C19",
@@ -373,7 +463,12 @@
         "Email",
         "WhatsApp"
       ],
-      "critical": false
+      "critical": false,
+      "premium": {
+        "headline": "Still exploring? We’re here.",
+        "body": "A good property decision deserves careful thought.\n\nWhenever you’re ready, our team can help you compare ownership options and find the right next step.",
+        "cta": "Explore my options"
+      }
     },
     {
       "id": "X01",
@@ -392,7 +487,12 @@
         "Email",
         "WhatsApp"
       ],
-      "critical": false
+      "critical": false,
+      "premium": {
+        "headline": "Your adviser is here to help.",
+        "body": "Your Mortgage Xtra application {{application_ref}} has reached Client Service.\n\nYour assigned Landshop adviser will guide you through the next steps. Find the verified contact in your account.",
+        "cta": "Meet my adviser"
+      }
     },
     {
       "id": "X02",
@@ -411,7 +511,12 @@
         "Email",
         "WhatsApp"
       ],
-      "critical": false
+      "critical": false,
+      "premium": {
+        "headline": "More options, more possibilities.",
+        "body": "Not every property is the perfect fit. We can help you compare genuine, verified alternatives to suit your priorities.\n\nYour adviser can share the available options without pressure.",
+        "cta": "View property options"
+      }
     },
     {
       "id": "X03",
@@ -431,7 +536,12 @@
         "WhatsApp",
         "SMS"
       ],
-      "critical": true
+      "critical": true,
+      "premium": {
+        "headline": "Your equity milestone is near.",
+        "body": "A payment milestone for {{property}} is approaching on {{due_date}}.\n\nPlease check the exact equity amount, approved schedule and banking details in your signed agreement and account.",
+        "cta": "Review payment schedule"
+      }
     },
     {
       "id": "X04",
@@ -450,7 +560,12 @@
         "Email",
         "WhatsApp"
       ],
-      "critical": true
+      "critical": true,
+      "premium": {
+        "headline": "Your equity payment is confirmed.",
+        "body": "We’ve verified the payment recorded against your Mortgage Xtra equity milestone for {{property}}.\n\nYour updated statement and next official milestone are ready to view.",
+        "cta": "See my statement"
+      }
     },
     {
       "id": "X05",
@@ -469,7 +584,12 @@
         "Email",
         "WhatsApp"
       ],
-      "critical": true
+      "critical": true,
+      "premium": {
+        "headline": "Your property update is here.",
+        "body": "The project team has recorded a new milestone for {{property}}.\n\nReview the verified status and current expected date. Timelines remain subject to your signed agreement.",
+        "cta": "See project update"
+      }
     },
     {
       "id": "X06",
@@ -489,7 +609,12 @@
         "WhatsApp",
         "SMS"
       ],
-      "critical": true
+      "critical": true,
+      "premium": {
+        "headline": "Ready for the next chapter.",
+        "body": "Your property handover process for {{property}} is ready to progress.\n\nYour account has the confirmed appointment and document checklist, where applicable.",
+        "cta": "Review handover details"
+      }
     },
     {
       "id": "X07",
@@ -509,7 +634,12 @@
         "WhatsApp",
         "SMS"
       ],
-      "critical": true
+      "critical": true,
+      "premium": {
+        "headline": "Your annual account reminder.",
+        "body": "Your next Mortgage Xtra payment milestone is approaching on {{due_date}}.\n\nReview the amount and applicable contractual rate in your official schedule before taking action.",
+        "cta": "Review annual statement"
+      }
     },
     {
       "id": "B01",
@@ -529,7 +659,12 @@
         "WhatsApp",
         "SMS"
       ],
-      "critical": false
+      "critical": false,
+      "premium": {
+        "headline": "Your first step is in.",
+        "body": "We’ve received your Beta Mortgage pre-application. Your reference is {{application_ref}}.\n\nWe’ll let you know what is required next. A pre-application is not yet a financing approval.",
+        "cta": "Track pre-application"
+      }
     },
     {
       "id": "B02",
@@ -549,7 +684,12 @@
         "WhatsApp",
         "SMS"
       ],
-      "critical": true
+      "critical": true,
+      "premium": {
+        "headline": "Your qualification update.",
+        "body": "There’s an official qualification update for your Beta Mortgage application.\n\nYour account contains the authorized decision and all conditions to review before proceeding.",
+        "cta": "Review qualification"
+      }
     },
     {
       "id": "B03",
@@ -569,7 +709,12 @@
         "WhatsApp",
         "SMS"
       ],
-      "critical": true
+      "critical": true,
+      "premium": {
+        "headline": "Your funding plan, clearly.",
+        "body": "Your Beta Mortgage funding schedule is now ready for review.\n\nCheck the amounts, dates and applicable terms from your approved agreement before making a commitment.",
+        "cta": "Review funding plan"
+      }
     },
     {
       "id": "B04",
@@ -589,7 +734,12 @@
         "WhatsApp",
         "SMS"
       ],
-      "critical": true
+      "critical": true,
+      "premium": {
+        "headline": "Another payment recorded.",
+        "body": "We’ve reconciled your Beta Mortgage payment of {{payment_amount}} for {{property}}.\n\nYour receipt and latest scheduled balance are available securely. Thank you.",
+        "cta": "View payment receipt"
+      }
     },
     {
       "id": "B05",
@@ -609,7 +759,12 @@
         "WhatsApp",
         "SMS"
       ],
-      "critical": false
+      "critical": false,
+      "premium": {
+        "headline": "Your next instalment is coming.",
+        "body": "A scheduled Beta Mortgage payment of {{payment_amount}} is due on {{due_date}}.\n\nPlease verify the details in your account. If you need assistance, our team can help you review the options.",
+        "cta": "View payment schedule"
+      }
     },
     {
       "id": "B06",
@@ -628,7 +783,12 @@
         "Email",
         "WhatsApp"
       ],
-      "critical": true
+      "critical": true,
+      "premium": {
+        "headline": "Your progress is showing.",
+        "body": "You’ve reached a verified payment milestone for {{property}} under your Beta Mortgage agreement.\n\nYour account shows what happens next; property readiness remains subject to separate confirmation.",
+        "cta": "See milestone details"
+      }
     },
     {
       "id": "B07",
@@ -648,7 +808,12 @@
         "WhatsApp",
         "SMS"
       ],
-      "critical": true
+      "critical": true,
+      "premium": {
+        "headline": "Your financing has progressed.",
+        "body": "A verified lender milestone has been recorded for {{property}}.\n\nSee the official financing status in your account. Your signed financing and handover terms remain unchanged.",
+        "cta": "Review financing status"
+      }
     },
     {
       "id": "B08",
@@ -667,7 +832,12 @@
         "Email",
         "WhatsApp"
       ],
-      "critical": true
+      "critical": true,
+      "premium": {
+        "headline": "A project readiness update.",
+        "body": "There is a new verified readiness update for {{property}}.\n\nPlease check the current project stage and expected date in your account.",
+        "cta": "View property timeline"
+      }
     },
     {
       "id": "B09",
@@ -687,7 +857,12 @@
         "WhatsApp",
         "SMS"
       ],
-      "critical": true
+      "critical": true,
+      "premium": {
+        "headline": "A payment needs your attention.",
+        "body": "Your account shows a scheduled payment that has not yet been reconciled.\n\nIf you’ve already paid, submit the reference securely. Otherwise, contact Accounts to review your options.",
+        "cta": "Review account status"
+      }
     },
     {
       "id": "B10",
@@ -706,7 +881,12 @@
         "Email",
         "WhatsApp"
       ],
-      "critical": true
+      "critical": true,
+      "premium": {
+        "headline": "Let’s resolve this together.",
+        "body": "A payment remains outstanding in your Beta Mortgage account.\n\nPlease review your agreement and contact Accounts. Any grace period or charge applies only when legally and contractually verified.",
+        "cta": "See account details"
+      }
     },
     {
       "id": "B11",
@@ -725,7 +905,12 @@
         "Email",
         "WhatsApp"
       ],
-      "critical": true
+      "critical": true,
+      "premium": {
+        "headline": "An important document is ready.",
+        "body": "Official correspondence about your Beta Mortgage agreement needs your attention.\n\nRead the signed document securely, including any response period and contact details for the authorized team.",
+        "cta": "Review official notice"
+      }
     },
     {
       "id": "B12",
@@ -744,7 +929,12 @@
         "Email",
         "WhatsApp"
       ],
-      "critical": false
+      "critical": false,
+      "premium": {
+        "headline": "Your latest mortgage status.",
+        "body": "Your updated Beta Mortgage financing status is available.\n\nYour account shows the next verified milestone and any action required from you.",
+        "cta": "View status update"
+      }
     },
     {
       "id": "I01",
@@ -764,7 +954,12 @@
         "WhatsApp",
         "SMS"
       ],
-      "critical": true
+      "critical": true,
+      "premium": {
+        "headline": "Welcome to your Invest journey.",
+        "body": "Your Landshop investment application {{application_ref}} has been received.\n\nBefore any commitment, review the approved opportunity details, risks and applicable agreements in your account.",
+        "cta": "View application"
+      }
     },
     {
       "id": "I02",
@@ -784,7 +979,12 @@
         "WhatsApp",
         "SMS"
       ],
-      "critical": true
+      "critical": true,
+      "premium": {
+        "headline": "Your investment is recorded.",
+        "body": "We’ve reconciled {{payment_amount}} against your signed Landshop investment agreement.\n\nYour receipt, terms and approved reporting schedule are ready. Future returns are not guaranteed.",
+        "cta": "Review investment details"
+      }
     },
     {
       "id": "I03",
@@ -803,7 +1003,12 @@
         "Email",
         "WhatsApp"
       ],
-      "critical": true
+      "critical": true,
+      "premium": {
+        "headline": "Your monthly update is here.",
+        "body": "A verified monthly report for {{property}} is ready.\n\nSee the project activity, current status and any material updates in your secure statement.",
+        "cta": "View monthly report"
+      }
     },
     {
       "id": "I04",
@@ -823,7 +1028,12 @@
         "WhatsApp",
         "SMS"
       ],
-      "critical": true
+      "critical": true,
+      "premium": {
+        "headline": "Your quarterly statement is ready.",
+        "body": "Your latest quarterly Landshop Invest statement has been published.\n\nReview actual performance and any verified distribution shown in the document. This message does not promise a payout.",
+        "cta": "Open quarterly statement"
+      }
     },
     {
       "id": "I05",
@@ -842,7 +1052,12 @@
         "Email",
         "WhatsApp"
       ],
-      "critical": true
+      "critical": true,
+      "premium": {
+        "headline": "An important maturity update.",
+        "body": "Your investment in {{property}} is approaching its contractual maturity date of {{due_date}}.\n\nYour account explains the current process and any requirements.",
+        "cta": "Review maturity details"
+      }
     },
     {
       "id": "I06",
@@ -862,7 +1077,12 @@
         "WhatsApp",
         "SMS"
       ],
-      "critical": true
+      "critical": true,
+      "premium": {
+        "headline": "Your payout is confirmed.",
+        "body": "We’ve reconciled the final payout of {{payment_amount}} for {{property}}.\n\nYour completion statement and verified payment reference are available in your account.",
+        "cta": "View payout statement"
+      }
     },
     {
       "id": "I07",
@@ -882,7 +1102,12 @@
         "WhatsApp",
         "SMS"
       ],
-      "critical": true
+      "critical": true,
+      "premium": {
+        "headline": "Your preferences are updated.",
+        "body": "You’ve successfully opted out of optional investment marketing messages.\n\nEssential notices may continue where required for an active agreement. Your investment itself is unchanged.",
+        "cta": "Manage preferences"
+      }
     },
     {
       "id": "I08",
@@ -901,7 +1126,12 @@
         "Email",
         "WhatsApp"
       ],
-      "critical": false
+      "critical": false,
+      "premium": {
+        "headline": "Still considering an investment?",
+        "body": "Your Invest enquiry is saved if you’d like to continue.\n\nOur team can explain verified documentation and risks before you decide. There’s no obligation to proceed.",
+        "cta": "Continue my enquiry"
+      }
     },
     {
       "id": "I09",
@@ -920,7 +1150,12 @@
         "Email",
         "WhatsApp"
       ],
-      "critical": true
+      "critical": true,
+      "premium": {
+        "headline": "Your payment is being checked.",
+        "body": "A payment attempt linked to {{application_ref}} is still awaiting verification.\n\nPlease check its status in your account before retrying or making another transfer.",
+        "cta": "Check payment status"
+      }
     },
     {
       "id": "E01",
@@ -940,7 +1175,12 @@
         "WhatsApp",
         "SMS"
       ],
-      "critical": true
+      "critical": true,
+      "premium": {
+        "headline": "Welcome to Estate Pro.",
+        "body": "Thank you for your Estate Pro enquiry, {{first_name}}. We’ve received your onboarding request {{application_ref}}.\n\nWe’ll guide you through the verified next steps and introduce your officer when assigned.",
+        "cta": "View onboarding"
+      }
     },
     {
       "id": "E02",
@@ -960,7 +1200,12 @@
         "WhatsApp",
         "SMS"
       ],
-      "critical": false
+      "critical": false,
+      "premium": {
+        "headline": "Your officer has been assigned.",
+        "body": "Your Estate Pro account officer is {{account_officer}}.\n\nYou can confirm their official details and continue your enquiry securely in your account.",
+        "cta": "Meet my officer"
+      }
     },
     {
       "id": "E03",
@@ -979,7 +1224,12 @@
         "Email",
         "WhatsApp"
       ],
-      "critical": false
+      "critical": false,
+      "premium": {
+        "headline": "Just checking in.",
+        "body": "Were you able to connect with your Estate Pro officer?\n\nIf you still need help, we’ll gladly arrange a convenient follow-up.",
+        "cta": "Request a callback"
+      }
     },
     {
       "id": "E04",
@@ -998,7 +1248,12 @@
         "Email",
         "WhatsApp"
       ],
-      "critical": false
+      "critical": false,
+      "premium": {
+        "headline": "A small step remains.",
+        "body": "There’s one more requirement to complete your Estate Pro request {{application_ref}}.\n\nSign in to see what’s needed and submit information securely.",
+        "cta": "Complete onboarding"
+      }
     },
     {
       "id": "D01",
@@ -1018,7 +1273,12 @@
         "WhatsApp",
         "SMS"
       ],
-      "critical": true
+      "critical": true,
+      "premium": {
+        "headline": "Welcome to Landshop Develop.",
+        "body": "Thank you for exploring property with Landshop Develop. We’ve recorded your enquiry {{application_ref}}.\n\nOur team can help you explore verified options and inspections.",
+        "cta": "View my enquiry"
+      }
     },
     {
       "id": "D02",
@@ -1038,7 +1298,12 @@
         "WhatsApp",
         "SMS"
       ],
-      "critical": true
+      "critical": true,
+      "premium": {
+        "headline": "Your inspection is all set.",
+        "body": "We’ve confirmed your inspection of {{property}} for {{inspection_date}} at {{inspection_time}} WAT.\n\nYour booking details and verified meeting point are available securely.",
+        "cta": "See inspection details"
+      }
     },
     {
       "id": "D03",
@@ -1058,7 +1323,12 @@
         "WhatsApp",
         "SMS"
       ],
-      "critical": true
+      "critical": true,
+      "premium": {
+        "headline": "We’ll see you soon.",
+        "body": "Your inspection of {{property}} is coming up at {{inspection_time}} WAT.\n\nHere’s a friendly reminder to check your meeting instructions. You can reschedule if needed.",
+        "cta": "View my booking"
+      }
     },
     {
       "id": "D04",
@@ -1077,7 +1347,12 @@
         "Email",
         "WhatsApp"
       ],
-      "critical": false
+      "critical": false,
+      "premium": {
+        "headline": "Shall we find another time?",
+        "body": "We missed you at the scheduled inspection of {{property}}. We understand plans change.\n\nChoose another available time whenever you’re ready.",
+        "cta": "Reschedule inspection"
+      }
     },
     {
       "id": "D05",
@@ -1096,7 +1371,12 @@
         "Email",
         "WhatsApp"
       ],
-      "critical": false
+      "critical": false,
+      "premium": {
+        "headline": "Thank you for visiting.",
+        "body": "It was a pleasure helping you explore {{property}}.\n\nIf you’d like clearer pricing, documentation or payment options, your adviser is available to help.",
+        "cta": "Explore next steps"
+      }
     },
     {
       "id": "D06",
@@ -1115,7 +1395,12 @@
         "Email",
         "WhatsApp"
       ],
-      "critical": false
+      "critical": false,
+      "premium": {
+        "headline": "A property that feels right.",
+        "body": "If {{property}} isn’t your ideal fit, we can share other verified Landshop property options.\n\nTake your time comparing them; there’s no obligation.",
+        "cta": "See other options"
+      }
     },
     {
       "id": "D07",
@@ -1134,7 +1419,12 @@
         "Email",
         "WhatsApp"
       ],
-      "critical": true
+      "critical": true,
+      "premium": {
+        "headline": "Your property offer is ready.",
+        "body": "Your approved offer letter for {{property}} is available in your account.\n\nPlease review the pricing, stated conditions and validity date before responding.",
+        "cta": "Review offer letter"
+      }
     },
     {
       "id": "D08",
@@ -1154,7 +1444,12 @@
         "WhatsApp",
         "SMS"
       ],
-      "critical": true
+      "critical": true,
+      "premium": {
+        "headline": "Your first payment is confirmed.",
+        "body": "We’ve verified the initial payment of {{payment_amount}} towards {{property}}.\n\nYour official receipt and approved schedule are ready. Thank you for choosing Landshop.",
+        "cta": "See my receipt"
+      }
     },
     {
       "id": "D09",
@@ -1174,7 +1469,12 @@
         "WhatsApp",
         "SMS"
       ],
-      "critical": true
+      "critical": true,
+      "premium": {
+        "headline": "A friendly payment reminder.",
+        "body": "Your next Develop instalment of {{payment_amount}} is due on {{due_date}}.\n\nReview your current balance and the verified payment instructions securely.",
+        "cta": "Review my schedule"
+      }
     },
     {
       "id": "D10",
@@ -1193,7 +1493,12 @@
         "Email",
         "WhatsApp"
       ],
-      "critical": true
+      "critical": true,
+      "premium": {
+        "headline": "Let’s check your account.",
+        "body": "An instalment for {{property}} has not yet been reconciled.\n\nIf you have already paid, send the reference through your account. Otherwise, our Accounts team can assist.",
+        "cta": "Review account status"
+      }
     },
     {
       "id": "D11",
@@ -1212,7 +1517,12 @@
         "Email",
         "WhatsApp"
       ],
-      "critical": true
+      "critical": true,
+      "premium": {
+        "headline": "Official correspondence is ready.",
+        "body": "An important document concerning your {{property}} agreement is available.\n\nPlease review the full signed notice and any response instructions through your secure account.",
+        "cta": "Read official document"
+      }
     },
     {
       "id": "D12",
@@ -1231,7 +1541,12 @@
         "Email",
         "WhatsApp"
       ],
-      "critical": true
+      "critical": true,
+      "premium": {
+        "headline": "Your contract is ready.",
+        "body": "Your Develop contract of sale for {{property}} is available for review and signature.\n\nRead the details carefully and ask questions before signing.",
+        "cta": "Review my contract"
+      }
     },
     {
       "id": "D13",
@@ -1250,7 +1565,12 @@
         "Email",
         "WhatsApp"
       ],
-      "critical": true
+      "critical": true,
+      "premium": {
+        "headline": "Your property documents update.",
+        "body": "Your account shows a new documentation milestone for {{property}}.\n\nCheck which deed, survey or plan documents are verified as ready and how to collect them.",
+        "cta": "View document details"
+      }
     },
     {
       "id": "D14",
@@ -1270,7 +1590,12 @@
         "WhatsApp",
         "SMS"
       ],
-      "critical": true
+      "critical": true,
+      "premium": {
+        "headline": "Your allocation has progressed.",
+        "body": "A verified allocation update is available for {{property}}.\n\nReview the approved plot or unit information and any remaining conditions in your account.",
+        "cta": "View allocation details"
+      }
     },
     {
       "id": "D15",
@@ -1289,7 +1614,12 @@
         "Email",
         "WhatsApp"
       ],
-      "critical": true
+      "critical": true,
+      "premium": {
+        "headline": "Your payment milestone is complete.",
+        "body": "Full payment for {{property}} has been verified and reconciled. Congratulations on this important step.\n\nThe next documentation and allocation requirements are available securely.",
+        "cta": "See my next steps"
+      }
     },
     {
       "id": "P01",
@@ -1309,7 +1639,12 @@
         "WhatsApp",
         "SMS"
       ],
-      "critical": true
+      "critical": true,
+      "premium": {
+        "headline": "Welcome to Dev Pro.",
+        "body": "Your Landshop Dev Pro onboarding request {{application_ref}} is in. We’re delighted you reached out.\n\nOur team will confirm the appropriate programme details and next steps.",
+        "cta": "View my onboarding"
+      }
     },
     {
       "id": "P02",
@@ -1329,7 +1664,12 @@
         "WhatsApp",
         "SMS"
       ],
-      "critical": false
+      "critical": false,
+      "premium": {
+        "headline": "Meet your Dev Pro officer.",
+        "body": "Your assigned Dev Pro officer is {{account_officer}}.\n\nThe verified contact information is available in your Landshop account.",
+        "cta": "See officer details"
+      }
     },
     {
       "id": "P03",
@@ -1348,7 +1688,12 @@
         "Email",
         "WhatsApp"
       ],
-      "critical": false
+      "critical": false,
+      "premium": {
+        "headline": "Have we connected yet?",
+        "body": "We’re checking that you were able to reach your Dev Pro officer.\n\nIf you’d prefer a callback or need an answer, we’re here for you.",
+        "cta": "Get assistance"
+      }
     },
     {
       "id": "P04",
@@ -1367,7 +1712,12 @@
         "Email",
         "WhatsApp"
       ],
-      "critical": false
+      "critical": false,
+      "premium": {
+        "headline": "Whenever you’re ready.",
+        "body": "Your Dev Pro enquiry {{application_ref}} is still available in your account.\n\nIf now is the right time to continue, we’ll happily reconnect you with your team.",
+        "cta": "Continue my enquiry"
+      }
     }
   ],
   "flows": {
