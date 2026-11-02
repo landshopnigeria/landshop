@@ -104,7 +104,6 @@ export default function ApprovedHomepageContent({featured}:{featured:FeaturedPro
    </Link>):archiveHomes.map((item,i)=><Link className="lsap-estate-card" href={item.url} key={item.title}>
     <div className="lsap-estate-photo"><img src={item.image} alt={item.note} loading="lazy"/><small>{item.kind}</small></div><div className="lsap-estate-body"><p>FAMOUS GARDENS / IBEJU-LEKKI</p><h3>{item.title}</h3><p>{item.note}</p><strong>Explore Estate Archive <ApprovedArrow/></strong></div>
    </Link>)}</div>
-   {!featured.length&&<p className="lsap-provenance">Estate archival photography is not a current unit offer. Specific listings will display automatically once Landshop has verified and published them.</p>}
   </div></section>
 
   <section className="lsap-section lsap-collections" id="collections"><div className="lsap-container">
