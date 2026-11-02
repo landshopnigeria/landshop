@@ -193,3 +193,21 @@
 .comm-premium-editor button.danger{background:#fff1f0;border:1px solid #edc0ba;color:#aa423c}
 .comm-premium-editor button:disabled{opacity:.5;cursor:wait}
 @media(max-width:410px){.comm-premium-meta{padding:10px}.comm-premium-top{min-height:115px}.comm-premium-middle{padding:18px 8px}.comm-premium-middle h2{font-size:23px}.comm-premium-photo img{height:115px}.comm-premium-body{padding:13px}.comm-premium-footer{padding:18px 9px}}
+
+
+/* Restricted communication operations: imported contacts, consent, internal follow-up. */
+.comm-ops-import{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;margin:24px 0}
+.comm-ops-import section{border:1px solid #d7e7df;border-radius:15px;padding:17px;background:#f8fcf9;min-width:0}
+.comm-ops-import h3{font-size:15px;margin:0 0 8px;color:#146c50}
+.comm-ops-import p{font-size:12px;line-height:1.75;color:#668373}
+.comm-ops-import input{max-width:100%;width:100%;font-size:11px;margin:12px 0}
+.comm-ops-import a{display:inline-flex;font-size:12px;color:#147b56;font-weight:800}
+.comm-ops-audit{background:#f8faf8;border:1px solid #dbe9dd;border-radius:13px;padding:13px;margin-top:16px}
+.comm-ops-audit summary{cursor:pointer;color:#1f6e4e;font-weight:780}
+.comm-ops-audit .comm-table-wrap{margin:12px 0}
+.comm-ops-notice{border-radius:10px;background:#e9f8ef;padding:12px 15px;border:1px solid #c7e7d7;color:#13583c;font-size:12px;margin:13px 0}
+.comm-table-wrap select,.comm-table-wrap button{padding:7px 9px;border-radius:8px;border:1px solid #cadfd4;background:white;color:#1a5b42;font-size:11px}
+.comm-table-wrap button:disabled{opacity:.4}
+.comm-table-wrap input[type="checkbox"]{accent-color:#2dac80}
+.comm-premium-editor button:hover:not(:disabled),.comm-actions button:hover:not(:disabled){filter:brightness(.97)}
+@media(max-width:880px){.comm-ops-import{grid-template-columns:1fr}}
