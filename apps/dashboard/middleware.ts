@@ -8,6 +8,9 @@ function privateRedirect(request:NextRequest,path:string){
 }
 
 export async function middleware(request: NextRequest) {
+ // Provider callbacks authenticate at their own handlers (Basic/HMAC). Do not
+ // depend on an unrelated browser session or Supabase Auth network lookup.
+ if(request.nextUrl.pathname.startsWith('/api/communications/webhooks/'))return NextResponse.next();
  let response = NextResponse.next({request});
  const url=process.env.NEXT_PUBLIC_SUPABASE_URL;
  const key=process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
