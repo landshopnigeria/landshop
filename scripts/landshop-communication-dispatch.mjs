@@ -132,7 +132,7 @@ if(mode==='preview'){await previewTest();console.log('PREVIEW: no database reads
 if(env.LANDSHOP_COMM_LIVE_ENABLED!=='true'||env.LANDSHOP_COMM_ROTATION_CONFIRMED!=='true'||env.GITHUB_REF!=='refs/heads/main'){
  console.log('OUTBOUND DISABLED: explicit production enable, key rotation confirmation and main-branch context required.');process.exit(0);
 }
-const key=requireVar('LANDSHOP_SUPABASE_SERVICE_ROLE_KEY'),url=requireVar('LANDSHOP_SUPABASE_URL');
+const key=env.LANDSHOP_SUPABASE_SECRET_KEY?.trim()||requireVar('LANDSHOP_SUPABASE_SERVICE_ROLE_KEY'),url=requireVar('LANDSHOP_SUPABASE_URL');
 if(!/^https:\/\/[a-z0-9]+\.supabase\.co\/?$/.test(url))throw Error('Untrusted database endpoint');
 const available=channels.filter(c=>env['LANDSHOP_COMM_'+c.toUpperCase()+'_LIVE']==='true');
 if(!available.length){console.log('OUTBOUND DISABLED: no provider channel is explicitly authorized');process.exit(0)}
