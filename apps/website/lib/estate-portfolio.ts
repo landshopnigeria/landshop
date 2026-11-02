@@ -48,6 +48,7 @@ export const estatePortfolio:PortfolioEstate[]=[
   facts:[['Estate location','Jakande, Lekki, Lagos'],['Development size','Approximately 50 hectares'],['Developer','Sterling Realties Development Company'],['Marketing','Landshop'],['Plot options','600-1,800 m² historically'],['Title claim','Global C of O; verify']],
   pricing:[['600 m² · 2026 public asking reference','₦570m-₦630m','Third-party advertised range; not a Landshop-approved offer'],['1,020 m² · 2026 public asking reference','₦860m-₦950m','Third-party advertised range; subject to verification'],['Current Landshop quotation','On request','Confirm current price, plot identity, authority and applicable terms']],
   images:[
+   {src:'/media/maiyegun0.webp',caption:'Original Landshop Maiyegun Beach Estate photograph from the documented project archive; historical site conditions only',kind:'archive-photo'},
    {src:'/estates/maiyegun-beach-estate/coastal-site.webp',caption:'Owner-supplied photograph of Maiyegun coastal development terrain',kind:'archive-photo'},
    {src:'/estates/maiyegun-beach-estate/oceanfront-development.webp',caption:'Owner-supplied aerial view of beachside roads and coastal estate development',kind:'archive-photo'},
    {src:'/estates/maiyegun-beach-estate/coastal-road.webp',caption:'Owner-supplied archive showing coastal road and shoreline infrastructure',kind:'archive-photo'},
