@@ -9,6 +9,7 @@ on:
       - 'packages/**'
       - 'package.json'
       - '.github/workflows/validate-foundation.yml'
+      - '.github/workflows/landshop-communication-outbound.yml'
       - '.github/workflows/deploy-landshop-enterprise.yml'
   pull_request:
     branches: [main]
