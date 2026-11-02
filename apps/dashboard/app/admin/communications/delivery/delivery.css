@@ -1,0 +1,43 @@
+.comm-delivery{min-height:100vh;background:#f5f9f6;color:#073f34;padding:clamp(12px,3vw,42px);font-family:Arial,Helvetica,sans-serif}
+.comm-delivery *{box-sizing:border-box}
+.comm-delivery button,.comm-delivery input,.comm-delivery select{font:inherit}
+.comm-delivery a{color:#187e60}
+.comm-delivery-hero{display:flex;gap:18px;align-items:center;justify-content:space-between;flex-wrap:wrap;background:linear-gradient(110deg,#edf8f0,#fff);border:1px solid #d6e8dd;border-radius:20px;padding:23px}
+.comm-delivery-hero h1{font-size:clamp(22px,3vw,34px);margin:13px 0 8px}
+.comm-delivery-hero p{font-size:13px;color:#5d7769;line-height:1.6;margin:0}
+.comm-delivery-hero>span{font-size:11px;background:#e4f5e9;color:#155c43;border-radius:99px;padding:10px 12px;font-weight:700}
+.comm-delivery-warning{border-left:4px solid #f26b10;background:#fff7ec;padding:11px 14px;line-height:1.6;font-size:12px;border-radius:0 9px 9px 0}
+.comm-delivery-metrics{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin:18px 0}
+.comm-delivery-metrics>div{padding:14px;background:#fff;border:1px solid #d7e6dc;border-radius:13px}
+.comm-delivery-metrics b{display:block;font-size:24px}
+.comm-delivery-metrics small{display:block;font-size:11px;color:#60806e;margin-top:4px}
+.comm-delivery-tabs{display:flex;gap:9px;flex-wrap:wrap;margin:16px 0}
+.comm-delivery-tabs button,.comm-delivery button{border:1px solid #cde3d5;border-radius:10px;background:#fff;color:#0c6445;padding:10px 12px;cursor:pointer;font-weight:700}
+.comm-delivery-tabs button.active,.comm-delivery button:hover{background:#2bac80;color:#fff}
+.comm-delivery button:disabled{opacity:.4;cursor:not-allowed}
+.comm-delivery-card{background:#fff;border:1px solid #d5e5d9;border-radius:18px;padding:clamp(13px,2vw,23px)}
+.comm-delivery-card h2{font-size:20px;margin:4px 0 11px}
+.comm-delivery-card h3{font-size:16px;margin-top:22px}
+.comm-delivery-card>p{color:#60786c;font-size:12px;line-height:1.65}
+.comm-delivery-toolbar{display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px;margin:13px 0}
+.comm-delivery-toolbar label{font-size:11px;color:#506e5d;display:grid;gap:5px;font-weight:700;flex:1 1 130px;min-width:115px}
+.comm-delivery-toolbar label input,.comm-delivery-toolbar label select{border:1px solid #c8e0d0;border-radius:9px;padding:10px;background:#fff;color:#184f3a;max-width:100%;min-width:0}
+.comm-delivery-overflow{overflow:auto;border:1px solid #e2eee4;border-radius:13px;max-width:100%}
+.comm-delivery-overflow table{width:100%;border-collapse:collapse;min-width:850px}
+.comm-delivery-overflow th,.comm-delivery-overflow td{text-align:left;padding:12px 10px;border-bottom:1px solid #e8f0e8;font-size:12px}
+.comm-delivery-overflow th{background:#f3faf5;color:#2b7052}
+.comm-delivery-overflow input[type=checkbox]{accent-color:#2ba47a;width:17px;height:17px}
+.comm-delivery-status{display:inline-block;padding:6px 9px;border-radius:80px;background:#f0f2f0;color:#47594c;font-size:11px;font-weight:bold}
+.comm-delivery-status.delivered,.comm-delivery-status.accepted{background:#e3f7e9;color:#167b49}
+.comm-delivery-status.uncertain,.comm-delivery-status.failed{background:#fce5e2;color:#a8302e}
+.comm-delivery-status.queued,.comm-delivery-status.retry{background:#fff5e4;color:#9e6718}
+.comm-delivery-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.comm-delivery-cards article{border:1px solid #d9e7db;border-radius:14px;padding:17px;background:#f9fdf9}
+.comm-delivery-cards article h3{margin:0}
+.comm-delivery-cards article p{color:#5d7668;line-height:1.65;font-size:13px}
+.comm-delivery-cards article strong{display:block;margin:17px 0 11px;font-size:12px}
+.comm-delivery-cards article label{display:flex;gap:9px;align-items:center;font-size:12px;color:#2e6449}
+.comm-delivery-notice{position:sticky;bottom:10px;background:#073f34;color:#fff;border-radius:12px;padding:13px 20px;margin:16px 0;font-size:12px}
+@media(max-width:950px){.comm-delivery-metrics{grid-template-columns:repeat(3,1fr)}.comm-delivery-cards{grid-template-columns:1fr}}
+@media(max-width:540px){.comm-delivery{padding:9px}.comm-delivery-metrics{grid-template-columns:repeat(2,1fr)}.comm-delivery-hero{padding:14px}.comm-delivery-toolbar label{flex:1 1 120px}}
+@media(max-width:270px){.comm-delivery-metrics{grid-template-columns:1fr}.comm-delivery-tabs button{font-size:11px;padding:7px}}
