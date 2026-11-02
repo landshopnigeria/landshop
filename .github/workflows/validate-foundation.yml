@@ -53,6 +53,8 @@ jobs:
         run: python3 scripts/verify-project-photo-governance.py
       - name: Verify Supabase index migration and 12-character signup guardrails
         run: python3 scripts/verify-landshop-supabase-security-baseline.py
+      - name: Enforce explicit grants for newly introduced privileged Supabase functions
+        run: python3 scripts/verify-landshop-privileged-rpc-migrations.py
       - name: Verify communication dispatcher without customer sends
         run: |
           node scripts/landshop-communication-dispatch.mjs --self-test
