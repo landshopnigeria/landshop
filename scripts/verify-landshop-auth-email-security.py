@@ -26,6 +26,9 @@ for text,path in (("{action:'recovery'","password reset"),("{action:'resend'","e
  src=reset if path=="password reset" else signin
  assert text in src and "fetch('/api/auth/email-action'" in src,path+" must use the server API"
  assert ".auth.resetPasswordForEmail(" not in src and ".auth.resend(" not in src,path+" must not bypass the server API"
+middleware=(root/"apps/portal/middleware.ts").read_text(encoding="utf-8")
+assert "'/api/auth/email-action'" in middleware, "Email actions must not require cookie-session lookup"
+
 print("PASS: Auth email requests are bound by origin, payload size, and hashed throttle buckets")
 print("PASS: Customer recovery and confirmation resend use Landshop server routes")
 print("NOTE: Supabase's independent provider-side Auth rate limits remain necessary")

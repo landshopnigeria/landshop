@@ -4,7 +4,8 @@ import { NextResponse, type NextRequest } from 'next/server';
 export async function middleware(request: NextRequest) {
  // Public sign-in and recovery pages validate auth in their own client/callback.
  // Avoid an unnecessary network Auth lookup before their first render.
- if(['/', '/auth/callback', '/reset-password', '/update-password', '/api/release-health'].includes(request.nextUrl.pathname))
+ if(['/', '/auth/callback', '/reset-password', '/update-password', '/api/release-health',
+     '/api/auth/email-action'].includes(request.nextUrl.pathname))
   return NextResponse.next({request});
  let response = NextResponse.next({request});
  const url=process.env.NEXT_PUBLIC_SUPABASE_URL;
