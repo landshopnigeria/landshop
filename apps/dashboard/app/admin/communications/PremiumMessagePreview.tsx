@@ -2,7 +2,7 @@
 import type {ReactNode} from 'react';
 import catalog from './catalog.json';
 export type Scenario=(typeof catalog.templates)[number];
-export type PremiumOverride={id:string;subject:string;headline:string;body:string;whatsapp:string;sms:string;image_url:string|null;state:string;change_note:string|null;edited_at?:string|null};
+export type PremiumOverride={id:string;subject:string;headline:string;body:string;whatsapp:string;sms:string;image_url:string|null;state:string;change_note:string|null;edited_at?:string;edited_at?:string|null};
 export type Channel='Email'|'WhatsApp'|'SMS';
 const photos:Record<string,string>={
  Xtra:'/media/famous0.webp',Beta:'/media/maiyegun0.webp',Invest:'/media/deck-investment.webp',
