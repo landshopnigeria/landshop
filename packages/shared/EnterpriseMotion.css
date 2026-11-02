@@ -112,3 +112,16 @@ html{-webkit-text-size-adjust:100%}
   }
   html{scroll-behavior:auto!important}
 }
+
+/* Homepage hero copy is rendered in full on the server for immediate content
+   and search visibility. A single compositor animation replaces ~80 React
+   updates per slide from the former letter-by-letter typewriter effect. */
+@media (prefers-reduced-motion:no-preference){
+  @keyframes ls-hero-copy-arrive{
+    from{opacity:.82;transform:translate3d(0,7px,0)}
+    to{opacity:1;transform:translate3d(0,0,0)}
+  }
+  .ls-v23-hero .hero-v16-content .hero-v16-title{
+    animation:ls-hero-copy-arrive 350ms var(--ls-motion-ease) both;
+  }
+}

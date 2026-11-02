@@ -22,7 +22,10 @@ const products=[
 ];
 
 export default function Homepage({featured}:{featured:FeaturedProperty[]}){
- const [slide,setSlide]=useState(0),[purpose,setPurpose]=useState('Buy'),[typedLength,setTypedLength]=useState(0);
+ const [slide,setSlide]=useState(0),[purpose,setPurpose]=useState('Buy');
+ // Only the first visible 630 KB hero photograph is requested during initial HTML parsing.
+ // Future slides are warmed after the initial paint and remain cached for smooth fades.
+ const [readyBackgrounds,setReadyBackgrounds]=useState<number[]>([0]);
  const router=useRouter();
  const touchStartX=useRef<number|null>(null);
  const goToSlide=(next:number)=>{setSlide((next+slides.length)%slides.length);};
@@ -40,7 +43,21 @@ export default function Homepage({featured}:{featured:FeaturedProperty[]}){
   const change=event.changedTouches[0]?.screenX-start;
   if(Math.abs(change)>55)goToSlide(slide+(change<0?1:-1));
  };
- useEffect(()=>{const [first,last]=titleParts[slide],total=first.length+1+last.length;if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){setTypedLength(total);return;}setTypedLength(0);let index=0;const id=setInterval(()=>{index=Math.min(total,index+1);setTypedLength(index);if(index===total)clearInterval(id)},37);return()=>clearInterval(id)},[slide]);
+ useEffect(()=>{
+  const next=(slide+1)%slides.length;
+  if(readyBackgrounds.includes(next))return;
+  // Do not prefetch decorative images on connections with data-saving enabled.
+  const connection=(navigator as Navigator&{connection?:{saveData?:boolean}}).connection;
+  if(connection?.saveData)return;
+  let active=true;
+  const timer=window.setTimeout(()=>{
+   const image=new window.Image();
+   image.decoding='async';
+   image.onload=()=>{if(active)setReadyBackgrounds(previous=>previous.includes(next)?previous:[...previous,next])};
+   image.src=slides[next].image;
+  },1700);
+  return()=>{active=false;window.clearTimeout(timer)};
+ },[slide,readyBackgrounds]);
 
  const current=slides[slide];
  function search(e:React.FormEvent<HTMLFormElement>){
@@ -64,13 +81,13 @@ export default function Homepage({featured}:{featured:FeaturedProperty[]}){
    onKeyDown={event=>{if(event.key==='ArrowLeft'){event.preventDefault();goToSlide(slide-1)}if(event.key==='ArrowRight'){event.preventDefault();goToSlide(slide+1)}}}>
    <div className="hero-v16-media ls-v23-hero-media" aria-hidden="true">{slides.map((item,i)=>
      <div key={item.name} className={'hero-v16-image '+(slide===i?'is-visible':'')}
-       style={{backgroundImage:'url("'+item.image+'")'}}/>)}</div>
+       style={{backgroundImage:readyBackgrounds.includes(i)||slide===i?'url("'+item.image+'")':undefined}}/>)}</div>
    <div className="hero-v16-wash ls-v23-hero-wash" aria-hidden="true"/>
    <div className="hero-v16-inner ls-v23-hero-inner">
     <div className="hero-v16-content ls-v23-hero-content" key={current.name}>
      <span className="eyebrow hero-v16-eyebrow">{current.subtitle}</span>
      <h1 className="hero-v16-title ls-v23-hero-title" aria-label={current.title}>
-      <span>{titleParts[slide][0].slice(0,typedLength)}</span>{typedLength>titleParts[slide][0].length?' ':null}<strong>{titleParts[slide][1].slice(0,Math.max(0,typedLength-titleParts[slide][0].length-1))}</strong>
+      <span>{titleParts[slide][0]}</span>{' '}<strong>{titleParts[slide][1]}</strong>
      </h1>
      <p className="hero-v16-copy ls-v23-hero-description">{current.copy}</p>
      <div className="hero-v16-actions ls-v23-hero-actions">
