@@ -23,6 +23,10 @@ export default {
   {source:'/my-account',destination:'https://portal.landshopnigeria.com',permanent:true},
   {source:'/property-list',destination:'/properties',permanent:true},
   {source:'/properties-list',destination:'/properties',permanent:true},
-  {source:'/blog',destination:'/insights',permanent:true}
+  {source:'/blog',destination:'/insights',permanent:true},
+  {source:'/projects/blue-diamond',destination:'/projects/blue-diamonds',permanent:true},
+  {source:'/properties/blue-diamond',destination:'/properties/blue-diamonds',permanent:true},
+  {source:'/projects/blue-diamonds-estate',destination:'/projects/blue-diamonds',permanent:true},
+  {source:'/properties/blue-diamonds-estate',destination:'/properties/blue-diamonds',permanent:true}
  ];}
 };
