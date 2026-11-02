@@ -112,6 +112,11 @@ export default function FinancePlanner({kind,state='',propertyType='',budget,cri
     <Link href={'/properties'+(listingQuery.size?'?'+listingQuery.toString():'')} className="lsfin-search">View verified properties <ApprovedArrow/></Link>
    </section>
   </div>
+  <section aria-label="Optional calculator guidance request" style={{background:'#f5faf7',border:'1px solid #d4ebdd',borderRadius:16,padding:'20px 22px',marginTop:24}}>
+   <h2 style={{margin:'0 0 8px',color:'#238463',fontSize:22}}>Receive personalised property finance guidance.</h2>
+   <p style={{fontSize:13,color:'#536e60',lineHeight:1.65}}>You can use this calculator anonymously. If you want Landshop to follow up, submit your contact details voluntarily through the secure enquiry form.</p>
+   <Link href={'/contact?topic='+(kind==='investment'?'Incubate':'Mortgage%20Guidance')} style={{display:'inline-flex',alignItems:'center',gap:8,padding:'12px 17px',borderRadius:10,background:'#f26b10',color:'#fff',fontWeight:800,textDecoration:'none'}}>Request a personal follow-up <ApprovedArrow/></Link>
+  </section>
   {kind==='mortgage'&&<p className="lsfin-portal">For a detailed amortisation schedule, use the <a href="https://portal.landshopnigeria.com/calculator">existing Landshop customer portal calculator</a>.</p>}
  </div></main>;
 }
