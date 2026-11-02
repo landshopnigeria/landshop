@@ -41,6 +41,7 @@ export default function SiteHeader(){
  const [expanded,setExpanded]=useState<string|null>(null);
  const [closingGroup,setClosingGroup]=useState<string|null>(null);
  const [navVisible,setNavVisible]=useState(true);
+ const navVisibleRef=useRef(true);
  const [focused,setFocused]=useState<string|null>(null);
  const frame=useRef<HTMLDivElement>(null);
  const activeGroup=(expanded||closingGroup)?groupsByLabel[expanded||closingGroup||'']:null;
@@ -53,19 +54,27 @@ export default function SiteHeader(){
   let previous=Math.max(0,window.scrollY);
   let movement=0;
   let frameId=0;
+  const publishVisible=(visible:boolean)=>{
+   // Avoid redundant React updates on every scroll frame. The header
+   // appearance and its approved reveal/hide thresholds stay unchanged.
+   if(navVisibleRef.current===visible)return;
+   navVisibleRef.current=visible;
+   setNavVisible(visible);
+  };
   const read=()=>{
    frameId=0;
    const y=Math.max(0,window.scrollY);
    const delta=y-previous;
    previous=y;
-   if(y<15||menuOpen||expanded){movement=0;setNavVisible(true);return}
+   if(y<15||menuOpen||expanded){movement=0;publishVisible(true);return}
    if(Math.abs(delta)<1)return;
-   // Any deliberate upward movement should reveal immediately; CSS performs
-   // the slower, gentle slide-in. Small mobile wheel/touch deltas count too.
-   if(delta< -2){movement=0;setNavVisible(true);return;}
+   // A deliberate upward scroll immediately triggers the existing
+   // gentle reveal animation; no layout work is done in the scroll event.
+   if(delta< -2){movement=0;publishVisible(true);return}
    if(delta>0){
+    if(!navVisibleRef.current)return;
     movement=Math.max(0,Math.min(90,movement+delta));
-    if(y>105&&movement>19){setNavVisible(false);movement=0}
+    if(y>105&&movement>19){publishVisible(false);movement=0}
    }
   };
   const onScroll=()=>{if(!frameId)frameId=window.requestAnimationFrame(read)};

@@ -3,6 +3,7 @@ import '../../../packages/shared/EnterpriseReadability.css';
 import '../../../packages/shared/BrandedSelect.css';
 import type { Metadata } from 'next';
 import './globals.css';
+import '../../../packages/shared/EnterpriseMotion.css';
 export const dynamic='force-dynamic';
 export const revalidate=0;
 export const metadata:Metadata={title:'Landshop Portal',description:'Secure Landshop account registration, verification and sign-in'};

@@ -1,0 +1,114 @@
+/* Landshop 2026: restrained, compositor-friendly motion across public, customer
+   and staff surfaces. Do not modify the approved header, property filter or footer layout.
+   No per-frame scroll JavaScript, global opacity hiding, or large parallax transforms. */
+:root{
+  --ls-motion-ease:cubic-bezier(.22,1,.36,1);
+  --ls-motion-fast:180ms;
+  --ls-motion-standard:300ms;
+}
+html{-webkit-text-size-adjust:100%}
+:where(body main,body .authScene,body .ls25-shell,body .command-shell,body .dc-shell){min-width:0}
+:where(body main,body .authScene,body .ls25-shell,body .command-shell,body .dc-shell) :is(button,a,input,select,textarea,[role="button"]){touch-action:manipulation}
+:where(body main,body .authScene,body .ls25-shell,body .command-shell,body .dc-shell) :is(h1,h2,h3){overflow-wrap:break-word}
+:where(body main,body .authScene,body .ls25-shell,body .command-shell,body .dc-shell) :is(img,video){max-width:100%}
+
+/* Progressive native transitions for same-origin full page navigations.
+   Next.js client-side transitions get the page-entry animation below. */
+@media (prefers-reduced-motion:no-preference){
+  @view-transition{navigation:auto}
+  @keyframes ls-enter-page{
+    from{opacity:.90;transform:translate3d(0,7px,0)}
+    to{opacity:1;transform:translate3d(0,0,0)}
+  }
+  @keyframes ls-enter-section{
+    from{opacity:.82;transform:translate3d(0,12px,0)}
+    to{opacity:1;transform:translate3d(0,0,0)}
+  }
+  body main{
+    animation:ls-enter-page 360ms var(--ls-motion-ease) both;
+  }
+  /* Scope scroll-based effects to content blocks: not the hero, nav,
+     carousels, live form controls or important LCP images. */
+  @supports (animation-timeline:view()){
+    body main :is(
+      .lsap-head,.lsap-about-grid,.lsap-promise-grid,.lsap-story-grid,
+      .lsap-why-grid article,.lsap-estate-card,.lsap-insight,
+      .lsp-heading,.lsp-feature,.lsp-pathway,.lsp-conversion,
+      .content-page article,.content-page h2,
+      .ls26-panel,.ls25-card,.command-content section,.dc-main article,
+      .authCard
+    ){
+      animation-name:ls-enter-section;
+      animation-duration:1s;
+      animation-timing-function:linear;
+      animation-fill-mode:both;
+      animation-timeline:view(block);
+      animation-range:entry 0% cover 18%;
+    }
+  }
+
+  /* Micro-interactions are transform-based so they do not trigger reflow. */
+  body main :is(
+    .lsp-primary,.lsp-outline,.lsp-pathway a,.lsp-pathway button,
+    .lsap-button,.lsap-view,.mk-btn,.ls26-action-tiles>a,
+    .ls25-action,.command-action,.dc-action
+  ){
+    transition:transform var(--ls-motion-fast) var(--ls-motion-ease),
+               box-shadow var(--ls-motion-fast) ease,
+               background-color var(--ls-motion-fast) ease,
+               border-color var(--ls-motion-fast) ease;
+  }
+  @media (hover:hover) and (pointer:fine){
+    body main :is(
+      .lsp-primary,.lsp-outline,.lsp-pathway a,.lsp-pathway button,
+      .lsap-button,.lsap-view,.mk-btn,.ls26-action-tiles>a,
+      .ls25-action,.command-action,.dc-action
+    ):hover{
+      transform:translate3d(0,-2px,0);
+    }
+    body main :is(
+      .lsp-feature,.lsp-pathway,.lsp-product-card,.lsap-estate-card,
+      .lsap-insight,.lsap-why-grid article,.ls26-panel,.ls25-card
+    ){
+      transition:transform var(--ls-motion-standard) var(--ls-motion-ease),
+                 box-shadow var(--ls-motion-standard) ease,
+                 border-color var(--ls-motion-standard) ease;
+    }
+    body main :is(
+      .lsp-feature,.lsp-pathway,.lsp-product-card,.lsap-estate-card,
+      .lsap-insight,.lsap-why-grid article,.ls26-panel,.ls25-card
+    ):hover{
+      transform:translate3d(0,-3px,0);
+    }
+  }
+  body main :is(
+    .lsp-primary,.lsp-outline,.lsp-pathway button,
+    .lsap-button,.mk-btn
+  ):active{
+    transform:translate3d(0,1px,0) scale(.992);
+  }
+}
+@media (max-width:700px){
+  /* Prevent iOS Safari from zooming the viewport when a form field is focused. */
+  :where(body main,body .authScene,body .ls25-shell,body .command-shell,body .dc-shell)
+  :is(input:not([type="checkbox"]):not([type="radio"]),select,textarea){
+    font-size:16px;
+  }
+}
+@media (pointer:coarse){
+  :where(body main,body .authScene,body .ls25-shell,body .command-shell,body .dc-shell)
+  :is(button[type="submit"],a.lsp-primary,a.lsp-outline,.lsap-button){
+    min-height:44px;
+  }
+}
+@media (prefers-reduced-motion:reduce){
+  body main{animation:none!important}
+  :where(body main,body .authScene,body .ls25-shell,body .command-shell,body .dc-shell)
+  :is(.lsp-feature,.lsp-pathway,.lsp-product-card,.lsap-estate-card,
+  .lsap-insight,.lsap-head,.lsp-heading,.ls26-panel,.ls25-card,.authCard){
+    animation:none!important;
+    transition:none!important;
+    transform:none;
+  }
+  html{scroll-behavior:auto!important}
+}

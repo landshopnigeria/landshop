@@ -3,6 +3,7 @@ import '../../../packages/shared/EnterpriseReadability.css';
 import '../../../packages/shared/BrandedSelect.css';
 import './staff/staff-auth.css';
 import './enterprise-showcase.css';
+import '../../../packages/shared/EnterpriseMotion.css';
 import type {Metadata} from 'next';
 export const dynamic='force-dynamic';
 export const revalidate=0;
