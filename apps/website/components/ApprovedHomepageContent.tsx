@@ -127,7 +127,7 @@ export default function ApprovedHomepageContent({featured}:{featured:FeaturedPro
 
   <section className="lsap-section lsap-locations" id="locations" {...locationPlayback.handlers}><div className="lsap-container">
    <SectionHead kicker="PROPERTY LOCATIONS" title="Explore Locations" href="/locations" linkLabel="View all locations"/>
-   <div className="lsap-location-track" ref={locTrack}>{locations.map((loc,i)=><Link href={'/locations/'+loc.slug} className="lsap-location" key={loc.slug}><div><small>{String(i+1).padStart(2,'0')} / NIGERIA</small><ApprovedArrow/></div><div><h3>{loc.name}</h3><p>{loc.summary}</p><strong>Explore Location <ApprovedArrow/></strong></div></Link>)}</div>
+   <div className="lsap-location-track" ref={locTrack}>{locations.map((loc,i)=><Link href={'/locations?state='+encodeURIComponent(loc.name==='Abuja (FCT)'?'Federal Capital Territory':loc.name)} className="lsap-location" key={loc.slug}><div><small>{String(i+1).padStart(2,'0')} / NIGERIA</small><ApprovedArrow/></div><div><h3>{loc.name}</h3><p>{loc.summary}</p><strong>Explore Location <ApprovedArrow/></strong></div></Link>)}</div>
    <div className="lsap-carousel-foot"><span>{String(locationIndex+1).padStart(2,'0')} / {String(locations.length).padStart(2,'0')}</span><div><button type="button" onClick={()=>changeLocation(locationIndex-1)} aria-label="Previous location"><ApprovedArrow direction="left"/></button><button type="button" onClick={()=>changeLocation(locationIndex+1)} aria-label="Next location"><ApprovedArrow/></button></div></div>
   </div></section>
 

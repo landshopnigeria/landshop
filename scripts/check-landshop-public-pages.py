@@ -43,6 +43,10 @@ PUBLIC_PAGES = [
     ("website", "/collections/luxury", "Luxury Estates."),
     ("website", "/visit", "Come with questions."),
     ("website", "/careers", "Build meaningful work."),
+    ("website", "/locations", "Find your property."),
+    ("website", "/investment-calculator", "Investment calculator"),
+    ("website", "/mortgage-calculator", "Mortgage calculator"),
+    ("website", "/loan-calculator", "Loan calculator"),
     ("website", "/properties", "Property Marketplace"),
     ("website", "/applications", "Your property journey"),
     ("website", "/search", "Search Landshop"),
@@ -252,6 +256,19 @@ def verify_source() -> None:
     nav_css = Path("apps/website/app/public-icon-27.css").read_text(encoding="utf-8")
     approved_body = Path("apps/website/components/ApprovedHomepageContent.tsx").read_text(encoding="utf-8")
     approved_css = Path("apps/website/app/home-approved-reference.css").read_text(encoding="utf-8")
+    location_page = Path("apps/website/app/locations/page.tsx").read_text(encoding="utf-8")
+    location_finder = Path("apps/website/components/LocationDiscovery.tsx").read_text(encoding="utf-8")
+    location_style = Path("apps/website/app/locations/location-discovery.css").read_text(encoding="utf-8")
+    finance = Path("apps/website/components/FinancePlanner.tsx").read_text(encoding="utf-8")
+    if '<LocationDiscovery initial={filters} initialGoal={initialGoal}/>' not in location_page:
+        raise AssertionError("Location landing page must open with the connected property filter")
+    if 'className="lsloc-state-grid"' not in location_finder or 'onClick={()=>destination(location.state)}' not in location_finder:
+        raise AssertionError("Location cards must carry selected filters to the next step")
+    for goal in ("investment", "mortgage", "loan"):
+        if goal not in location_finder or goal not in finance:
+            raise AssertionError("Missing routed financial planning goal: " + goal)
+    if ".lsloc-filter" not in location_style:
+        raise AssertionError("Location filter layout styling is missing")
     if 'className="lsap-location-track"' not in approved_body or 'className="lsap-location"' not in approved_body:
         raise AssertionError("Approved homepage location carousel JSX is missing")
     if 'flex:0 0 calc((100% - 40px)/3)' not in approved_css:

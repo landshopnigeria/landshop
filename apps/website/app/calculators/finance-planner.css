@@ -1,0 +1,42 @@
+/* Dedicated calculators; shares mathematics, not presentation with the portal. */
+.lsfin-page{background:#f7faf8;color:#133f32;min-height:75vh;font-family:"Helvetica Neue",Arial,sans-serif}
+.lsfin-page *{box-sizing:border-box}
+.lsfin-shell{width:min(1230px,calc(100% - 48px));margin:0 auto;padding:36px 0 78px}
+.lsfin-intro{max-width:800px;margin-bottom:25px}
+.lsfin-back{display:inline-flex;color:#087857;font-weight:750;text-decoration:none;font-size:12px;margin-bottom:20px}
+.lsfin-back:hover{color:#f26b10}
+.lsfin-kicker{display:block;letter-spacing:.15em;font-size:11px;color:#079269;font-weight:850;margin-bottom:9px}
+.lsfin-intro h1{font-size:28px;color:#083e30;line-height:1.2;margin:0 0 11px}
+.lsfin-intro p{color:#647c6e;line-height:1.7;font-size:14px;margin:0}
+.lsfin-context{color:#386a55;background:#eaf6ee;border-radius:10px;padding:11px 14px;margin-top:16px;font-size:12px;line-height:1.6}
+.lsfin-tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px}
+.lsfin-tabs a{text-decoration:none;padding:11px 22px;font-weight:800;font-size:13px;background:white;border:1px solid #dae7de;border-radius:10px;color:#345b4c}
+.lsfin-tabs a.active{background:#2ba47a;color:#fff;border-color:#2ba47a}
+.lsfin-tabs a:hover{border-color:#f26b10;color:#f26b10}
+.lsfin-tabs a.active:hover{color:#fff;background:#f26b10}
+.lsfin-layout{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:22px;align-items:start}
+.lsfin-panel{background:white;border:1px solid #e0eae3;border-radius:21px;padding:clamp(20px,3vw,34px);box-shadow:0 12px 33px #073c2610}
+.lsfin-panel h2{margin:0 0 22px;font-size:23px;color:#073f34}
+.lsfin-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:17px}
+.lsfin-fields label{min-width:0;display:flex;flex-direction:column;gap:8px;color:#456b59;font-size:12px;font-weight:800}
+.lsfin-fields input{width:100%;height:49px;padding:11px 14px;background:#fff;border:1px solid #ccded3;border-radius:10px;font-size:14px;color:#183e31;outline:none}
+.lsfin-fields input:focus{border-color:#2ba47a;box-shadow:0 0 0 3px #2ba47a20}
+.lsfin-assumption{background:#f2f8f3;color:#688174;font-size:12px;line-height:1.7;padding:16px;border-radius:12px;margin:24px 0 0}
+.lsfin-results{background:#073f34;color:white;border-radius:21px;padding:clamp(23px,3vw,36px);box-shadow:0 18px 45px #073f3424}
+.lsfin-results>span{font-size:11px;letter-spacing:.15em;font-weight:850;color:#a5e6cc}
+.lsfin-primary{margin:23px 0 19px;padding-bottom:18px;border-bottom:1px solid #ffffff38}
+.lsfin-primary small{font-size:12px;color:#cce5d7;display:block;margin-bottom:12px}
+.lsfin-primary strong{font-size:clamp(23px,3vw,37px);font-weight:850;line-height:1.24;letter-spacing:-.02em;overflow-wrap:anywhere}
+.lsfin-stat{display:flex;gap:15px;justify-content:space-between;align-items:baseline;border-bottom:1px solid #ffffff26;padding:13px 0;font-size:12px}
+.lsfin-stat span{color:#bdd8cc;line-height:1.55;max-width:60%}
+.lsfin-stat strong{color:white;text-align:right;font-weight:800;max-width:60%;overflow-wrap:anywhere}
+.lsfin-empty{padding:24px 0;color:#ebf8ef;line-height:1.7}
+.lsfin-disclaimer{font-size:11px;line-height:1.8;color:#d0e3d8;margin:20px 0}
+.lsfin-search{display:inline-flex;text-decoration:none;color:#fff;border:1px solid #ffffff73;border-radius:10px;padding:12px 17px;font-size:12px;font-weight:800}
+.lsfin-search:hover{background:#f26b10;border-color:#f26b10}
+.lsfin-portal{font-size:12px;color:#587466;line-height:1.7;margin:23px 0}
+.lsfin-portal a{color:#087d5d;font-weight:800}
+.lsfin-page :is(a,input):focus-visible{outline:3px solid #f26b10;outline-offset:3px}
+@media(max-width:900px){.lsfin-layout{grid-template-columns:1fr}.lsfin-shell{width:calc(100% - 36px)}}
+@media(max-width:580px){.lsfin-shell{width:calc(100% - 24px);padding:22px 0 55px}.lsfin-fields{grid-template-columns:1fr}.lsfin-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}.lsfin-tabs a{padding:10px 9px;text-align:center}.lsfin-results{padding:23px 19px}}
+@media(prefers-reduced-motion:reduce){.lsfin-page *{transition:none!important}}

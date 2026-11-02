@@ -1,4 +1,8 @@
-import ApprovedArrow from '../../components/ApprovedArrow';
-import Link from 'next/link';
-export const metadata={title:'Mortgage Calculator | Landshop',description:'Explore a mortgage estimate using the existing secure Landshop calculator and request assistance with the full payment plan.'};
-export default function Calculator(){return <main className="ls26-page"><div className="ls26-container"><div className="ls26-intro"><span className="ls26-eyebrow">MORTGAGE CALCULATOR</span><h1>Start with the numbers.</h1><p>Use the existing Landshop mortgage calculator to explore an estimate. Then consider the 20% equity, any additional funding balance, rent and other costs together.</p><div className="ls26-hero-actions"><a href="https://portal.landshopnigeria.com/calculator" className="ls26-button">Open the mortgage calculator <ApprovedArrow /></a><Link href="/mortgage-review" className="ls26-outline">Help me review the full plan <ApprovedArrow /></Link></div></div><div className="ls26-grid-three"><article className="ls26-aside"><h3>Choose a home.</h3><p>Have a purchase price in mind and think about the equity available to you.</p></article><article className="ls26-aside"><h3>Explore an estimate.</h3><p>Calculator outputs are estimates and are not credit scores, eligibility decisions or lender approvals.</p></article><article className="ls26-aside"><h3>Look beyond the loan.</h3><p>Landshop's balance arrangement, applicable rent, legal charges and other costs may not appear in your mortgage estimate.</p></article></div></div></main>}
+import FinancePlanner from '../../components/FinancePlanner';
+import {cleanFilters,type Params} from '../../lib/marketplace';
+import '../calculators/finance-planner.css';
+export const metadata={title:'Mortgage Calculator | Landshop Nigeria',description:'Calculate an illustrative mortgage payment with your property price, equity contribution, annual rate and repayment period.'};
+export default async function MortgageCalculator({searchParams}:{searchParams:Promise<Params>}){
+ const filters=cleanFilters(await searchParams);
+ return <FinancePlanner kind="mortgage" state={filters.state} propertyType={filters.type} budget={filters.max}/>;
+}
