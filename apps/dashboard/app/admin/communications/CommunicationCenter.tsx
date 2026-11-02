@@ -2,6 +2,7 @@
 import {useMemo,useState} from 'react';
 import Link from 'next/link';
 import {excelWorkbook,wordDocument} from '../reports/export-openxml';
+import {createBrowserClient} from '@supabase/ssr';
 import catalog from './catalog.json';
 import './communications.css';
 
@@ -46,6 +47,7 @@ export default function CommunicationCenter({runs,evidenceAvailable}:{runs:Run[]
  const [exportScope,setExportScope]=useState<'one'|'selected'|'all'>('all');
  const [exportFormat,setExportFormat]=useState<'csv'|'html'|'xlsx'|'docx'|'pdf'>('csv');
  const [notice,setNotice]=useState('');
+ const [savingDraft,setSavingDraft]=useState(false);
  const flow=catalog.flows[journey];
  const stages=flow as typeof catalog.flows.Xtra;
  const stage=(stages as unknown as Array<{id:string;name:string;phase:string;note:string;next:string;templates:string[]}>).find(s=>s.id===stageId)||stages[0];
@@ -61,6 +63,27 @@ export default function CommunicationCenter({runs,evidenceAvailable}:{runs:Run[]
  const rows=filteredRuns.map(r=>({Run_ID:r.id,Timestamp_UTC:r.started_at,Workflow:r.workflow,Mode:r.mode,Status:r.status,
    Channel:'Not reported by workflow run',Geography:'Unavailable in this source',Customer_Intent:'Unavailable in this source'}));
  function chosenRows(){if(exportScope==='all')return rows;if(exportScope==='one')return rows.slice(0,1);return rows.filter(row=>runSelected.includes(row.Run_ID))}
+ async function createManualDraft(){
+  if(savingDraft)return;
+  setSavingDraft(true);
+  try{
+   const url=process.env.NEXT_PUBLIC_SUPABASE_URL,key=process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+   if(!url||!key)throw Error('The authorized automation database is not configured.');
+   const db=createBrowserClient(url,key,{cookieOptions:{domain:'.landshopnigeria.com',sameSite:'lax',secure:true,path:'/'}});
+   const nodes=[
+    {id:'com-trigger',type:'trigger',label:'Verified '+template.stage,x:80,y:160,config:{event:'communication.source_event',notes:template.id}},
+    {id:'com-check',type:'condition',label:'Validate consent and business event',x:300,y:160,config:{notes:template.gate.slice(0,260)}},
+    {id:'com-approval',type:'approval',label:'Authorize communication template',x:540,y:160,config:{approvalRole:template.intent==='Marketing'?'Marketing':'Operations'}},
+    {id:'com-message',type:'notification',label:template.title.slice(0,78),x:780,y:160,config:{channel:'email',notes:'Template '+template.id+' · draft only · provider disabled'}},
+    {id:'com-end',type:'end',label:'Audit and complete',x:1020,y:160,config:{notes:'Delivery requires separate authorized activation'}}
+   ];
+   const edges=nodes.slice(1).map((n,i)=>({from:nodes[i].id,to:n.id}));
+   const {data,error}=await db.rpc('landshop_automation_create',{p_name:(template.id+' · '+template.title).slice(0,100),p_description:'Landshop communication draft: '+template.stage+' | '+template.timing+' | '+template.gate,p_graph:{nodes,edges}});
+   if(error||!data)throw Error('Not saved. '+(error?.message||'Management authorization required.'));
+   setNotice('Saved draft '+String(data).slice(0,8)+' in NEXUS. No email, SMS or WhatsApp was sent. Open the builder to inspect it.');
+  }catch(e){setNotice(e instanceof Error?e.message:'Draft could not be saved.');}
+  finally{setSavingDraft(false);}
+ }
  function exportReport(){
   const selected=chosenRows();if(!selected.length){setNotice('No authorized records available for this export.');return}
   const date=new Date().toISOString().slice(0,10),base='landshop-communication-runs-'+date;
@@ -114,7 +137,7 @@ export default function CommunicationCenter({runs,evidenceAvailable}:{runs:Run[]
        <footer className="comm-email-footer"><img src="/media/logo.webp" alt="Landshop logo" width={102} height={45}/><strong>Landshop Limited</strong><p>Suite 1, 3rd Floor, King's Deck, Alternative Route, Chevron Drive, Lekki-Epe Expressway, Lagos, Nigeria.</p><p>Phone: +234 1 888 0063 · WhatsApp: +234 818 886 6772<br/>Email: care@landshopnigeria.com · www.landshopnigeria.com</p><p>{template.intent==='Marketing'?'Preferences and unsubscribe link supplied by the real messaging provider.':'Official notifications never request passwords, OTPs or unverified account transfers.'}</p><small>© {new Date().getFullYear()} Landshop Limited. All rights reserved.</small></footer>
       </div>:<div className={'comm-message '+(channel==='WhatsApp'?'comm-wa':'comm-sms')}><div className="comm-message-header">{channel==='WhatsApp'?'WhatsApp Business · Landshop':'Landshop SMS'}</div><p>{personalize(channel==='WhatsApp'?template.wa:template.sms)}</p><small>Channel preview only. Actual delivery requires opt-in and provider verification.</small></div>}
       <div className="comm-message-meta"><div><b>Trigger</b><span>{template.stage}</span></div><div><b>Required check</b><span>{template.gate}</span></div><div><b>Timing</b><span>{template.timing}</span></div></div>
-      <div className="comm-actions"><button onClick={()=>toggleReview(template.id)}>{reviewed.includes(template.id)?'✓ Reviewed · Undo':'Mark reviewed'}</button><button onClick={()=>{const body=channel==='Email'?template.subject+'\n\n'+template.body:channel==='WhatsApp'?template.wa:template.sms;navigator.clipboard?.writeText(body);setNotice('Template text copied for review.')}}>Copy message draft</button></div>
+      <div className="comm-actions"><button onClick={()=>toggleReview(template.id)}>{reviewed.includes(template.id)?'✓ Reviewed · Undo':'Mark reviewed'}</button><button disabled={savingDraft} onClick={()=>void createManualDraft()}>{savingDraft?'Saving draft…':'Create NEXUS draft from template'}</button><button onClick={()=>{const body=channel==='Email'?template.subject+'\n\n'+template.body:channel==='WhatsApp'?template.wa:template.sms;navigator.clipboard?.writeText(body);setNotice('Template text copied for review.')}}>Copy message draft</button></div>
      </div></div></div>}
    {tab==='reporting'&&<div className="comm-panel"><div className="comm-titleline"><div><h2>Actual Command Center workflow activity</h2><p>Records read from authorized automation runs. No synthetic delivery, location, customer identity or conversion figures.</p></div><span className="comm-label">{runs.length} recent entries · max 200</span></div>
     {!evidenceAvailable?<p className="comm-warning">Live workflow run records are currently unavailable for this role. This is not a zero-activity claim.</p>:null}
