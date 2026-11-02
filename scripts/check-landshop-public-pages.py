@@ -177,8 +177,15 @@ def check(kind: str, route: str, expected: str | None):
             raise AssertionError("Approved three-column property locations carousel is missing")
         if 'class="lsap-head"' not in html or 'class="lsap-kicker"' not in html:
             raise AssertionError("Approved homepage section subtitles are missing")
-        if "Projects" not in visible or "Careers" not in visible:
-            raise AssertionError("requested Projects/Careers header links are missing")
+        if "Projects" not in visible or "Company" not in visible:
+            raise AssertionError("Projects and Company header navigation must remain visible")
+        if 'class="lsap-product-grid"' not in html:
+            raise AssertionError("Five-product carousel track is missing")
+        for product in ("Develop", "Incubate", "Grow", "DevPro", "EstatePro"):
+            if product not in visible:
+                raise AssertionError("Homepage product carousel is missing " + product)
+        if 'aria-label="Previous product"' not in html or 'aria-label="Next product"' not in html:
+            raise AssertionError("Homepage product carousel navigation controls are missing")
         if 'data-landshop-hero="v16-separated-product-slides"' not in html:
             raise AssertionError("approved V16 distinct-slide homepage is missing")
         if 'data-active-product="LANDSHOP"' not in html:
@@ -241,6 +248,23 @@ def verify_source() -> None:
         raise AssertionError("Approved homepage location carousel JSX is missing")
     if 'flex:0 0 calc((100% - 40px)/3)' not in approved_css:
         raise AssertionError("Homepage desktop carousel must display three property locations per row")
+    # Careers belongs inside Company, not in the top-level navigation.
+    if " {label:'Careers',eyebrow:" in nav:
+        raise AssertionError("Careers must not appear as a top-level header group")
+    company_start = nav.find(" {label:'Company',eyebrow:")
+    company_end = nav.find(" {label:'Services',eyebrow:", company_start)
+    if company_start < 0 or company_end < 0:
+        raise AssertionError("Company dropdown is missing")
+    company_group = nav[company_start:company_end]
+    for career_url in ("/careers", "/careers/programs"):
+        if "href:'"+career_url+"'" not in company_group:
+            raise AssertionError("Company dropdown is missing " + career_url)
+    if 'className="lsap-product-grid" ref={productTrack}' not in approved_body:
+        raise AssertionError("Product carousel track is not connected to scrolling controls")
+    if "productPlayback.handlers" not in approved_body:
+        raise AssertionError("Product carousel playback/pause handlers are missing")
+    if "flex:0 0 calc((100% - 36px)/3)" not in approved_css:
+        raise AssertionError("Product carousel must show three columns on desktop")
     if '<SiteIcon name="chevron" size={19}/>' not in nav:
         raise AssertionError("Public dropdown navigation V chevrons are missing")
     if "chevron:'M5.5 9l6.5 6.5L18.5 9'" not in icons:
