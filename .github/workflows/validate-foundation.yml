@@ -50,6 +50,10 @@ jobs:
         run: python3 scripts/verify-landshop-arrow-standard.py
       - name: Verify private project photography governance
         run: python3 scripts/verify-project-photo-governance.py
+      - name: Verify communication dispatcher without customer sends
+        run: |
+          node scripts/landshop-communication-dispatch.mjs --self-test
+          node scripts/landshop-communication-dispatch.mjs --preview
       - name: Build applications
         env:
           NEXT_PUBLIC_SUPABASE_URL: https://iwkfagzkogzidrbbezds.supabase.co
