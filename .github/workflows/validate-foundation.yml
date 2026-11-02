@@ -11,6 +11,7 @@ on:
       - '.github/workflows/validate-foundation.yml'
       - '.github/workflows/landshop-communication-outbound.yml'
       - '.github/workflows/deploy-landshop-enterprise.yml'
+      - '.github/workflows/website-release-validation.yml'
   pull_request:
     branches: [main]
   workflow_dispatch:
