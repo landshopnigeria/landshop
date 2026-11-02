@@ -1,6 +1,7 @@
 'use client';
 import {useMemo,useState} from 'react';
 import Link from 'next/link';
+import ApprovedArrow from './ApprovedArrow';
 type Kind='investment'|'mortgage'|'loan';
 type Props={kind:Kind;state?:string;propertyType?:string;budget?:number;criteriaQuery?:string};
 const money=(n:number)=>new Intl.NumberFormat('en-NG',{style:'currency',currency:'NGN',maximumFractionDigits:0}).format(n);
@@ -62,7 +63,7 @@ export default function FinancePlanner({kind,state='',propertyType='',budget,cri
  const input=(label:string,value:string,set:(v:string)=>void,opts:{placeholder?:string;min?:number;max?:number;step?:string}={})=>
   <label key={label}>{label}<input type="number" inputMode="decimal" min={opts.min??0} max={opts.max??1000000000000} step={opts.step||'any'} placeholder={opts.placeholder||''} value={value} onChange={event=>set(event.target.value)}/></label>;
  return <main className="lsfin-page"><div className="lsfin-shell">
-  <div className="lsfin-intro"><Link href={'/locations?'+back.toString()} className="lsfin-back">← Back to property filter</Link><span className="lsfin-kicker">PROPERTY FINANCIAL PLANNING</span><h1>{title}</h1><p>{description}</p>{locationLabel&&<div className="lsfin-context">Property search: <strong>{locationLabel}</strong>{budget?<> · Working budget: <strong>{money(budget)}</strong></>:null}</div>}</div>
+  <div className="lsfin-intro"><Link href={'/locations?'+back.toString()} className="lsfin-back"><ApprovedArrow direction="left"/> Back to property filter</Link><span className="lsfin-kicker">PROPERTY FINANCIAL PLANNING</span><h1>{title}</h1><p>{description}</p>{locationLabel&&<div className="lsfin-context">Property search: <strong>{locationLabel}</strong>{budget?<> · Working budget: <strong>{money(budget)}</strong></>:null}</div>}</div>
   <div className="lsfin-tabs" aria-label="Available calculators"><Link className={kind==='investment'?'active':''} href={'/investment-calculator?'+back.toString()}>Investment</Link><Link className={kind==='mortgage'?'active':''} href={'/mortgage-calculator?'+back.toString()}>Mortgage</Link><Link className={kind==='loan'?'active':''} href={'/loan-calculator?'+back.toString()}>Loan</Link></div>
   <div className="lsfin-layout">
    <section className="lsfin-panel"><h2>{kind==='investment'?'Investment assumptions':kind==='mortgage'?'Mortgage assumptions':'Loan assumptions'}</h2>
@@ -108,7 +109,7 @@ export default function FinancePlanner({kind,state='',propertyType='',budget,cri
      <div className="lsfin-stat"><span>Upfront fees (excluded from monthly)</span><strong>{money(data.fees)}</strong></div>
     </>:<div className="lsfin-empty">Enter a valid amount, annual rate and repayment period to calculate.</div>}
     <p className="lsfin-disclaimer">{kind==='investment'?'Scenario only. Actual income, occupancy, expenses, resale prices and capital values may differ. No returns are guaranteed.':'Planning estimate only. This is not a lending offer, interest-rate quotation or eligibility decision. Confirm all terms directly with the lender.'}</p>
-    <Link href={'/properties'+(listingQuery.size?'?'+listingQuery.toString():'')} className="lsfin-search">View verified properties →</Link>
+    <Link href={'/properties'+(listingQuery.size?'?'+listingQuery.toString():'')} className="lsfin-search">View verified properties <ApprovedArrow/></Link>
    </section>
   </div>
   {kind==='mortgage'&&<p className="lsfin-portal">For a detailed amortisation schedule, use the <a href="https://portal.landshopnigeria.com/calculator">existing Landshop customer portal calculator</a>.</p>}
