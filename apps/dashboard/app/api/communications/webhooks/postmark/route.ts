@@ -43,13 +43,13 @@ export async function POST(request:Request){
   Delivery:'delivered',Bounce:'bounced',SpamComplaint:'complained',Open:'opened',Click:'clicked'
  };
  const name=names[kind];
- if(!name)return new Response(null,{status:204,headers:noStore});
+ if(!name)return new Response(null,{status:200,headers:noStore});
  const db=client();
  if(!db)return new Response(null,{status:503,headers:noStore});
  const {data:outbox,error:lookupError}=await db.from('landshop_comm_outbox')
   .select('id,contact_id,status').eq('channel','email').eq('provider_message_id',msg).maybeSingle();
  if(lookupError)return new Response(null,{status:503,headers:noStore});
- if(!outbox)return new Response(null,{status:204,headers:noStore});
+ if(!outbox)return new Response(null,{status:200,headers:noStore});
 
  const trace=request.headers.get('x-pm-webhook-trace-id');
  const identity=trace&&trace.length<=200?trace:createHash('sha256').update(
@@ -79,5 +79,5 @@ export async function POST(request:Request){
   }
  }
  // Open and click receipts are optional and do not prove human reading.
- return new Response(null,{status:204,headers:noStore});
+ return new Response(null,{status:200,headers:noStore});
 }
