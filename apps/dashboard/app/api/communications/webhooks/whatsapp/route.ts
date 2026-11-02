@@ -38,7 +38,9 @@ export async function POST(request:Request){
  if(!body||typeof body!=='object')return new Response(null,{status:400,headers});
  const db=client();
  if(!db)return new Response(null,{status:503,headers});
- const root=body as {entry?:Array<{changes?:Array<{value?:{statuses?:Array<{id?:string;status?:string;timestamp?:string}>}}}>};
+ type ProviderStatus={id?:string;status?:string;timestamp?:string};
+ type ProviderPayload={entry?:{changes?:{value?:{statuses?:ProviderStatus[]}}[]}[]};
+ const root=body as ProviderPayload;
  const statuses=root.entry?.flatMap(e=>e.changes?.flatMap(c=>c.value?.statuses||[])||[])||[];
  if(statuses.length>50)return new Response(null,{status:413,headers});
  for(const item of statuses){
