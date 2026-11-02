@@ -8,6 +8,7 @@ on:
       - 'scripts/**'
       - 'packages/**'
       - 'package.json'
+      - 'package-lock.json'
       - '.github/workflows/validate-foundation.yml'
       - '.github/workflows/landshop-communication-outbound.yml'
       - '.github/workflows/deploy-landshop-enterprise.yml'
