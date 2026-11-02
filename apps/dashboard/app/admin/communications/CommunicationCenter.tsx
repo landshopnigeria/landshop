@@ -4,13 +4,17 @@ import Link from 'next/link';
 import {excelWorkbook,wordDocument} from '../reports/export-openxml';
 import {createBrowserClient} from '@supabase/ssr';
 import catalog from './catalog.json';
+import PremiumMessagePreview, {type PremiumOverride} from './PremiumMessagePreview';
+import TemplateEditor from './TemplateEditor';
+import OperationsCenter from './OperationsCenter';
+import type {Contact,Event,Task,Audit} from './OperationsCenter';
 import './communications.css';
 
 type Journey=keyof typeof catalog.flows;
 type Scenario=(typeof catalog.templates)[number];
 type Channel='Email'|'WhatsApp'|'SMS';
 type Run={id:string;workflow:string;status:string;started_at:string;mode:string};
-type Tab='journeys'|'templates'|'reporting'|'exports'|'safeguards';
+type Tab='journeys'|'templates'|'operations'|'reporting'|'exports'|'safeguards';
 const journeyNames:Journey[]=['Xtra','Beta','Invest','Estate Pro','Develop','Dev Pro'];
 const labels:Record<Journey,string>={Xtra:'Mortgage Xtra',Beta:'Beta Mortgage',Invest:'Invest / Incubate','Estate Pro':'Estate Pro',Develop:'Develop','Dev Pro':'Dev Pro'};
 const photos:Record<Journey,string>={Xtra:'/media/famous0.webp',Beta:'/media/maiyegun0.webp',Invest:'/media/deck-investment.webp','Estate Pro':'/media/deck-building.webp',Develop:'/media/famous0.webp','Dev Pro':'/media/deck-building.webp'};
@@ -37,7 +41,7 @@ function channelIcon(channel:Channel){
 }
 function channelClass(channel:Channel){return channel.toLowerCase();}
 function inJourney(t:Scenario,j:Journey){return t.flow===j||(t.flow==='Both'&&(j==='Xtra'||j==='Beta'))}
-export default function CommunicationCenter({runs,evidenceAvailable}:{runs:Run[];evidenceAvailable:boolean}){
+export default function CommunicationCenter({runs,evidenceAvailable,operations,initialOverrides,templateDataReady}:{runs:Run[];evidenceAvailable:boolean;operations:{contacts:Contact[];events:Event[];tasks:Task[];audit:Audit[];ready:boolean};initialOverrides:PremiumOverride[];templateDataReady:boolean}){
  const [tab,setTab]=useState<Tab>('journeys');
  const [journey,setJourney]=useState<Journey>('Xtra');
  const [stageId,setStageId]=useState('xc');
@@ -52,10 +56,12 @@ export default function CommunicationCenter({runs,evidenceAvailable}:{runs:Run[]
  const [exportFormat,setExportFormat]=useState<'csv'|'html'|'xlsx'|'docx'|'pdf'>('csv');
  const [notice,setNotice]=useState('');
  const [savingDraft,setSavingDraft]=useState(false);
+ const [overrides,setOverrides]=useState<PremiumOverride[]>(initialOverrides);
  const flow=catalog.flows[journey];
  const stages=flow as typeof catalog.flows.Xtra;
  const stage=(stages as unknown as Array<{id:string;name:string;phase:string;note:string;next:string;templates:string[]}>).find(s=>s.id===stageId)||stages[0];
  const template=catalog.templates.find(t=>t.id===templateId)||catalog.templates[0];
+ const currentOverride=overrides.find(t=>t.id===template.id);
  const templates=useMemo(()=>catalog.templates.filter(t=>inJourney(t,journey)&&
    (typeFilter==='All'||t.intent===typeFilter)&&
    (t.title+' '+t.stage+' '+t.body+' '+t.source).toLowerCase().includes(query.toLowerCase())),[journey,query,typeFilter]);
@@ -112,7 +118,7 @@ export default function CommunicationCenter({runs,evidenceAvailable}:{runs:Run[]
  return <main className="comm-center">
   <header className="comm-top"><div className="comm-top-inner">
    <Link href="/admin" className="comm-back">← Command Center</Link>
-   <div className="comm-identity"><img src="/media/logo.webp" alt="Official Landshop logo" width={105} height={52}/><div><strong>Enterprise Communications</strong><span>Internal management workspace · six product journeys</span></div></div>
+   <div className="comm-identity"><img src="/media/logo-transparent.png" alt="Official transparent Landshop logo" width={105} height={52}/><div><strong>Enterprise Communications</strong><span>Internal management workspace · six product journeys</span></div></div>
    <div className="comm-top-actions"><span className="comm-lock">Management only · Sending disabled</span><Link href="/admin/automation" className="comm-builder">Open NEXUS Builder ↗</Link></div>
   </div></header>
   <div className="comm-container">
@@ -121,7 +127,7 @@ export default function CommunicationCenter({runs,evidenceAvailable}:{runs:Run[]
     <p className="comm-warning">Draft review and real workflow run visibility only. Provider sends, legal notices and unverified financial events remain disabled.</p></div>
     <div className="comm-stats"><div><strong>6</strong><span>Product journeys</span></div><div><strong>70</strong><span>Message scenarios</span></div><div><strong>{runs.length}</strong><span>Recorded run entries</span></div><div><strong>{reviewed.length}</strong><span>Templates reviewed locally</span></div></div></section>
    <nav className="comm-tabs" aria-label="Communication workspace sections">
-    {([['journeys','Workflow canvas'],['templates','Email & message studio'],['reporting','Management reporting'],['exports','Exports & manual automation'],['safeguards','Approval gates']] as [Tab,string][]).map(([id,label])=><button type="button" key={id} className={tab===id?'active':''} onClick={()=>setTab(id)} aria-current={tab===id?'page':undefined}>{label}</button>)}
+    {([['journeys','Workflow canvas'],['templates','Email & message studio'],['operations','Customer activity & contacts'],['reporting','Management reporting'],['exports','Exports & manual automation'],['safeguards','Approval gates']] as [Tab,string][]).map(([id,label])=><button type="button" key={id} className={tab===id?'active':''} onClick={()=>setTab(id)} aria-current={tab===id?'page':undefined}>{label}</button>)}
    </nav>
    {tab==='journeys'&&<div className="comm-panel">
     <div className="comm-titleline"><div><h2>Six connected customer journeys</h2><p>Select a product and click any stage to review the conditions and outgoing messages.</p></div><span className="comm-label">{countForJourney} matching messages</span></div>
@@ -130,19 +136,18 @@ export default function CommunicationCenter({runs,evidenceAvailable}:{runs:Run[]
      <aside className="comm-stage-detail"><small>SELECTED WORKFLOW STAGE</small><h2>{stage.name}</h2><p>{stage.note}</p><h4>Next action</h4><p>{stage.next}</p><h4>Connected templates</h4>{stage.templates.length?stage.templates.map(id=>{const t=catalog.templates.find(v=>v.id===id);return t?<button className="comm-linked" key={id} onClick={()=>openTemplate(id)}>{t.title}<span>View →</span></button>:null}):<p>This is a process stage. No outbound message is scheduled at this step.</p>}</aside>
     </div></div>}
    {tab==='templates'&&<div className="comm-panel">
-    <div className="comm-titleline"><div><h2>Branded messaging studio</h2><p>Official Landshop logo, genuine archive photography, personal greetings, footer contacts and channel-specific content.</p></div><span className="comm-label">{reviewed.length} of 70 reviewed</span></div>
+    <div className="comm-titleline"><div><h2>Premium customer communication studio</h2><p>Exact approved light header, vertical signature-teal band, concise personalized copy, orange CTA and fully centered logo footer.</p></div><span className="comm-label">{overrides.length} saved changes · {reviewed.length} local reviews</span></div>
     <div className="comm-controls"><label>Journey<select value={journey} onChange={e=>pickJourney(e.target.value as Journey)}>{journeyNames.map(j=><option key={j} value={j}>{labels[j]}</option>)}</select></label><label>Message type<select value={typeFilter} onChange={e=>setTypeFilter(e.target.value)}><option>All</option><option>Transactional</option><option>Marketing</option></select></label><label className="comm-search">Search<input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search scenarios, events or content"/></label></div>
     <div className="comm-library"><div className="comm-list">{templates.length?templates.map(t=><button className={template.id===t.id?'active':''} key={t.id} onClick={()=>{setTemplateId(t.id);setChannel('Email')}}><small>{t.id} · {t.flow} · {t.intent}</small><strong>{t.title}</strong><span>{t.stage}</span></button>):<p>No messages match this filter.</p>}</div>
      <div className="comm-preview"><div className="comm-templatehead"><div><small>{template.id} · {template.source}</small><h3>{template.title}</h3><p>{template.timing}</p></div><div className="comm-channels">{(['Email','WhatsApp','SMS'] as Channel[]).filter(ch=>template.channels.includes(ch)).map(ch=><button key={ch} className={(channel===ch?'active ':'')+channelClass(ch)} onClick={()=>setChannel(ch)}>{channelIcon(ch)} {ch}</button>)}</div></div>
-      {channel==='Email'?<div className="comm-email"><div className="comm-email-head"><img src="/media/logo.webp" alt="Landshop logo" width={132} height={60}/><span>{labels[journey]} · Customer Experience</span></div>
-       <div className="comm-email-photo"><img src={photos[journey]} alt="Illustrative photograph from the Landshop property archive" loading="lazy"/><small>Illustrative Landshop photo archive. Production messages use only verified, property-matched imagery.</small></div>
-       <div className="comm-email-body"><small>LANDSHOP CUSTOMER UPDATE</small><h2>{personalize(template.subject)}</h2><p className="comm-email-copy">{personalize(template.body)}</p>
-        <a href="https://www.landshopnigeria.com" onClick={e=>e.preventDefault()} className="comm-email-button">View your secure Landshop account</a><p className="comm-email-tip">Preview only. No message is being transmitted.</p></div>
-       <footer className="comm-email-footer"><img src="/media/logo.webp" alt="Landshop logo" width={102} height={45}/><strong>Landshop Limited</strong><p>Suite 1, 3rd Floor, King's Deck, Alternative Route, Chevron Drive, Lekki-Epe Expressway, Lagos, Nigeria.</p><p>Phone: +234 1 888 0063 · WhatsApp: +234 818 886 6772<br/>Email: care@landshopnigeria.com · www.landshopnigeria.com</p><p>{template.intent==='Marketing'?'Preferences and unsubscribe link supplied by the real messaging provider.':'Official notifications never request passwords, OTPs or unverified account transfers.'}</p><small>© {new Date().getFullYear()} Landshop Limited. All rights reserved.</small></footer>
-      </div>:<div className={'comm-message '+(channel==='WhatsApp'?'comm-wa':'comm-sms')}><div className="comm-message-header">{channel==='WhatsApp'?'WhatsApp Business · Landshop':'Landshop SMS'}</div><p>{personalize(channel==='WhatsApp'?template.wa:template.sms)}</p><small>Channel preview only. Actual delivery requires opt-in and provider verification.</small></div>}
+      <PremiumMessagePreview template={template} journey={journey} channel={channel} override={currentOverride}/>
+
       <div className="comm-message-meta"><div><b>Trigger</b><span>{template.stage}</span></div><div><b>Required check</b><span>{template.gate}</span></div><div><b>Timing</b><span>{template.timing}</span></div></div>
+      {!templateDataReady&&<p className="comm-warning">Saved template changes could not be loaded from the management database.</p>}
+      <TemplateEditor key={template.id} scenario={template} override={currentOverride} onSaved={saved=>setOverrides(list=>saved?[...list.filter(x=>x.id!==template.id),saved]:list.filter(x=>x.id!==template.id))}/>
       <div className="comm-actions"><button onClick={()=>toggleReview(template.id)}>{reviewed.includes(template.id)?'✓ Reviewed · Undo':'Mark reviewed'}</button><button disabled={savingDraft} onClick={()=>void createManualDraft()}>{savingDraft?'Saving draft…':'Create NEXUS draft from template'}</button><button onClick={()=>{const body=channel==='Email'?template.subject+'\n\n'+template.body:channel==='WhatsApp'?template.wa:template.sms;navigator.clipboard?.writeText(body);setNotice('Template text copied for review.')}}>Copy message draft</button></div>
      </div></div></div>}
+   {tab==='operations'&&<OperationsCenter contacts={operations.contacts} events={operations.events} tasks={operations.tasks} audit={operations.audit} ready={operations.ready}/>}
    {tab==='reporting'&&<div className="comm-panel"><div className="comm-titleline"><div><h2>Actual Command Center workflow activity</h2><p>Records read from authorized automation runs. No synthetic delivery, location, customer identity or conversion figures.</p></div><span className="comm-label">{runs.length} recent entries · max 200</span></div>
     {!evidenceAvailable?<p className="comm-warning">Live workflow run records are currently unavailable for this role. This is not a zero-activity claim.</p>:null}
     <div className="comm-stats small"><div><strong>{runs.filter(r=>r.status==='completed').length}</strong><span>Completed runs</span></div><div><strong>{runs.filter(r=>r.status==='running').length}</strong><span>Running</span></div><div><strong>{runs.filter(r=>/fail|error/i.test(r.status)).length}</strong><span>Failed</span></div><div><strong>{runs.filter(r=>r.mode==='rehearsal').length}</strong><span>Rehearsals</span></div></div>
