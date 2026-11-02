@@ -218,9 +218,6 @@ insert into public.landshop_comm_delivery_rules(event_type,template_id,channel,p
 values
  ('contact_submitted','T00','email','transactional',false),
  ('inspection_requested','T01','email','transactional',false),
- ('inspection_confirmed','C03','email','transactional',false),
- ('application_received','C01','email','transactional',false),
- ('payment_verified','C05','email','transactional',false),
  ('contact_submitted','T00','whatsapp','transactional',false),
  ('inspection_requested','T01','whatsapp','transactional',false),
  ('contact_submitted','T00','sms','transactional',false),
