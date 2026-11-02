@@ -30,7 +30,11 @@ function personalize(value:string){return value.replace(/\{\{\s*([a-z_]+)\s*\}\}
 function safeCsv(value:unknown){const raw=String(value??'');const v=/^\s*[=+\-@]/.test(raw)?"'"+raw:raw;return '"'+v.replaceAll('"','""')+'"';}
 function escapeHtml(value:unknown){return String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]||char));}
 function downloadBlob(filename:string,blob:Blob){const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500)}
-function channelIcon(channel:Channel){return channel==='Email'?'✉':channel==='WhatsApp'?'●':'▤';}
+function channelIcon(channel:Channel){
+ if(channel==='Email')return <svg aria-hidden="true" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#364D5D" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 7 10-7"/></svg>;
+ if(channel==='WhatsApp')return <svg aria-hidden="true" width="18" height="18" viewBox="0 0 32 32"><circle cx="16" cy="16" r="15" fill="#25D366"/><path fill="#fff" d="M9.2 24.2 10.4 20a9 9 0 1 1 3.5 3.2zm7-15.8a7.6 7.6 0 0 0-6.5 11.4l.3.5-.8 2.8 2.9-.8.5.3a7.6 7.6 0 1 0 3.6-14.8zm-4 4.2c.1-.3.4-.5.6-.5h.5c.2 0 .4.1.5.5l.9 2.2c.1.2.1.4-.1.7l-.5.7c-.1.1-.2.3-.1.5.4.8 1.5 2 2.8 2.6.2.1.4.1.5-.1l.9-1c.2-.2.4-.2.6-.1l2 1c.3.2.4.3.3.5l-.2 1c-.1.5-1.2 1.1-1.8 1.2-1 .1-2.7-.5-4.8-2.4-2.2-2-3.1-3.9-3-5.1.1-.4.5-1.1.9-1.5z"/></svg>;
+ return <svg aria-hidden="true" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#364D5D" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M7 9h10M7 13h7"/></svg>;
+}
 function channelClass(channel:Channel){return channel.toLowerCase();}
 function inJourney(t:Scenario,j:Journey){return t.flow===j||(t.flow==='Both'&&(j==='Xtra'||j==='Beta'))}
 export default function CommunicationCenter({runs,evidenceAvailable}:{runs:Run[];evidenceAvailable:boolean}){
@@ -56,7 +60,7 @@ export default function CommunicationCenter({runs,evidenceAvailable}:{runs:Run[]
    (typeFilter==='All'||t.intent===typeFilter)&&
    (t.title+' '+t.stage+' '+t.body+' '+t.source).toLowerCase().includes(query.toLowerCase())),[journey,query,typeFilter]);
  const filteredRuns=useMemo(()=>runs.filter(r=>(r.workflow+' '+r.status+' '+r.id).toLowerCase().includes(runFilter.toLowerCase())),[runs,runFilter]);
- function pickJourney(j:Journey){setJourney(j);const f=catalog.flows[j] as Array<{id:string}>;setStageId(f[0]?.id||'');setQuery('');setTypeFilter('All')}
+ function pickJourney(j:Journey){setJourney(j);const f=catalog.flows[j] as Array<{id:string}>;setStageId(f[0]?.id||'');setTemplateId(catalog.templates.find(t=>inJourney(t,j))?.id||'C01');setChannel('Email');setQuery('');setTypeFilter('All')}
  function openTemplate(id:string){setTemplateId(id);setChannel('Email');setTab('templates')}
  function toggleReview(id:string){setReviewed(items=>items.includes(id)?items.filter(x=>x!==id):[...items,id])}
  function toggleRun(id:string){setRunSelected(items=>items.includes(id)?items.filter(x=>x!==id):[...items,id])}
