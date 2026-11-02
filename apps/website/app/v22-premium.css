@@ -189,3 +189,14 @@
 .v22-signin-prompt{margin-top:25px}
 .v22-comment-success{color:#176c47!important;font-weight:720}
 .v22-comment-error{color:#b42318!important;font-weight:720}
+
+/* Recognition brand-color treatment: About page only. */
+.v22-root.v22-interior .v22-section.ls-about-recognition{background:#2BA47A;color:#FFFFFF}
+.v22-root.v22-interior .ls-about-recognition .v22-eyebrow{color:#E7FFF4!important}
+.v22-root.v22-interior .ls-about-recognition .v22-eyebrow::before{content:"";display:inline-block;width:9px;height:9px;background:#F26B10;border-radius:2px;vertical-align:middle;margin-right:12px}
+.v22-root.v22-interior .ls-about-recognition h2{color:#FFFFFF!important}
+.v22-root.v22-interior .ls-about-recognition p{color:#F1FFF8!important}
+.v22-root.v22-interior .ls-about-recognition .v22-btn{background:#FFFFFF!important;color:#073F34!important;border:1px solid #FFFFFF;box-shadow:0 8px 24px rgba(7,63,52,.12)}
+.v22-root.v22-interior .ls-about-recognition .v22-btn .ls-approved-arrow{color:#F26B10!important}
+.v22-root.v22-interior .ls-about-recognition .v22-btn:hover,.v22-root.v22-interior .ls-about-recognition .v22-btn:focus-visible{background:#FFF3E8!important;border-color:#F26B10;box-shadow:0 12px 28px rgba(7,63,52,.20)}
+.v22-root.v22-interior .ls-about-recognition .v22-cover-photo{display:block}
