@@ -36,4 +36,17 @@ for path,token in paths.items():
 
 print("PASS: Customer/staff signup and password changes screen proposed passwords")
 print("PASS: Only the SHA-1 prefix is transmitted; the full password remains private")
+# Every public form endpoint must retain request throttling and bounded input.
+endpoints={
+ "apps/website/app/api/contact/route.ts": ("publicFormThrottle(", "raw.length>9000"),
+ "apps/website/app/api/inspection/route.ts": ("publicFormThrottle(", "input.length>8000"),
+ "apps/website/app/api/newsletter/subscribe/route.ts": ("publicFormThrottle(", "body.length>2048"),
+ "apps/website/app/api/newsletter/unsubscribe/route.ts": ("publicFormThrottle(", "raw.length>512", "content-type"),
+}
+for path,tokens in endpoints.items():
+ source=(root/path).read_text(encoding="utf-8")
+ for token in tokens:
+  assert token in source, f"{path}: public form protection missing: {token}"
+
+print("PASS: All four public enquiry, inspection and newsletter routes retain request safeguards")
 print("NOTE: Direct Supabase Auth API calls are not covered by this browser-side check")
