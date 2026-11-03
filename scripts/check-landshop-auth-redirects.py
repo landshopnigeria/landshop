@@ -6,10 +6,11 @@ Checks redirects without following them so no cookies or sessions are exchanged.
 """
 from __future__ import annotations
 
-from urllib.error import HTTPError
+from urllib.error import HTTPError, URLError
 from urllib.parse import urljoin
 from urllib.request import HTTPRedirectHandler, Request, build_opener
 import sys
+import time
 
 
 class DoNotFollow(HTTPRedirectHandler):
@@ -38,10 +39,19 @@ def check(source:str,destination:str,requires_no_store:bool)->None:
         "Cache-Control":"no-cache, no-store",
         "Pragma":"no-cache",
     })
-    try:
-        response=OPENER.open(request,timeout=30)
-    except HTTPError as exc:
-        response=exc
+    for attempt in range(2):
+        try:
+            response=OPENER.open(request,timeout=30)
+            break
+        except HTTPError as exc:
+            # Redirect responses are deliberately returned without following them.
+            response=exc
+            break
+        except (URLError,TimeoutError,OSError) as exc:
+            if attempt:
+                raise
+            print(f"RETRY guest auth transport {source}: {type(exc).__name__}",flush=True)
+            time.sleep(3)
     with response:
         status=response.status
         target=urljoin(source,response.headers.get("Location",""))
