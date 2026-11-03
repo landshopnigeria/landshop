@@ -9,6 +9,9 @@ const exists=name=>!!e[name]?.trim();
 const bool=v=>v?'READY':'MISSING';
 const messages=[];
 function log(group,state){messages.push({group,state});console.log(group+': '+state)}
+log('AI planning worker credential',bool(exists('LANDSHOP_OPENAI_API_KEY')));
+log('AI planning worker model',bool(/^[a-zA-Z0-9._:-]{1,100}$/.test(e.LANDSHOP_WORKFLOW_AI_MODEL||'')));
+log('AI readiness scope','worker environment only; application server has separate configuration');
 log('Global send authorization',yes('LANDSHOP_COMM_LIVE_ENABLED')?'enabled':'disabled');
 log('Key rotation attestation',yes('LANDSHOP_COMM_ROTATION_CONFIRMED')?'confirmed':'not confirmed');
 log('Worker privileged database key',bool(Boolean(databaseKey)));
