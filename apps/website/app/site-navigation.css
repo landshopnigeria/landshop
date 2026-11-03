@@ -146,6 +146,3 @@ body{scroll-padding-top:105px}
 html{scroll-padding-top:168px}
 @media(max-width:1050px){html{scroll-padding-top:150px}.ls-mobile-subnav .ls-icon-chip{width:52px;height:52px;min-width:52px}.ls-mobile-subnav .ls-icon-chip .ls-icon{width:28px;height:28px}}
 @media(max-width:680px){html{scroll-padding-top:135px}.ls-primary-nav.ls-nav-mobile-open{max-width:calc(100vw - 20px);box-sizing:border-box}}
-
-/* The approved corporate image itself is alpha-transparent; never blend a white square into the header. */
-.ls-site-chrome .ls-brand,.ls-site-chrome .ls-brand img{background:transparent!important;box-shadow:none;mix-blend-mode:normal}
