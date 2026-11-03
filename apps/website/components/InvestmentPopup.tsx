@@ -2,6 +2,7 @@
 
 import {useEffect,useRef,useState} from 'react';
 import Link from 'next/link';
+import ApprovedArrow from './ApprovedArrow';
 import {usePathname} from 'next/navigation';
 import './InvestmentPopup.css';
 
@@ -72,7 +73,7 @@ export default function InvestmentPopup(){
     <span className="ls-investment-eyebrow">LANDSHOP NIGERIA</span>
     <h2 id="ls-investment-heading">Your Next Property Investment Starts Here.</h2>
     <p id="ls-investment-description">Discover property ownership and investment opportunities designed around your goals.</p>
-    <Link href="/incubate" onClick={onInvest} className="ls-investment-action">Invest Now <span aria-hidden="true">→</span></Link>
+    <Link href="/incubate" onClick={onInvest} className="ls-investment-action">Invest Now <ApprovedArrow/></Link>
     <p className="ls-investment-note">Explore opportunities at your own pace.</p>
    </div>
   </section>
