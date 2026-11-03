@@ -1,14 +1,17 @@
 import Link from 'next/link';
 import ApprovedArrow from '../../components/ApprovedArrow';
 import {AboutProductsCarousel,AboutServicesCarousel} from '../../components/AboutShowcaseCarousels';
+import AboutStoryTimeline from '../../components/AboutStoryTimeline';
+import AboutImpactCounters from '../../components/AboutImpactCounters';
+import AboutRevealObserver from '../../components/AboutRevealObserver';
 import './about-refinement.css';
 
 export const metadata={
  title:'About Landshop | Our Story, Vision, People and Property Solutions',
  description:'Explore the Landshop story, mission, values, real estate products, services and our commitment to accessible property ownership in Nigeria.',
  alternates:{canonical:'/about'},
- openGraph:{title:'About Landshop | A More Accessible Path to Property Ownership',description:'Discover Landshop’s story, products, values and commitment to Nigerian property ownership.',url:'/about',images:[{url:'/owner/2026/famous-gate.webp',alt:'Landshop Nigerian estate entrance'}]},
- twitter:{card:'summary_large_image',images:['/owner/2026/famous-gate.webp']}
+ openGraph:{title:'About Landshop | A More Accessible Path to Property Ownership',description:'Discover Landshop’s story, products, values and commitment to Nigerian property ownership.',url:'/about',images:[{url:'/about/landshop-landmark-building.webp',alt:'Landshop-branded landmark building'}]},
+ twitter:{card:'summary_large_image',images:['/about/landshop-landmark-building.webp']}
 };
 
 const icons:Record<string,string>={
@@ -32,12 +35,6 @@ const icons:Record<string,string>={
 function AboutIcon({kind}:{kind:string}){
  return <svg viewBox="0 0 24 24" width="27" height="27" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={icons[kind]||icons.star}/></svg>;
 }
-const history=[
- {icon:'calendar',title:'2017: The Beginning',body:'Founded to help more Nigerians access land and build wealth through property.'},
- {icon:'layers',title:'Property Pathways',body:'Expanded our offering into acquisition, homeownership and guided investment enquiries.'},
- {icon:'cube',title:'Structured Access',body:'Clearer property journeys, documentation guidance and flexible ownership pathways.'},
- {icon:'chart',title:'Today',body:'A growing real estate brand supporting clients through property decisions and long-term value.'}
-];
 const values=[
  {icon:'gem',title:'Clarity',body:'Explain property terms and opportunities simply, so every client can make informed decisions.'},
  {icon:'handshake',title:'Accessibility',body:'Create practical pathways for Nigerians with different property goals and readiness levels.'},
@@ -57,34 +54,27 @@ const benefits=[
 
 export default function About(){
  return <main className="content-page ls-about-page"><div className="content-main">
- <div className="v22-root v22-interior ls-about-showcase">
+ <div className="v22-root v22-interior ls-about-showcase"><AboutRevealObserver/>
   <section className="v22-section ls-about-hero" id="who-we-are" aria-labelledby="about-landshop-heading">
    <div className="v22-container ls-about-hero-layout">
     <div className="ls-about-hero-content">
-     <span className="ls-about-kicker">WHO WE ARE</span>
+     <span className="ls-about-kicker ls-about-faded-kicker">WHO WE ARE</span>
      <h1 id="about-landshop-heading">About <span>Landshop</span><em>.</em></h1>
      <p>Landshop is a Nigerian real estate brand focused on simplifying property ownership and unlocking real estate value across the country. We bring clarity, trust and innovation to land and property investment, making ownership more accessible and helping Nigerians build long-term wealth.</p>
      <Link className="v22-btn ls-about-primary-cta" href="/plans/develop">Build with Landshop <ApprovedArrow /></Link>
     </div>
-    <div className="ls-about-photo-collage" aria-label="Landshop estate developments and on-site team">
-     <img className="ls-about-collage-main" src="/owner/2026/famous-gate.webp" alt="Landshop Famous Gardens estate gate from the owner-supplied Nigerian property archive" loading="eager" fetchPriority="high"/>
-     <img src="/owner/2026/garden-site-team.webp" alt="Nigerian Landshop project staff at a development site" loading="eager"/>
-     <img src="/owner/2026/garden-construction.webp" alt="Active property development and construction work in Nigeria" loading="lazy"/>
+    <div className="ls-about-photo-collage" aria-label="Three owner-selected images for the Landshop About page">
+     <img className="ls-about-collage-main" src="/about/landshop-landmark-building.webp" alt="Landshop-branded landmark building image selected for the About page" loading="eager" fetchPriority="high"/>
+     <img src="/about/landshop-site-team-huddle.webp" alt="Three Landshop-branded construction team members on site" loading="eager"/>
+     <img src="/about/landshop-white-estate-gate.webp" alt="White estate entrance gate and residential buildings" loading="eager"/>
     </div>
    </div>
   </section>
   <section className="v22-section ls-about-story" aria-labelledby="about-our-story">
    <div className="v22-container">
-    <span className="ls-about-kicker">OUR STORY</span>
+    <span className="ls-about-kicker ls-about-faded-kicker">OUR STORY</span>
     <h2 id="about-our-story" className="ls-about-section-title">Built on the belief that property can be more accessible.</h2>
-    <div className="ls-about-timeline">
-     {history.map((item)=><article key={item.title} className="ls-about-milestone">
-      <div className="ls-about-timeline-icon"><AboutIcon kind={item.icon}/></div>
-      <span className="ls-about-timeline-dot" aria-hidden="true"/>
-      <h3>{item.title}</h3>
-      <p>{item.body}</p>
-     </article>)}
-    </div>
+    <AboutStoryTimeline/>
    </div>
   </section>
   <section className="v22-section ls-about-vision-section" aria-label="Landshop vision and mission">
@@ -103,7 +93,7 @@ export default function About(){
     </article>
    </div>
   </section>
-  <section className="v22-section ls-about-values" aria-labelledby="about-values">
+  <section className="v22-section ls-about-values ls-about-animate" aria-labelledby="about-values">
    <div className="v22-container">
     <span className="ls-about-kicker">WHAT GUIDES US</span>
     <h2 id="about-values" className="ls-about-section-title">Our core values drive everything we do.</h2>
@@ -113,7 +103,7 @@ export default function About(){
     </article>)}</div>
    </div>
   </section>
-  <section className="v22-section ls-about-leadership" aria-labelledby="about-ceo-message">
+  <section className="v22-section ls-about-leadership ls-about-animate" aria-labelledby="about-ceo-message">
    <div className="v22-container ls-about-leadership-grid">
     <figure className="ls-about-leadership-photo">
      <img src="/owner/2026/garden-field-update.webp" alt="Landshop project representative giving a Nigerian estate development update" loading="lazy" decoding="async"/>
@@ -142,25 +132,18 @@ export default function About(){
   </section>
   <section className="v22-section ls-about-impact" aria-labelledby="about-impact-heading">
    <div className="v22-container">
-    <span className="ls-about-kicker">IMPACT IN NUMBERS</span>
-    <h2 id="about-impact-heading">A growing track record of trust, interest and real results.</h2>
-    <div className="ls-about-impact-grid">
-     <div><AboutIcon kind="calendar"/><strong>2017</strong><span>Founded</span></div>
-     <div><AboutIcon kind="users"/><strong>7,000+</strong><span>Qualified Leads</span></div>
-     <div><AboutIcon kind="layers"/><strong>17+</strong><span>Closed Property Deals</span></div>
-     <div><AboutIcon kind="wallet"/><strong>₦102M+</strong><span>Client Value</span></div>
-    </div>
-    <p className="ls-about-impact-note">Historical, company-reported figures; not a statement of live inventory or guaranteed investment outcomes.</p>
+    <h2 id="about-impact-heading">IMPACT IN NUMBERS</h2>
+    <AboutImpactCounters/>
    </div>
   </section>
-  <section className="v22-section ls-about-why" aria-labelledby="about-why-heading">
+  <section className="v22-section ls-about-why ls-about-animate" aria-labelledby="about-why-heading">
    <div className="v22-container">
     <span className="ls-about-kicker">WHY CHOOSE LANDSHOP</span>
     <h2 id="about-why-heading" className="ls-about-section-title">A more trusted and accessible path to property ownership.</h2>
     <div className="ls-about-benefits">{benefits.map((item)=><div key={item.label}><span className="ls-about-benefit-icon"><AboutIcon kind={item.icon}/></span><strong>{item.label}</strong></div>)}</div>
    </div>
   </section>
-  <section className="v22-section ls-about-last-section" aria-label="Start your property journey">
+  <section className="v22-section ls-about-last-section ls-about-animate" aria-label="Start your property journey">
    <div className="v22-container">
     <div className="ls-about-final-cta">
      <div className="ls-about-final-copy">

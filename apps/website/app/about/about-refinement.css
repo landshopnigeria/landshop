@@ -184,3 +184,171 @@
 @media(prefers-reduced-motion:reduce){
  .ls-about-page .ls-about-carousel-dots button{transition:none!important}
 }
+
+
+/* FULL-SECTION NOVEMBER ABOUT REFINEMENT: local to /about, no global edits. */
+.ls-about-page .ls-about-showcase .v22-section{
+  min-height:clamp(560px,68svh,790px);
+  padding:clamp(94px,8.5vw,148px) 0!important;
+  display:flex;flex-direction:column;justify-content:center;
+  position:relative;isolation:isolate;
+}
+.ls-about-page .ls-about-showcase .v22-section+.v22-section{margin-top:0!important}
+.ls-about-page .ls-about-showcase .v22-container{width:min(1280px,calc(100% - 88px));max-width:1280px}
+.ls-about-page .ls-about-showcase .ls-about-hero{
+ min-height:clamp(700px,94svh,950px);
+ padding-top:clamp(154px,13vw,220px)!important;
+ padding-bottom:clamp(84px,7vw,140px)!important;
+ background:radial-gradient(circle at 7% 8%,#e9f8f1,transparent 27%),#fff!important;
+}
+.ls-about-page .ls-about-hero-layout{grid-template-columns:minmax(0,.95fr) minmax(0,1.08fr);gap:clamp(42px,6vw,92px)}
+.ls-about-page .ls-about-hero-content{max-width:610px}
+.ls-about-page .ls-about-hero-content h1{font-size:clamp(44px,4.5vw,70px);margin:8px 0 26px;line-height:1.04;white-space:normal;letter-spacing:-.057em}
+.ls-about-page .ls-about-hero-content p{font-size:clamp(16px,1.25vw,19px)!important;line-height:1.83!important;max-width:53ch;margin:0 0 33px!important}
+.ls-about-page .ls-about-primary-cta{font-size:15px;min-height:54px;padding:15px 26px;box-shadow:0 12px 29px rgba(7,111,79,.2)}
+.ls-about-page .ls-about-photo-collage{grid-template-rows:minmax(210px,1fr) minmax(210px,1fr);min-height:478px;gap:16px}
+.ls-about-page .ls-about-photo-collage img{border-radius:23px;box-shadow:0 20px 38px rgba(7,63,52,.12)}
+.ls-about-page .ls-about-photo-collage .ls-about-collage-main{object-position:center}
+.ls-about-page .ls-about-faded-kicker{font-size:clamp(17px,1.55vw,22px)!important;font-weight:900!important;color:#8daca1!important;letter-spacing:.14em!important}
+.ls-about-page .ls-about-faded-kicker:after{width:40px;height:3px}
+.ls-about-page .ls-about-section-title{font-size:clamp(26px,2.55vw,36px)!important;max-width:none!important}
+.ls-about-page .ls-about-showcase .ls-about-story{min-height:clamp(640px,78svh,870px);background:linear-gradient(180deg,#fff,#f7fbf8)!important}
+.ls-about-page .ls-about-story .ls-about-section-title{margin:8px 0 50px!important}
+.ls-about-page .ls-about-timeline-interactive{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(14px,2vw,34px);position:relative;margin-top:24px}
+.ls-about-page .ls-about-timeline:before{display:none!important}
+.ls-about-page .ls-about-timeline-line{position:absolute;top:71px;left:12.5%;right:12.5%;height:3px;z-index:0;background:#cee5d9}
+.ls-about-page .ls-about-timeline-line>span{display:block;width:var(--ls-progress,0%);height:100%;background:linear-gradient(90deg,#2ba47a,#0d9971,#f26b10);transition:width 1s cubic-bezier(.2,.8,.15,1);border-radius:100px}
+.ls-about-page .ls-about-timeline-interactive .ls-about-milestone{align-items:center;min-width:0;position:relative;text-align:center;padding:0 4px}
+.ls-about-page .ls-about-milestone-control{width:100%;display:flex;align-items:center;flex-direction:column;gap:12px;border:0;background:transparent;padding:0;margin:0 0 23px;cursor:pointer;color:inherit}
+.ls-about-page .ls-about-milestone-control:focus-visible{outline:3px solid #f26b10;outline-offset:5px;border-radius:10px}
+.ls-about-page .ls-about-milestone-control .ls-about-timeline-icon{width:63px;height:63px;margin:0;background:#e6f7ee;transition:transform .45s cubic-bezier(.2,1.5,.4,1),box-shadow .35s,background .35s;color:#0c9569;position:relative}
+.ls-about-page .ls-about-milestone.is-active .ls-about-timeline-icon{transform:translateY(-5px) scale(1.12);box-shadow:0 13px 30px rgba(5,111,78,.18);background:#d8f9e6}
+.ls-about-page .ls-about-milestone-control .ls-about-timeline-dot{width:16px;height:16px;margin:0;box-shadow:0 0 0 5px #f7fbf8;transition:background .3s,transform .3s}
+.ls-about-page .ls-about-milestone.is-active .ls-about-timeline-dot{background:#f26b10;border-color:#f26b10;transform:scale(1.15)}
+.ls-about-page .ls-about-milestone h3{font-size:clamp(16px,1.5vw,21px);line-height:1.3;text-align:center;min-height:53px;margin:0 0 13px}
+.ls-about-page .ls-about-milestone p{font-size:clamp(13px,1.1vw,16px)!important;line-height:1.7!important;text-align:center;max-width:25ch}
+.ls-about-page .ls-about-milestone.is-active h3{color:#098b60}
+.ls-about-page .ls-about-showcase .ls-about-vision-section{min-height:clamp(590px,70svh,760px)}
+.ls-about-page .ls-about-vision-grid{gap:30px}
+.ls-about-page .ls-about-promise-card{min-height:295px;padding:40px;grid-template-columns:53px 1fr;gap:20px;border:1px solid #d9eee3;box-shadow:0 20px 43px rgba(7,63,52,.07)}
+.ls-about-page .ls-about-promise-card h2{font-size:clamp(21px,1.85vw,27px)!important;margin:0 0 18px!important}
+.ls-about-page .ls-about-promise-card p{font-size:clamp(14px,1.1vw,16px)!important;line-height:1.77!important}
+.ls-about-page .ls-about-showcase .ls-about-values{
+ min-height:clamp(670px,85svh,960px);
+ background:linear-gradient(125deg,#218f70,#2ba47a 52%,#177e64)!important;
+}
+.ls-about-page .ls-about-values .ls-about-kicker{color:#e2fff1}
+.ls-about-page .ls-about-values .ls-about-kicker:after{background:#ffd7ae}
+.ls-about-page .ls-about-values .ls-about-section-title{color:#fff!important;margin:8px 0 38px!important}
+.ls-about-page .ls-about-values-grid{gap:23px}
+.ls-about-page .ls-about-value-card{
+ min-height:166px;padding:27px 25px;gap:18px;border-radius:19px;
+ border:1px solid rgba(255,255,255,.72);
+ background:linear-gradient(142deg,rgba(255,255,255,.9),rgba(255,255,255,.7));
+ backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+ box-shadow:0 16px 38px rgba(0,54,37,.15),inset 0 1px rgba(255,255,255,.52);
+}
+.ls-about-page .ls-about-value-card h3{font-size:clamp(18px,1.65vw,24px)}
+.ls-about-page .ls-about-value-card p{font-size:clamp(13px,1.03vw,15px)!important;line-height:1.66!important}
+.ls-about-page .ls-about-value-icon{width:49px;height:49px}
+.ls-about-page .ls-about-showcase .ls-about-leadership{min-height:clamp(660px,84svh,920px)}
+.ls-about-page .ls-about-leadership-grid{gap:clamp(44px,6vw,105px)}
+.ls-about-page .ls-about-leadership-photo{height:clamp(430px,47vw,590px);border-radius:23px;box-shadow:0 22px 45px rgba(7,63,52,.13)}
+.ls-about-page .ls-about-leadership h2{font-size:clamp(29px,2.7vw,39px)!important;margin-bottom:24px!important}
+.ls-about-page .ls-about-leadership-copy p{font-size:clamp(15px,1.1vw,17px)!important;line-height:1.83!important;margin-bottom:18px!important}
+.ls-about-page .ls-about-showcase .ls-about-products,.ls-about-page .ls-about-showcase .ls-about-services{min-height:clamp(650px,80svh,850px);background:#f7fbf8!important}
+.ls-about-page .ls-about-showcase .ls-about-services{background:#fff!important}
+.ls-about-page .ls-about-products .ls-about-carousel,.ls-about-page .ls-about-services .ls-about-carousel{margin-top:44px}
+.ls-about-page .ls-about-carousel-card{min-height:350px}
+.ls-about-page .ls-about-services .ls-about-carousel-card{min-height:170px}
+.ls-about-page .ls-about-continuous .ls-about-carousel-track{scroll-snap-type:none!important;scroll-behavior:auto!important}
+.ls-about-page .ls-about-continuous .ls-about-carousel-card{scroll-snap-align:none}
+.ls-about-page .ls-about-continuous .ls-about-carousel-controls{margin-top:22px}
+.ls-about-page .ls-about-showcase .ls-about-impact{min-height:clamp(420px,54svh,620px);padding:110px 0!important}
+.ls-about-page .ls-about-impact h2{font-size:clamp(25px,3vw,38px)!important;letter-spacing:.12em;line-height:1.24;margin:0 0 50px!important}
+.ls-about-page .ls-about-impact-grid{gap:12px}
+.ls-about-page .ls-about-impact-grid>div{gap:9px;padding:15px 32px}
+.ls-about-page .ls-about-impact-grid strong{font-size:clamp(30px,3.1vw,47px);font-variant-numeric:tabular-nums}
+.ls-about-page .ls-about-impact-grid span{font-size:clamp(12px,1.1vw,15px)}
+.ls-about-page .ls-about-showcase .ls-about-why{min-height:clamp(580px,73svh,800px)}
+.ls-about-page .ls-about-why .ls-about-section-title{margin-bottom:48px!important}
+.ls-about-page .ls-about-benefits{gap:15px;align-items:stretch}
+.ls-about-page .ls-about-benefits>div{gap:18px;padding:23px 15px;min-height:180px;justify-content:center;border-right:1px solid #dfebe4;transition:transform .4s,background .4s,border-radius .4s}
+.ls-about-page .ls-about-benefits>div:hover{background:#eff9f4;border-radius:16px;transform:translateY(-8px)}
+.ls-about-page .ls-about-benefit-icon{height:62px;width:62px;background:#e4f7eb;transition:transform .4s,background .4s}
+.ls-about-page .ls-about-benefits>div:hover .ls-about-benefit-icon{transform:rotate(-8deg) scale(1.12);background:#d4f4e5}
+.ls-about-page .ls-about-benefits strong{font-size:clamp(13px,1.15vw,17px);max-width:160px;line-height:1.4}
+.ls-about-page .ls-about-showcase .ls-about-last-section{min-height:clamp(650px,80svh,850px);padding:105px 0!important;background:#f5faf7!important}
+.ls-about-page .ls-about-final-cta{min-height:clamp(400px,45vw,540px);border-radius:28px;box-shadow:0 24px 56px rgba(0,61,43,.12)}
+.ls-about-page .ls-about-final-copy{width:67%;min-height:clamp(400px,45vw,540px);padding:clamp(36px,6vw,84px)}
+.ls-about-page .ls-about-final-copy h2{font-size:clamp(28px,3.15vw,49px)!important;line-height:1.11!important}
+.ls-about-page .ls-about-final-copy p{font-size:clamp(14px,1.2vw,18px)!important;margin-top:15px!important}
+.ls-about-page .ls-about-cta-actions{margin-top:27px}
+.ls-about-page .ls-about-cta-actions a{min-height:51px;padding:14px 22px;font-size:13px}
+@media(prefers-reduced-motion:no-preference){
+ .ls-about-page .ls-about-motion-ready .ls-about-animate:not(.is-in-view) .ls-about-value-card,
+ .ls-about-page .ls-about-motion-ready .ls-about-animate:not(.is-in-view) .ls-about-benefits>div,
+ .ls-about-page .ls-about-motion-ready .ls-about-animate:not(.is-in-view) .ls-about-leadership-grid,
+ .ls-about-page .ls-about-motion-ready .ls-about-animate:not(.is-in-view) .ls-about-final-cta{opacity:.1;transform:translateY(30px)}
+ .ls-about-page .ls-about-animate .ls-about-value-card,
+ .ls-about-page .ls-about-animate .ls-about-benefits>div,
+ .ls-about-page .ls-about-animate .ls-about-leadership-grid,
+ .ls-about-page .ls-about-animate .ls-about-final-cta{transition:opacity .85s cubic-bezier(.2,.8,.2,1),transform .85s cubic-bezier(.2,.8,.2,1)}
+ .ls-about-page .ls-about-animate .ls-about-value-card:nth-child(2),.ls-about-page .ls-about-animate .ls-about-benefits>div:nth-child(2){transition-delay:.1s}
+ .ls-about-page .ls-about-animate .ls-about-value-card:nth-child(3),.ls-about-page .ls-about-animate .ls-about-benefits>div:nth-child(3){transition-delay:.2s}
+ .ls-about-page .ls-about-animate .ls-about-value-card:nth-child(4),.ls-about-page .ls-about-animate .ls-about-benefits>div:nth-child(4){transition-delay:.3s}
+ .ls-about-page .ls-about-animate .ls-about-value-card:nth-child(5),.ls-about-page .ls-about-animate .ls-about-benefits>div:nth-child(5){transition-delay:.4s}
+ .ls-about-page .ls-about-animate .ls-about-value-card:nth-child(6),.ls-about-page .ls-about-animate .ls-about-benefits>div:nth-child(6){transition-delay:.5s}
+}
+@media(max-width:1000px){
+ .ls-about-page .ls-about-hero-content h1{font-size:clamp(40px,4.5vw,57px)}
+ .ls-about-page .ls-about-photo-collage{min-height:390px;grid-template-rows:185px 185px}
+ .ls-about-page .ls-about-values-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .ls-about-page .ls-about-leadership-grid{gap:40px}
+ .ls-about-page .ls-about-benefits{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .ls-about-page .ls-about-benefits>div:nth-child(3n){border:0}
+}
+@media(max-width:720px){
+ .ls-about-page .ls-about-showcase .v22-container{width:calc(100% - 36px)}
+ .ls-about-page .ls-about-showcase .v22-section{min-height:auto!important;padding:clamp(86px,16vw,110px) 0!important}
+ .ls-about-page .ls-about-showcase .ls-about-hero{padding-top:clamp(140px,22vw,170px)!important;min-height:auto!important}
+ .ls-about-page .ls-about-hero-layout{grid-template-columns:1fr;gap:38px}
+ .ls-about-page .ls-about-hero-content h1{font-size:clamp(37px,9vw,55px);white-space:normal}
+ .ls-about-page .ls-about-hero-content p{font-size:15px!important}
+ .ls-about-page .ls-about-photo-collage{min-height:390px;grid-template-rows:190px 190px;gap:10px}
+ .ls-about-page .ls-about-photo-collage img{border-radius:14px}
+ .ls-about-page .ls-about-section-title{font-size:clamp(23px,6.7vw,31px)!important}
+ .ls-about-page .ls-about-timeline-interactive{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:45px}
+ .ls-about-page .ls-about-timeline-line{display:none}
+ .ls-about-page .ls-about-milestone h3{min-height:auto;font-size:16px}
+ .ls-about-page .ls-about-milestone p{font-size:13px!important}
+ .ls-about-page .ls-about-promise-card{padding:28px 23px;min-height:230px}
+ .ls-about-page .ls-about-values-grid{grid-template-columns:1fr;gap:15px}
+ .ls-about-page .ls-about-value-card{min-height:138px;padding:22px}
+ .ls-about-page .ls-about-leadership-grid{grid-template-columns:1fr;gap:34px}
+ .ls-about-page .ls-about-leadership-photo{height:420px}
+ .ls-about-page .ls-about-leadership h2{font-size:clamp(28px,7.5vw,37px)!important}
+ .ls-about-page .ls-about-carousel-card{min-height:325px}
+ .ls-about-page .ls-about-impact h2{font-size:clamp(21px,5.4vw,29px)!important}
+ .ls-about-page .ls-about-impact-grid{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:28px}
+ .ls-about-page .ls-about-impact-grid strong{font-size:clamp(25px,7vw,39px)}
+ .ls-about-page .ls-about-benefits{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+ .ls-about-page .ls-about-benefits>div{min-height:152px;border:0;border-bottom:1px solid #e4efe8;padding:18px 8px}
+ .ls-about-page .ls-about-benefits strong{font-size:13px}
+ .ls-about-page .ls-about-final-cta,.ls-about-page .ls-about-final-copy{min-height:390px}
+ .ls-about-page .ls-about-final-copy{padding:32px;width:100%}
+ .ls-about-page .ls-about-final-copy h2{font-size:clamp(26px,6.4vw,35px)!important}
+}
+@media(max-width:380px){
+ .ls-about-page .ls-about-showcase .v22-container{width:calc(100% - 28px)}
+ .ls-about-page .ls-about-photo-collage{grid-template-rows:145px 145px;min-height:300px}
+ .ls-about-page .ls-about-hero-content h1{font-size:34px}
+ .ls-about-page .ls-about-timeline-interactive{gap:32px 14px}
+ .ls-about-page .ls-about-value-card{padding:20px 16px}
+ .ls-about-page .ls-about-final-copy{padding:26px 17px}
+}
+@media(prefers-reduced-motion:reduce){
+ .ls-about-page .ls-about-milestone-control .ls-about-timeline-icon,
+ .ls-about-page .ls-about-benefits>div,
+ .ls-about-page .ls-about-timeline-line>span{transition:none!important}
+}
