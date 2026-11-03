@@ -179,13 +179,22 @@ def check(kind: str, route: str, expected: str | None):
         for section in about_sections:
             if section not in html:
                 raise AssertionError(f"About showcase section missing: {section}")
-        for asset in ('/owner/2026/famous-gate.webp',
-                      '/owner/2026/garden-site-team.webp',
+        for asset in ('/about/landshop-landmark-building.webp',
+                      '/about/landshop-site-team-huddle.webp',
+                      '/about/landshop-white-estate-gate.webp',
                       '/owner/2026/famous-completed-homes.webp'):
             if asset not in html:
                 raise AssertionError(f"About showcase owner-photo reference missing: {asset}")
         if "Landshop project team on site" not in visible:
             raise AssertionError("About leadership editorial caption missing")
+        if "A growing track record of trust" in visible or "Historical, company-reported figures" in visible:
+            raise AssertionError("Removed impact copy has returned")
+        if "IMPACT IN NUMBERS" not in visible:
+            raise AssertionError("Approved impact heading is missing")
+        if 'class="ls-about-timeline-line"' not in html:
+            raise AssertionError("Interactive About timeline not rendered")
+        if 'aria-label="Landshop impact counters"' not in html:
+            raise AssertionError("About animated counters not rendered")
     if kind in ("website", "www") and route == "/":
         if "Estate archival photography is not a current unit offer." in visible:
             raise AssertionError("removed estate archival photography disclaimer has returned")
