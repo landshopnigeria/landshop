@@ -112,6 +112,7 @@ def fetch_html(url: str) -> str:
     last_error = None
     for attempt in range(3):
         try:
+            time.sleep(2)
             with urlopen(request, timeout=22) as response:
                 if response.status != 200:
                     raise ValueError(f"unexpected status {response.status}")

@@ -58,25 +58,27 @@ def request(url, *, static=False):
     if not static:
         headers.update({"Cache-Control":"no-cache, no-store","Pragma":"no-cache"})
     req=Request(url,headers=headers)
-    with urlopen(req,timeout=24 if static else 35) as resp:
-        status=resp.status
-        response_headers=dict(resp.headers.items())
-        content=resp.read(3_000_000)
-        return status,response_headers,content,resp.geturl()
+    # Shared-host protection: do not burst hundreds of new TLS connections.
+    # Keep every original assertion; retries apply only to transport failures.
+    for attempt in range(2):
+        time.sleep(2 if attempt == 0 else 15)
+        try:
+            with urlopen(req,timeout=24 if static else 35) as resp:
+                status=resp.status
+                response_headers=dict(resp.headers.items())
+                content=resp.read(3_000_000)
+                return status,response_headers,content,resp.geturl()
+        except HTTPError:
+            raise
+        except (URLError,TimeoutError,OSError) as exc:
+            if attempt:
+                raise
+            print(f"RETRY transport: {url} ({type(exc).__name__})",flush=True)
 
 @lru_cache(maxsize=96)
 def request_static(url):
     """Verify identical immutable assets once per host, retrying a transient timeout."""
-    last=None
-    for attempt in range(2):
-        try:
-            return request(url,static=True)
-        except (URLError,TimeoutError,OSError) as exc:
-            last=exc
-            if attempt==0:
-                print(f"RETRY static asset: {url} ({type(exc).__name__})",flush=True)
-                time.sleep(1.5)
-    raise last
+    return request(url,static=True)
 
 def get_header(headers,key):
     return next((v for k,v in headers.items() if k.lower()==key.lower()),"-")
