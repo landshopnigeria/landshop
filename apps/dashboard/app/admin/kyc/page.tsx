@@ -18,7 +18,7 @@ export default async function KycQueue(){
   }
  });
  const {data:{user},error}=await db.auth.getUser();
- if(error||!user)redirect('https://portal.landshopnigeria.com/');
+ if(error||!user)redirect('/staff/sign-in');
  const {data:members,error:memberError}=await db.from('organization_members')
   .select('organization_id,role,status').eq('user_id',user.id).eq('status','active');
  if(memberError)return <main>Reviewer permission verification failed.</main>;

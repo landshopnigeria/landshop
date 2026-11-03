@@ -10,7 +10,7 @@ export default async function Page(){
  const db=createServerClient(url,key,{cookieOptions:{domain:'.landshopnigeria.com',path:'/',sameSite:'lax',secure:true},
   cookies:{getAll(){return store.getAll()},setAll(changes){try{changes.forEach(x=>store.set(x.name,x.value,x.options))}catch{}}}});
  const {data:{user},error}=await db.auth.getUser();
- if(error||!user)redirect('https://portal.landshopnigeria.com/');
+ if(error||!user)redirect('/staff/sign-in');
  const {data:members}=await db.from('organization_members').select('organization_id,role')
   .eq('user_id',user.id).eq('status','active');
  const reviewers=(members||[]).filter(m=>['owner','admin','operations','legal'].includes(m.role));

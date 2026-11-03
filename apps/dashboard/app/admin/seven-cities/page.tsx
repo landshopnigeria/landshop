@@ -11,7 +11,7 @@ export default async function SevenCities(){
  const db=createServerClient(url,key,{cookieOptions:{domain:'.landshopnigeria.com',sameSite:'lax',secure:true,path:'/'},
   cookies:{getAll(){return cookiesStore.getAll()},setAll(items){try{items.forEach(x=>cookiesStore.set(x.name,x.value,x.options))}catch{}}}});
  const {data:{user},error:authError}=await db.auth.getUser();
- if(authError||!user)redirect('https://portal.landshopnigeria.com/');
+ if(authError||!user)redirect('/staff/sign-in');
  const {data:members}=await db.from('organization_members').select('organization_id,role').eq('user_id',user.id).eq('status','active');
  const admin=(members||[]).filter(x=>['owner','ceo','founder','admin','technology_officer','technology_consultant'].includes(x.role));
  if(!admin.length)return <main style={{padding:40}}>Landshop Operations or Legal access required.</main>;

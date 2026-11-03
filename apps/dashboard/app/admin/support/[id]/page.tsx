@@ -5,7 +5,7 @@ import SupportDecision from './SupportDecision';
 export const dynamic='force-dynamic';
 export default async function SupportDetail({params}:{params:Promise<{id:string}>}){
  const {id}=await params;if(!/^[0-9a-f]{8}-[0-9a-f-]{27,36}$/i.test(id))notFound();
- const {db}=await requireLandshopStaff(['owner','admin','operations']);
+ const {db}=await requireLandshopStaff(['owner','ceo','founder','technology_officer','technology_consultant','admin','operations']);
  const {data,error}=await db.from('support_tickets').select('id,subject,description,category,status,priority,created_at').eq('id',id).maybeSingle();
  if(error||!data)notFound();
  const events=await db.from('support_ticket_events').select('id,event_type,note,created_at').eq('ticket_id',id).order('created_at',{ascending:false}).limit(40);

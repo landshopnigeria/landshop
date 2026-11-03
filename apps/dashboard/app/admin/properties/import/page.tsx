@@ -13,7 +13,7 @@ export default async function Import(){
   cookies:{getAll(){return store.getAll()},setAll(changes){try{changes.forEach(({name,value,options})=>store.set(name,value,options))}catch{}}}
  });
  const {data:{user},error}=await db.auth.getUser();
- if(error||!user)redirect('https://portal.landshopnigeria.com/');
+ if(error||!user)redirect('/staff/sign-in');
  const {data:members}=await db.from('organization_members').select('organization_id,role')
   .eq('user_id',user.id).eq('status','active');
  const authorized=(members||[]).filter(m=>['owner','ceo','founder','admin','technology_officer','technology_consultant'].includes(m.role));

@@ -7,7 +7,7 @@ export default async function ApplicationQueue({searchParams}:{searchParams:Prom
  const {status}=await searchParams;
  const accepted=['draft','submitted','review','approved','rejected','withdrawn'];
  const current=accepted.includes(status||'')?status||'':'';
- const {db}=await requireLandshopStaff(['owner','admin','operations','legal','finance']);
+ const {db}=await requireLandshopStaff(['owner','ceo','founder','technology_officer','technology_consultant','admin','operations','legal','finance']);
  let req=db.from('applications').select('id,kind,status,created_at')
   .order('created_at',{ascending:false}).limit(100);
  if(current)req=req.eq('status',current);

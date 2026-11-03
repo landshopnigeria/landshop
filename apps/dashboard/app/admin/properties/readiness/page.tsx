@@ -9,7 +9,7 @@ type Asset={property_id:string;kind:string;status:string};
 type Media={property_id:string;kind:string;status:string};
 type Check={name:string;ok:boolean;reason:string};
 export default async function Readiness(){
- const {db}=await requireLandshopStaff(['owner','admin','operations','sales','legal']);
+ const {db}=await requireLandshopStaff(['owner','ceo','founder','technology_officer','technology_consultant','admin','operations','sales','legal']);
  const [p,e,profiles,assets,media,edits]=await Promise.all([
   db.from('properties').select('id,title,status,estate_id,amount_kobo,price_is_starting_at,price_last_confirmed_at,price_confirmed_by,source_url').order('created_at',{ascending:false}).limit(200),
   db.from('estates').select('id,name,status,state,city,review_requested_by').limit(250),

@@ -15,7 +15,8 @@ export default function StaffSignIn(){
  const [email,setEmail]=useState(''),[password,setPassword]=useState(''),[busy,setBusy]=useState(false),[message,setMessage]=useState('');
  const [showConfirmationRecovery,setShowConfirmationRecovery]=useState(false),[resendCompleted,setResendCompleted]=useState(false);
  useEffect(()=>{
-  const reason=new URLSearchParams(window.location.search).get('error');
+  const params=new URLSearchParams(window.location.search);
+  const reason=params.get('error');
   if(reason&&Object.prototype.hasOwnProperty.call(callbackErrors,reason)){
    setMessage(callbackErrors[reason]);
    setShowConfirmationRecovery(confirmationRecoveryErrors.has(reason));
@@ -70,6 +71,10 @@ export default function StaffSignIn(){
      if(!orgError&&organizations?.length&&!managementError&&isManagement===true)landing='/admin';
     }
    }
+   const requested=new URLSearchParams(window.location.search).get('next');
+   // Only same-origin Command Center paths; never accept an external redirect.
+   if(landing==='/admin'&&requested&&/^\/admin(?:\/|\?|$)/.test(requested)&&!/[\\\r\n]/.test(requested))
+    landing=requested;
    window.location.assign(landing);
   }catch(e){setMessage(e instanceof Error?e.message:'Login failed')}finally{setBusy(false)}
  }

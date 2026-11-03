@@ -35,9 +35,13 @@ export async function middleware(request: NextRequest) {
  });
  const {data:{user},error}=await supabase.auth.getUser();
  if(request.nextUrl.pathname==='/admin'||request.nextUrl.pathname.startsWith('/admin/')){
-  if(error||!user)return privateRedirect(request,'/staff/sign-in');
+  if(error||!user)return privateRedirect(request,'/staff/sign-in?next='+encodeURIComponent(request.nextUrl.pathname+request.nextUrl.search));
   const {data:manager,error:accessError}=await supabase.rpc('landshop_is_management',{p_user:user.id});
-  if(accessError||manager!==true)return privateRedirect(request,'/staff');
+  if(accessError||manager!==true){
+   // This evidence page separately authorizes verified staff uploads and manager reviews.
+   if(request.nextUrl.pathname!=='/admin/properties/project-media')
+    return privateRedirect(request,'/staff?access=management_required');
+  }
   response.headers.set('Cache-Control','private, no-store');
  }
  return response;

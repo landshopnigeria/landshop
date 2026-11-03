@@ -3,7 +3,7 @@ import {requireLandshopStaff} from '../../../lib/admin-access';
 export const dynamic='force-dynamic';
 export const metadata={title:'Staff Directory | Landshop'};
 export default async function Staff(){
- const {db,organizationIds}=await requireLandshopStaff(['owner','admin','hr','operations']);
+ const {db,organizationIds}=await requireLandshopStaff(['owner','ceo','founder','technology_officer','technology_consultant','admin','hr','operations']);
  const {data,error}=await db.from('organization_members').select('user_id,role,status,organization_id')
   .in('organization_id',organizationIds).eq('status','active').order('role',{ascending:true}).limit(150);
  const {data:details}=await db.from('landshop_staff_profiles').select('user_id,username,staff_number,requested_role,kyc_state,employment_state').limit(500);

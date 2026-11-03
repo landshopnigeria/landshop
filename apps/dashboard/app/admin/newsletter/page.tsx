@@ -16,9 +16,9 @@ async function staff(){
  const db=createServerClient(url,key,{cookieOptions:{domain:'.landshopnigeria.com',path:'/',secure:true,sameSite:'lax'},
   cookies:{getAll(){return cs.getAll()},setAll(items){try{items.forEach(({name,value,options})=>cs.set(name,value,options))}catch{}}}});
  const {data:{user},error}=await db.auth.getUser();
- if(error||!user||user.is_anonymous)redirect('https://portal.landshopnigeria.com/');
+ if(error||!user||user.is_anonymous)redirect('/staff/sign-in');
  const {data:members}=await db.from('organization_members').select('organization_id,role')
-  .eq('user_id',user.id).eq('status','active').in('role',['owner','admin','operations','ceo','founder']);
+  .eq('user_id',user.id).eq('status','active').in('role',['owner','admin','operations','ceo','founder','technology_officer','technology_consultant']);
  if(!members?.length)throw new Error('Newsletter approval requires authorized Landshop staff.');
  const {data:orgs}=await db.from('organizations').select('id').eq('kind','landshop')
   .in('id',members.map(m=>m.organization_id));
