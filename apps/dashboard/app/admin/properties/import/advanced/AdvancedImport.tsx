@@ -3,9 +3,19 @@ import {useState} from 'react';
 import {createBrowserClient} from '@supabase/ssr';
 
 const allowed=['csv','xlsx','xml','pdf','docx','zip'];
-const types=['text/csv','application/csv','application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
- 'application/xml','text/xml','application/pdf','application/vnd.openxmlformats-officedocument.wordprocessingml.document',
- 'application/zip','application/x-zip-compressed'];
+const mimeByExtension:Record<string,string[]>={
+ csv:['text/csv','application/csv','application/vnd.ms-excel','text/plain'],
+ xlsx:['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
+ xml:['application/xml','text/xml','text/plain'],
+ pdf:['application/pdf'],
+ docx:['application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
+ zip:['application/zip','application/x-zip-compressed','application/x-zip']
+};
+const defaultMime:Record<string,string>={
+ csv:'text/csv',xlsx:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+ xml:'application/xml',pdf:'application/pdf',
+ docx:'application/vnd.openxmlformats-officedocument.wordprocessingml.document',zip:'application/zip'
+};
 function db(){
  const url=process.env.NEXT_PUBLIC_SUPABASE_URL,key=process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
  if(!url||!key)throw Error('Not configured');
@@ -21,11 +31,17 @@ export default function AdvancedImport({userId}:{userId:string}){
   setBusy(true);setMessage('');setJob(null);
   try{
    const ext=file.name.split('.').pop()?.toLowerCase()||'';
-   if(!allowed.includes(ext)||!types.includes(file.type))throw Error('Unsupported format or MIME type.');
+   if(!allowed.includes(ext))throw Error('Unsupported document extension.');
+   const reportedMime=file.type.toLowerCase().trim();
+   if(reportedMime && !mimeByExtension[ext].includes(reportedMime))
+    throw Error('The file type does not match its extension.');
    if(file.size===0||file.size>20*1024*1024)throw Error('Maximum 20 MiB per document.');
+   // Browsers may omit MIME information for valid files. Preserve explicit
+   // extension validation and let the isolated worker validate actual contents.
+   const uploadMime=reportedMime||defaultMime[ext];
    const path=userId+'/'+crypto.randomUUID()+'.'+ext;
    const {error:uploadError}=await db().storage.from('landshop-import-uploads').upload(path,file,{
-    contentType:file.type,upsert:false});
+    contentType:uploadMime,upsert:false});
    if(uploadError)throw Error('Private upload failed. Check database and staff permissions.');
    setPrivatePath(path);
    const response=await fetch('/api/admin/properties/import/jobs',{method:'POST',credentials:'same-origin',
