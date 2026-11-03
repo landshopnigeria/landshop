@@ -275,7 +275,7 @@ export default function NexusHost({initial,html}:{initial:Flow[];html:string}){
    <button type="button" onClick={()=>{setRuntimeOpen(v=>!v);setHistoryOpen(false)}}>Runtime monitor</button>
    <button type="button" onClick={()=>{setHistoryOpen(v=>!v);setRuntimeOpen(false);if(!historyOpen)void refreshRuns(activeRef.current)}} disabled={!active}>Run history</button>
    <span className="nexus-host-status" role="status" title={status}>{status}</span>
-   <button type="button" onClick={()=>window.dispatchEvent(new CustomEvent('landshop-canvas-focus',{detail:true}))}>Full canvas</button><Link href="/admin/communications">Email automation →</Link>
+   <button type="button" onClick={()=>{post('focus-on');window.dispatchEvent(new CustomEvent('landshop-canvas-focus',{detail:true}))}}>Full canvas</button><Link href="/admin/communications">Email automation →</Link>
   </div>
   <iframe ref={iframe} title="Landshop NEXUS visual automation workflow studio" className="nexus-host-frame"
    sandbox="allow-scripts allow-downloads" srcDoc={html} onLoad={()=>post('hello')}/>
