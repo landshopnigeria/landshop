@@ -28,16 +28,16 @@ export default async function Admin(){
   cookies:{getAll(){return store.getAll()},setAll(items){try{items.forEach(({name,value,options})=>store.set(name,value,options))}catch{}}}
  });
  const {data:{user},error:authError}=await db.auth.getUser();
- if(authError||!user)redirect('https://portal.landshopnigeria.com/');
+ if(authError||!user)redirect('/staff/sign-in');
  const {data:members,error:membershipError}=await db.from('organization_members')
   .select('role,organization_id').eq('user_id',user.id).eq('status','active');
  if(membershipError||!members?.length)return <main className="command-denied">Landshop Global Command Center — staff account required. <Link href="/dashboard">Customer Dashboard</Link></main>;
  const allowed=members.filter(m=>['owner','ceo','founder','admin','technology_officer','technology_consultant'].includes(m.role));
- if(!allowed.length)return <main className="command-denied">Your account is not authorized for management access.</main>;
+ if(!allowed.length)return <main className="command-denied"><h1>Management access not approved</h1><p>This account is signed in, but has no approved Command Center management role. Registration role selections do not grant administrator access.</p><Link href="/staff">Return to Staff Dashboard</Link></main>;
  // Align the top-level command center with the verified management gate
  // already used in RLS and privileged staff review procedures.
  const {data:verifiedManager,error:managementCheckError}=await db.rpc('landshop_is_management',{p_user:user.id});
- if(managementCheckError||verifiedManager!==true)return <main className="command-denied">Verified management approval is required for Command Center access.</main>;
+ if(managementCheckError||verifiedManager!==true)return <main className="command-denied"><h1>Management verification required</h1><p>Your account must have an active, independently authorized Landshop management membership to enter the Command Center.</p><Link href="/staff">Return to Staff Dashboard</Link></main>;
  const {data:orgs}=await db.from('organizations').select('id').eq('kind','landshop').in('id',allowed.map(m=>m.organization_id));
  if(!orgs?.length)return <main className="command-denied">No active Landshop management assignment found.</main>;
  const isOwner=allowed.some(m=>m.role==='owner'&&orgs.some(o=>o.id===m.organization_id));
