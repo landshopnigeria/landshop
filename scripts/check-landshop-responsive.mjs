@@ -69,7 +69,7 @@ try{
      // Classify search separately so its intentional compact sizing is validated.
      const directionalIcons=actionIcons.filter(icon=>icon.classList.contains('ls-icon-directional'));
      const searchPath='M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16z m6-2 5 5';
-     const compactSearch=actionIcons.filter(icon=>icon.querySelector('path')?.getAttribute('d')===searchPath);
+     const compactSearch=actionIcons.filter(icon=>icon.closest('.ls-global-search')&&icon.querySelector('path')?.getAttribute('d')===searchPath);
      const generalIcons=actionIcons.filter(icon=>!directionalIcons.includes(icon)&&!compactSearch.includes(icon));
      const wrongIconSizes=generalIcons.map(icon=>({className:icon.getAttribute('class'),...dimensions(icon)}))
       .filter(icon=>Math.abs(icon.width-27)>.1||Math.abs(icon.height-27)>.1).slice(0,8);
