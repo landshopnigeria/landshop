@@ -55,7 +55,7 @@ const structuredData={
  '@context':'https://schema.org','@graph':[
   {'@type':'Organization','@id':'https://www.landshopnigeria.com/#organization',name:'Landshop Nigeria',
    legalName:'Landshop Limited',url:'https://www.landshopnigeria.com/',
-   logo:'https://www.landshopnigeria.com/media/logo.webp',
+   logo:'https://www.landshopnigeria.com/media/logo-transparent.png',
    description:'Nigerian real estate company offering property acquisition, shared-ownership enquiries, mortgage guidance and property development services.',
    address:{'@type':'PostalAddress',streetAddress:"Suite 1, 3rd Floor, King’s Deck, Alternative Route, Chevron Drive, Lekki-Epe Expressway",addressLocality:'Lekki',addressRegion:'Lagos',addressCountry:'NG'},
    contactPoint:{'@type':'ContactPoint',contactType:'customer support',telephone:'+23418880063',email:'care@landshopnigeria.com',areaServed:'NG'}},
