@@ -10,6 +10,7 @@ import re
 ROOT = Path(__file__).resolve().parents[1]
 BASELINE = "20261102101029"
 ALLOW_ANONYMOUS = {
+    "landshop_assert_account_access",  # Read-only pre-request denial hook; returns no private data.
     "landshop_contact_submit",
     "landshop_inspection_request",
     "landshop_newsletter_subscribe",

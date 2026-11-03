@@ -1,6 +1,8 @@
 import type {SupabaseClient} from '@supabase/supabase-js';
 /** Destination only. Every page/API retains its own database authorization. */
 export async function accountHome(db:SupabaseClient,user:{id:string;user_metadata?:Record<string,unknown>}){
+ const {data:state}=await db.rpc('landshop_my_account_state');
+ if(state==='suspended'||state==='archived')return '/account-unavailable';
  // The server claims only a prior Owner assignment matched to confirmed Auth email.
  await db.rpc('landshop_claim_management_assignment');
  const {data:management,error}=await db.rpc('landshop_is_management',{p_user:user.id});
