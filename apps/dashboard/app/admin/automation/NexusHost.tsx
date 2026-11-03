@@ -2,6 +2,7 @@
 import {useCallback,useEffect,useMemo,useRef,useState} from 'react';
 import {createBrowserClient} from '@supabase/ssr';
 import Link from 'next/link';
+import {useRouter} from 'next/navigation';
 import type {Graph,NodeType} from './workflow-planner';
 
 type Flow={id:string;name:string;description:string|null;version:number;state:string;draft_graph:Graph};
@@ -100,7 +101,7 @@ function toPersistedGraph(payload:unknown):Graph{
  if(JSON.stringify(graph).length>62000)throw Error('Workflow exceeds the 64KB versioned-draft limit. Divide it into subflows.');
  return graph;
 }
-const knownKinds=new Set(['website','webhook','schedule','leadform','commenttrigger','aiwriter','aiclassify','research','transcription','imageai','flyer','video','asset','facebook','instagram','linkedin','youtube','tiktok','pinterest','groups','comments','email','whatsapp','crm','sheet','api','database','analytics','router','condition','approval','delay','dedup','google','googlesheets','gmail','googleads','meta','openai','canva','mqtt','opcua','modbus','grpc','edge','telemetry','deadletter','circuit']);
+const knownKinds=new Set(['website','webhook','schedule','leadform','commenttrigger','aiwriter','aiclassify','research','airesearch','transcription','imageai','flyer','video','asset','facebook','instagram','linkedin','youtube','tiktok','pinterest','groups','comments','email','whatsapp','crm','sheet','api','database','analytics','router','condition','approval','delay','dedup','google','googlesheets','gmail','googleads','meta','openai','canva','mqtt','opcua','modbus','grpc','edge','telemetry','deadletter','circuit']);
 function toCanvas(flow:Flow):CanvasDraft{
  const nodes=(flow.draft_graph.nodes||[])
   .filter(n=>(n.config as Record<string,unknown>|undefined)?.nexusKind!=='__terminal')
@@ -124,6 +125,7 @@ function dbClient(){
  return createBrowserClient(url,key,{cookieOptions:{domain:'.landshopnigeria.com',sameSite:'lax',secure:true,path:'/'}});
 }
 export default function NexusHost({initial,html}:{initial:Flow[];html:string}){
+ const router=useRouter();
  const [flows,setFlows]=useState(initial);
  const [active,setActive]=useState(()=>initial.find(f=>f.draft_graph.nodes.some(n=>(n.config as Record<string,unknown>|undefined)?.nexusKind))?.id||'');
  const [status,setStatus]=useState('Ready · drafts and rehearsals only');
@@ -185,6 +187,19 @@ export default function NexusHost({initial,html}:{initial:Flow[];html:string}){
   }catch(e){const msg=e instanceof Error?e.message:'Could not save the draft';setStatus(msg);post('error',{message:msg});}
   finally{busyRef.current=false;setBusy(false);}
  },[db,post]);
+ const generateAI=useCallback(async(payload:unknown)=>{
+  if(busyRef.current)return;
+  const prompt=(payload as {prompt?:unknown})?.prompt;if(typeof prompt!=='string')return;
+  busyRef.current=true;setBusy(true);setStatus('Generating an editable AI draft…');post('ai-busy',true);
+  try{
+   const response=await fetch('/api/admin/automation/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt}),signal:AbortSignal.timeout(55000)});
+   const result=await response.json();if(!response.ok)throw Error(result.error||'AI generation failed.');
+   const draft=validCanvas(result.graph);toPersistedGraph(draft);
+   activeRef.current='';setActive('');setRunEvents([]);setCurrentRun(null);
+   post('ai-generated',draft);setStatus('AI draft ready. Review the steps, then Save draft.');
+  }catch(error){const message=error instanceof Error?error.message:'AI generation failed';setStatus(message);post('ai-error',{message});}
+  finally{busyRef.current=false;setBusy(false);post('ai-busy',false)}
+ },[post]);
  useEffect(()=>{
   function onMessage(event:MessageEvent){
    if(event.source!==iframe.current?.contentWindow)return;
@@ -196,11 +211,13 @@ export default function NexusHost({initial,html}:{initial:Flow[];html:string}){
     return;
    }
    if(message.type==='save')void save(message.payload);
+   if(message.type==='generate-ai')void generateAI(message.payload);
+   if(message.type==='connections')router.push('/admin/automation/connections');
    if(message.type==='focus')window.dispatchEvent(new CustomEvent('landshop-canvas-focus',{detail:message.payload===true}));
   }
   window.addEventListener('message',onMessage);
   return()=>window.removeEventListener('message',onMessage);
- },[post,save]);
+ },[post,save,generateAI,router]);
  useEffect(()=>{const restore=()=>post('restore-focus');window.addEventListener('landshop-canvas-restore',restore);return()=>{window.removeEventListener('landshop-canvas-restore',restore);window.dispatchEvent(new CustomEvent('landshop-canvas-focus',{detail:false}))}},[post]);
  const refreshRuntime=useCallback(async()=>{
   const {data,error}=await db.from('automation_runtime_jobs')
@@ -264,18 +281,18 @@ export default function NexusHost({initial,html}:{initial:Flow[];html:string}){
   <div className="nexus-host-toolbar">
    <div className="nexus-host-title"><Link href="/admin" aria-label="Return to Command Center">←</Link><span>Automation <strong>Operating System</strong></span></div>
    <label className="nexus-host-select">Saved workflows
-    <select aria-label="Select a saved automation" value={active} onChange={e=>choose(e.target.value)}>
+    <select disabled={busy} aria-label="Select a saved automation" value={active} onChange={e=>choose(e.target.value)}>
      <option value="">New workflow</option>
      {flows.map(f=><option key={f.id} value={f.id}>{f.name} · v{f.version}</option>)}
     </select>
    </label>
-   <button type="button" onClick={()=>choose('')}>New draft</button>
+   <button disabled={busy} type="button" onClick={()=>choose('')}>New draft</button>
    <button type="button" onClick={()=>void startRehearsal()} disabled={!active||busy}>Record rehearsal</button>
    <button type="button" onClick={()=>void queueRuntimePreview()} disabled={!active||busy}>Queue safe preview</button>
    <button type="button" onClick={()=>{setRuntimeOpen(v=>!v);setHistoryOpen(false)}}>Runtime monitor</button>
    <button type="button" onClick={()=>{setHistoryOpen(v=>!v);setRuntimeOpen(false);if(!historyOpen)void refreshRuns(activeRef.current)}} disabled={!active}>Run history</button>
    <span className="nexus-host-status" role="status" title={status}>{status}</span>
-   <button type="button" onClick={()=>{post('focus-on');window.dispatchEvent(new CustomEvent('landshop-canvas-focus',{detail:true}))}}>Full canvas</button><Link href="/admin/communications">Email automation →</Link>
+   <button type="button" onClick={()=>{post('focus-on');window.dispatchEvent(new CustomEvent('landshop-canvas-focus',{detail:true}))}}>Full canvas</button><Link href="/admin/communications">Email automation →</Link><Link href="/admin/automation/connections">Connection status →</Link>
   </div>
   <iframe ref={iframe} title="Landshop Automation Operating System" className="nexus-host-frame"
    sandbox="allow-scripts allow-downloads" srcDoc={html} onLoad={()=>post('hello')}/>
