@@ -5,6 +5,8 @@ Unlike /api/release-health, this follows an ordinary browser's actual HTML asset
 references on both public domain variants. Pure GET; no customer records modified.
 """
 from __future__ import annotations
+from hashlib import sha256
+from pathlib import Path
 import os
 import re
 import socket
@@ -169,6 +171,24 @@ def check_application(host,path,marker):
             raise AssertionError(f"{host}{path} JavaScript missing: {asset}")
     print(f"  VERIFIED dynamic HTML + exact release + {len(parser.css)} CSS refs + {len(parser.js)} JS refs",flush=True)
 
+def check_transparent_brand_logo(host, app):
+    """Require the exact original-artwork RGBA PNG to be served by every public hostname."""
+    name = "/media/logo-transparent.png"
+    url = f"https://{host}{name}?release={EXPECTED[:12]}"
+    status, headers, blob, final = request(url)
+    local = Path("apps") / app / "public" / "media" / "logo-transparent.png"
+    if status != 200 or not blob.startswith(b"\\x89PNG\\r\\n\\x1a\\n".decode("unicode_escape").encode("latin1")):
+        raise AssertionError(f"{host}: transparent logo missing or not PNG")
+    if not local.exists():
+        raise AssertionError(f"{app}: original transparent release file not found")
+    if sha256(blob).digest() != sha256(local.read_bytes()).digest():
+        raise AssertionError(f"{host}: live logo differs from the exact approved transparent release asset")
+    if "image/png" not in get_header(headers, "Content-Type").lower():
+        raise AssertionError(f"{host}: expected image/png, got {get_header(headers, 'Content-Type')}")
+    if len(blob) < 10000 or blob[25] != 6:
+        raise AssertionError(f"{host}: missing valid RGBA logo content")
+    print(f"BRAND_OK {host}{name}: exact logo digest {sha256(blob).hexdigest()[:12]}",flush=True)
+
 def main():
     if not re.fullmatch("[0-9a-f]{40}",EXPECTED):
         raise RuntimeError("LANDSHOP_EXPECTED_SHA must be the exact Git commit")
@@ -188,6 +208,18 @@ def main():
         except (AssertionError,URLError,HTTPError,OSError,TimeoutError,ValueError) as exc:
             failures.append((host,path,str(exc)))
             print(f"FAILED {host}{path}: {exc}",file=sys.stderr,flush=True)
+    # Website, portal and dashboard have independent public/media folders.
+    for host,app in (
+        ("landshopnigeria.com","website"),
+        ("www.landshopnigeria.com","website"),
+        ("portal.landshopnigeria.com","portal"),
+        ("app.landshopnigeria.com","dashboard"),
+    ):
+        try:
+            check_transparent_brand_logo(host,app)
+        except (AssertionError,URLError,HTTPError,OSError,TimeoutError,ValueError) as exc:
+            failures.append((host,"/media/logo-transparent.png",str(exc)))
+            print(f"FAILED live brand logo {host}: {exc}",file=sys.stderr,flush=True)
     for host,path,error in failures:
         print(f"FAILURE SUMMARY {host}{path}: {error}",file=sys.stderr)
     if failures:
