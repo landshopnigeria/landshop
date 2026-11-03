@@ -26,6 +26,7 @@ import '../../../packages/shared/EnterpriseMotion.css';
 import SiteHeader from '../components/SiteHeader';
 import SiteFooter from '../components/SiteFooter';
 import GlobalArticleCarousel from '../components/GlobalArticleCarousel';
+import InvestmentPopup from '../components/InvestmentPopup';
 // Every marketing page must be served fresh while the V16 site is actively updated.
 // Next.js static-prerendered HTML previously sent s-maxage=31536000 (one year).
 // Keep hashed /_next/static assets cacheable; only route HTML is dynamic.
@@ -65,4 +66,4 @@ const structuredData={
  ]
 };
 
-export default function Layout({children}:{children:React.ReactNode}){return <html lang="en"><head><script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify(structuredData).replace(/</g,'\\u003c')}}/><meta name="landshop-release" content={process.env.NEXT_PUBLIC_LANDSHOP_RELEASE_SHA||'unversioned'}/></head><body><WebsiteContent/><ReleaseVersionNotice/><SiteHeader/>{children}<GlobalArticleCarousel/><SiteFooter/></body></html>}
+export default function Layout({children}:{children:React.ReactNode}){return <html lang="en"><head><script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify(structuredData).replace(/</g,'\\u003c')}}/><meta name="landshop-release" content={process.env.NEXT_PUBLIC_LANDSHOP_RELEASE_SHA||'unversioned'}/></head><body><WebsiteContent/><ReleaseVersionNotice/><SiteHeader/>{children}<GlobalArticleCarousel/><SiteFooter/><InvestmentPopup/></body></html>}
