@@ -72,6 +72,10 @@ required = {
  "apps/dashboard/app/staff/StaffWorkspace.tsx": [HOME, '/media/logo-transparent.png'],
  "apps/dashboard/app/admin/communications/CommunicationCenter.tsx": [HOME, '/media/logo-transparent.png'],
  "apps/dashboard/app/admin/communications/PremiumMessagePreview.tsx": [HOME, '/media/logo-transparent.png'],
+ "apps/website/app/collections/[tier]/page.tsx": ['href="/" aria-label="Landshop homepage"', '/media/logo-transparent.png'],
+ "apps/portal/app/applications/page.tsx": [HOME, '/media/logo-transparent.png'],
+ "apps/portal/app/applications/[kind]/ApplicationForm.tsx": [HOME, '/media/logo-transparent.png'],
+ "apps/dashboard/app/admin/automation/NexusWorkspaceHTML.ts": [HOME, '/media/logo-transparent.png'],
 }
 for relative, needles in required.items():
     path = ROOT / relative
@@ -94,6 +98,21 @@ for relative, pattern in css_guards.items():
     if file.exists() and re.search(pattern, file.read_text(encoding="utf-8"), re.IGNORECASE | re.DOTALL):
         issues.append(f"White logo tile persists in {relative}")
 
+# Inspect browser/app favicon sources as well; do not change an already approved icon.
+favicon_files = [
+    ROOT / "apps/website/public/favicon.png",
+    *[ROOT / "apps" / name / "app/icon.png" for name in APPS],
+]
+for icon_file in favicon_files:
+    if icon_file.exists():
+        with Image.open(icon_file) as fav:
+            if "A" in fav.getbands():
+                extrema = fav.getchannel("A").getextrema()
+                transparent = sum(v == 0 for v in fav.getchannel("A").getdata())
+                ratio = transparent / (fav.width * fav.height)
+                print(f"FAVICON {icon_file.relative_to(ROOT)}: size={fav.size}, alpha={extrema}, clear={ratio:.1%}")
+            else:
+                print(f"FAVICON {icon_file.relative_to(ROOT)}: size={fav.size}, no alpha channel")
 print(f"Audited {scanned} source files. Found {len(logo_placements)} transparent corporate logo references.")
 for item in logo_placements:
     print("LOGO", item)
