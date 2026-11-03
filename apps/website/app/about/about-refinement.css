@@ -1,66 +1,163 @@
-/* About page only. Never affects the global header, property filter or footer. */
-.ls-about-page .v22-root{overflow:clip}
-.ls-about-page .v22-section{padding:clamp(82px,8.5vw,124px) 0}
-.ls-about-page .v22-section+.v22-section{margin-top:clamp(24px,3.6vw,48px)}
-.ls-about-page .v22-section h2{font-size:28px!important;line-height:1.25;letter-spacing:-.025em;font-weight:750;max-width:100%;white-space:nowrap;margin-bottom:24px}
-.ls-about-page .v22-section p{max-width:62ch}
-.ls-about-page .v22-steps{gap:20px}
-.ls-about-page .v22-steps>article{border-top:2px solid #2ba47a;border-radius:0 0 14px 14px;padding:24px 21px;background:#fff;min-width:0}
-.ls-about-page .v22-steps h3{font-size:19px;white-space:nowrap}
-.ls-about-page .v22-vision{min-width:0}
-.ls-about-page .v22-vision p{font-size:16px;line-height:1.85;margin-bottom:0}
-.ls-about-page .v22-actions{display:flex;align-items:center;gap:12px;flex-wrap:nowrap;width:100%}
-.ls-about-page .v22-actions a{white-space:nowrap}
-.ls-about-page .v22-action-panel{min-width:0}
-.ls-about-page .ls-about-journey-title{font-size:clamp(19px,2.25vw,28px)!important}
-.ls-about-page .ls-about-carousel{min-width:0;margin-top:32px}
-.ls-about-page .ls-about-carousel-track{display:flex;gap:22px;overflow-x:auto;scroll-snap-type:x mandatory;overscroll-behavior-inline:contain;scrollbar-width:none;scroll-padding-inline:1px;padding:5px 2px 17px;outline-offset:3px}
+/* Approved November 2026 About-page showcase. Deliberately About-only.
+   Global header, footer, property filter and article layouts remain unchanged. */
+.ls-about-page{background:#fff;color:#073f34}
+.ls-about-page .content-main{width:100%;max-width:none;margin:0;padding:0}
+.ls-about-page .ls-about-showcase{--ls-green:#2ba47a;--ls-dark:#073f34;--ls-orange:#f26b10;--ls-soft:#e9f8f1;background:#fff;overflow:clip}
+.ls-about-page .ls-about-showcase .v22-container{width:min(1200px,calc(100% - 72px));max-width:1200px;margin:0 auto}
+.ls-about-page .ls-about-showcase .v22-section{padding:clamp(35px,4.3vw,66px) 0;margin:0!important;background:#fff}
+.ls-about-page .ls-about-showcase .v22-section h2{color:var(--ls-dark);letter-spacing:-.032em;line-height:1.16;font-weight:800;white-space:normal;max-width:none;margin:0}
+.ls-about-page .ls-about-showcase .v22-section p{color:#3c5049;font-size:clamp(13px,1.12vw,16px);line-height:1.65;margin:0}
+.ls-about-page .ls-about-kicker{display:inline-flex;align-items:center;gap:13px;color:#086249;font-size:12px;line-height:1.5;font-weight:850;letter-spacing:.17em;text-transform:uppercase;margin-bottom:8px}
+.ls-about-page .ls-about-kicker:after{content:"";display:block;width:28px;height:2px;background:var(--ls-orange);flex:none}
+.ls-about-page .ls-about-section-title{font-size:clamp(23px,2.3vw,28px)!important}
+.ls-about-page .ls-about-title-dot{color:var(--ls-orange)}
+.ls-about-page .ls-about-showcase .ls-about-hero{padding-top:clamp(130px,10.5vw,174px);padding-bottom:38px}
+.ls-about-page .ls-about-hero-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.12fr);gap:clamp(30px,5vw,74px);align-items:center}
+.ls-about-page .ls-about-hero-content h1{font-size:clamp(34px,3.7vw,50px);font-weight:850;line-height:1.1;color:var(--ls-dark);letter-spacing:-.05em;margin:0 0 22px;white-space:nowrap}
+.ls-about-page .ls-about-hero-content h1 span{color:#0d9f6e}
+.ls-about-page .ls-about-hero-content h1 em{color:var(--ls-orange);font-style:normal}
+.ls-about-page .ls-about-hero-content p{font-size:clamp(14px,1.2vw,17px);max-width:53ch;margin:0 0 22px;line-height:1.73}
+.ls-about-page .ls-about-primary-cta{background:linear-gradient(105deg,#0c9566,#0d825c);border-radius:9px;padding:13px 20px;min-height:46px;font-size:13px;gap:12px;box-shadow:0 7px 20px rgba(0,113,70,.12)}
+.ls-about-page .ls-about-photo-collage{display:grid;grid-template-columns:1.05fr 1fr;grid-template-rows:150px 150px;gap:12px;min-width:0}
+.ls-about-page .ls-about-photo-collage img{display:block;width:100%;height:100%;max-width:100%;object-fit:cover;border-radius:17px;box-shadow:0 8px 24px rgba(7,63,52,.12)}
+.ls-about-page .ls-about-photo-collage .ls-about-collage-main{grid-row:1 / 3}
+.ls-about-page .ls-about-story{padding-top:20px!important}
+.ls-about-page .ls-about-timeline{position:relative;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px;margin-top:24px}
+.ls-about-page .ls-about-timeline:before{content:"";position:absolute;left:12.5%;right:12.5%;height:2px;top:53px;background:linear-gradient(90deg,#9acdb5,#2ba47a,#a3d7c2)}
+.ls-about-page .ls-about-milestone{position:relative;min-width:0;display:flex;flex-direction:column;align-items:flex-start}
+.ls-about-page .ls-about-timeline-icon{height:45px;width:45px;margin:0 auto 5px;display:grid;place-items:center;background:#e8f7ef;border-radius:50%;color:#09996b}
+.ls-about-page .ls-about-timeline-dot{display:block;margin:0 auto 14px;width:12px;height:12px;background:#fff;border:2px solid #0aa16e;border-radius:50%;z-index:1}
+.ls-about-page .ls-about-milestone h3{font-size:16px;font-weight:800;line-height:1.25;letter-spacing:-.025em;color:var(--ls-dark);margin:0 0 7px}
+.ls-about-page .ls-about-milestone p{font-size:13px!important;line-height:1.5!important;max-width:28ch}
+.ls-about-page .ls-about-vision-section{padding-top:24px!important;padding-bottom:26px!important}
+.ls-about-page .ls-about-vision-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.ls-about-page .ls-about-promise-card{min-width:0;min-height:180px;display:grid;grid-template-columns:44px minmax(0,1fr);align-items:start;gap:16px;padding:28px 27px;background:linear-gradient(130deg,#effaf5,#e5f5ed);border-radius:16px;position:relative;overflow:hidden}
+.ls-about-page .ls-about-promise-card:after{content:"";position:absolute;right:-30px;bottom:-44px;width:180px;height:130px;background:linear-gradient(120deg,transparent,rgba(4,130,90,.07));transform:skewX(-32deg)}
+.ls-about-page .ls-about-promise-icon,.ls-about-page .ls-about-value-icon{display:grid;place-items:center;width:42px;height:42px;flex-shrink:0;background:linear-gradient(150deg,#00aa75,#057b55);color:#fff;border-radius:9px}
+.ls-about-page .ls-about-promise-card h2{font-size:20px!important;line-height:1.23!important;margin:0 0 10px!important;position:relative;z-index:1}
+.ls-about-page .ls-about-promise-card p{font-size:13px!important;max-width:43ch}
+.ls-about-page .ls-about-values{padding-top:12px!important;padding-bottom:25px!important}
+.ls-about-page .ls-about-values-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:17px}
+.ls-about-page .ls-about-value-card{display:flex;align-items:flex-start;gap:15px;min-height:104px;min-width:0;background:#fff;border-radius:13px;border:1px solid #e7eee9;padding:18px 17px;box-shadow:0 5px 13px rgba(10,50,35,.09);transition:transform .3s,box-shadow .3s}
+.ls-about-page .ls-about-value-card:hover{transform:translateY(-4px);box-shadow:0 12px 24px rgba(10,50,35,.13)}
+.ls-about-page .ls-about-value-icon{width:40px;height:40px;border-radius:8px}
+.ls-about-page .ls-about-value-card h3{color:var(--ls-dark);font-weight:800;font-size:17px;line-height:1.25;margin:0 0 5px}
+.ls-about-page .ls-about-value-card p{font-size:12px!important;line-height:1.45!important}
+.ls-about-page .ls-about-leadership{padding-top:18px!important;padding-bottom:42px!important}
+.ls-about-page .ls-about-leadership-grid{display:grid;grid-template-columns:.87fr 1.3fr;gap:clamp(30px,5.3vw,76px);align-items:center}
+.ls-about-page .ls-about-leadership-photo{height:320px;border-radius:16px;overflow:hidden;background:linear-gradient(140deg,#043b31,#128360);box-shadow:0 10px 24px rgba(8,55,37,.12)}
+.ls-about-page .ls-about-leadership-photo img{width:100%;height:100%;object-fit:cover;display:block}
+.ls-about-page .ls-about-short-accent{width:31px;height:3px;background:var(--ls-orange);display:block;margin-bottom:14px}
+.ls-about-page .ls-about-leadership h2{font-size:clamp(25px,2.5vw,32px)!important;margin:0 0 11px!important}
+.ls-about-page .ls-about-leadership-copy p{margin:0 0 12px!important;font-size:14px!important;line-height:1.63!important}
+.ls-about-page .ls-about-leadership-signature{margin-top:16px;padding-left:14px;border-left:3px solid var(--ls-orange);display:flex;flex-direction:column;gap:3px;font-size:13px}
+.ls-about-page .ls-about-leadership-signature strong{color:var(--ls-dark)}
+.ls-about-page .ls-about-leadership-signature span{color:#5b665e;font-size:11px;letter-spacing:.04em}
+.ls-about-page .ls-about-products,.ls-about-page .ls-about-services{padding-top:28px!important;padding-bottom:25px!important}
+.ls-about-page .ls-about-carousel{margin-top:16px;position:relative}
+.ls-about-page .ls-about-carousel-track{display:flex;gap:19px;overflow-x:auto;scroll-snap-type:x mandatory;overscroll-behavior-inline:contain;scrollbar-width:none;padding:6px 2px 12px;outline-offset:3px}
 .ls-about-page .ls-about-carousel-track::-webkit-scrollbar{display:none}
-.ls-about-page .ls-about-carousel-card{flex:0 0 calc((100% - 44px)/3);scroll-snap-align:start;min-width:0;display:flex;flex-direction:column;border:1px solid #e0eae4;border-radius:20px;background:#fff;overflow:hidden;box-shadow:0 13px 34px rgba(7,63,52,.07);transition:transform .3s ease,box-shadow .3s ease,border-color .3s ease}
-.ls-about-page .ls-about-carousel-card:hover,.ls-about-page .ls-about-carousel-card:focus-within{transform:translateY(-4px);border-color:#f26b10;box-shadow:0 18px 42px rgba(7,63,52,.13)}
-.ls-about-page .ls-about-carousel-image{height:208px;display:block;overflow:hidden;background:#edf5ef}
-.ls-about-page .ls-about-carousel-image img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .45s ease}
-.ls-about-page .ls-about-carousel-card:hover .ls-about-carousel-image img{transform:scale(1.035)}
-.ls-about-page .ls-about-carousel-copy{min-width:0;flex:1;display:flex;flex-direction:column;align-items:flex-start;padding:22px 23px 24px}
-.ls-about-page .ls-about-product-logo{display:block;width:auto;max-width:175px;height:39px;object-fit:contain;object-position:left center;margin:0 0 13px}
-.ls-about-page .ls-about-carousel-category{letter-spacing:.09em;font-size:10px;font-weight:850;color:#258665}
-.ls-about-page .ls-about-carousel-card h3{margin:10px 0;font-size:21px;letter-spacing:-.024em;white-space:nowrap}
-.ls-about-page .ls-about-carousel-card h3 a{color:#073f34}
-.ls-about-page .ls-about-carousel-card p{line-height:1.6;font-size:13px;flex:1;margin:0 0 19px}
-.ls-about-page .ls-about-card-link{display:inline-flex;gap:9px;align-items:center;border-top:1px solid #e4eee6;padding-top:14px;width:100%;color:#147857;font-size:12px;font-weight:800}
-.ls-about-page .ls-about-card-link svg{flex-shrink:0}
-.ls-about-page .ls-about-carousel-controls{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:16px;color:#648574;font-size:12px;font-weight:800}
+.ls-about-page .ls-about-carousel-card{flex:0 0 calc((100% - 38px)/3);min-width:0;display:flex;flex-direction:column;overflow:hidden;scroll-snap-align:start;border:1px solid #e6ece6;border-bottom:3px solid var(--ls-orange);background:#fff;border-radius:15px;box-shadow:0 7px 22px rgba(0,50,35,.08);transition:transform .3s,border-color .3s,box-shadow .3s}
+.ls-about-page .ls-about-carousel-card:hover,.ls-about-page .ls-about-carousel-card:focus-within{transform:translateY(-4px);border-color:var(--ls-orange);box-shadow:0 13px 26px rgba(0,50,35,.14)}
+.ls-about-page .ls-about-carousel-image{display:block;width:100%;height:165px;background:#e8f5ee;overflow:hidden}
+.ls-about-page .ls-about-carousel-image img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s}
+.ls-about-page .ls-about-carousel-card:hover .ls-about-carousel-image img{transform:scale(1.04)}
+.ls-about-page .ls-about-carousel-copy{min-width:0;display:flex;flex:1;flex-direction:column;align-items:flex-start;padding:17px 18px 19px}
+.ls-about-page .ls-about-product-logo{height:36px;max-width:140px;object-fit:contain;object-position:left center;margin:0 0 10px}
+.ls-about-page .ls-about-carousel-category{font-size:10px;font-weight:850;letter-spacing:.08em;color:#12815d}
+.ls-about-page .ls-about-carousel-card h3{font-size:21px;font-weight:800;margin:8px 0;white-space:normal;line-height:1.15}
+.ls-about-page .ls-about-carousel-card h3 a{color:var(--ls-dark)}
+.ls-about-page .ls-about-carousel-card p{font-size:13px!important;line-height:1.48!important;flex:1;margin:0!important}
+.ls-about-page .ls-about-products .ls-about-card-link{display:none}
+.ls-about-page .ls-about-carousel-controls{display:flex;justify-content:flex-end;gap:20px;align-items:center;color:#4e7263;font-size:12px;font-weight:800;margin-top:12px}
 .ls-about-page .ls-about-carousel-controls>div{display:flex;gap:9px}
-.ls-about-page .ls-about-carousel-controls button{width:46px;height:46px;display:grid;place-items:center;border-radius:50%;border:1px solid #cce0d3;background:#fff;color:#147857;cursor:pointer;transition:border-color .2s,color .2s}
-.ls-about-page .ls-about-carousel-controls button:hover,.ls-about-page .ls-about-carousel-controls button:focus-visible{border-color:#f26b10;color:#f26b10}
+.ls-about-page .ls-about-carousel-controls button{display:grid;place-items:center;width:43px;height:43px;background:#fff;color:var(--ls-dark);border:1px solid #d7e5db;border-radius:50%;cursor:pointer}
+.ls-about-page .ls-about-carousel-controls button:hover,.ls-about-page .ls-about-carousel-controls button:focus-visible{border-color:var(--ls-orange);color:var(--ls-orange);background:#fff}
+.ls-about-page .ls-about-services .ls-about-carousel-card{flex-direction:row;min-height:139px;align-items:center;padding:16px 16px}
+.ls-about-page .ls-about-services .ls-about-carousel-image{display:none}
+.ls-about-page .ls-about-services .ls-about-service-symbol{display:grid;place-items:center;flex:0 0 43px;width:43px;height:43px;background:linear-gradient(140deg,#17ac78,#057b56);border-radius:10px;color:#fff}
+.ls-about-page .ls-about-services .ls-about-carousel-copy{padding:0 0 0 15px;align-self:stretch}
+.ls-about-page .ls-about-services .ls-about-carousel-card h3{font-size:16px;margin:1px 0 7px}
+.ls-about-page .ls-about-services .ls-about-carousel-category{display:none}
+.ls-about-page .ls-about-services .ls-about-carousel-card p{font-size:12px!important;line-height:1.45!important}
+.ls-about-page .ls-about-services .ls-about-card-link{margin-top:9px;width:auto;border:0;padding:0;color:#177c5b;font-weight:800;font-size:11px}
+.ls-about-page .ls-about-services .ls-about-card-link svg{width:20px;height:20px}
+.ls-about-page .ls-about-impact{background:linear-gradient(98deg,rgba(0,59,44,.98),rgba(2,116,82,.96)),url('/owner/2026/famous-completed-homes.webp') center / cover!important;color:#fff;padding:32px 0!important}
+.ls-about-page .ls-about-impact .ls-about-kicker{color:#d8f7e8}
+.ls-about-page .ls-about-impact h2{font-size:clamp(20px,2vw,26px)!important;color:#fff!important;margin-bottom:20px!important}
+.ls-about-page .ls-about-impact-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
+.ls-about-page .ls-about-impact-grid>div{display:flex;flex-direction:column;gap:4px;padding:4px 28px;border-right:1px solid rgba(255,255,255,.33)}
+.ls-about-page .ls-about-impact-grid>div:first-child{padding-left:0}
+.ls-about-page .ls-about-impact-grid>div:last-child{border:0}
+.ls-about-page .ls-about-impact-grid svg{width:27px;height:27px;color:#f4fff8}
+.ls-about-page .ls-about-impact-grid strong{font-size:clamp(24px,2.5vw,32px);line-height:1.12;color:#fff}
+.ls-about-page .ls-about-impact-grid span{font-size:12px;color:#fff}
+.ls-about-page .ls-about-impact-note{color:#c6e9db!important;font-size:10px!important;margin-top:17px!important}
+.ls-about-page .ls-about-why{padding-top:32px!important;padding-bottom:27px!important}
+.ls-about-page .ls-about-benefits{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));margin-top:24px}
+.ls-about-page .ls-about-benefits>div{display:flex;align-items:center;flex-direction:column;justify-content:flex-start;gap:8px;text-align:center;border-right:1px solid #e0eae3;padding:0 11px}
+.ls-about-page .ls-about-benefits>div:last-child{border-right:0}
+.ls-about-page .ls-about-benefit-icon{color:#07966a;display:grid;place-items:center;width:40px;height:40px;background:#eff9f3;border-radius:50%}
+.ls-about-page .ls-about-benefits strong{color:var(--ls-dark);font-size:12px;line-height:1.25;max-width:110px}
+.ls-about-page .ls-about-last-section{padding:12px 0 60px!important}
+.ls-about-page .ls-about-final-cta{position:relative;min-height:220px;display:flex;align-items:center;overflow:hidden;border-radius:20px;background:linear-gradient(108deg,#013c30 0%,#078762 60%,#065747 100%);color:#fff}
+.ls-about-page .ls-about-final-copy{position:relative;z-index:2;width:60%;padding:30px 45px;background:linear-gradient(90deg,rgba(0,62,48,.98),rgba(0,102,71,.95));clip-path:polygon(0 0,100% 0,89% 100%,0 100%);min-height:220px;display:flex;flex-direction:column;justify-content:center}
+.ls-about-page .ls-about-final-copy h2{font-size:clamp(22px,2.3vw,32px)!important;color:#fff!important;line-height:1.08!important;margin-bottom:8px!important}
+.ls-about-page .ls-about-final-copy p{font-size:13px!important;line-height:1.45!important;color:#eefdf5!important;max-width:44ch}
+.ls-about-page .ls-about-final-cta>img{position:absolute;right:0;top:0;width:49%;height:100%;object-fit:cover;object-position:center}
+.ls-about-page .ls-about-cta-actions{display:flex;gap:12px;margin-top:16px;align-items:center}
+.ls-about-page .ls-about-cta-actions a{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:42px;padding:10px 15px;border-radius:8px;color:#fff;font-size:12px;font-weight:800;white-space:nowrap;transition:background .2s,transform .2s}
+.ls-about-page .ls-about-cta-actions a:hover{transform:translateY(-2px)}
+.ls-about-page .ls-about-cta-orange{background:var(--ls-orange)}
+.ls-about-page .ls-about-cta-orange:hover{background:#d85d0a}
+.ls-about-page .ls-about-cta-outline{border:1px solid rgba(255,255,255,.7);background:rgba(0,48,37,.18)}
+.ls-about-page .ls-about-cta-outline:hover{background:rgba(255,255,255,.18)}
 @media(max-width:1000px){
- .ls-about-page .ls-about-carousel-card{flex-basis:calc((100% - 22px)/2)}
- .ls-about-page .v22-section{padding:78px 0}
+ .ls-about-page .ls-about-hero-layout{gap:30px}
+ .ls-about-page .ls-about-photo-collage{grid-template-rows:130px 130px}
+ .ls-about-page .ls-about-values-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .ls-about-page .ls-about-carousel-card{flex-basis:calc((100% - 19px)/2)}
+ .ls-about-page .ls-about-benefits{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:20px}
+ .ls-about-page .ls-about-benefits>div:nth-child(3n){border-right:0}
+ .ls-about-page .ls-about-final-copy{width:68%}
 }
 @media(max-width:720px){
- .ls-about-page .v22-section{padding:72px 0}
- .ls-about-page .v22-section+.v22-section{margin-top:30px}
- .ls-about-page .v22-section h2{font-size:clamp(16px,5.3vw,25px)!important}
- .ls-about-page .v22-steps>article{padding:21px 18px}
- .ls-about-page .v22-steps h3{font-size:17px}
- .ls-about-page .ls-about-journey-title{font-size:clamp(10px,3vw,20px)!important;letter-spacing:-.025em}
- .ls-about-page .v22-action-panel{width:100%;padding:21px 18px}
- .ls-about-page .v22-actions{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}
- .ls-about-page .v22-actions a{min-width:0;min-height:44px;display:inline-flex;justify-content:center;gap:4px;padding:10px 4px;font-size:clamp(9px,2.6vw,12px);line-height:1}
- .ls-about-page .v22-actions a svg{width:19px;height:19px}
-}
-@media(max-width:640px){
- .ls-about-page .ls-about-carousel-track{gap:14px}
+ .ls-about-page .ls-about-showcase .v22-container{width:calc(100% - 32px)}
+ .ls-about-page .ls-about-showcase .v22-section{padding:38px 0}
+ .ls-about-page .ls-about-showcase .ls-about-hero{padding-top:116px;padding-bottom:25px}
+ .ls-about-page .ls-about-hero-layout{grid-template-columns:1fr;gap:24px}
+ .ls-about-page .ls-about-hero-content h1{font-size:clamp(31px,8vw,42px)}
+ .ls-about-page .ls-about-hero-content p{font-size:14px}
+ .ls-about-page .ls-about-photo-collage{grid-template-rows:150px 150px}
+ .ls-about-page .ls-about-timeline{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:25px;column-gap:20px}
+ .ls-about-page .ls-about-timeline:before{display:none}
+ .ls-about-page .ls-about-timeline-icon,.ls-about-page .ls-about-timeline-dot{margin-left:0}
+ .ls-about-page .ls-about-timeline-dot{margin-top:0}
+ .ls-about-page .ls-about-vision-grid,.ls-about-page .ls-about-leadership-grid{grid-template-columns:1fr}
+ .ls-about-page .ls-about-promise-card{padding:24px 18px;min-height:auto}
+ .ls-about-page .ls-about-promise-card h2{font-size:18px!important}
+ .ls-about-page .ls-about-values-grid{grid-template-columns:1fr 1fr}
+ .ls-about-page .ls-about-value-card{padding:14px;gap:10px}
+ .ls-about-page .ls-about-value-card h3{font-size:15px}
+ .ls-about-page .ls-about-value-card p{font-size:11px!important}
+ .ls-about-page .ls-about-leadership-photo{height:290px}
  .ls-about-page .ls-about-carousel-card{flex-basis:100%}
- .ls-about-page .ls-about-carousel-image{height:210px}
- .ls-about-page .ls-about-carousel-card h3{font-size:20px}
+ .ls-about-page .ls-about-impact-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+ .ls-about-page .ls-about-impact-grid>div{border:0!important;padding:0!important}
+ .ls-about-page .ls-about-final-copy{width:100%;padding:25px 24px;background:linear-gradient(90deg,rgba(0,62,48,.97),rgba(0,62,48,.83));clip-path:none}
+ .ls-about-page .ls-about-final-cta>img{width:100%;opacity:.38}
 }
-@media(max-width:360px){
- .ls-about-page .v22-section h2{font-size:clamp(14px,4.9vw,18px)!important}
- .ls-about-page .ls-about-journey-title{font-size:10px!important}
- .ls-about-page .v22-steps h3{font-size:15px}
+@media(max-width:420px){
+ .ls-about-page .ls-about-showcase .v22-container{width:calc(100% - 28px)}
+ .ls-about-page .ls-about-section-title{font-size:clamp(20px,5vw,25px)!important}
+ .ls-about-page .ls-about-values-grid{grid-template-columns:1fr}
+ .ls-about-page .ls-about-photo-collage{grid-template-rows:120px 120px;gap:8px}
+ .ls-about-page .ls-about-photo-collage img{border-radius:12px}
+ .ls-about-page .ls-about-cta-actions{gap:7px}
+ .ls-about-page .ls-about-cta-actions a{padding:9px 9px;font-size:10px}
+ .ls-about-page .ls-about-benefits strong{font-size:10px}
+ .ls-about-page .ls-about-benefits>div{padding:0 6px}
 }
 @media(prefers-reduced-motion:reduce){
- .ls-about-page .ls-about-carousel-card,.ls-about-page .ls-about-carousel-image img{transition:none!important}
- .ls-about-page .ls-about-carousel-track{scroll-behavior:auto!important}
+ .ls-about-page .ls-about-showcase *{scroll-behavior:auto!important;animation:none!important;transition:none!important}
 }

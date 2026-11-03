@@ -18,20 +18,21 @@ const products:Item[]=landshopProductCards.map(item=>({
  logo:item.logo
 }));
 const services:Item[]=[
- {title:'Property Acquisition',category:'PURCHASE SUPPORT',description:'Review property options, title documentation and inspection steps before deciding.',href:'/services/property-acquisition',image:editorialImages.develop.src,alt:editorialImages.develop.alt},
- {title:'Property Advisory',category:'EXPERT GUIDANCE',description:'Get practical help with property goals, due diligence and the buying process.',href:'/services/advisory',image:editorialImages.team.src,alt:editorialImages.team.alt},
- {title:'Mortgage Guidance',category:'HOME FINANCING',description:'Explore financing pathways, affordability and application requirements.',href:'/services/mortgage',image:editorialImages.grow.src,alt:editorialImages.grow.alt},
- {title:'Construction Credit',category:'DEVELOPMENT SUPPORT',description:'Enquire about eligibility for construction or estate infrastructure finance.',href:'/services/construction-credit',image:editorialImages.architecture.src,alt:editorialImages.architecture.alt},
- {title:'Cooperative Solutions',category:'GROUP OWNERSHIP',description:'Learn about structured and cooperative real estate enquiries.',href:'/services/cooperatives',image:editorialImages.residential.src,alt:editorialImages.residential.alt},
- {title:'Property Inspections',category:'BOOK A VISIT',description:'Request a property inspection and receive a confirmed appointment.',href:'/services/inspection',image:editorialImages.develop.src,alt:editorialImages.develop.alt}
+ {title:'Real Estate Advisory',category:'EXPERT GUIDANCE',description:'Expert guidance to help you make confident property decisions.',href:'/services/advisory',image:editorialImages.team.src,alt:editorialImages.team.alt},
+ {title:'Property Acquisition Support',category:'PURCHASE SUPPORT',description:'End-to-end help to find, evaluate and acquire the right property.',href:'/services/property-acquisition',image:editorialImages.develop.src,alt:editorialImages.develop.alt},
+ {title:'Mortgage Guidance',category:'HOME FINANCING',description:'Practical support to explore and access suitable mortgage options.',href:'/services/mortgage',image:editorialImages.grow.src,alt:editorialImages.grow.alt},
+ {title:'Construction Credit',category:'DEVELOPMENT SUPPORT',description:'Learn about eligibility for construction and estate infrastructure finance.',href:'/services/construction-credit',image:editorialImages.architecture.src,alt:editorialImages.architecture.alt},
+ {title:'Cooperative Solutions',category:'GROUP OWNERSHIP',description:'Explore structured group ownership and cooperative enquiries.',href:'/services/cooperatives',image:editorialImages.residential.src,alt:editorialImages.residential.alt},
+ {title:'Property Inspections',category:'BOOK A VISIT',description:'Request a development visit with a confirmed appointment.',href:'/services/inspection',image:editorialImages.develop.src,alt:editorialImages.develop.alt}
 ];
 
 function ShowcaseRail({items,label}:{items:Item[];label:string}){
  const track=useRef<HTMLDivElement>(null);
  const [index,setIndex]=useState(0);
  const [columns,setColumns]=useState(3);
+ const isService=label==='Landshop services';
  useEffect(()=>{
-  const update=()=>setColumns(window.innerWidth<=640?1:window.innerWidth<=1000?2:3);
+  const update=()=>setColumns(window.innerWidth<=720?1:window.innerWidth<=1000?2:3);
   update();
   window.addEventListener('resize',update,{passive:true});
   return()=>window.removeEventListener('resize',update);
@@ -53,15 +54,16 @@ function ShowcaseRail({items,label}:{items:Item[];label:string}){
  return <div className="ls-about-carousel" aria-label={label} aria-roledescription="carousel" {...playback.handlers}>
   <div className="ls-about-carousel-track" ref={track} tabIndex={0} role="region" aria-label={label+' cards; swipe or scroll to explore'}>
    {items.map(item=><article className="ls-about-carousel-card" key={item.href}>
-    <Link href={item.href} className="ls-about-carousel-image" aria-label={'Explore '+item.title}>
+    {isService?<span className="ls-about-service-symbol" aria-hidden="true"><svg viewBox="0 0 24 24" width="27" height="27" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M4 20V9l8-6 8 6v11H4Zm5 0v-8h6v8M4 11h16"/></svg></span>
+    :<Link href={item.href} className="ls-about-carousel-image" aria-label={'Explore '+item.title}>
      <img src={item.image} alt={item.alt} loading="lazy" decoding="async"/>
-    </Link>
+    </Link>}
     <div className="ls-about-carousel-copy">
      {item.logo&&<img className="ls-about-product-logo" src={item.logo} alt={item.title+' brand mark'} loading="lazy" decoding="async"/>}
      <span className="ls-about-carousel-category">{item.category}</span>
      <h3><Link href={item.href}>{item.title}</Link></h3>
      <p>{item.description}</p>
-     <Link href={item.href} className="ls-about-card-link">Explore More <ApprovedArrow /></Link>
+     <Link href={item.href} className="ls-about-card-link">Explore Service <ApprovedArrow /></Link>
     </div>
    </article>)}
   </div>
