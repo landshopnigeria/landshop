@@ -170,6 +170,22 @@ def check(kind: str, route: str, expected: str | None):
             raise AssertionError("removed About Us hero has returned")
         if 'id="who-we-are"' not in html:
             raise AssertionError("approved Who We Are introduction is missing")
+        about_sections = (
+            'id="about-landshop-heading"', 'id="about-our-story"',
+            'id="about-values"', 'id="about-ceo-message"',
+            'id="about-products"', 'id="about-services"',
+            'id="about-impact-heading"', 'id="about-why-heading"',
+        )
+        for section in about_sections:
+            if section not in html:
+                raise AssertionError(f"About showcase section missing: {section}")
+        for asset in ('/owner/2026/famous-gate.webp',
+                      '/owner/2026/garden-site-team.webp',
+                      '/owner/2026/famous-completed-homes.webp'):
+            if asset not in html:
+                raise AssertionError(f"About showcase owner-photo reference missing: {asset}")
+        if "Landshop project team on site" not in visible:
+            raise AssertionError("About leadership editorial caption missing")
     if kind in ("website", "www") and route == "/":
         if "Estate archival photography is not a current unit offer." in visible:
             raise AssertionError("removed estate archival photography disclaimer has returned")

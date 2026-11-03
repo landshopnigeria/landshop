@@ -6,7 +6,9 @@ import './about-refinement.css';
 export const metadata={
  title:'About Landshop | Our Story, Vision, People and Property Solutions',
  description:'Explore the Landshop story, mission, values, real estate products, services and our commitment to accessible property ownership in Nigeria.',
- alternates:{canonical:'/about'}
+ alternates:{canonical:'/about'},
+ openGraph:{title:'About Landshop | A More Accessible Path to Property Ownership',description:'Discover Landshop’s story, products, values and commitment to Nigerian property ownership.',url:'/about',images:[{url:'/owner/2026/famous-gate.webp',alt:'Landshop Nigerian estate entrance'}]},
+ twitter:{card:'summary_large_image',images:['/owner/2026/famous-gate.webp']}
 };
 
 const icons:Record<string,string>={
@@ -113,9 +115,10 @@ export default function About(){
   </section>
   <section className="v22-section ls-about-leadership" aria-labelledby="about-ceo-message">
    <div className="v22-container ls-about-leadership-grid">
-    <div className="ls-about-leadership-photo">
-     <img src="/owner/2026/garden-field-update.webp" alt="Landshop project representative giving a Nigerian estate development update; illustrative of the team, not identified as the CEO" loading="lazy" decoding="async"/>
-    </div>
+    <figure className="ls-about-leadership-photo">
+     <img src="/owner/2026/garden-field-update.webp" alt="Landshop project representative giving a Nigerian estate development update" loading="lazy" decoding="async"/>
+     <figcaption>Landshop project team on site</figcaption>
+    </figure>
     <div className="ls-about-leadership-copy">
      <span className="ls-about-short-accent" aria-hidden="true"/>
      <h2 id="about-ceo-message">Message from the CEO</h2>

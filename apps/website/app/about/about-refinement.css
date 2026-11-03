@@ -161,3 +161,26 @@
 @media(prefers-reduced-motion:reduce){
  .ls-about-page .ls-about-showcase *{scroll-behavior:auto!important;animation:none!important;transition:none!important}
 }
+
+/* Responsive page-only finishing refinements. */
+.ls-about-page .ls-about-leadership-photo{position:relative;margin:0}
+.ls-about-page .ls-about-leadership-photo figcaption{position:absolute;bottom:14px;left:14px;background:rgba(3,44,35,.87);color:white;padding:8px 12px;border-radius:7px;font-size:11px;font-weight:700;letter-spacing:.02em}
+.ls-about-page .ls-about-carousel-controls{justify-content:space-between}
+.ls-about-page .ls-about-carousel-pagination{display:flex;align-items:center;gap:12px;min-width:0}
+.ls-about-page .ls-about-carousel-dots{display:flex;gap:7px;align-items:center}
+.ls-about-page .ls-about-carousel-dots button{width:9px;height:9px;min-width:9px;border-radius:50%;border:0;background:#d3ded8;padding:0;transition:background .2s,transform .2s}
+.ls-about-page .ls-about-carousel-dots button.is-active{background:#f26b10;transform:scale(1.12)}
+.ls-about-page .ls-about-carousel-dots button:hover{background:#2ba47a}
+.ls-about-page .ls-about-carousel-dots button:focus-visible{outline:3px solid #f26b10;outline-offset:3px}
+@media(max-width:380px){
+ .ls-about-page .ls-about-cta-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+ .ls-about-page .ls-about-cta-actions a{font-size:8px;min-width:0;padding:8px 3px;gap:2px}
+ .ls-about-page .ls-about-cta-actions a svg{width:14px;height:14px;flex:none}
+ .ls-about-page .ls-about-final-copy{padding:25px 14px}
+ .ls-about-page .ls-about-carousel-pagination{gap:5px;font-size:10px}
+ .ls-about-page .ls-about-carousel-dots{gap:4px}
+ .ls-about-page .ls-about-carousel-dots button{width:7px;height:7px;min-width:7px}
+}
+@media(prefers-reduced-motion:reduce){
+ .ls-about-page .ls-about-carousel-dots button{transition:none!important}
+}
