@@ -177,7 +177,7 @@ def check_transparent_brand_logo(host, app):
     url = f"https://{host}{name}?release={EXPECTED[:12]}"
     status, headers, blob, final = request(url)
     local = Path("apps") / app / "public" / "media" / "logo-transparent.png"
-    if status != 200 or not blob.startswith(b"\\x89PNG\\r\\n\\x1a\\n".decode("unicode_escape").encode("latin1")):
+    if status != 200 or not blob.startswith(bytes((137,80,78,71,13,10,26,10))):
         raise AssertionError(f"{host}: transparent logo missing or not PNG")
     if not local.exists():
         raise AssertionError(f"{app}: original transparent release file not found")
