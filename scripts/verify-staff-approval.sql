@@ -16,6 +16,8 @@ WITH source AS (
   AND c.relrowsecurity)=3 AS protected_tables,
  (SELECT count(*) FROM pg_policies
   WHERE schemaname='public' AND tablename IN ('landshop_staff_profiles','organization_members')
+  -- Restrictive policies only narrow access; they cannot grant a client write.
+  AND permissive='PERMISSIVE'
   AND cmd IN ('INSERT','UPDATE','DELETE','ALL'))=0 AS no_client_staff_writes,
  (SELECT pg_get_expr(d.adbin,d.adrelid) FROM pg_attrdef d JOIN pg_attribute a
   ON a.attrelid=d.adrelid AND a.attnum=d.adnum
