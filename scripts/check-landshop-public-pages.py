@@ -55,7 +55,7 @@ PUBLIC_PAGES = [
     ("website", "/properties", "Property Marketplace"),
     ("website", "/applications", "Your property journey"),
     ("website", "/search", "Search Landshop"),
-    ("website", "/about", "Landshop is a co-investment real estate brand focused on simplifying property acquisition"),
+    ("website", "/about", "Landshop is a Nigerian real estate brand focused on simplifying property ownership"),
     ("website", "/contact", "Contact Us"),
     ("website", "/insights", "Insights for better property decisions."),
     ("website", "/company/team", "The work behind every decision"),

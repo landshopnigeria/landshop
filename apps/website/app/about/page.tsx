@@ -31,7 +31,7 @@ function AboutIcon({kind}:{kind:string}){
  return <svg viewBox="0 0 24 24" width="27" height="27" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={icons[kind]||icons.star}/></svg>;
 }
 const history=[
- {icon:'calendar',title:'2017 : The Beginning',body:'Founded to help more Nigerians access land and build wealth through property.'},
+ {icon:'calendar',title:'2017: The Beginning',body:'Founded to help more Nigerians access land and build wealth through property.'},
  {icon:'layers',title:'Property Pathways',body:'Expanded our offering into acquisition, homeownership and guided investment enquiries.'},
  {icon:'cube',title:'Structured Access',body:'Clearer property journeys, documentation guidance and flexible ownership pathways.'},
  {icon:'chart',title:'Today',body:'A growing real estate brand supporting clients through property decisions and long-term value.'}
@@ -56,7 +56,7 @@ const benefits=[
 export default function About(){
  return <main className="content-page ls-about-page"><div className="content-main">
  <div className="v22-root v22-interior ls-about-showcase">
-  <section className="v22-section ls-about-hero" aria-labelledby="about-landshop-heading">
+  <section className="v22-section ls-about-hero" id="who-we-are" aria-labelledby="about-landshop-heading">
    <div className="v22-container ls-about-hero-layout">
     <div className="ls-about-hero-content">
      <span className="ls-about-kicker">WHO WE ARE</span>
