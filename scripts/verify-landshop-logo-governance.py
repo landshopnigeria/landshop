@@ -38,7 +38,7 @@ if len(digests) != 1:
 scanned = 0
 logo_placements = []
 extensions = {".ts", ".tsx", ".js", ".jsx", ".mjs", ".css", ".html"}
-roots = [ROOT / "apps", ROOT / "packages", ROOT / "services"]
+roots = [ROOT / "apps", ROOT / "packages", ROOT / "services", ROOT / "mobile"]
 for base in roots:
     if not base.exists():
         continue
@@ -76,6 +76,8 @@ required = {
  "apps/portal/app/applications/page.tsx": [HOME, '/media/logo-transparent.png'],
  "apps/portal/app/applications/[kind]/ApplicationForm.tsx": [HOME, '/media/logo-transparent.png'],
  "apps/dashboard/app/admin/automation/NexusWorkspaceHTML.ts": [HOME, '/media/logo-transparent.png'],
+ "mobile/customer-app/App.tsx": [HOME, "const logo=portal+'/media/logo-transparent.png'"],
+ "mobile/customer-app/scripts/prepare_brand_assets.py": ['"logo-transparent.png"'],
 }
 for relative, needles in required.items():
     path = ROOT / relative
