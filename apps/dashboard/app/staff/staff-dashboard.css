@@ -7,7 +7,7 @@
 .ls25-shell button:disabled{cursor:not-allowed;opacity:.53}
 .ls25-sidebar{background:linear-gradient(160deg,#063e31 0%,#064937 58%,#02402e 100%);width:285px;min-width:285px;min-height:100vh;position:sticky;top:0;height:100vh;padding:19px 15px 24px;display:flex;flex-direction:column;gap:24px;z-index:30;overflow:hidden;transition:width .23s ease,min-width .23s ease;color:#e6fff2}
 .ls25-logo-row{display:flex;gap:8px;align-items:center;min-height:92px;position:relative;z-index:2}
-.ls25-logo{width:219px;height:86px;display:flex;align-items:center;justify-content:center;background:#fff;border-radius:15px;padding:9px 13px;box-shadow:0 8px 23px #001e141a;overflow:hidden}
+.ls25-logo{width:219px;height:86px;display:flex;align-items:center;justify-content:center;background:transparent;border-radius:0;padding:0;box-shadow:none;overflow:hidden}
 .ls25-logo img{width:100%;height:100%;object-fit:contain;display:block}
 .ls25-collapse-button{width:28px;height:36px;flex-shrink:0;border:0;background:transparent;color:#e4fff3;display:grid;place-items:center;border-radius:7px}
 .ls25-collapse-button:hover,.ls25-navitem:hover,.ls25-sidefooter a:hover,.ls25-sidefooter button:hover{background:#17775a}

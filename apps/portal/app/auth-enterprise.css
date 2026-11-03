@@ -61,3 +61,6 @@
 @media(max-width:410px){.authEntV25 .authSceneEnterprise{padding:11px 10px;min-height:calc(100dvh - 94px)}.authEntV25 .authGlass{padding:19px 15px}.authEntV25 .authTabs{margin-bottom:12px}.authEntV25 .authCaption{margin-bottom:12px}.authEntV25 .authForm,.authEntV25 .authGrid{gap:9px}.authEntV25 .authForm input:not([type=checkbox]),.authEntV25 .authField .ls-branded-select-trigger{height:43px;min-height:43px}.authEntV25 .authFoot{font-size:10px}}
 @media(max-height:650px) and (min-width:731px){.authEntV25 .authSceneEnterprise{min-height:585px}.authEntV25 .authGlass{padding:18px}.authEntV25 .authForm{gap:8px}.authEntV25 .authCaption{margin-bottom:11px}}
 @media(prefers-reduced-motion:reduce){.authEntV25 *{transition:none!important}}
+
+/* Remove branded image tiles while leaving the approved glass auth layout intact. */
+.authEntV25 .authBrand,.authEntV25 .authBrand img{background:transparent!important;border:0;box-shadow:none;mix-blend-mode:normal;object-fit:contain}

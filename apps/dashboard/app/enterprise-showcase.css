@@ -44,8 +44,8 @@
 .ls-basic-shell,.ls25-shell{font-family:"Helvetica Neue",Arial,sans-serif!important;background:#f4f8f7!important;color:#17372e!important}
 .ls-basic-side,.ls25-sidebar{background:linear-gradient(155deg,#073f34,#014c3c)!important}
 .ls-basic-brand,.ls25-logo-row{background:transparent!important}
-.ls-basic-brand img{width:100%!important;max-width:214px!important;height:auto!important;max-height:120px!important;padding:8px!important;border-radius:14px!important;background:#fff!important;object-fit:contain}
-.ls25-logo{background:#fff!important;border-radius:16px!important;box-shadow:none!important}
+.ls-basic-brand img{width:100%!important;max-width:214px!important;height:auto!important;max-height:120px!important;padding:0!important;border-radius:0!important;background:transparent!important;object-fit:contain}
+.ls25-logo{background:transparent!important;border-radius:0!important;box-shadow:none!important;padding:0!important}
 .ls25-sidebar{width:265px!important;min-width:265px!important;gap:18px!important}
 .ls25-collapsed .ls25-sidebar{width:90px!important;min-width:90px!important}
 .ls-basic-side nav button,.ls25-navitem{border-radius:11px!important;font-size:15px!important;font-weight:700!important}
@@ -90,7 +90,7 @@
 .dc-shell{grid-template-columns:260px minmax(0,1fr)!important;background:#f3f8f6!important}
 .dc-shell:has(.cd-sidebar.cd-nav-compact){grid-template-columns:82px minmax(0,1fr)!important}
 .dc-sidebar{background:linear-gradient(160deg,#073f34,#014b39)!important;color:#fff!important;padding:18px 13px!important}
-.dc-sidebar .cd-nav-brand-row{background:#fff;border-radius:13px;padding:9px!important;margin-bottom:18px}
+.dc-sidebar .cd-nav-brand-row{background:transparent;border-radius:0;padding:9px!important;margin-bottom:18px}
 .dc-sidebar .dc-side-brand{border:0!important}.dc-sidebar .cd-nav-brand-row .cd-nav-collapse{color:#0b6c52!important}
 .dc-sidebar nav a{color:#e5fff2!important;font-size:14px!important;font-weight:700!important;min-height:49px!important}
 .dc-sidebar nav a svg{color:inherit!important;width:24px!important;height:24px!important}
@@ -122,10 +122,10 @@
 .command-shell{grid-template-columns:266px minmax(0,1fr)!important;background:#f3f8f6!important}
 .command-shell:has(.command-side.is-collapsed){grid-template-columns:80px minmax(0,1fr)!important}
 .command-side{background:linear-gradient(155deg,#073f34,#014d3e)!important}
-.command-side .command-brand{background:#fff!important;margin:14px 12px 8px;padding:9px!important;border-radius:14px!important}
+.command-side .command-brand{background:transparent!important;margin:14px 12px 8px;padding:9px!important;border-radius:0!important;box-shadow:none!important}
 .command-side .command-brand img{max-width:100%;object-fit:contain}
-.command-side .command-brand small{color:#105b48!important;font-size:10px!important;font-weight:750}
-.command-side .command-brand .command-nav-collapse{color:#0f6850!important;border-color:#c7e5d6!important;background:#fff!important}
+.command-side .command-brand small{color:#d6f6e8!important;font-size:10px!important;font-weight:750}
+.command-side .command-brand .command-nav-collapse{color:#e3fff2!important;border-color:#8dcbb0!important;background:transparent!important}
 .command-side nav a{font-size:14px!important;min-height:47px!important}
 .command-side nav a>span:first-child{font-size:23px!important}
 .command-side nav a.active,.command-side nav a:hover{background:#148b64!important}
@@ -219,3 +219,8 @@
 .ls26-attendance-summary strong{font-size:clamp(16px,1.55vw,23px);color:#13392e;display:block;margin:5px 0;overflow-wrap:anywhere}
 .ls26-attendance-summary div:nth-child(2){background:#fff5eb}
 @media(max-width:480px){.ls26-attendance-summary{grid-template-columns:1fr 1fr}.ls26-attendance-summary>div:last-child{grid-column:span 2}}
+
+/* Corporate logos are transparent artwork, not white tiles. */
+:is(.ls-basic-brand,.ls25-logo-row,.cd-nav-brand-row,.command-brand,.cc-brand) img[src*="logo-transparent.png"]{background:transparent!important;border:0!important;box-shadow:none!important;mix-blend-mode:normal!important;object-fit:contain}
+.command-side .command-home-logo,.ls-basic-brand>a,.dc-sidebar .dc-side-brand{display:inline-flex;align-items:center;background:transparent!important;text-decoration:none}
+.command-side .command-home-logo img,.ls25-sidebar .ls25-logo img,.ls-basic-side .ls-basic-brand img{filter:drop-shadow(0 1px 1px rgba(255,255,255,.48))}
