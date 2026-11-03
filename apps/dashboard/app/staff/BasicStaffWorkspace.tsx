@@ -63,7 +63,7 @@ export default function BasicStaffWorkspace({profile,tasks,email,userId}:{profil
  }
  return <div className="ls-basic-shell">
   <aside className={'ls-basic-side '+(sidebarOpen?'is-open':'')} aria-label="Staff dashboard sections">
-   <div className="ls-basic-brand"><img src="/media/logo-transparent.png" onError={e=>{e.currentTarget.src="/media/logo.webp"}} alt="Landshop" /><button type="button" aria-label="Close navigation" onClick={()=>setSidebarOpen(false)} className="ls-basic-close">×</button></div>
+   <div className="ls-basic-brand"><a href="https://www.landshopnigeria.com/" aria-label="Landshop homepage"><img src="/media/logo-transparent.png" alt="Landshop" /></a><button type="button" aria-label="Close navigation" onClick={()=>setSidebarOpen(false)} className="ls-basic-close">×</button></div>
    <nav>{menu.map(([key,title])=><button type="button" key={key} className={section===key?'active':''} aria-current={section===key?'page':undefined} onClick={()=>navigate(key)}><span className="ls-basic-marker" aria-hidden="true">{key==='overview'?'⌂':key==='kyc'?'♙':key==='tasks'?'☑':key==='reports'?'▤':'◷'}</span>{title}<span aria-hidden="true" className="ls-basic-chevron">›</span></button>)}</nav>
    <p className="ls-basic-side-note">Your personal dashboard is available after email verification. Sensitive operations require their own approvals.</p>
   </aside>

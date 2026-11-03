@@ -5,7 +5,11 @@ Unlike /api/release-health, this follows an ordinary browser's actual HTML asset
 references on both public domain variants. Pure GET; no customer records modified.
 """
 from __future__ import annotations
+from hashlib import sha256
+from pathlib import Path
 import os
+import time
+from functools import lru_cache
 import re
 import socket
 import sys
@@ -46,13 +50,33 @@ class Assets(HTMLParser):
         if tag=="meta" and a.get("name")=="landshop-release":
             self.meta_sha=a.get("content")
 
-def request(url):
-    req=Request(url,headers={"User-Agent":UA,"Cache-Control":"no-cache, no-store","Pragma":"no-cache","Accept-Encoding":"identity"})
-    with urlopen(req,timeout=35) as resp:
+def request(url, *, static=False):
+    # HTML must bypass caches. Immutable hashed CSS/JS and versioned PNG
+    # are deliberately fetched with browser-standard headers to avoid
+    # forcing uncached LiteSpeed work for each repeated stylesheet URL.
+    headers={"User-Agent":UA,"Accept-Encoding":"identity"}
+    if not static:
+        headers.update({"Cache-Control":"no-cache, no-store","Pragma":"no-cache"})
+    req=Request(url,headers=headers)
+    with urlopen(req,timeout=24 if static else 35) as resp:
         status=resp.status
-        headers=dict(resp.headers.items())
+        response_headers=dict(resp.headers.items())
         content=resp.read(3_000_000)
-        return status,headers,content,resp.geturl()
+        return status,response_headers,content,resp.geturl()
+
+@lru_cache(maxsize=96)
+def request_static(url):
+    """Verify identical immutable assets once per host, retrying a transient timeout."""
+    last=None
+    for attempt in range(2):
+        try:
+            return request(url,static=True)
+        except (URLError,TimeoutError,OSError) as exc:
+            last=exc
+            if attempt==0:
+                print(f"RETRY static asset: {url} ({type(exc).__name__})",flush=True)
+                time.sleep(1.5)
+    raise last
 
 def get_header(headers,key):
     return next((v for k,v in headers.items() if k.lower()==key.lower()),"-")
@@ -96,7 +120,7 @@ def check(host,path,marker,css_class):
     css_ok=0
     for relative in parser.css[:10]:
         asset=urljoin(f"https://{host}",relative)
-        status,ch,content,_=request(asset)
+        status,ch,content,_=request_static(asset)
         if status!=200 or "css" not in get_header(ch,"Content-Type").lower():
             raise AssertionError(f"CSS resource not available: {asset}")
         css_ok+=1
@@ -124,14 +148,14 @@ def check(host,path,marker,css_class):
     if 'class="ls24-global-footer"' not in html or 'class="ls24-newsletter-section"' not in html:
         raise AssertionError("approved global newsletter/footer not rendered with the page")
     if path=="/":
-        photo_status,photo_headers,photo_bytes,_=request(f"https://{host}/media/landshop-footer-cris6882.svg")
+        photo_status,photo_headers,photo_bytes,_=request_static(f"https://{host}/media/landshop-footer-cris6882.svg")
         photo_type=get_header(photo_headers,"Content-Type").lower()
         if photo_status!=200 or "svg" not in photo_type or len(photo_bytes)<6000 or b"data:image/webp;base64," not in photo_bytes:
             raise AssertionError("user-approved photo background missing from website assets")
 
     for relative in parser.js[:2]:
         asset=urljoin(f"https://{host}",relative)
-        js_status,jh,_,_=request(asset)
+        js_status,jh,_,_=request_static(asset)
         if js_status!=200 or not any(x in get_header(jh,"Content-Type").lower() for x in ("javascript","ecmascript","text/plain")):
             raise AssertionError(f"New JavaScript bundle cannot be loaded: {asset}")
     print(f"  VERIFIED page markup + release meta + {css_ok} CSS files + JS references",flush=True)
@@ -159,15 +183,33 @@ def check_application(host,path,marker):
         raise AssertionError(f"{host}{path} does not reference fresh compiled assets")
     for relative in parser.css[:6]:
         asset=urljoin(url,relative)
-        asset_status,asset_headers,asset_body,_=request(asset)
+        asset_status,asset_headers,asset_body,_=request_static(asset)
         if asset_status!=200 or "css" not in get_header(asset_headers,"Content-Type").lower() or len(asset_body)<50:
             raise AssertionError(f"{host}{path} CSS missing: {asset}")
     for relative in parser.js[:2]:
         asset=urljoin(url,relative)
-        asset_status,asset_headers,asset_body,_=request(asset)
+        asset_status,asset_headers,asset_body,_=request_static(asset)
         if asset_status!=200 or not any(x in get_header(asset_headers,"Content-Type").lower() for x in ("javascript","ecmascript","text/plain")) or not asset_body:
             raise AssertionError(f"{host}{path} JavaScript missing: {asset}")
     print(f"  VERIFIED dynamic HTML + exact release + {len(parser.css)} CSS refs + {len(parser.js)} JS refs",flush=True)
+
+def check_transparent_brand_logo(host, app):
+    """Require the exact original-artwork RGBA PNG to be served by every public hostname."""
+    name = "/media/logo-transparent.png"
+    url = f"https://{host}{name}?release={EXPECTED[:12]}"
+    status, headers, blob, final = request_static(url)
+    local = Path("apps") / app / "public" / "media" / "logo-transparent.png"
+    if status != 200 or not blob.startswith(bytes((137,80,78,71,13,10,26,10))):
+        raise AssertionError(f"{host}: transparent logo missing or not PNG")
+    if not local.exists():
+        raise AssertionError(f"{app}: original transparent release file not found")
+    if sha256(blob).digest() != sha256(local.read_bytes()).digest():
+        raise AssertionError(f"{host}: live logo differs from the exact approved transparent release asset")
+    if "image/png" not in get_header(headers, "Content-Type").lower():
+        raise AssertionError(f"{host}: expected image/png, got {get_header(headers, 'Content-Type')}")
+    if len(blob) < 10000 or blob[25] != 6:
+        raise AssertionError(f"{host}: missing valid RGBA logo content")
+    print(f"BRAND_OK {host}{name}: exact logo digest {sha256(blob).hexdigest()[:12]}",flush=True)
 
 def main():
     if not re.fullmatch("[0-9a-f]{40}",EXPECTED):
@@ -188,6 +230,18 @@ def main():
         except (AssertionError,URLError,HTTPError,OSError,TimeoutError,ValueError) as exc:
             failures.append((host,path,str(exc)))
             print(f"FAILED {host}{path}: {exc}",file=sys.stderr,flush=True)
+    # Website, portal and dashboard have independent public/media folders.
+    for host,app in (
+        ("landshopnigeria.com","website"),
+        ("www.landshopnigeria.com","website"),
+        ("portal.landshopnigeria.com","portal"),
+        ("app.landshopnigeria.com","dashboard"),
+    ):
+        try:
+            check_transparent_brand_logo(host,app)
+        except (AssertionError,URLError,HTTPError,OSError,TimeoutError,ValueError) as exc:
+            failures.append((host,"/media/logo-transparent.png",str(exc)))
+            print(f"FAILED live brand logo {host}: {exc}",file=sys.stderr,flush=True)
     for host,path,error in failures:
         print(f"FAILURE SUMMARY {host}{path}: {error}",file=sys.stderr)
     if failures:

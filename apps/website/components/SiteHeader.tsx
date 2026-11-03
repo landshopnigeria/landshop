@@ -107,7 +107,7 @@ export default function SiteHeader(){
   </div></div>
   <div className="ls-glass-wrap" onMouseLeave={()=>{if(!menuOpen)setExpanded(null)}} onBlurCapture={event=>{if(!menuOpen&&!event.currentTarget.contains(event.relatedTarget as Node|null))setExpanded(null)}}><header className="ls-glass-header">
    <Link href="/" className="ls-brand" aria-label="Landshop homepage">
-    <img src="/media/logo-transparent.png" alt="Landshop" width={150} height={63} decoding="async" fetchPriority="high" onError={event=>{event.currentTarget.src='/media/logo.webp'}}/>
+    <img src="/media/logo-transparent.png" alt="Landshop" width={150} height={63} decoding="async" fetchPriority="high"/>
    </Link>
    <nav className={'ls-primary-nav '+(menuOpen?'ls-nav-mobile-open':'')} aria-label="Site navigation">
     <Link className={'ls-header-link '+(pathname==='/'?'ls-nav-active':'')} href="/" onClick={()=>setMenuOpen(false)}><span>Home</span></Link>

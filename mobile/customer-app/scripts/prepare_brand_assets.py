@@ -9,7 +9,7 @@ from PIL import Image, ImageOps
 
 ROOT = Path(__file__).resolve().parents[3]
 OUTPUT = Path(__file__).resolve().parents[1] / "assets"
-SOURCE = ROOT / "apps" / "portal" / "public" / "media" / "logo.webp"
+SOURCE = ROOT / "apps" / "portal" / "public" / "media" / "logo-transparent.png"
 RESAMPLING = Image.Resampling.LANCZOS
 
 def contained(source: Image.Image, size: int, max_w: int, max_h: int) -> Image.Image:

@@ -10,7 +10,7 @@ type Mode='signin'|'signup'|'verify';
 const portalOrigin='https://portal.landshopnigeria.com';
 const appOrigin='https://app.landshopnigeria.com';
 const refPattern=/^LANDSHOP[0-9]{2,12}$/;
-const logo='/media/logo.webp';
+const logo='/media/logo-transparent.png';
 function Brand(){return <a href="https://www.landshopnigeria.com" aria-label="Landshop homepage" className="authBrand"><img src={logo} alt="Landshop Nigeria" width={156} height={62}/></a>}
 function Field({label,children}:{label:string;children:ReactNode}){return <label className="authField"><span>{label}</span>{children}</label>}
 function GoogleMark(){return <svg viewBox="0 0 48 48" width="20" height="20" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.7 1.2 9.2 3.6l6.8-6.8C35.9 2.5 30.4 0 24 0 14.6 0 6.5 5.4 2.6 13.3l7.9 6.1C12.4 13.7 17.7 9.5 24 9.5Z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.3 5.48-4.86 7.18l7.73 6C44.3 38.04 46.98 31.9 46.98 24.55Z"/><path fill="#FBBC05" d="M10.53 28.6c-.5-1.5-.79-3.07-.79-4.6s.28-3.1.78-4.6l-7.9-6.1A23.6 23.6 0 0 0 0 24c0 3.89.94 7.57 2.62 10.7l7.91-6.1Z"/><path fill="#34A853" d="M24 48c6.4 0 11.8-2.1 15.7-5.8l-7.73-6c-2.14 1.44-4.88 2.28-7.97 2.28-6.3 0-11.6-4.23-13.48-9.88l-7.9 6.1C6.5 42.6 14.6 48 24 48Z"/></svg>}

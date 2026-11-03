@@ -15,7 +15,7 @@ type Page='signin'|'signup'|'verify'|'reset-password'|'dashboard'|'referrals'|'k
 type Summary={total_referrals:number;email_verified:number;kyc_verified:number;approved_applications:number};
 const green='#078a6b',ink='#123a32',orange='#e97721',muted='#688278';
 const portal='https://portal.landshopnigeria.com',app='https://app.landshopnigeria.com';
-const logo=portal+'/media/logo.webp';
+const logo=portal+'/media/logo-transparent.png';
 const building=portal+'/media/auth-landshop-building.jpg';
 const signinPhoto=portal+'/media/auth-landshop-signin-staff.jpg';
 const signupPhoto=portal+'/media/auth-landshop-signup-staff.jpg';
