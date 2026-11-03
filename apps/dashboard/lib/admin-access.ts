@@ -1,7 +1,8 @@
+import {cache} from 'react';
 import {createServerClient} from '@supabase/ssr';
 import {cookies} from 'next/headers';
 import {redirect} from 'next/navigation';
-export async function requireLandshopStaff(roles:string[]){
+async function requireStaff(roles:string[]){
  const url=process.env.NEXT_PUBLIC_SUPABASE_URL,key=process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
  if(!url||!key)throw Error('Supabase configuration missing');
  const store=await cookies();
@@ -29,3 +30,5 @@ export async function requireLandshopStaff(roles:string[]){
  if(orgError||!organizations?.length)redirect('/staff');
  return {db,user,organizationIds:organizations.map(x=>x.id)};
 }
+const cachedStaff=cache((roles:string)=>requireStaff(roles.split(',')));
+export const requireLandshopStaff=(roles:string[])=>cachedStaff([...roles].sort().join(','));

@@ -59,7 +59,9 @@ for migration in sorted((ROOT / "supabase" / "migrations").glob("*.sql")):
             violations.append(f"{migration}: {name}: pin the function search_path")
         if not matches_function_permission(source, "REVOKE", name):
             violations.append(f"{migration}: {name}: explicitly REVOKE ALL/EXECUTE ON FUNCTION")
-        if not matches_function_permission(source, "GRANT", name):
+        # Trigger functions are invoked by their table trigger, never as client RPCs.
+        # An explicit revoke with no client grant is the intended permission model.
+        if not matches_function_permission(source, "GRANT", name) and not re.search(r"\bRETURNS\s+TRIGGER\b", segment, re.IGNORECASE):
             violations.append(f"{migration}: {name}: explicitly GRANT EXECUTE to intended roles")
         if grants_anonymous(source, name) and name not in ALLOW_ANONYMOUS:
             violations.append(f"{migration}: {name}: unreviewed anonymous SECURITY DEFINER RPC")

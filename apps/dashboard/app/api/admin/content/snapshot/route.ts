@@ -1,0 +1,5 @@
+import {NextRequest,NextResponse} from 'next/server';
+import {requireLandshopStaff} from '../../../../../lib/admin-access';
+import {publicContentRoute} from '../../../../../../../packages/shared/content-model';
+export async function GET(request:NextRequest){await requireLandshopStaff(['owner','ceo','founder','admin','technology_officer','technology_consultant']);const route=request.nextUrl.searchParams.get('route')||'/';if(!publicContentRoute(route))return NextResponse.json({error:'Choose a public website page.'},{status:400});
+ try{const response=await fetch('https://www.landshopnigeria.com'+route,{cache:'no-store',redirect:'error',signal:AbortSignal.timeout(15000),headers:{Accept:'text/html'}});if(!response.ok)return NextResponse.json({error:'Page returned '+response.status+'. Use its final public path.'},{status:400});const html=await response.text();if(html.length>3000000)throw Error('Page too large');return NextResponse.json({html},{headers:{'Cache-Control':'private,no-store'}})}catch{return NextResponse.json({error:'Unable to load public page. Check its route and try again.'},{status:502})}}
