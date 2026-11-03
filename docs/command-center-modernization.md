@@ -13,7 +13,7 @@ The `/admin` route tree now uses the approved compact white/teal workspace. All 
 
 ## Remaining activation boundaries
 
-The existing prompt composer is deterministic, not an AI model. Genuine AI generation requires the user’s API credential decision before API implementation. The visual social destinations are draft connector definitions; this release does not establish OAuth connections or claim successful external posting on Facebook, Instagram, YouTube, TikTok, Pinterest, LinkedIn or groups. The NEXUS runtime remains preview-only. Actual email/SMS/WhatsApp delivery belongs to the separate existing communications engine and its provider readiness checks.
+The existing prompt composer is deterministic, not an AI model. Genuine AI generation requires the user’s API credential decision before API implementation. The visual social destinations are draft connector definitions; this release does not establish OAuth connections or claim successful external posting on Facebook, Instagram, YouTube, TikTok, Pinterest, LinkedIn or groups. The NEXUS runtime remains preview-only. Actual email/SMS/WhatsApp delivery belongs to the separate existing communications engine. At verification, all three channel enable flags were false; this UI release does not activate customer sends.
 
 ## Validation
 
