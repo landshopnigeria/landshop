@@ -5,8 +5,8 @@
 .ls-investment-eyebrow{font-size:11px;font-weight:750;letter-spacing:.13em;color:#2BA47A}
 .ls-investment-popup h2{font-size:clamp(20px,3vw,26px);line-height:1.2;letter-spacing:-.025em;margin:11px 0;color:#073F34}
 .ls-investment-popup p{font-size:14px;line-height:1.6;margin:0 0 19px;color:#566b63}
-.ls-investment-action{display:flex;align-items:center;justify-content:center;gap:12px;min-height:48px;padding:12px 18px;border-radius:11px;background:#F26B10;color:#fff!important;font-weight:750;text-decoration:none;transition:background .2s,transform .2s}
-.ls-investment-action:hover,.ls-investment-action:focus-visible{background:#d55408;transform:translateY(-1px)}
+.ls-investment-action{display:flex;align-items:center;justify-content:center;gap:12px;min-height:48px;padding:12px 18px;border-radius:11px;background:#2BA47A;color:#fff!important;font-weight:750;text-decoration:none;transition:background .2s,transform .2s}
+.ls-investment-action:hover,.ls-investment-action:focus-visible{background:#238665;transform:translateY(-1px)}
 .ls-investment-popup .ls-investment-note{text-align:center;font-size:12px;margin:13px 0 0;color:#738078}
 .ls-investment-close{position:absolute;top:12px;right:12px;z-index:1;display:grid;place-items:center;width:38px;height:38px;border:0;border-radius:50%;background:rgba(255,255,255,.94);font-size:29px;line-height:1;color:#233e32;cursor:pointer}
 .ls-investment-close:hover,.ls-investment-close:focus-visible{background:#fce8da;color:#c45006}
