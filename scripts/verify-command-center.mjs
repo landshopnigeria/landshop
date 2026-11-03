@@ -4,7 +4,7 @@ import path from 'node:path';
 import ts from 'typescript';
 const root=process.cwd();
 const load=(file)=>{const source=fs.readFileSync(file,'utf8');const compiled=ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText;const exports={};new Function('exports',compiled)(exports);return exports};
-const {safeContentURL,publicContentRoute}=load('packages/shared/content-model.ts');
+const {safeContentURL,publicContentRoute,parsePageStyle,pageStyleCSS}=load('packages/shared/content-model.ts');
 for(const input of ['javascript:alert(1)','data:text/html,test','//evil.test','/\\evil.test','/bad\nroute','http://unsafe.test'])assert.equal(safeContentURL(input,'link'),false,input);
 for(const input of ['/about','https://www.landshopnigeria.com/about','mailto:care@landshopnigeria.com','tel:+23418880063'])assert.equal(safeContentURL(input,'link'),true,input);
 assert.equal(safeContentURL('https://evil.test/image.jpg','image'),false);
@@ -22,3 +22,9 @@ new Function(nexus.split('<script>').at(-1).split('</script>')[0]);
 for(const platform of ['facebook','instagram','youtube','tiktok','pinterest','linkedin'])assert.ok(nexus.includes('"'+platform+'":')||nexus.includes(platform+':'),platform);
 assert.ok(nexus.includes("type:'focus'"));assert.ok(nexus.includes('Auto arrange canvas'));assert.ok(nexus.includes('Workflow outline'));
 console.log(`PASS: safe content URLs, route restrictions, ${destinations.length} destinations, complete export columns, spreadsheet formula protection and canvas syntax/controls`);
+
+assert.equal(parsePageStyle('{"base":{"position":"fixed"}}'),null);
+assert.equal(parsePageStyle('{"base":{"color":"url(https://bad.test)"}}'),null);
+assert.ok(pageStyleCSS('body > main:nth-of-type(1)','{"base":{"color":"#f26b10"},"mobile":{"display":"grid","grid-template-columns":"1fr"}}').includes('@media(max-width:760px)'));
+assert.equal(pageStyleCSS('body > main{color:red}','{"base":{"color":"red"}}'),'');
+console.log('PASS: responsive style whitelist and selector/CSS injection protections');
