@@ -36,6 +36,8 @@ jobs:
       - run: npm install --no-audit --no-fund --no-package-lock
       - name: Audit current production credentials and consent gates without sending
         env:
+          LANDSHOP_OPENAI_API_KEY: ${{ secrets.LANDSHOP_OPENAI_API_KEY || secrets.OPENAI_API_KEY }}
+          LANDSHOP_WORKFLOW_AI_MODEL: ${{ vars.LANDSHOP_WORKFLOW_AI_MODEL }}
           LANDSHOP_COMM_LIVE_ENABLED: ${{ vars.LANDSHOP_COMM_LIVE_ENABLED || 'false' }}
           LANDSHOP_COMM_ROTATION_CONFIRMED: ${{ vars.LANDSHOP_COMM_ROTATION_CONFIRMED || 'false' }}
           LANDSHOP_COMM_EMAIL_LIVE: ${{ vars.LANDSHOP_COMM_EMAIL_LIVE || 'false' }}
