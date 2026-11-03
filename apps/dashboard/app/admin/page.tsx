@@ -31,7 +31,7 @@ export default async function Admin(){
  if(authError||!user)redirect('/staff/sign-in');
  const {data:members,error:membershipError}=await db.from('organization_members')
   .select('role,organization_id').eq('user_id',user.id).eq('status','active');
- if(membershipError||!members?.length)return <main className="command-denied">Landshop Global Command Center — staff account required. <Link href="/dashboard">Customer Dashboard</Link></main>;
+ if(membershipError||!members?.length)return <main className="command-denied">Landshop Global Command Center — an authorized staff account is required. <Link href="/staff">Return to Staff Dashboard</Link></main>;
  const allowed=members.filter(m=>['owner','ceo','founder','admin','technology_officer','technology_consultant'].includes(m.role));
  if(!allowed.length)return <main className="command-denied"><h1>No authorized management role found</h1><p>Command Center access activates automatically for accounts already assigned a trusted Landshop management role. The role selected at registration does not itself grant administrative permissions.</p><Link href="/staff">Return to Staff Dashboard</Link></main>;
  // Align the top-level command center with the verified management gate
