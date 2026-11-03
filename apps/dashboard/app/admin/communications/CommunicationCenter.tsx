@@ -118,7 +118,7 @@ export default function CommunicationCenter({runs,evidenceAvailable,operations,i
  return <main className="comm-center">
   <header className="comm-top"><div className="comm-top-inner">
    <Link href="/admin" className="comm-back">← Command Center</Link>
-   <div className="comm-identity"><img src="/media/logo-transparent.png" alt="Official transparent Landshop logo" width={105} height={52}/><div><strong>Enterprise Communications</strong><span>Internal management workspace · six product journeys</span></div></div>
+   <div className="comm-identity"><a href="https://www.landshopnigeria.com/" aria-label="Landshop homepage"><img src="/media/logo-transparent.png" alt="Official transparent Landshop logo" width={105} height={52}/></a><div><strong>Enterprise Communications</strong><span>Internal management workspace · six product journeys</span></div></div>
    <div className="comm-top-actions"><span className="comm-lock">Management only · Sending disabled</span><Link href="/admin/automation" className="comm-builder">Open NEXUS Builder ↗</Link></div>
   </div></header>
   <div className="comm-container">
