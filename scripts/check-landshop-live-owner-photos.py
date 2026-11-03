@@ -34,7 +34,7 @@ def checked_get(url, *, limit=22, attempts=3):
  raise RuntimeError(f"Unreachable after {attempts} attempts: {url.split('?')[0]} ({type(last).__name__})") from last
 
 def check_photo(photo):
- data=checked_get(base+photo.name+"?release="+sha[:12],limit=16)
+ data=checked_get(base+photo.name+"?release="+sha[:12],limit=26)
  if data[:4]!=b"RIFF" or data[8:12]!=b"WEBP":
   raise RuntimeError(f"Invalid WebP content: {photo.name}")
  return photo.name
