@@ -175,11 +175,11 @@ export default function NexusHost({initial,html}:{initial:Flow[];html:string}){
     post('saved',{version:latest.version,id:latest.id});
    }else{
     const {data,error}=await db.rpc('landshop_automation_create',{
-     p_name:draft.name,p_description:'NEXUS visual workflow · authorization required for external actions',p_graph:graph});
+     p_name:draft.name,p_description:'Landshop automation workflow · authorization required for external actions',p_graph:graph});
     if(error||!data)throw Error(error?.message||'Workflow draft could not be created for this management role.');
-    const created:Flow={id:String(data),name:draft.name,description:'NEXUS visual workflow',version:1,state:'draft',draft_graph:graph};
+    const created:Flow={id:String(data),name:draft.name,description:'Landshop automation workflow',version:1,state:'draft',draft_graph:graph};
     setDrafts([created,...flowsRef.current]);activeRef.current=created.id;setActive(created.id);
-    setStatus('New NEXUS draft v1 saved in Landshop securely.');
+    setStatus('New automation draft v1 saved in Landshop securely.');
     post('saved',{version:1,id:created.id});
    }
   }catch(e){const msg=e instanceof Error?e.message:'Could not save the draft';setStatus(msg);post('error',{message:msg});}
