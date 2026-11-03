@@ -5,6 +5,7 @@ import ApprovedArrow from './ApprovedArrow';
 import {landshopProductCards} from '../lib/landshop-brand-media';
 import {editorialImages} from '../lib/editorial-imagery';
 import {useCarouselPlayback} from './useCarouselPlayback';
+import AboutContinuousProducts from './AboutContinuousProducts';
 
 type Item={title:string;category:string;description:string;href:string;image:string;alt:string;logo?:string;icon?:string};
 const serviceIcons:Record<string,string>={
@@ -105,5 +106,5 @@ function ShowcaseRail({items,label}:{items:Item[];label:string}){
   </div>
  </div>;
 }
-export function AboutProductsCarousel(){return <ShowcaseRail items={products} label="Landshop products"/>}
+export function AboutProductsCarousel(){return <AboutContinuousProducts/>}
 export function AboutServicesCarousel(){return <ShowcaseRail items={services} label="Landshop services"/>}
