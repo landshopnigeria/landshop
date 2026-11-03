@@ -1,4 +1,5 @@
 'use client';
+import {accountHome} from '../../../packages/shared/account-home';
 import {useEffect,useState,type FormEvent,type ReactNode} from 'react';
 import BrandedSelect from '../components/BrandedSelect';
 import {browserSupabase} from '../lib/supabase-browser';
@@ -27,11 +28,11 @@ export default function Portal(){
   if(params.get('error'))setMessage('The authentication link could not be verified. Please try again.');
   let live=true;
   const auth=browserSupabase();
-  const route=(user:{user_metadata?:{staff_signup?:boolean}}|null|undefined)=>{
-   if(live&&user?.user_metadata?.staff_signup===true)window.location.replace(appOrigin+'/staff');
+  const route=async(user:{id:string;user_metadata?:Record<string,unknown>}|null|undefined)=>{
+   if(live&&user) {const home=await accountHome(auth,user);if(live)window.location.replace(appOrigin+home);}
   };
   auth.auth.getUser().then(({data})=>route(data.user)).catch(()=>{});
-  const {data:{subscription}}=auth.auth.onAuthStateChange((_event,session)=>route(session?.user));
+  const {data:{subscription}}=auth.auth.onAuthStateChange((_event,session)=>{setTimeout(()=>{void route(session?.user)},0)});
   return()=>{live=false;subscription.unsubscribe()};
  },[]);
  function changeMode(next:Mode){setMode(next);setStep(1);setMessage('');setPassword('');setConfirm('')}
@@ -71,7 +72,8 @@ export default function Portal(){
     const returnTo=new URLSearchParams(window.location.search).get('returnTo');
     let target=appOrigin+'/dashboard';
     if(returnTo){try{const u=new URL(returnTo);if(u.protocol==='https:'&&u.hostname==='www.landshopnigeria.com'&&u.pathname.startsWith('/insights/'))target=u.toString()}catch{}}
-    window.location.assign(data.user.user_metadata?.staff_signup===true?appOrigin+'/staff':target);
+    const home=await accountHome(db,data.user);
+    window.location.assign(home==='/dashboard'?target:appOrigin+home);
    }
   }catch(err){setMessage(err instanceof Error?err.message:'Unable to complete the request.')}
   finally{setBusy(false)}

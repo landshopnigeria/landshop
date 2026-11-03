@@ -1,3 +1,4 @@
+import RealtorRegistration from '../../../components/RealtorRegistration';
 import {redirect} from 'next/navigation';
 import {createServerClient} from '@supabase/ssr';
 import {cookies} from 'next/headers';
@@ -26,6 +27,7 @@ export default async function MyAccount(){
  <header className="dc-top"><Link href="/dashboard">← Customer Dashboard</Link><strong>Landshop Account & Security</strong><Link href="https://www.landshopnigeria.com">Website ↗</Link></header>
  <main className="dc-page" style={{maxWidth:1100,margin:'0 auto'}}>
   <section className="dc-hero"><div><small>ACCOUNT MANAGEMENT</small><h1>My Landshop account.</h1><p>Review your verified email, identity status and account details, and manage your active session securely.</p></div></section>
+  <RealtorRegistration userId={user.id}/>
   <div className="dc-grid">
    <section className="dc-panel"><h2>Identity & Contact</h2>
     {profileError||!profile?<div className="dc-security" role="status"><strong>Account profile not available</strong><p>Your Supabase account is authenticated, but its customer profile could not be retrieved. Contact support; an owner may need to repair your profile record. KYC cannot be treated as approved.</p></div>:

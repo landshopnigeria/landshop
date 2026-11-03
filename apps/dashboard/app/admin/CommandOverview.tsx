@@ -19,7 +19,7 @@ export default function CommandOverview({metrics,tasks,reports,drafts,pendingKyc
  const actions=[
   {label:'Approvals',detail:'Review & approve',icon:'✓',url:'/admin/properties/import/review'},
   {label:'People & Staff',detail:'Roles, verify, suspend',icon:'♙',url:'/admin/staff'},
-  {label:'Customers',detail:'Customer activity',icon:'♧',url:'/admin/customer-activity'},
+  {label:'Customers',detail:'Profiles & submissions',icon:'♧',url:'/admin/users'},
   {label:'Performance',detail:'Staff reports',icon:'▥',url:'/admin/reports/staff'},
   {label:'Portfolio',detail:'Properties & applications',icon:'▦',url:'/admin/properties'}
  ];

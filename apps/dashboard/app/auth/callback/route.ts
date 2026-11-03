@@ -1,3 +1,4 @@
+import {accountHome} from '../../../../../packages/shared/account-home';
 import {NextRequest,NextResponse} from 'next/server';
 import {createServerClient} from '@supabase/ssr';
 
@@ -53,26 +54,6 @@ export async function GET(request:NextRequest){
  }
  // Recovery links must remain password recovery links and may not bypass that flow.
  if(type==='recovery')response.headers.set('Location','https://portal.landshopnigeria.com/update-password');
- else if(user.user_metadata?.staff_signup!==true){
-  // Nonstaff accounts must never be silently enrolled as employees.
-  response.headers.set('Location',origin+'/dashboard');
- }else{
-  // Same verified-management gate as the Command Center. Merely requesting
-  // an executive role in editable signup metadata never grants privileges.
-  const {data:members,error:memberError}=await supabase.from('organization_members')
-   .select('organization_id,role').eq('user_id',user.id).eq('status','active');
-  if(!memberError&&members?.length){
-   const allowed=members.filter(m=>['owner','ceo','founder','admin','technology_officer','technology_consultant'].includes(m.role));
-   if(allowed.length){
-    const [{data:organizations,error:orgError},{data:management,error:managementError}]=await Promise.all([
-     supabase.from('organizations').select('id').eq('kind','landshop')
-      .in('id',allowed.map(m=>m.organization_id)),
-     supabase.rpc('landshop_is_management',{p_user:user.id})
-    ]);
-    if(!orgError&&organizations?.length&&!managementError&&management===true)
-     response.headers.set('Location',origin+'/admin');
-   }
-  }
- }
+ else response.headers.set('Location',origin+await accountHome(supabase,user));
  return response;
 }
