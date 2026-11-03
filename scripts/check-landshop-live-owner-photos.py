@@ -19,6 +19,7 @@ def checked_get(url, *, limit=22, attempts=3):
  last=None
  for attempt in range(attempts):
   try:
+   time.sleep(2)
    req=Request(url,headers={"User-Agent":"Landshop-Owner-Media-Release-Check","Cache-Control":"no-store"})
    with urlopen(req,timeout=limit) as response:
     if response.status!=200:
@@ -41,7 +42,7 @@ def check_photo(photo):
 
 failures=[]
 # Requests to shared hosting are deliberately bounded to avoid overload.
-with ThreadPoolExecutor(max_workers=4) as pool:
+with ThreadPoolExecutor(max_workers=1) as pool:
  futures={pool.submit(check_photo,photo):photo for photo in files}
  for future in as_completed(futures):
   photo=futures[future]
