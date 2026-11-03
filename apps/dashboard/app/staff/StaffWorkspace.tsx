@@ -143,7 +143,7 @@ export default function StaffWorkspace({userId,initialProfile,initialTasks,role,
  const go=(item:string)=>{setActiveTab(item);setMobileNav(false);setNotifyOpen(false)};
  const unviewed=tasks.filter(t=>!t.viewed_at&&t.status==='assigned').length;
  const filteredTasks=tasks.filter(t=>(t.title+' '+(t.details||'')).toLowerCase().includes(search.toLowerCase()));
- const roleLabel=(ownerActive?'Company Owner':verified?(approvedRole||'staff'):'Staff account · '+(profile?.requested_role||wanted)+' requested').replaceAll('_',' ').replace(/\b\w/g,x=>x.toUpperCase());
+ const roleLabel=(ownerActive?'Verified Company Owner':verified?(approvedRole||'staff'):'Staff (requested: '+(profile?.requested_role||wanted)+')').replaceAll('_',' ').replace(/\b\w/g,x=>x.toUpperCase());
  const kycLabel=(profile?.kyc_state||'not_started').replaceAll('_',' ');
  const todayAttendance=attendance.filter(a=>new Date(a.occurred_at).toLocaleDateString('en-CA',{timeZone:'Africa/Lagos'})===new Date().toLocaleDateString('en-CA',{timeZone:'Africa/Lagos'}));
  const lastClock=attendance[0];
@@ -274,7 +274,7 @@ export default function StaffWorkspace({userId,initialProfile,initialTasks,role,
    <main className="ls25-content">
     {message&&<div role="status" aria-live="polite" className="ls25-toast">{message}<button type="button" aria-label="Dismiss notice" onClick={()=>setMessage('')}>×</button></div>}
     {ownerActive&&<section className="ls25-owner-access" aria-labelledby="owner-command-title"><div className="ls25-owner-access-icon"><StaffGlyph name="briefcase" size={29}/></div><div className="ls25-owner-access-copy"><p>VERIFIED LANDSHOP OWNER</p><h2 id="owner-command-title">Your Global Command Center</h2><span>Manage properties, people, customers, applications, approvals, automation, operations and reports.</span></div><Link href="/admin" className="ls25-owner-access-cta">Open Global Command Center <span aria-hidden="true">↗</span></Link></section>}
-    {!verified&&!ownerActive&&<div className="ls25-account-active" role="status"><StaffGlyph name="shield" size={22}/><div><strong>Staff dashboard activated automatically</strong><p>Email confirmation gives immediate dashboard access. Internal task execution, attendance, employee ID and management functions require separate company authorization.</p></div></div>}
+    {!verified&&!ownerActive&&<div className="ls25-account-active" role="status"><StaffGlyph name="shield" size={22}/><div><strong>Staff account active · Management access not approved</strong><p>Your current workspace is Staff. Requested role: {(profile?.requested_role||wanted).replaceAll('_',' ')}. Choosing Owner or CEO at sign-up does not grant Command Center privileges. An authorized Landshop administrator must approve an active management membership. Complete your identity verification in My Profile &amp; KYC.</p></div></div>}
     {(activeTab==='dashboard'||activeTab==='overview')&&<section className="ls26-welcome ls26-staff-welcome">
       <div><small>LANDSHOP STAFF PORTAL</small><h2>Good day, {profile?.username||username||'team member'}</h2><p>Manage your work, attendance, reports and performance at a glance.</p><span className="ls26-pill">{verified?'Verified staff access':'Personal dashboard active'}</span></div>
     </section>}
