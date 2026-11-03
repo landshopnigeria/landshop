@@ -7,7 +7,7 @@ import {useEffect,useState,type FormEvent} from 'react';
 import Link from 'next/link';
 import {createBrowserClient} from '@supabase/ssr';
 const roles=[
- ['owner','Company Owner (Verification Required)'],['staff','Staff / Team Member'],['ceo','Chief Executive Officer (CEO)'],['founder','Founder'],['admin','Administrator'],['hr_officer','Human Resources Officer (HRO)'],
+ ['owner','Company Owner'],['staff','Staff / Team Member'],['ceo','Chief Executive Officer (CEO)'],['founder','Founder'],['admin','Administrator'],['hr_officer','Human Resources Officer (HRO)'],
  ['head_finance','Head of Finance'],['technology_officer','Technology Officer'],['technology_consultant','Technology Consultant'],['social_media_manager','Social Media Manager'],
  ['customer_service_manager','Customer Service Manager'],['department_manager','Department Manager'],['operations','Operations'],['marketing','Marketing'],['sales','Sales'],
  ['legal','Legal / Compliance'],['youth_corps','Youth Corps (NYSC)'],['intern','Intern / Internship']
@@ -59,7 +59,7 @@ export default function StaffSignUp(){
   setPendingEmail(v.email.trim().toLowerCase());
   setConfirmationPending(true);
   setResendCompleted(false);
-  setMsg(v.role==='owner'?'Confirm your email to open your staff dashboard. Company Owner privileges still require independent authorization.':'Check your email to activate your personal staff dashboard automatically. No management approval is needed to enter your dashboard.');
+  setMsg('Confirm your email to open your account. Existing company role entitlements are applied automatically when your account matches Landshop’s trusted organizational records. Choosing a title during registration does not create administrator permissions.');
  }catch(e){setMsg(e instanceof Error?e.message:'Unable to register')}finally{setBusy(false)}
  }
 
@@ -70,7 +70,7 @@ export default function StaffSignUp(){
  <div className="lsa-field"><label htmlFor="su-age">Age</label><input id="su-age" required type="number" min={18} max={120} inputMode="numeric" value={v.age} onChange={e=>update('age',e.target.value)} placeholder="Enter your age"/></div>
  <div className="lsa-field"><label htmlFor="su-gender">Gender</label><div className="lsa-select"><select id="su-gender" required value={v.gender} onChange={e=>update('gender',e.target.value)}><option value="" disabled>Select gender</option><option value="prefer_not_to_say">Prefer not to say</option><option value="female">Female</option><option value="male">Male</option><option value="non_binary">Other</option></select><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></div></div>
  <div className="lsa-field full"><label htmlFor="su-role">Requested staff role</label><div className="lsa-select"><select id="su-role" required value={v.role} onChange={e=>update('role',e.target.value)}><option value="" disabled>Select staff role</option>{roles.map(([key,name])=><option key={key} value={key}>{name}</option>)}</select><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></div>
- {v.role==='owner'&&<small className="lsa-owner-notice">Owner registration is a request. Verified owner access requires separate company authorization.</small>}</div>
+ {v.role==='owner'&&<small className="lsa-owner-notice">Your existing company role is recognized automatically from trusted Landshop records. Selecting Owner here does not create or change a privileged role.</small>}</div>
  <StaffPasswordField id="su-password" label="Password" autoComplete="new-password" minLength={12} value={v.password} onChange={value=>update('password',value)} placeholder="Create password"/>
  <StaffPasswordField id="su-confirm" label="Confirm password" autoComplete="new-password" minLength={12} value={v.confirm} onChange={value=>update('confirm',value)} placeholder="Confirm password"/>
  </div><div className="lsa-terms"><input type="checkbox" id="su-terms" required checked={acknowledged} onChange={e=>setAcknowledged(e.target.checked)}/><label htmlFor="su-terms">I have read the <a href="/staff/terms" target="_blank" rel="noopener noreferrer">Terms and Conditions</a></label></div>
