@@ -54,7 +54,23 @@ export default function StaffSignIn(){
     throw Error('Your email address needs confirmation. Enter it above and request another confirmation email.');
    }
    if(error||!data.user)throw Error(error?.message||'Unable to verify this account');
-   window.location.assign('/staff');
+   // Route only users with a verified, active Landshop management membership
+   // to the Command Center; self-selected signup titles are never authorization.
+   let landing='/staff';
+   const {data:members,error:memberError}=await db.from('organization_members')
+    .select('organization_id,role').eq('user_id',data.user.id).eq('status','active');
+   if(!memberError&&members?.length){
+    const qualified=members.filter(m=>['owner','ceo','founder','admin','technology_officer','technology_consultant'].includes(m.role));
+    if(qualified.length){
+     const [{data:organizations,error:orgError},{data:isManagement,error:managementError}]=await Promise.all([
+      db.from('organizations').select('id').eq('kind','landshop')
+       .in('id',qualified.map(m=>m.organization_id)),
+      db.rpc('landshop_is_management',{p_user:data.user.id})
+     ]);
+     if(!orgError&&organizations?.length&&!managementError&&isManagement===true)landing='/admin';
+    }
+   }
+   window.location.assign(landing);
   }catch(e){setMessage(e instanceof Error?e.message:'Login failed')}finally{setBusy(false)}
  }
 
