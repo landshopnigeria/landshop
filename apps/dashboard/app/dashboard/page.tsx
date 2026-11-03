@@ -34,7 +34,7 @@ export default async function Dashboard(){
  if(error||!user)redirect('https://portal.landshopnigeria.com/');
  const home=await accountHome(db,user);
  if(home!=='/dashboard')redirect(home);
- const [profileRes,appsRes,codeRes,summaryRes,walletRes,ticketsRes,propertyRes,referralActivityRes,rewardHistoryRes]=await Promise.all([
+ const [profileRes,appsRes,codeRes,summaryRes,walletRes,ticketsRes,propertyRes,referralActivityRes,rewardHistoryRes,paymentsRes,documentsRes]=await Promise.all([
   db.from('profiles').select('full_name,kyc_status').eq('id',user.id).maybeSingle(),
   db.from('applications').select('id,kind,status,created_at,answers',{count:'exact'}).eq('applicant_id',user.id).order('created_at',{ascending:false}).limit(4),
   db.from('referral_codes').select('code').eq('user_id',user.id).maybeSingle(),
@@ -43,9 +43,7 @@ export default async function Dashboard(){
   db.from('support_tickets').select('id,status',{count:'exact'}).eq('requester_id',user.id).limit(1),
   db.from('properties').select('id,title,slug,amount_kobo').eq('status','published').order('created_at',{ascending:false}).limit(1),
   db.rpc('landshop_referral_activity',{p_limit:15}),
-  db.from('referral_reward_events').select('id,created_at,description,status,direction,amount_kobo').eq('user_id',user.id).order('created_at',{ascending:false}).limit(12)
- ]);
- const [paymentsRes,documentsRes]=await Promise.all([
+  db.from('referral_reward_events').select('id,created_at,description,status,direction,amount_kobo').eq('user_id',user.id).order('created_at',{ascending:false}).limit(12),
   db.from('landshop_payment_intents').select('id,amount_kobo,currency,purpose,purpose_reference,status,verified_at,created_at')
    .eq('customer_id',user.id).order('created_at',{ascending:false}).limit(40),
   db.from('application_documents').select('id,document_type,created_at,application_id')
