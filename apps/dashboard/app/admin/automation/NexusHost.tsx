@@ -262,7 +262,7 @@ export default function NexusHost({initial,html}:{initial:Flow[];html:string}){
  const chooseOptions=choices.map(e=>({id:e.to,label:currentRun?.context.graph_snapshot?.nodes.find(n=>n.id===e.to)?.label||'Next step'}));
  return <main className="nexus-host">
   <div className="nexus-host-toolbar">
-   <div className="nexus-host-title"><Link href="/admin" aria-label="Return to Command Center">←</Link><span>NEXUS <strong>Enterprise Studio</strong></span></div>
+   <div className="nexus-host-title"><Link href="/admin" aria-label="Return to Command Center">←</Link><span>Automation <strong>Operating System</strong></span></div>
    <label className="nexus-host-select">Saved workflows
     <select aria-label="Select a saved automation" value={active} onChange={e=>choose(e.target.value)}>
      <option value="">New workflow</option>
@@ -277,9 +277,9 @@ export default function NexusHost({initial,html}:{initial:Flow[];html:string}){
    <span className="nexus-host-status" role="status" title={status}>{status}</span>
    <button type="button" onClick={()=>{post('focus-on');window.dispatchEvent(new CustomEvent('landshop-canvas-focus',{detail:true}))}}>Full canvas</button><Link href="/admin/communications">Email automation →</Link>
   </div>
-  <iframe ref={iframe} title="Landshop NEXUS visual automation workflow studio" className="nexus-host-frame"
+  <iframe ref={iframe} title="Landshop Automation Operating System" className="nexus-host-frame"
    sandbox="allow-scripts allow-downloads" srcDoc={html} onLoad={()=>post('hello')}/>
-  {runtimeOpen&&<aside className="nexus-run-drawer nexus-runtime-monitor" aria-label="NEXUS durable execution queue">
+  {runtimeOpen&&<aside className="nexus-run-drawer nexus-runtime-monitor" aria-label="Automation execution queue">
    <header><div><small>ATOMIC QUEUE & RECOVERY</small><strong>Runtime Monitor</strong></div>
     <button type="button" onClick={()=>setRuntimeOpen(false)} aria-label="Close runtime monitor">×</button></header>
    <p>Durable, version-snapshotted preview jobs only. The worker requires separate deployment. No external posts, email, social group actions, payments or device commands are executed by this engine.</p>
