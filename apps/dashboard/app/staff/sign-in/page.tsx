@@ -1,4 +1,5 @@
 'use client';
+import {accountHome} from '../../../../../packages/shared/account-home';
 import {useEffect,useState,type FormEvent} from 'react';
 import StaffAuthShell,{StaffAuthLogo} from '../StaffAuthShell';
 import StaffPasswordField from '../StaffPasswordField';
@@ -15,7 +16,8 @@ export default function StaffSignIn(){
  const [email,setEmail]=useState(''),[password,setPassword]=useState(''),[busy,setBusy]=useState(false),[message,setMessage]=useState('');
  const [showConfirmationRecovery,setShowConfirmationRecovery]=useState(false),[resendCompleted,setResendCompleted]=useState(false);
  useEffect(()=>{
-  const reason=new URLSearchParams(window.location.search).get('error');
+  const params=new URLSearchParams(window.location.search);
+  const reason=params.get('error');
   if(reason&&Object.prototype.hasOwnProperty.call(callbackErrors,reason)){
    setMessage(callbackErrors[reason]);
    setShowConfirmationRecovery(confirmationRecoveryErrors.has(reason));
@@ -54,22 +56,11 @@ export default function StaffSignIn(){
     throw Error('Your email address needs confirmation. Enter it above and request another confirmation email.');
    }
    if(error||!data.user)throw Error(error?.message||'Unable to verify this account');
-   // Route only users with a verified, active Landshop management membership
-   // to the Command Center; self-selected signup titles are never authorization.
-   let landing='/staff';
-   const {data:members,error:memberError}=await db.from('organization_members')
-    .select('organization_id,role').eq('user_id',data.user.id).eq('status','active');
-   if(!memberError&&members?.length){
-    const qualified=members.filter(m=>['owner','ceo','founder','admin','technology_officer','technology_consultant'].includes(m.role));
-    if(qualified.length){
-     const [{data:organizations,error:orgError},{data:isManagement,error:managementError}]=await Promise.all([
-      db.from('organizations').select('id').eq('kind','landshop')
-       .in('id',qualified.map(m=>m.organization_id)),
-      db.rpc('landshop_is_management',{p_user:data.user.id})
-     ]);
-     if(!orgError&&organizations?.length&&!managementError&&isManagement===true)landing='/admin';
-    }
-   }
+   let landing=await accountHome(db,data.user);
+   const requested=new URLSearchParams(window.location.search).get('next');
+   // Only same-origin Command Center paths; never accept an external redirect.
+   if(landing==='/admin'&&requested&&/^\/admin(?:\/|\?|$)/.test(requested)&&!/[\\\r\n]/.test(requested))
+    landing=requested;
    window.location.assign(landing);
   }catch(e){setMessage(e instanceof Error?e.message:'Login failed')}finally{setBusy(false)}
  }

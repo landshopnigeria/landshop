@@ -3,7 +3,7 @@ import {requireLandshopStaff} from '../../../lib/admin-access';
 export const dynamic='force-dynamic';
 export const metadata={title:'Support Cases | Landshop Command Center'};
 export default async function SupportQueue(){
- const {db}=await requireLandshopStaff(['owner','admin','operations']);
+ const {db}=await requireLandshopStaff(['owner','ceo','founder','technology_officer','technology_consultant','admin','operations']);
  const {data,error}=await db.from('support_tickets')
   .select('id,subject,category,status,priority,created_at').order('created_at',{ascending:false}).limit(150);
  return <main style={{minHeight:'100vh',background:'#f3f8f4',color:'#113e34',padding:'clamp(22px,5vw,60px)',fontFamily:'Arial,sans-serif'}}>

@@ -1,0 +1,10 @@
+'use client';
+import {useEffect,useState} from 'react';
+import {createBrowserClient} from '@supabase/ssr';
+export default function RealtorRegistration({userId}:{userId:string}){
+ const [number,setNumber]=useState(''),[issuer,setIssuer]=useState(''),[busy,setBusy]=useState(false),[message,setMessage]=useState('');
+ function db(){return createBrowserClient(process.env.NEXT_PUBLIC_SUPABASE_URL!,process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,{cookieOptions:{domain:'.landshopnigeria.com',path:'/',secure:true,sameSite:'lax'}})}
+ useEffect(()=>{let active=true;void db().from('landshop_realtor_registrations').select('registration_number,issuing_body').eq('user_id',userId).maybeSingle().then(({data,error})=>{if(active){if(data){setNumber(data.registration_number);setIssuer(data.issuing_body)}if(error)setMessage('Registration records are temporarily unavailable.')}});return()=>{active=false}},[userId]);
+ async function save(){setBusy(true);setMessage('');try{const {error}=await db().from('landshop_realtor_registrations').upsert({user_id:userId,registration_number:number.trim(),issuing_body:issuer.trim(),updated_at:new Date().toISOString()});if(error)throw error;setMessage('Registration details saved and available to Landshop management.')}catch{setMessage('Registration details could not be saved. Please try again.')}finally{setBusy(false)}}
+ return <section style={{padding:22,background:'white',border:'1px solid #d9e7df',borderRadius:16,margin:'20px 0'}}><h2>Realtor registration</h2><p>If you are a realtor, record your issued registration number here. Submission does not verify a licence or grant management access.</p><form onSubmit={e=>{e.preventDefault();void save()}} style={{display:'flex',gap:14,flexWrap:'wrap',alignItems:'end'}}><label>Registration number <input required minLength={2} maxLength={80} value={number} onChange={e=>setNumber(e.target.value)}/></label><label>Issuing organization <input maxLength={160} value={issuer} onChange={e=>setIssuer(e.target.value)}/></label><button disabled={busy}>{busy?'Saving…':'Save registration'}</button></form>{message&&<p role="status">{message}</p>}</section>;
+}

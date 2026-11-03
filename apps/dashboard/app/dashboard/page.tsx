@@ -1,3 +1,4 @@
+import {accountHome} from '../../../../packages/shared/account-home';
 import InvestorOverview from './InvestorOverview';
 import CustomerNavigation from './CustomerNavigation';
 import {redirect} from 'next/navigation';
@@ -31,6 +32,8 @@ export default async function Dashboard(){
   cookies:{getAll(){return store.getAll()},setAll(changes){try{changes.forEach(({name,value,options})=>store.set(name,value,options))}catch{}}}});
  const {data:{user},error}=await db.auth.getUser();
  if(error||!user)redirect('https://portal.landshopnigeria.com/');
+ const home=await accountHome(db,user);
+ if(home!=='/dashboard')redirect(home);
  const [profileRes,appsRes,codeRes,summaryRes,walletRes,ticketsRes,propertyRes,referralActivityRes,rewardHistoryRes]=await Promise.all([
   db.from('profiles').select('full_name,kyc_status').eq('id',user.id).maybeSingle(),
   db.from('applications').select('id,kind,status,created_at,answers',{count:'exact'}).eq('applicant_id',user.id).order('created_at',{ascending:false}).limit(4),

@@ -59,6 +59,8 @@ jobs:
         run: python3 scripts/verify-project-photo-governance.py
       - name: Verify Supabase index migration and 12-character signup guardrails
         run: python3 scripts/verify-landshop-supabase-security-baseline.py
+      - name: Verify account destination separation
+        run: node --experimental-strip-types --test packages/shared/account-home.test.mjs
       - name: Enforce explicit grants for newly introduced privileged Supabase functions
         run: python3 scripts/verify-landshop-privileged-rpc-migrations.py
       - name: Verify no-cost compromised-password screening in customer and staff auth
@@ -210,7 +212,7 @@ jobs:
               grep -Fq 'ls25-owner-access-cta' apps/dashboard/app/staff/StaffWorkspace.tsx || { echo "::error::Owner Command Center call to action missing"; exit 1; }
               grep -Fq "member.role==='owner'||(!ownerOnly" apps/dashboard/lib/admin-access.ts || { echo "::error::Global owner access across Command Center modules missing"; exit 1; }
               grep -Fq 'landshop_is_management' apps/dashboard/lib/admin-access.ts || { echo "::error::Owner authorization still requires live management RPC"; exit 1; }
-              grep -Fq 'href="/staff">Staff Dashboard</Link>' apps/dashboard/app/admin/page.tsx || { echo "::error::Return to Staff Dashboard missing"; exit 1; }
+              grep -Fq 'href="/staff?workspace=personal">Staff Dashboard</Link>' apps/dashboard/app/admin/page.tsx || { echo "::error::Return to Staff Dashboard missing"; exit 1; }
               echo "Verified owner full Command Center and two-way staff navigation checks passed"
               echo "Automatic dashboard activation with protected internal permissions verified"
               echo "Approved staff sign-in and sign-up UI regression smoke passed"

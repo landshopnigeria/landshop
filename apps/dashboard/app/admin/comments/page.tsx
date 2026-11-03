@@ -11,8 +11,8 @@ async function staffClient(){
  const store=await cookies();
  const db=createServerClient(url,key,{cookieOptions:{domain:'.landshopnigeria.com',path:'/',secure:true,sameSite:'lax'},cookies:{getAll(){return store.getAll()},setAll(changes){try{changes.forEach(({name,value,options})=>store.set(name,value,options))}catch{}}}});
  const {data:{user},error}=await db.auth.getUser();
- if(error||!user||user.is_anonymous)redirect('https://portal.landshopnigeria.com/');
- const {data:members}=await db.from('organization_members').select('organization_id,role').eq('user_id',user.id).eq('status','active').in('role',['owner','admin','operations']);
+ if(error||!user||user.is_anonymous)redirect('/staff/sign-in');
+ const {data:members}=await db.from('organization_members').select('organization_id,role').eq('user_id',user.id).eq('status','active').in('role',['owner','ceo','founder','admin','technology_officer','technology_consultant','operations']);
  if(!members?.length)throw Error('Staff access required');
  const {data:orgs}=await db.from('organizations').select('id').eq('kind','landshop').in('id',members.map(m=>m.organization_id));
  if(!orgs?.length)throw Error('Landshop staff membership required');

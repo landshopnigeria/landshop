@@ -1,4 +1,5 @@
 'use client';
+import RealtorRegistration from '../../components/RealtorRegistration';
 import BrandedSelect from '../../components/BrandedSelect';
 
 import {useEffect,useState,type FormEvent,type ReactNode} from 'react';
@@ -234,7 +235,7 @@ export default function StaffWorkspace({userId,initialProfile,initialTasks,role,
  const menuName:Record<string,string>={dashboard:'Staff Dashboard',overview:'Work Overview',profile:'My Profile',attendance:'Attendance',tasks:'Assigned Tasks',daily:'Work Reports',performance:'My Performance'};
  // Until both identity verification and an active Landshop membership are present,
  // show only onboarding and approval status—not the employee command dashboard.
- if(!dashboardActive)return <StaffAuthShell><section className="ls25-applicant" aria-labelledby="staff-onboarding-title">
+ if(!dashboardActive)return <StaffAuthShell><RealtorRegistration userId={userId}/><section className="ls25-applicant" aria-labelledby="staff-onboarding-title">
   <div className="ls25-applicant-heading"><p>LANDSHOP STAFF PORTAL</p>
    <h1 id="staff-onboarding-title">{(profile?.requested_role||wanted)==='owner'?'Owner':'Staff'} <span>registration</span></h1>
    <p>{!profile?'Complete your registration to request '+(wanted==='owner'?'company ownership':'staff access')+'.':
@@ -272,6 +273,7 @@ export default function StaffWorkspace({userId,initialProfile,initialTasks,role,
     </div>
    </header>
    <main className="ls25-content">
+    <RealtorRegistration userId={userId}/>
     {message&&<div role="status" aria-live="polite" className="ls25-toast">{message}<button type="button" aria-label="Dismiss notice" onClick={()=>setMessage('')}>×</button></div>}
     {ownerActive&&<section className="ls25-owner-access" aria-labelledby="owner-command-title"><div className="ls25-owner-access-icon"><StaffGlyph name="briefcase" size={29}/></div><div className="ls25-owner-access-copy"><p>VERIFIED LANDSHOP OWNER</p><h2 id="owner-command-title">Your Global Command Center</h2><span>Manage properties, people, customers, applications, approvals, automation, operations and reports.</span></div><Link href="/admin" className="ls25-owner-access-cta">Open Global Command Center <span aria-hidden="true">↗</span></Link></section>}
     {!verified&&!ownerActive&&<div className="ls25-account-active" role="status"><StaffGlyph name="shield" size={22}/><div><strong>Staff account active · Management access not approved</strong><p>Your current workspace is Staff. Requested role: {(profile?.requested_role||wanted).replaceAll('_',' ')}. Choosing Owner or CEO at sign-up does not grant Command Center privileges. An authorized Landshop administrator must approve an active management membership. Complete your identity verification in My Profile &amp; KYC.</p></div></div>}

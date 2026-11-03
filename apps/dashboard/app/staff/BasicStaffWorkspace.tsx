@@ -1,4 +1,5 @@
 'use client';
+import RealtorRegistration from '../../components/RealtorRegistration';
 import {useEffect,useState} from 'react';
 import Link from 'next/link';
 import {createBrowserClient} from '@supabase/ssr';
@@ -114,7 +115,7 @@ export default function BasicStaffWorkspace({profile,tasks,email,userId}:{profil
     {section==='tasks'&&<StaffWorkActions active initialTasks={tasks}/>}
     {section==='reports'&&<><StaffWorkActions active initialTasks={tasks}/><StaffReportHistory userId={userId}/></>}
     {section==='attendance'&&<section className="ls-basic-card"><h3>Staff Attendance</h3><p>Your personal dashboard is active, but GPS-based clock-in and clock-out require verified employee identity and authorized attendance access.</p><p><strong>Identity review:</strong> {kycState.replaceAll('_',' ')}</p><button type="button" onClick={()=>navigate('kyc')}>View verification requirements <span aria-hidden="true">→</span></button><p>Once your identity is approved, attendance, history and performance controls become available in your full staff workspace.</p></section>}
-    <footer className="ls-basic-footer"><Link href="https://www.landshopnigeria.com">Landshop website <span aria-hidden="true">↗</span></Link><span>© {new Date().getFullYear()} Landshop</span></footer>
+    <RealtorRegistration userId={userId}/><footer className="ls-basic-footer"><Link href="https://www.landshopnigeria.com">Landshop website <span aria-hidden="true">↗</span></Link><span>© {new Date().getFullYear()} Landshop</span></footer>
    </div>
   </div>
  </div>;

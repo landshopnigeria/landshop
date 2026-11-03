@@ -6,7 +6,7 @@ const esc=(x:unknown)=>{
  const raw=String(x??'');
  // Spreadsheet software interprets leading =, +, -, @, tabs and newlines as formulas.
  // Escape untrusted cells so an exported customer field cannot execute a formula.
- const safe=/^[\\s]*[=+@-]/.test(raw)||/^[\\t\\r\\n]/.test(raw)?"'"+raw:raw;
+ const safe=/^\s*[=+@-]/.test(raw)||/^[\t\r\n]/.test(raw)?"'"+raw:raw;
  return '"'+safe.replaceAll('"','""')+'"';
 };
 export default function ExportRecords({rows,basename}:{rows:Row[];basename:string}){
@@ -22,7 +22,7 @@ export default function ExportRecords({rows,basename}:{rows:Row[];basename:strin
    blob=new Blob([new Uint8Array(wordDocument(rows,basename.replaceAll('-',' ')))],{type:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
   }else{
    const content=format==='json'?JSON.stringify(rows,null,2):
-    [headers.map(esc).join(','),...rows.map(row=>headers.map(k=>esc(row[k])).join(','))].join('\\r\\n');
+    [headers.map(esc).join(','),...rows.map(row=>headers.map(k=>esc(row[k])).join(','))].join('\r\n');
    blob=new Blob([content],{type:format==='csv'?'text/csv;charset=utf-8':'application/json;charset=utf-8'});
   }
   const url=URL.createObjectURL(blob);const a=document.createElement('a');

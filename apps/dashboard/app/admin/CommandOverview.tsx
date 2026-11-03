@@ -19,8 +19,8 @@ export default function CommandOverview({metrics,tasks,reports,drafts,pendingKyc
  const actions=[
   {label:'Approvals',detail:'Review & approve',icon:'✓',url:'/admin/properties/import/review'},
   {label:'People & Staff',detail:'Roles, verify, suspend',icon:'♙',url:'/admin/staff'},
-  {label:'Customers',detail:'Customer activity',icon:'♧',url:'/admin/customer-activity'},
-  {label:'Performance',detail:'Staff reports',icon:'▥',url:'/admin/reports'},
+  {label:'Customers',detail:'Profiles & submissions',icon:'♧',url:'/admin/users'},
+  {label:'Performance',detail:'Staff reports',icon:'▥',url:'/admin/reports/staff'},
   {label:'Portfolio',detail:'Properties & applications',icon:'▦',url:'/admin/properties'}
  ];
  const exports=[
@@ -32,8 +32,8 @@ export default function CommandOverview({metrics,tasks,reports,drafts,pendingKyc
  const alerts=[
   {label:'Draft properties awaiting verification',value:drafts,url:'/admin/properties',priority:'Review'},
   {label:'Identity verification queue',value:pendingKyc,url:'/admin/kyc',priority:'Review'},
-  {label:'Staff reports needing review',value:reports,url:'/admin/staff',priority:'Review'},
-  {label:'Total staff assignments',value:tasks,url:'/admin/staff',priority:'Overview'}
+  {label:'Staff reports needing review',value:reports,url:'/admin/reports/staff',priority:'Review'},
+  {label:'Total staff assignments',value:tasks,url:'/admin/workforce',priority:'Overview'}
  ];
  return <section className="ls26-command-overview" aria-labelledby="ls26-command-heading">
   <div className="ls26-welcome ls26-command-welcome"><div><small>LANDSHOP ENTERPRISE</small><h1 id="ls26-command-heading">Global Command Center</h1><p>Enterprise operations, staff, customers, estates and verified financial activity in one controlled workspace.</p></div></div>
@@ -64,9 +64,9 @@ export default function CommandOverview({metrics,tasks,reports,drafts,pendingKyc
    </section>
    <section className="ls26-panel"><div className="ls26-panel-heading"><h3>Operational Queues</h3><Link href="/admin/staff">Staff Management <span aria-hidden="true">→</span></Link></div><div className="ls26-queue-list">
     <Link href="/admin/kyc"><strong>{number(pendingKyc)}</strong><span>KYC cases requiring review</span><b aria-hidden="true">→</b></Link>
-    <Link href="/admin/staff"><strong>{number(reports)}</strong><span>Staff submissions awaiting review</span><b aria-hidden="true">→</b></Link>
+    <Link href="/admin/reports/staff"><strong>{number(reports)}</strong><span>Staff submissions awaiting review</span><b aria-hidden="true">→</b></Link>
     <Link href="/admin/properties"><strong>{number(drafts)}</strong><span>Draft property records</span><b aria-hidden="true">→</b></Link>
-    <Link href="/admin/staff"><strong>{number(tasks)}</strong><span>Staff tasks</span><b aria-hidden="true">→</b></Link>
+    <Link href="/admin/workforce"><strong>{number(tasks)}</strong><span>Staff tasks</span><b aria-hidden="true">→</b></Link>
    </div></section>
   </div>
  </section>;

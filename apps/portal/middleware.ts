@@ -24,7 +24,11 @@ export async function middleware(request: NextRequest) {
    }
   }
  });
- await supabase.auth.getUser(); // refresh & validate; page-level authorization stays mandatory
+ const {data:{user}}=await supabase.auth.getUser();
+ if(user){
+  const {data:state,error}=await supabase.rpc('landshop_my_account_state');
+  if(error||state!=='active')return NextResponse.redirect('https://app.landshopnigeria.com/account-unavailable',{headers:{'Cache-Control':'private, no-store'}});
+ }
  return response;
 }
 

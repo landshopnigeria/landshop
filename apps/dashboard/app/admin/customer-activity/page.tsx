@@ -33,7 +33,7 @@ export default async function CustomerActivity(){
        <td style={{padding:13,borderTop:'1px solid #edf1ef',fontFamily:'monospace'}}>{r.customer_id?r.customer_id.slice(0,12)+'…':'Unlinked'}</td>
        <td style={{padding:13,borderTop:'1px solid #edf1ef'}}>{r.stage}</td>
        <td style={{padding:13,borderTop:'1px solid #edf1ef'}}>{new Date(r.happened_at).toLocaleString('en-NG',{timeZone:'Africa/Lagos'})}</td>
-       <td style={{padding:13,borderTop:'1px solid #edf1ef'}}><Link href={targets[r.activity_type]||'/admin'}>Open queue</Link></td>
+       <td style={{padding:13,borderTop:'1px solid #edf1ef'}}><Link href={r.activity_type==='application'?'/admin/applications/'+r.record_id:r.activity_type==='kyc_submission'?'/admin/kyc/'+r.record_id:r.activity_type==='support_ticket'?'/admin/support/'+r.record_id:targets[r.activity_type]||'/admin'}>Open queue</Link></td>
       </tr>)}</tbody>
      </table>
      {rows.length===0&&<p style={{padding:22}}>No customer activity recorded in these operational sources yet.</p>}

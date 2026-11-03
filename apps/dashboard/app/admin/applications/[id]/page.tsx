@@ -5,7 +5,7 @@ export const dynamic='force-dynamic';
 export default async function ReviewApplication({params}:{params:Promise<{id:string}>}){
  const {id}=await params;
  if(!/^[0-9a-f]{8}-[0-9a-f-]{27,36}$/i.test(id))notFound();
- const {db}=await requireLandshopStaff(['owner','admin','operations','legal','finance']);
+ const {db}=await requireLandshopStaff(['owner','ceo','founder','technology_officer','technology_consultant','admin','operations','legal','finance']);
  const {data,error}=await db.from('applications').select('id,applicant_id,kind,status,created_at,answers').eq('id',id).maybeSingle();
  if(error||!data)notFound();
  const {data:documents}=await db.from('application_documents').select('id,document_type,created_at').eq('application_id',id);

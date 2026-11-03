@@ -24,7 +24,7 @@ CHECKS=(
     ("https://app.landshopnigeria.com/auth/callback",
      "https://app.landshopnigeria.com/staff/sign-in?error=missing_confirmation",True),
     ("https://app.landshopnigeria.com/admin",
-     "https://app.landshopnigeria.com/staff/sign-in",True),
+     "https://app.landshopnigeria.com/staff/sign-in?next=%2Fadmin",True),
     ("https://app.landshopnigeria.com/staff",
      "https://app.landshopnigeria.com/staff/sign-in",False),
     ("https://app.landshopnigeria.com/dashboard",

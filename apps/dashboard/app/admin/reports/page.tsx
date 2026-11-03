@@ -3,7 +3,7 @@ import {requireLandshopStaff} from '../../../lib/admin-access';
 export const dynamic='force-dynamic';
 export const metadata={title:'Operational Reports | Landshop'};
 export default async function Reports(){
- const {db}=await requireLandshopStaff(['owner','admin','executive','operations','legal','finance']);
+ const {db}=await requireLandshopStaff(['owner','ceo','founder','technology_officer','technology_consultant','admin','executive','operations','legal','finance']);
  const categories=[['Property Inventory','properties'],['Applications','applications'],['KYC Submissions','kyc_submissions'],['Property Imports','property_import_batches'],['Allocation Cases','allocation_cases'],['Automation Runs','automation_runs']];
  const counts=await Promise.all(categories.map(async ([label,table])=>{
   const {count,error}=await db.from(table).select('*',{count:'exact',head:true});

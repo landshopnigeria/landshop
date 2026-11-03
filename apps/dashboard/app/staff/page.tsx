@@ -1,3 +1,4 @@
+import {accountHome} from '../../../../packages/shared/account-home';
 import {cookies} from 'next/headers';
 import {redirect} from 'next/navigation';
 import {createServerClient} from '@supabase/ssr';
@@ -7,13 +8,16 @@ import BasicStaffWorkspace from './BasicStaffWorkspace';
 import StaffReportHistory from './StaffReportHistory';
 export const dynamic='force-dynamic';
 export const metadata={title:'My Staff Dashboard | Landshop'};
-export default async function Page(){
+export default async function Page({searchParams}:{searchParams:Promise<{workspace?:string}>}){
  const url=process.env.NEXT_PUBLIC_SUPABASE_URL,key=process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
  if(!url||!key)return <main>Staff authentication service is unavailable.</main>;
  const store=await cookies();
  const db=createServerClient(url,key,{cookieOptions:{domain:'.landshopnigeria.com',path:'/',sameSite:'lax',secure:true},
  cookies:{getAll(){return store.getAll()},setAll(items){try{items.forEach(i=>store.set(i.name,i.value,i.options))}catch{}}}});
  const {data:{user},error}=await db.auth.getUser();if(error||!user)redirect('/staff/sign-in');
+ const home=await accountHome(db,user);
+ if(home==='/admin'&&(await searchParams).workspace!=='personal')redirect('/admin');
+ if(home==='/dashboard')redirect('/dashboard');
  // A registered email or requested role does not establish workforce access.
  // Resolve the authoritative backend work gate before retrieving any task data.
  // A verified owner is authorized by an audited, active organization membership,

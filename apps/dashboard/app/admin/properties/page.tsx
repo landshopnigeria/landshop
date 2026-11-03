@@ -16,7 +16,7 @@ export default async function Page(){
    cookies:{getAll(){return store.getAll()},setAll(changes){try{changes.forEach(({name,value,options})=>store.set(name,value,options))}catch{}}}
  });
  const {data:{user},error:authError}=await db.auth.getUser();
- if(authError||!user)redirect('https://portal.landshopnigeria.com/');
+ if(authError||!user)redirect('/staff/sign-in');
  const {data:members,error:membersError}=await db.from('organization_members')
   .select('organization_id,role').eq('user_id',user.id).eq('status','active');
  if(membersError||!members?.length)return <main style={{padding:40}}>Access denied.</main>;

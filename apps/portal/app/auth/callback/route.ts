@@ -1,3 +1,4 @@
+import {accountHome} from '../../../../../packages/shared/account-home';
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 
@@ -11,7 +12,6 @@ export async function GET(request:NextRequest) {
  const code=request.nextUrl.searchParams.get('code');
  const tokenHash=request.nextUrl.searchParams.get('token_hash');
  const type=request.nextUrl.searchParams.get('type');
- const staffFlow=request.nextUrl.searchParams.get('flow')==='staff';
  const origin='https://portal.landshopnigeria.com';
  if(!code && !tokenHash)return callbackFailure('missing_code');
  // Keep the response object that receives authentication cookies.
@@ -49,8 +49,8 @@ export async function GET(request:NextRequest) {
       user.user_metadata?.staff_signup!==true) {
     await supabase.rpc('landshop_claim_signup_referral',{p_code:invite});
   }
-  if(staffFlow||user?.user_metadata?.staff_signup===true)
-    response.headers.set('Location','https://app.landshopnigeria.com/staff');
+  const landing=await accountHome(supabase,user);
+  response.headers.set('Location','https://app.landshopnigeria.com'+landing);
  }
  return response;
 }
