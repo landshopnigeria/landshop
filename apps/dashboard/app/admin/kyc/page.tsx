@@ -31,7 +31,7 @@ export default async function KycQueue(){
   .in('status',['submitted','review'])
   .order('created_at',{ascending:true}).limit(100);
  return <main style={{fontFamily:'Arial,sans-serif',padding:'clamp(18px,5vw,60px)',background:'#f4faf6',minHeight:'100vh',color:'#073c32'}}>
-  <a href="/dashboard">Landshop</a><h1>KYC Review Queue</h1>
+  <a href="/admin">Landshop</a><h1>KYC Review Queue</h1>
   <p>Authorized Landshop staff view. Applications require document review and audited decisions before approval can be activated.</p>
   {queueError?<p role="alert">The KYC review queue is not available. Verify the database migration and access policies.</p>:
    !submissions?.length?<p>No submitted KYC applications are currently visible.</p>:

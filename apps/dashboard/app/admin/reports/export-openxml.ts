@@ -42,7 +42,7 @@ function zip(files:Record<string,string>):Uint8Array{
 }
 function excelColumn(number:number){let letters='';for(let n=number+1;n>0;n=Math.floor((n-1)/26)){letters=String.fromCharCode(65+(n-1)%26)+letters}return letters}
 export function excelWorkbook(rows:Row[]):Uint8Array{
- const keys=Object.keys(rows[0]||{});
+ const keys=Array.from(new Set(rows.flatMap(row=>Object.keys(row))));
  const cells=(values:Cell[],i:number)=>values.map((value,j)=>{
   const ref=excelColumn(j)+(i+1);
   // All user-controlled values are text, preventing spreadsheet formula execution.
@@ -60,7 +60,7 @@ export function excelWorkbook(rows:Row[]):Uint8Array{
  });
 }
 export function wordDocument(rows:Row[],title:string):Uint8Array{
- const keys=Object.keys(rows[0]||{});
+ const keys=Array.from(new Set(rows.flatMap(row=>Object.keys(row))));
  const cell=(value:unknown,header=false)=>'<w:tc><w:p><w:r>'+(header?'<w:rPr><w:b/></w:rPr>':'')+'<w:t xml:space="preserve">'+xml(value)+'</w:t></w:r></w:p></w:tc>';
  const table='<w:tbl><w:tblPr><w:tblW w:w="0" w:type="auto"/></w:tblPr>'+
   '<w:tr>'+keys.map(k=>cell(k,true)).join('')+'</w:tr>'+

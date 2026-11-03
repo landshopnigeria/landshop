@@ -196,10 +196,12 @@ export default function NexusHost({initial,html}:{initial:Flow[];html:string}){
     return;
    }
    if(message.type==='save')void save(message.payload);
+   if(message.type==='focus')window.dispatchEvent(new CustomEvent('landshop-canvas-focus',{detail:message.payload===true}));
   }
   window.addEventListener('message',onMessage);
   return()=>window.removeEventListener('message',onMessage);
  },[post,save]);
+ useEffect(()=>{const restore=()=>post('restore-focus');window.addEventListener('landshop-canvas-restore',restore);return()=>{window.removeEventListener('landshop-canvas-restore',restore);window.dispatchEvent(new CustomEvent('landshop-canvas-focus',{detail:false}))}},[post]);
  const refreshRuntime=useCallback(async()=>{
   const {data,error}=await db.from('automation_runtime_jobs')
    .select('id,run_id,status,attempts,available_at,created_at,last_error_code')
@@ -273,7 +275,7 @@ export default function NexusHost({initial,html}:{initial:Flow[];html:string}){
    <button type="button" onClick={()=>{setRuntimeOpen(v=>!v);setHistoryOpen(false)}}>Runtime monitor</button>
    <button type="button" onClick={()=>{setHistoryOpen(v=>!v);setRuntimeOpen(false);if(!historyOpen)void refreshRuns(activeRef.current)}} disabled={!active}>Run history</button>
    <span className="nexus-host-status" role="status" title={status}>{status}</span>
-   <span className="nexus-host-locked">External publishing locked</span>
+   <button type="button" onClick={()=>window.dispatchEvent(new CustomEvent('landshop-canvas-focus',{detail:true}))}>Full canvas</button><Link href="/admin/communications">Email automation →</Link>
   </div>
   <iframe ref={iframe} title="Landshop NEXUS visual automation workflow studio" className="nexus-host-frame"
    sandbox="allow-scripts allow-downloads" srcDoc={html} onLoad={()=>post('hello')}/>

@@ -1,3 +1,4 @@
+import FullExport from './FullExport';
 import Link from 'next/link';
 import {requireLandshopStaff} from '../../../lib/admin-access';
 export const dynamic='force-dynamic';
@@ -20,6 +21,6 @@ export default async function Reports(){
    <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(220px,1fr))',gap:16,marginTop:30}}>
     {counts.map(item=><article key={item.label} style={{background:'white',border:'1px solid #d6e9df',borderRadius:18,padding:23}}><small>{item.label}</small><h2 style={{fontSize:36,margin:'12px 0'}}>{item.count===null?'—':item.count.toLocaleString('en-NG')}</h2><span style={{fontSize:12,color:'#557a69'}}>{item.count===null?'Restricted or unavailable':'Records visible to your role'}</span></article>)}
    </div><p style={{fontSize:12,color:'#547566',marginTop:32}}>Scope: current authorized Landshop records. Date-based performance, cash collections and financial recognition require separately defined and reconciled source data.</p>
-  </section>
+  <FullExport/></section>
  </main>;
 }

@@ -36,6 +36,8 @@ jobs:
           package-manager-cache: false
       - name: Install dependencies
         run: npm install --no-audit --no-fund
+      - name: Verify Command Center navigation, content safety and export integrity
+        run: node scripts/verify-command-center.mjs
       - name: Block high or critical production dependency advisories
         run: npm audit --omit=dev --audit-level=high
       - name: Compile production release checks without network requests

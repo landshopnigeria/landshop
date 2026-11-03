@@ -12,6 +12,7 @@ export default function AccountDirectory(){
   const {data,error}=await db().rpc('landshop_command_directory',{p_search:search,p_offset:offset,p_limit:50});
   if(error)throw error;setRows(data.rows||[]);setTotal(data.total||0);
  }catch{setRows([]);setMessage('Records could not be loaded. Check your management session and the directory migration.')}finally{setBusy(false)}},[search,offset]);
+ useEffect(()=>{const value=new URLSearchParams(window.location.search).get('search');if(value){setQuery(value);setSearch(value)}},[]);
  useEffect(()=>{void load()},[load]);
  async function save(){if(!selected)return;setBusy(true);setMessage('');try{
   const {error}=await db().rpc('landshop_command_update_profile',{p_user:selected.id,p_name:name,p_phone:phone,p_reason:reason});
