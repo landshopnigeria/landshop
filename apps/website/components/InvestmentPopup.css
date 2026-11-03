@@ -1,7 +1,7 @@
 .ls-investment-overlay{position:fixed;inset:0;z-index:99999;display:grid;place-items:center;padding:20px;background:rgba(7,30,26,.57);backdrop-filter:blur(5px);animation:ls-investment-overlay-in .25s ease-out}
-.ls-investment-popup{position:relative;width:min(100%,460px);max-height:min(92dvh,750px);overflow:auto;background:#fff;color:#243a32;border-radius:22px;box-shadow:0 25px 90px rgba(0,0,0,.25);animation:ls-investment-popup-in .28s ease-out}
-.ls-investment-photo{height:180px;background:#e6efe8 url('/owner/2026/slider-01.webp') center/cover no-repeat}
-.ls-investment-content{padding:26px 28px 24px}
+.ls-investment-popup{position:relative;width:min(100%,600px);max-height:min(92dvh,850px);overflow:auto;background:#fff;color:#243a32;border-radius:22px;box-shadow:0 25px 90px rgba(0,0,0,.25);animation:ls-investment-popup-in .28s ease-out}
+.ls-investment-photo{height:245px;background:#e6efe8 url('/owner/2026/slider-01.webp') center/cover no-repeat}
+.ls-investment-content{padding:34px 38px 32px}
 .ls-investment-eyebrow{font-size:11px;font-weight:750;letter-spacing:.13em;color:#2BA47A}
 .ls-investment-popup h2{font-size:clamp(20px,3vw,26px);line-height:1.2;letter-spacing:-.025em;margin:11px 0;color:#073F34}
 .ls-investment-popup p{font-size:14px;line-height:1.6;margin:0 0 19px;color:#566b63}
@@ -11,5 +11,5 @@
 .ls-investment-close{position:absolute;top:12px;right:12px;z-index:1;display:grid;place-items:center;width:38px;height:38px;border:0;border-radius:50%;background:rgba(255,255,255,.94);font-size:29px;line-height:1;color:#233e32;cursor:pointer}
 .ls-investment-close:hover,.ls-investment-close:focus-visible{background:#fce8da;color:#c45006}
 @keyframes ls-investment-overlay-in{from{opacity:0}to{opacity:1}}@keyframes ls-investment-popup-in{from{opacity:0;transform:translateY(12px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
-@media(max-width:520px){.ls-investment-overlay{padding:14px}.ls-investment-photo{height:150px}.ls-investment-content{padding:21px}.ls-investment-popup{border-radius:18px}}
+@media(max-width:520px){.ls-investment-overlay{padding:14px}.ls-investment-photo{height:185px}.ls-investment-content{padding:24px}.ls-investment-popup{border-radius:18px}}
 @media(prefers-reduced-motion:reduce){.ls-investment-overlay,.ls-investment-popup{animation:none}.ls-investment-action{transition:none}}
