@@ -9,7 +9,7 @@ export default async function Collection({params}:{params:Promise<{tier:string}>
  <section className="ls29-collection-hero" aria-label={name+' estates editorial photography'}>
   <img src={tier==='prime'?'/editorial/2026/modern-duplex.jpg':'/editorial/2026/ikate-exterior.jpg'}
        alt={tier==='prime'?'Modern residential duplex, illustrative Prime editorial reference':'Modern detached duplex, illustrative Luxury editorial reference'} />
-  <div className="ls29-collection-hero-info"><img src="/media/logo.webp" alt="Landshop" />
+  <div className="ls29-collection-hero-info"><Link href="/" aria-label="Landshop homepage"><img src="/media/logo-transparent.png" alt="Landshop" /></Link>
    <strong>{name} Estates</strong><span>Property possibilities, thoughtfully presented.</span>
    <small>Editorial reference photography · View individual listings for verified current photos</small>
   </div>
