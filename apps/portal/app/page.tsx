@@ -29,7 +29,7 @@ export default function Portal(){
   let live=true;
   const auth=browserSupabase();
   const route=async(user:{id:string;user_metadata?:Record<string,unknown>}|null|undefined)=>{
-   if(live&&user) {const home=await accountHome(auth,user);if(live)window.location.replace(appOrigin+home);}
+   if(live&&user&&user.email_confirmed_at) {const home=await accountHome(auth,user);if(live)window.location.replace(appOrigin+home);}
   };
   auth.auth.getUser().then(({data})=>route(data.user)).catch(()=>{});
   const {data:{subscription}}=auth.auth.onAuthStateChange((_event,session)=>{setTimeout(()=>{void route(session?.user)},0)});
@@ -69,6 +69,7 @@ export default function Portal(){
     const {data,error}=await db.auth.signInWithPassword({email:email.trim().toLowerCase(),password});
     if(error)throw error;
     if(!data.user)throw Error('Your account could not be verified.');
+    if(!data.user.email_confirmed_at){setMode('verify');throw Error('Please verify your email address before accessing your dashboard.');}
     const returnTo=new URLSearchParams(window.location.search).get('returnTo');
     let target=appOrigin+'/dashboard';
     if(returnTo){try{const u=new URL(returnTo);if(u.protocol==='https:'&&u.hostname==='www.landshopnigeria.com'&&u.pathname.startsWith('/insights/'))target=u.toString()}catch{}}
