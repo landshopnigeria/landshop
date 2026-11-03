@@ -65,7 +65,12 @@ export default function AdvancedImport({userId}:{userId:string}){
   finally{setBusy(false)}
  }
  return <main style={{background:'#f1f8f4',minHeight:'100vh',fontFamily:'Arial,sans-serif',color:'#073d33',padding:'clamp(18px,5vw,60px)'}}>
-  <a href="/admin/properties/import">← Import Center</a>
+  <nav aria-label="Property import workflow" style={{display:'flex',flexWrap:'wrap',gap:16,marginBottom:20}}>
+   <a href="/admin/properties/import">CSV Import Center</a>
+   <a href="/admin/properties/import/review">Import Approval Queue</a>
+   <a href="/admin/properties">Property Management</a>
+   <a href="/admin/properties/readiness">Publication Readiness</a>
+  </nav>
   <h1>Advanced Bulk Property Import</h1>
   <p>Extract Excel, XML, PDF, Word and ZIP documents in an isolated Python worker. Extracted information must be reviewed before it becomes a draft property.</p>
   <section style={{maxWidth:850,padding:30,borderRadius:22,border:'1px solid #d0e4d8',background:'white'}}>
@@ -80,6 +85,7 @@ export default function AdvancedImport({userId}:{userId:string}){
      <p>Review artifact: {job.result.review_result}</p>
      <p><a href={'/admin/properties/import/results?path='+encodeURIComponent(job.result.review_result)}>Open Review Artifact (authorized reviewers)</a></p></>}
    </section>}
+   <p style={{fontSize:13,lineHeight:1.6}}>After extracting a file, open its review artifact, stage only verified rows, and have a different authorized reviewer approve the batch. Approved rows then move into draft property management. Nothing is published automatically.</p>
    {privatePath&&<p style={{fontSize:12}}>Uploaded source: {privatePath}</p>}
    <p role="status" aria-live="polite">{message}</p>
   </section>
