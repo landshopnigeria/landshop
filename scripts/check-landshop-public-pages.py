@@ -291,10 +291,16 @@ def check(kind: str, route: str, expected: str | None):
     if kind == "website" and route == "/properties":
         if 'class="mk-property-grid"' not in html and 'mk-property-grid ' not in html:
             raise AssertionError("database-backed marketplace grid is not rendered")
-        if 'name="state"' not in html or 'name="sort"' not in html:
-            raise AssertionError("marketplace filters and sorting controls are missing")
-        if 'ls26-market-filter' not in html or "Sell</button>" not in html:
-            raise AssertionError("shared homepage marketplace filter and Sell tab are missing")
+        # The approved /properties design deliberately removed the separate
+        # sort toolbar. Verify the real connected marketplace search, not a
+        # retired control whose absence must not trigger production rollback.
+        for marker in ('ls26-market-filter', 'name="query"', 'name="state"',
+                       'name="type"', 'Search Properties', 'Sell</button>'):
+            if marker not in html:
+                raise AssertionError("approved marketplace search is missing: " + marker)
+        for obsolete in ('name="sort"', 'mk-toolbar', 'mk-sort-select'):
+            if obsolete in html:
+                raise AssertionError("removed marketplace sorting toolbar has returned: " + obsolete)
     for legacy in RECOVERY:
         if legacy.casefold() in visible.casefold():
             raise AssertionError("obsolete static recovery-page content is visible")
