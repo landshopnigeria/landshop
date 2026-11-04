@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "next dev -p 3001",
     "build": "next build",
-    "start": "next start -p 3001"
+    "start": "next start -p 3001",
+    "predev": "node scripts/prepare-mobile-media.mjs",
+    "prebuild": "node scripts/prepare-mobile-media.mjs"
   },
   "dependencies": {
     "next": "15.5.28",
