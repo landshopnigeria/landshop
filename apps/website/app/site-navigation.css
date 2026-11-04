@@ -146,3 +146,15 @@ body{scroll-padding-top:105px}
 html{scroll-padding-top:168px}
 @media(max-width:1050px){html{scroll-padding-top:150px}.ls-mobile-subnav .ls-icon-chip{width:52px;height:52px;min-width:52px}.ls-mobile-subnav .ls-icon-chip .ls-icon{width:28px;height:28px}}
 @media(max-width:680px){html{scroll-padding-top:135px}.ls-primary-nav.ls-nav-mobile-open{max-width:calc(100vw - 20px);box-sizing:border-box}}
+
+
+/* Compact approved V chevrons for public dropdowns; preserve fast hit targets. */
+body .ls-site-chrome .ls-primary-nav .ls-nav-toggle .ls-icon-chevron{
+ width:18.5px;
+ height:18.5px;
+ flex:0 0 18.5px;
+ stroke-width:2.15;
+ transition:transform .16s ease;
+}
+body .ls-site-chrome .ls-primary-nav .ls-nav-toggle[aria-expanded="true"] .ls-icon-chevron{transform:rotate(180deg)}
+@media(prefers-reduced-motion:reduce){body .ls-site-chrome .ls-primary-nav .ls-nav-toggle .ls-icon-chevron{transition:none}}
