@@ -248,7 +248,7 @@ def check(kind: str, route: str, expected: str | None):
             if label not in html:
                 raise AssertionError(f"required V16 slider control/action missing: {label}")
     if kind in ("website","www") and route in ("/products","/develop","/incubate","/grow","/plans/develop","/plans/incubate","/plans/grow","/plans/devpro","/plans/estatepro"):
-        for marker in ('class="lsp-product"', 'class="lsp-hero"', 'class="lsp-stats"', 'lsp-faq'):
+        for marker in ('class="lsp-product lsp-luxury"', 'class="lsp-hero"', 'class="lsp-stats"', 'lsp-faq'):
             if marker not in html:
                 raise AssertionError("approved premium product layout is missing: "+marker)
         if 'class="lsp-compact-tabs"' not in html or 'id="lsp-tab-overview"' not in html or 'id="lsp-tab-process"' not in html:
