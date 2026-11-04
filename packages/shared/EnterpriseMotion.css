@@ -12,10 +12,9 @@ html{-webkit-text-size-adjust:100%}
 :where(body main,body .authScene,body .ls25-shell,body .command-shell,body .dc-shell) :is(h1,h2,h3){overflow-wrap:break-word}
 :where(body main,body .authScene,body .ls25-shell,body .command-shell,body .dc-shell) :is(img,video){max-width:100%}
 
-/* Progressive native transitions for same-origin full page navigations.
-   Next.js client-side transitions get the page-entry animation below. */
+/* Fast compositor-only transitions; no browser-managed full-page
+   view-transition overlay that can delay link taps on slower devices. */
 @media (prefers-reduced-motion:no-preference){
-  @view-transition{navigation:auto}
   @keyframes ls-enter-page{
     from{opacity:1;transform:translate3d(0,3px,0)}
     to{opacity:1;transform:translate3d(0,0,0)}
@@ -25,7 +24,7 @@ html{-webkit-text-size-adjust:100%}
     to{opacity:1;transform:translate3d(0,0,0)}
   }
   body main{
-    animation:ls-enter-page 160ms var(--ls-motion-ease) both;
+    animation:ls-enter-page 70ms var(--ls-motion-ease) both;
   }
   /* Scope scroll-based effects to content blocks: not the hero, nav,
      carousels, live form controls or important LCP images. */
