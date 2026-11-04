@@ -279,20 +279,33 @@ export default function NexusHost({initial,html}:{initial:Flow[];html:string}){
  const chooseOptions=choices.map(e=>({id:e.to,label:currentRun?.context.graph_snapshot?.nodes.find(n=>n.id===e.to)?.label||'Next step'}));
  return <main className="nexus-host">
   <div className="nexus-host-toolbar">
-   <div className="nexus-host-title"><Link href="/admin" aria-label="Return to Command Center">←</Link><span>Automation <strong>Operating System</strong></span></div>
+   <div className="nexus-host-title"><Link href="/admin" aria-label="Return to Command Center">←</Link><span>Landshop <strong>Automation OS</strong></span></div>
    <label className="nexus-host-select">Saved workflows
     <select disabled={busy} aria-label="Select a saved automation" value={active} onChange={e=>choose(e.target.value)}>
      <option value="">New workflow</option>
      {flows.map(f=><option key={f.id} value={f.id}>{f.name} · v{f.version}</option>)}
     </select>
    </label>
-   <button disabled={busy} type="button" onClick={()=>choose('')}>New draft</button>
-   <button type="button" onClick={()=>void startRehearsal()} disabled={!active||busy}>Record rehearsal</button>
-   <button type="button" onClick={()=>void queueRuntimePreview()} disabled={!active||busy}>Queue safe preview</button>
-   <button type="button" onClick={()=>{setRuntimeOpen(v=>!v);setHistoryOpen(false)}}>Runtime monitor</button>
-   <button type="button" onClick={()=>{setHistoryOpen(v=>!v);setRuntimeOpen(false);if(!historyOpen)void refreshRuns(activeRef.current)}} disabled={!active}>Run history</button>
    <span className="nexus-host-status" role="status" title={status}>{status}</span>
-   <button type="button" onClick={()=>{post('focus-on');window.dispatchEvent(new CustomEvent('landshop-canvas-focus',{detail:true}))}}>Full canvas</button><Link href="/admin/communications">Email automation →</Link><Link href="/admin/automation/connections">Connection status →</Link>
+   <div className="nexus-host-primary">
+    <button className="nexus-action-new" disabled={busy} type="button" onClick={()=>choose('')}>+ New workflow</button>
+    <button className="nexus-action-test" type="button" onClick={()=>void startRehearsal()} disabled={!active||busy}>Test saved</button>
+   </div>
+   <details className="nexus-host-more">
+    <summary aria-label="Open automation workspace tools">More tools</summary>
+    <div className="nexus-host-menu">
+     <strong>Workflow operations</strong>
+     <button type="button" onClick={()=>void queueRuntimePreview()} disabled={!active||busy}>Queue durable preview</button>
+     <button type="button" onClick={()=>{setRuntimeOpen(v=>!v);setHistoryOpen(false)}}>Runtime monitor</button>
+     <button type="button" onClick={()=>{setHistoryOpen(v=>!v);setRuntimeOpen(false);if(!historyOpen)void refreshRuns(activeRef.current)}} disabled={!active}>Rehearsal history</button>
+     <button type="button" onClick={()=>{post('focus-on');window.dispatchEvent(new CustomEvent('landshop-canvas-focus',{detail:true}))}}>Full canvas</button>
+     <div className="nexus-host-menu-divider"/>
+     <strong>Connections & communication</strong>
+     <Link href="/admin/communications">Communication automation</Link>
+     <Link href="/admin/automation/connections">Provider connections</Link>
+     <small>Existing automatic workflows and outbound communications are preserved. Live provider actions remain subject to configured authorization and consent controls.</small>
+    </div>
+   </details>
   </div>
   <iframe ref={iframe} title="Landshop Automation Operating System" className="nexus-host-frame"
    sandbox="allow-scripts allow-downloads" srcDoc={html} onLoad={()=>post('hello')}/>
