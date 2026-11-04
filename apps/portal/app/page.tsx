@@ -28,7 +28,7 @@ export default function Portal(){
   if(params.get('error'))setMessage('The authentication link could not be verified. Please try again.');
   let live=true;
   const auth=browserSupabase();
-  const route=async(user:{id:string;user_metadata?:Record<string,unknown>}|null|undefined)=>{
+  const route=async(user:{id:string;email_confirmed_at?:string|null;user_metadata?:Record<string,unknown>}|null|undefined)=>{
    if(live&&user&&user.email_confirmed_at) {const home=await accountHome(auth,user);if(live)window.location.replace(appOrigin+home);}
   };
   auth.auth.getUser().then(({data})=>route(data.user)).catch(()=>{});
