@@ -112,7 +112,7 @@ export default function MobileApp(){
    if(password.length<12||password!==confirm)throw Error('Use a password of at least 12 characters and match both passwords.');
    if(!agree)throw Error('Please accept the terms and privacy policy.');
    await assertLandshopPasswordSafe(password);
-   const {error}=await browserSupabase().auth.signUp({email:email.trim().toLowerCase(),password,options:{emailRedirectTo:'https://portal.landshopnigeria.com/auth/callback',data:{full_name:first.trim()+' '+last.trim(),username:username.trim().toLowerCase(),phone:phone.trim(),age:Number(age),gender}}});
+   const {error}=await browserSupabase().auth.signUp({email:email.trim().toLowerCase(),password,options:{emailRedirectTo:'https://portal.landshopnigeria.com/auth/callback?mobile=1',data:{full_name:first.trim()+' '+last.trim(),username:username.trim().toLowerCase(),phone:phone.trim(),age:Number(age),gender}}});
    if(error)throw error;
    setPassword('');setConfirm('');go('verify');
   }catch(error){setFeedback(error instanceof Error?error.message:'Unable to register.')}
@@ -129,7 +129,7 @@ export default function MobileApp(){
   }catch(error){setFeedback(error instanceof Error?error.message:'Please try again.')}
   finally{setBusy(false)}
  };
- const google=async()=>{setFeedback('');try{const {error}=await browserSupabase().auth.signInWithOAuth({provider:'google',options:{redirectTo:'https://portal.landshopnigeria.com/auth/callback'}});if(error)throw error;}catch{setFeedback('Google sign-in is not available. Please use email and password.')}};
+ const google=async()=>{setFeedback('');try{const {error}=await browserSupabase().auth.signInWithOAuth({provider:'google',options:{redirectTo:'https://portal.landshopnigeria.com/auth/callback?mobile=1'}});if(error)throw error;}catch{setFeedback('Google sign-in is not available. Please use email and password.')}};
  const logout=async()=>{try{await browserSupabase().auth.signOut();setSignedIn(false);setName('');setUserEmail('');go('signin')}catch{setFeedback('Unable to sign out at this time.')}};
  const installApp=async()=>{if(!installPrompt){setFeedback('On iPhone, use Safari Share then Add to Home Screen. On Android, use the browser Install app option.');return}const prompt=installPrompt as Event & {prompt?:()=>Promise<void>;userChoice?:Promise<{outcome:string}>};await prompt.prompt?.();setInstallPrompt(null)};
  const principal=Math.max(0,Number(price)*(1-Math.min(100,Math.max(0,Number(deposit)))/100));
