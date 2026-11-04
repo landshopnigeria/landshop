@@ -38,3 +38,19 @@
 .cd-account-dropdown{position:absolute;top:calc(100% + 9px);right:0;width:min(240px,85vw);background:#fff;border:1px solid #dcece1;box-shadow:0 16px 45px #113d2c24;border-radius:14px;padding:8px;display:grid;gap:4px;z-index:60}
 .cd-account-dropdown>a,.cd-account-dropdown .dc-cta{display:flex;align-items:center;justify-content:flex-start;width:100%;min-height:44px;border-radius:9px;padding:11px 13px;color:#124c39;font-size:13px;font-weight:700;background:transparent!important;border:0;box-shadow:none;cursor:pointer}
 .cd-account-dropdown>a:hover,.cd-account-dropdown .dc-cta:hover{background:#eaf6ee!important;color:#0b7558}
+
+/* Restore the customer drawer on phones: the legacy v25 stylesheet hid all
+   sidebars at 800px, including the newly approved collapsible drawer. */
+@media(max-width:850px){
+ .cd-v25 .cd-sidebar,.cd-v25 .cd-sidebar.cd-nav-compact{
+  display:flex!important;position:fixed!important;top:0;bottom:0;left:0;
+  width:min(310px,88vw)!important;max-width:88vw;min-width:0!important;
+  height:100dvh;z-index:107;overflow-y:auto;transform:translateX(-110%);
+  padding:17px 13px;flex-direction:column;box-shadow:12px 0 30px #143b2428;
+ }
+ .cd-v25 .cd-sidebar.cd-nav-open{transform:translateX(0)!important}
+ .cd-v25 .cd-sidebar .cd-nav-brand-row{display:flex;flex-direction:row}
+ .cd-v25 .cd-sidebar nav{display:grid;flex-direction:column;overflow:visible;gap:4px}
+ .cd-v25 .cd-sidebar .cd-nav-group-trigger{min-height:44px}
+ .cd-nav-mobile-toggle{z-index:105}
+}
