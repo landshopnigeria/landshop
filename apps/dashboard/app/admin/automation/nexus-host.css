@@ -71,3 +71,24 @@
 @media(max-width:900px){.nexus-host-toolbar{padding:6px;gap:6px}.nexus-host-title span{display:none}.nexus-host-title a{width:31px;height:31px}.nexus-host-select{flex:1;max-width:none;font-size:0}.nexus-host-select select{width:100%;max-width:none;height:35px;font-size:11px}.nexus-host-primary{gap:5px}.nexus-host-primary button{padding:8px 9px;font-size:10px}.nexus-host-more>summary{padding:9px;font-size:10px}}
 @media(max-width:650px){.nexus-host-primary .nexus-action-test{display:none}.nexus-host-toolbar{height:56px;min-height:56px;max-height:56px}.nexus-host-frame{height:auto}.nexus-host-title a{width:30px;height:30px}.nexus-host-primary .nexus-action-new{padding:8px 7px;font-size:10px}.nexus-host-more>summary{padding:9px 7px}.nexus-host-menu{right:0}.nexus-run-drawer{top:56px}}
 
+
+
+/* Keep the private automation canvas within the available device viewport. */
+.nexus-host-frame{min-width:0;min-height:0;max-width:100%;flex:1 1 auto}
+.nexus-host-toolbar select,.nexus-host-toolbar button,.nexus-host-more>summary{touch-action:manipulation}
+.nexus-host-toolbar button:focus-visible,.nexus-host-toolbar summary:focus-visible,.nexus-host-toolbar select:focus-visible{outline:2px solid #f26b10;outline-offset:2px}
+@media(max-width:900px){
+ .cc-workspace .nexus-host{min-height:0;max-width:100%;height:calc(100dvh - 130px);border-radius:12px}
+ .nexus-host-toolbar{min-width:0;max-width:100%}
+ .nexus-host-select{flex:1 1 0;min-width:0}
+ .nexus-host-select select{min-width:0;max-width:100%}
+ .nexus-host-frame{width:100%;height:auto}
+}
+@media(max-width:600px){
+ .cc-workspace .nexus-host{border-radius:8px}
+ .nexus-host-toolbar{gap:5px}
+ .nexus-host-toolbar select{font-size:12px}
+ .nexus-host-more>summary{min-height:35px}
+ .nexus-host-menu{max-height:min(75dvh,420px);overflow-y:auto;overscroll-behavior:contain}
+}
+@media(prefers-reduced-motion:reduce){.nexus-host-toolbar button,.nexus-host-more>summary{transition:none}}

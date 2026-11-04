@@ -14,6 +14,15 @@ const html=JSON.parse(source);
 const scripts=[...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)].map(match=>match[1]);
 assert.equal(scripts.length,1,'Studio must have one verified sandbox script');
 new Script(scripts[0],{filename:'NexusWorkspaceHTML.inline.js'});
+const script=scripts[0];
+const invalidIteration=/(?<!\$)\$\((?:'[^']+'|"[^"]+")\)\.forEach\s*\(/g;
+assert.equal([...script.matchAll(invalidIteration)].length,0,'Single-element selector cannot be iterated');
+const collectionSelector=String.fromCharCode(36,36);
+for(const binding of ["('[data-mobile-mode]').forEach","('.quick-idea').forEach","('[data-rail]').forEach"]){
+ assert(script.includes(collectionSelector+binding),'Missing safe canvas controls: '+binding);
+}
+assert(script.includes('scheduleMiniMap()'),'Minimap refresh must be deferred while panning');
+
 for(const id of [
  'app','library','library-list','canvas-stage','inspector',
  'mobile-steps-list','mobile-activity-list','mobile-add','mobile-save','mobile-test',
@@ -45,3 +54,11 @@ const hostCSS=read('apps/dashboard/app/admin/automation/nexus-host.css');
 assert(hostCSS.includes('nexus-host-menu'),'Compact operations menu styling missing');
 console.log('PASS: Landshop studio script parses, accessible mobile modes and single-open library are present.');
 console.log('PASS: Versioned drafts, authorized rehearsal, queue preview and communications navigation remain intact.');
+const communications=read('apps/dashboard/app/admin/communications/CommunicationCenter.tsx');
+for(const feature of ["dynamic(()=>import('./PremiumMessagePreview')","dynamic(()=>import('./TemplateEditor')","dynamic(()=>import('./OperationsCenter')","await import('../reports/export-openxml')","comm-mobile-section"]){
+ assert(communications.includes(feature),'Missing lazy-loaded communication feature: '+feature);
+}
+const adminLayout=read('apps/dashboard/app/admin/layout.tsx');
+assert(adminLayout.includes('index:false')&&adminLayout.includes('follow:false'),'Private management routes must not be indexed');
+console.log('PASS: Fast, responsive controls and on-demand communication panels are present.');
+
