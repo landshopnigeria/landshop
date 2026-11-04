@@ -83,7 +83,7 @@ export default function ApprovedHomepageContent({featured,featuredSlot}:{feature
       {landshopProductCards.map((item,index)=><article className="lsap-product" key={item.slug}>
        <div className="lsap-product-image"><img src={photos[item.slug]} alt={item.photoAlt||'Landshop owner-provided construction photography, editorial reference'} loading="lazy" decoding="async"/><small>{String(index+1).padStart(2,'0')} / 05</small></div>
        <div className="lsap-product-text">
-        <Link className="lsap-product-logo-link" href={item.href} aria-label={'Explore '+item.name} tabIndex={copy===1?-1:undefined}><img src={item.logo} className="lsap-product-logo" alt={item.name+' product identity'} loading="lazy"/></Link>
+        <Link className="lsap-product-logo-link" href={item.href} aria-label={'Explore '+item.name} tabIndex={copy===1?-1:undefined}><img src={item.logo} className="lsap-product-logo" alt={item.name+' product identity'} loading="lazy" decoding="async"/></Link>
         <p className="lsap-product-tag">{item.category}</p><h3><Link href={item.href} tabIndex={copy===1?-1:undefined}>{item.name}</Link></h3><p>{item.description}</p>
        </div>
       </article>)}
@@ -92,7 +92,7 @@ export default function ApprovedHomepageContent({featured,featuredSlot}:{feature
    </div>
   </div></section>
 
-  <section className="lsap-promise"><div className="lsap-container lsap-promise-grid"><div><p className="lsap-kicker">THE LANDSHOP PROMISE</p><h2>Everyone deserves <span>affordable property.</span></h2><p>Every property journey should begin with information you understand, choices you can compare and people who can guide the next step.</p><Link className="lsap-button lsap-light-button" href="/properties">Explore Properties <ApprovedArrow/></Link></div><div className="lsap-promise-photo"><img src="/owner/2026/estate-residential.webp" alt="Real Nigerian residential estate in Landshop's archival collection" loading="lazy"/></div></div></section>
+  <section className="lsap-promise"><div className="lsap-container lsap-promise-grid"><div><p className="lsap-kicker">THE LANDSHOP PROMISE</p><h2>Everyone deserves <span>affordable property.</span></h2><p>Every property journey should begin with information you understand, choices you can compare and people who can guide the next step.</p><Link className="lsap-button lsap-light-button" href="/properties">Explore Properties <ApprovedArrow/></Link></div><div className="lsap-promise-photo"><img src="/owner/2026/estate-residential.webp" alt="Real Nigerian residential estate in Landshop's archival collection" loading="lazy" decoding="async"/></div></div></section>
 
   <section className="lsap-section lsap-estates" id="featured-properties"><div className="lsap-container">
    <SectionHead kicker="OUR SELECTED" title="Estates / Properties" href="/properties" linkLabel="View published listings"/>
@@ -104,7 +104,7 @@ export default function ApprovedHomepageContent({featured,featuredSlot}:{feature
    <div className="lsap-collection-grid">{[
     {name:'Prime Estates',kind:'PRIME COLLECTION',url:'/collections/prime',src:'/owner/2026/famous-completed-homes.webp',desc:'Places for practical ownership and long-term plans.'},
     {name:'Luxury Estates',kind:'LUXURY COLLECTION',url:'/collections/luxury',src:'/owner/2026/estate-architecture.webp',desc:'Distinctive properties and premium residential design.'}
-   ].map(x=><Link href={x.url} className="lsap-collection" key={x.name}><img src={x.src} alt={'Owner-provided Nigerian estate photography for '+x.name} loading="lazy"/><span className="lsap-collection-overlay"/><small>{x.kind}</small><div><h3>{x.name}<em>.</em></h3><p>{x.desc}</p><strong>Explore Collection <ApprovedArrow/></strong></div></Link>)}</div>
+   ].map(x=><Link href={x.url} className="lsap-collection" key={x.name}><img src={x.src} alt={'Owner-provided Nigerian estate photography for '+x.name} loading="lazy" decoding="async"/><span className="lsap-collection-overlay"/><small>{x.kind}</small><div><h3>{x.name}<em>.</em></h3><p>{x.desc}</p><strong>Explore Collection <ApprovedArrow/></strong></div></Link>)}</div>
   </div></section>
 
   <section className="lsap-section lsap-prime" id="prime"><div className="lsap-container lsap-prime-grid"><div><p className="lsap-kicker">DISCOVER LANDSHOP PRIME</p><h2><span>Prime</span> Estates<em>.</em></h2><p>Explore the Prime collection through a closer look at the places, designs and property pathways suited to your goals. Every current listing is separately verified before publication.</p><Link className="lsap-button" href="/collections/prime">Explore Prime Estates <ApprovedArrow/></Link></div><LandshopVideo video="prime"/></div></section>
@@ -112,7 +112,7 @@ export default function ApprovedHomepageContent({featured,featuredSlot}:{feature
   <section className="lsap-section lsap-projects" id="projects"><div className="lsap-container">
    <SectionHead kicker="OUR WORK" title="Projects" href="/projects" linkLabel="View all projects"/>
    <div className="lsap-project-grid">{projects.map((p,i)=><Link href={'/projects/'+p.slug} className="lsap-project" key={p.slug}>
-    <img src={p.image} alt={p.verified?'Authentic owner-provided archive image for '+p.name:'Illustrative Landshop construction archive, not verified media for '+p.name} loading="lazy"/>
+    <img src={p.image} alt={p.verified?'Authentic owner-provided archive image for '+p.name:'Illustrative Landshop construction archive, not verified media for '+p.name} loading="lazy" decoding="async"/>
     <div className="lsap-project-overlay"/><small>{p.status} / {String(i+1).padStart(2,'0')}</small><div><p>{p.sub}</p><h3>{p.name}</h3>{!p.verified&&<p>Reference imagery, original project photo under review</p>}<strong>Explore Project <ApprovedArrow/></strong></div>
    </Link>)}</div>
   </div></section>
@@ -137,7 +137,7 @@ export default function ApprovedHomepageContent({featured,featuredSlot}:{feature
 
   <section className="lsap-section lsap-insights" id="insights" {...articlePlayback.handlers}><div className="lsap-container">
    <SectionHead kicker="EDITORIAL & GUIDES" title="Insights & Updates" href="/insights" linkLabel="View all articles"/>
-   <div className="lsap-insight-grid">{[0,1,2].map(offset=>{const a=articleFeed[(guideStart+offset)%articleFeed.length];return <article className="lsap-insight" key={a.slug+'-'+offset}><Link href={'/insights/'+a.slug} className="lsap-insight-image"><img src={a.image} alt={a.imageAlt||'Owner-provided documentary image for '+a.title} loading="lazy"/><small>{a.category}</small></Link><div><h3>{a.title}</h3><p>{a.summary}</p><Link href={'/insights/'+a.slug}>Read Article <ApprovedArrow/></Link></div></article>})}</div>
+   <div className="lsap-insight-grid">{[0,1,2].map(offset=>{const a=articleFeed[(guideStart+offset)%articleFeed.length];return <article className="lsap-insight" key={a.slug+'-'+offset}><Link href={'/insights/'+a.slug} className="lsap-insight-image"><img src={a.image} alt={a.imageAlt||'Owner-provided documentary image for '+a.title} loading="lazy" decoding="async"/><small>{a.category}</small></Link><div><h3>{a.title}</h3><p>{a.summary}</p><Link href={'/insights/'+a.slug}>Read Article <ApprovedArrow/></Link></div></article>})}</div>
    <div className="lsap-carousel-foot"><span>{guideStart+1} / {articleFeed.length}</span><div><button type="button" onClick={()=>setGuideStart(i=>(i+articleFeed.length-1)%articleFeed.length)} aria-label="Previous articles"><ApprovedArrow direction="left"/></button><button type="button" onClick={()=>setGuideStart(i=>(i+1)%articleFeed.length)} aria-label="Next articles"><ApprovedArrow/></button></div></div>
   </div></section>
  </div>;

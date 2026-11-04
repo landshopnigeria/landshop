@@ -21,18 +21,20 @@ jobs:
       - uses: actions/checkout@v5
         with:
           ref: ${{ github.event.workflow_run.head_sha || github.sha }}
-      - name: Skip obsolete release commits before building
+          fetch-depth: 0
+      - name: Confirm validated revision remains in main history
         shell: bash
         env:
           RELEASE_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
         run: |
           set -euo pipefail
-          latest=$(git ls-remote origin refs/heads/main | awk '{print $1}')
-          if [ -z "$latest" ] || [ "$latest" != "$RELEASE_SHA" ];then
-            echo "::error::This release commit is superseded by main. Refusing to deploy stale code."
+          git fetch --quiet origin main
+          latest=$(git rev-parse origin/main)
+          if ! git merge-base --is-ancestor "$RELEASE_SHA" "$latest";then
+            echo "::error::Validated revision is no longer in main history."
             exit 1
           fi
-          echo "Release target matches current main: $RELEASE_SHA"
+          echo "Validated revision $RELEASE_SHA remains in main history; later revisions can deploy afterward."
       - name: Verify authorized Namecheap production connection
         env:
           PUBLIC_URL: ${{ vars.LANDSHOP_SUPABASE_URL || 'https://iwkfagzkogzidrbbezds.supabase.co' }}
@@ -234,18 +236,42 @@ jobs:
             fi
           done
           REMOTE
-      - name: Prevent older queued releases from overwriting the latest main build
+      - name: Prevent rollback over a newer deployed revision
         shell: bash
         env:
           RELEASE_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+          SSH_PORT: ${{ vars.LANDSHOP_SSH_PORT || secrets.LANDSHOP_SSH_PORT || secrets.NAMECHEAP_SSH_PORT || '21098' }}
+          SSH_HOST: ${{ secrets.LANDSHOP_SSH_HOST || secrets.NAMECHEAP_SSH_HOST || vars.LANDSHOP_SSH_HOST }}
+          SSH_USER: ${{ secrets.LANDSHOP_SSH_USER || secrets.NAMECHEAP_SSH_USER || vars.LANDSHOP_SSH_USER }}
+          WEBSITE_ROOT: ${{ secrets.LANDSHOP_WEBSITE_APPROOT || vars.LANDSHOP_WEBSITE_APPROOT || '/home/maleghif/landshop-website' }}
+          PORTAL_ROOT: ${{ secrets.LANDSHOP_PORTAL_APPROOT || vars.LANDSHOP_PORTAL_APPROOT || '/home/maleghif/landshop-portal' }}
+          DASHBOARD_ROOT: ${{ secrets.LANDSHOP_DASHBOARD_APPROOT || vars.LANDSHOP_DASHBOARD_APPROOT || '/home/maleghif/landshop-app' }}
         run: |
           set -euo pipefail
-          current_sha=$(git ls-remote origin refs/heads/main | awk '{print $1}')
-          if [ -z "$current_sha" ] || [ "$current_sha" != "$RELEASE_SHA" ]; then
-            echo "::error::Release $RELEASE_SHA is not current main ($current_sha); refusing to overwrite newer production code."
+          git fetch --quiet origin main
+          latest=$(git rev-parse origin/main)
+          if ! git merge-base --is-ancestor "$RELEASE_SHA" "$latest";then
+            echo "::error::Validated revision no longer belongs to current main."
             exit 1
           fi
-          echo "Confirmed release is current main: $RELEASE_SHA"
+          # Preserve serialized deployment and backups, but do not abort only
+          # because a newer unbuilt commit has landed on main.
+          for root in "$WEBSITE_ROOT" "$PORTAL_ROOT" "$DASHBOARD_ROOT";do
+            quoted=$(printf '%q' "$root")
+            deployed=$(ssh -p "$SSH_PORT" -o BatchMode=yes -o StrictHostKeyChecking=yes \
+              "$SSH_USER@$SSH_HOST" "if test -s $quoted/LANDSHOP_RELEASE_SHA;then head -c 40 $quoted/LANDSHOP_RELEASE_SHA;fi")
+            if [[ "$deployed" =~ ^[0-9a-f]{40}$ && "$deployed" != "$RELEASE_SHA" ]];then
+              if ! git cat-file -e "$deployed^{commit}" 2>/dev/null;then
+                echo "::error::Deployed revision cannot be compared with main history."
+                exit 1
+              fi
+              if git merge-base --is-ancestor "$RELEASE_SHA" "$deployed";then
+                echo "::error::Production already contains a newer revision; refusing rollback."
+                exit 1
+              fi
+            fi
+          done
+          echo "Validated release does not overwrite any newer deployed commit."
       - name: Back up existing production Next.js release before overwriting
         shell: bash
         env:
