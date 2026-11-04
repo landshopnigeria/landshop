@@ -23,9 +23,9 @@ HOSTS=("landshopnigeria.com","www.landshopnigeria.com")
 APPLICATIONS=(("portal.landshopnigeria.com","/",'class="authGlass"'),("app.landshopnigeria.com","/staff/sign-in",'class="lsa-card signin"'),("app.landshopnigeria.com","/staff/sign-up",'class="lsa-card signup"'))
 PAGES=(
     ("/","cinematic-property-video-preview",".ls-v23-hero"),
-    ("/develop","lsp-secure-panel",".lsp-secure-panel"),
-    ("/incubate","lsp-secure-panel",".lsp-secure-panel"),
-    ("/grow","lsp-secure-panel",".lsp-secure-panel"),
+    ("/develop","lsp-luxury",".lsp-luxury .lsp-actions"),
+    ("/incubate","lsp-luxury",".lsp-luxury .lsp-actions"),
+    ("/grow","lsp-luxury",".lsp-luxury .lsp-actions"),
     ("/projects/famous-gardens","lde-gallery",".lde-thumbs"),
     ("/projects/merit-park","lde-gallery",".lde-thumbs"),
     ("/projects/maiyegun-beach-estate","lde-gallery",".lde-thumbs"),
@@ -139,6 +139,11 @@ def check(host,path,marker,css_class):
             footer_css_found=True
     if not found:
         raise AssertionError(f"New CSS selector {css_class} absent from live stylesheets on {host}{path}")
+    if path in ("/develop","/incubate","/grow"):
+        if 'class="lsp-product lsp-luxury"' not in html:
+            raise AssertionError(f"{host}{path} is not serving the redesigned luxury product layout")
+        if 'class="lsp-compact-pathways"' not in html or 'class="lsp-compact-secure"' not in html:
+            raise AssertionError(f"{host}{path} is missing the preserved product pathways and application handoff")
     if path=="/" and not correct_icon_css_found:
         raise AssertionError("Current 19px public icon stylesheet absent from fresh HTML asset links")
     if path=="/" and not correct_arrow_css_found:
