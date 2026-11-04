@@ -29,7 +29,7 @@ try{
  }
  // Verify actual client transitions, not just direct HTTP page loads.
  for(const [label,path] of [['Properties','/properties'],['Insights','/insights'],['Contact','/contact']]){
-  await navPage.getByRole('link',{name:label,exact:true}).click();
+  await navPage.getByRole('navigation',{name:'Site navigation'}).getByRole('link',{name:label,exact:true}).click();
   try{await navPage.waitForURL(root+path,{timeout:15000});await navPage.locator('main h1').waitFor({state:'visible',timeout:5000});}
   catch(error){errors.push('CLIENT NAVIGATION '+path+': '+String(error));}
  }

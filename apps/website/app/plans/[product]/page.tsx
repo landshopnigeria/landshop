@@ -4,8 +4,8 @@ const descriptions:Record<string,string>={
  develop:'Explore Landshop Develop property acquisition options, available estates and the steps to owning land or a home in Nigeria.',
  incubate:'Explore Landshop Incubate property participation options, understand the structure and review terms before registering interest.',
  grow:'Compare Landshop Grow home financing pathways, including Beta Mortgage and Mortgage Xtra, and request an eligibility review.',
- devpro:'Explore Landshop DevPro development support, project delivery and construction pathways for property owners in Nigeria.',
- estatepro:'Explore Landshop EstatePro estate development services, infrastructure planning and project delivery support in Nigeria.'
+ devpro:'Explore Landshop DevPro estate infrastructure finance enquiries for eligible drainage, roads, fencing and infrastructure levies in Nigeria.',
+ estatepro:'Explore Landshop EstatePro construction finance enquiries for eligible property subscribers ready to build in Nigeria.'
 };
 export async function generateMetadata({params}:{params:Promise<{product:string}>}){
  const {product}=await params;

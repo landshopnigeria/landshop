@@ -10,9 +10,9 @@ export default function NavigationFeedback(){
  useEffect(()=>{clear();},[pathname,search]);
  useEffect(()=>{
   const onClick=(event:MouseEvent)=>{
-   if(event.button!==0||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;
+   if(event.defaultPrevented||event.button!==0||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;
    const anchor=(event.target instanceof Element?event.target:null)?.closest('a[href]');
-   if(!(anchor instanceof HTMLAnchorElement)||anchor.download||(anchor.target&&anchor.target!=='_self')||anchor.hasAttribute('data-native-navigation'))return;
+   if(!(anchor instanceof HTMLAnchorElement)||anchor.hasAttribute('download')||(anchor.target&&anchor.target!=='_self')||anchor.hasAttribute('data-native-navigation'))return;
    const url=new URL(anchor.href,location.href);
    if(url.origin!==location.origin||url.pathname+url.search===location.pathname+location.search)return;
    clearTimeout(timer.current);setPending(url.pathname+url.search+url.hash);setSlow(false);

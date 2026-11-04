@@ -63,7 +63,7 @@ try{
   await waitForHydration('.ls-primary-nav a[href="/properties"]');
   for(const [name,path] of [['Properties','/properties'],['Insights','/insights'],['Contact','/contact']]){
    const started=Date.now();
-   await page.getByRole('link',{name,exact:true}).click();
+   await page.getByRole('navigation',{name:'Site navigation'}).getByRole('link',{name,exact:true}).click();
    await page.waitForURL(origins.website+path,{timeout:15000});
    await page.locator('main h1').waitFor({state:'visible',timeout:10000});
    console.log('E2E NAVIGATION',path,Date.now()-started+'ms');
