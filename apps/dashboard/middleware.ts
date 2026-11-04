@@ -34,6 +34,17 @@ export async function middleware(request: NextRequest) {
   }
  });
  const {data:{user},error}=await supabase.auth.getUser();
+ // Guard entire private sections before Server Component streaming starts.
+ // Otherwise an anonymous RSC redirect can become HTTP 200 with a client-side
+ // refresh, leaving guest auth smoke tests and intermediaries with a false 200.
+ // The individual pages still validate their user, organization and role.
+ if(error||!user){
+  const path=request.nextUrl.pathname;
+  if(path==='/staff'||path.startsWith('/staff/'))
+   return privateRedirect(request,'/staff/sign-in');
+  if(path==='/dashboard'||path.startsWith('/dashboard/'))
+   return privateRedirect(request,'https://portal.landshopnigeria.com/');
+ }
  if(user){
   const {data:state,error:stateError}=await supabase.rpc('landshop_my_account_state');
   if(stateError||state!=='active')return privateRedirect(request,'/account-unavailable');
