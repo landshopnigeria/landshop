@@ -50,7 +50,12 @@ export async function GET(request:NextRequest) {
     await supabase.rpc('landshop_claim_signup_referral',{p_code:invite});
   }
   const landing=await accountHome(supabase,user);
-  response.headers.set('Location','https://app.landshopnigeria.com'+landing);
+  // Preserve mobile-app context only for ordinary customer accounts.
+  // Privileged staff and management routes always use their verified landing.
+  const mobileRequested=request.nextUrl.searchParams.get('mobile')==='1';
+  response.headers.set('Location',mobileRequested&&landing==='/dashboard'
+   ?origin+'/mobile-app?screen=home'
+   :'https://app.landshopnigeria.com'+landing);
  }
  return response;
 }
