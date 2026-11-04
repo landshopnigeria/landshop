@@ -249,3 +249,12 @@
 }
 @media(max-width:350px){.lm-stage .lm-cta,.lm-stage .lm-soft-btn{font-size:10px!important;padding:9px 7px}.lm-quick-actions button{font-size:9px;gap:3px}.lm-summary-row button{padding:6px;gap:4px}.lm-app-top>img{width:128px}.lm-finance-fields{gap:6px}.lm-finance-fields .lm-field input{font-size:13px}.lm-donut-wrap{grid-template-columns:115px minmax(0,1fr)}.lm-donut{width:115px;height:115px}}
 @media(prefers-reduced-motion:reduce){.lm-stage *{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+/* Native-foundation account pathways: compact, readable and accessible. */
+.lm-member-shortcuts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:0 0 18px}
+.lm-member-shortcuts button{min-width:0;min-height:75px;background:#fff;border:1px solid #dbeae1;border-radius:12px;display:flex;align-items:center;gap:8px;padding:10px;text-align:left;color:#145c44;box-shadow:0 3px 13px #184a2a0b}
+.lm-member-shortcuts button:hover{border-color:#2ba47a;background:#f4faf6}
+.lm-member-shortcuts button>span{width:34px;height:34px;display:grid;place-items:center;border-radius:10px;flex:0 0 34px;background:#e7f5ec;color:#138363}
+.lm-member-shortcuts button>strong{font-size:10.5px;line-height:1.4;font-weight:800;min-width:0;flex:1}
+.lm-member-shortcuts button>svg:last-child{width:15px;height:15px;flex:0 0 15px;color:#f26b10}
+@media(max-width:350px){.lm-member-shortcuts button{padding:7px;gap:5px}.lm-member-shortcuts button>span{width:29px;height:29px;flex-basis:29px}.lm-member-shortcuts button>strong{font-size:9.5px}}
