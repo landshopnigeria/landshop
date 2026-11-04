@@ -15,7 +15,7 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: landshop-production-e2e-\${{ github.ref }}
+  group: landshop-production-e2e-${{ github.ref }}
   cancel-in-progress: true
 jobs:
   production-e2e:
@@ -24,15 +24,15 @@ jobs:
     timeout-minutes: 25
     env:
       CI: 'true'
-      LANDSHOP_E2E_CUSTOMER_EMAIL: \${{ secrets.LANDSHOP_E2E_CUSTOMER_EMAIL }}
-      LANDSHOP_E2E_CUSTOMER_PASSWORD: \${{ secrets.LANDSHOP_E2E_CUSTOMER_PASSWORD }}
-      LANDSHOP_E2E_STAFF_EMAIL: \${{ secrets.LANDSHOP_E2E_STAFF_EMAIL }}
-      LANDSHOP_E2E_STAFF_PASSWORD: \${{ secrets.LANDSHOP_E2E_STAFF_PASSWORD }}
+      LANDSHOP_E2E_CUSTOMER_EMAIL: ${{ secrets.LANDSHOP_E2E_CUSTOMER_EMAIL }}
+      LANDSHOP_E2E_CUSTOMER_PASSWORD: ${{ secrets.LANDSHOP_E2E_CUSTOMER_PASSWORD }}
+      LANDSHOP_E2E_STAFF_EMAIL: ${{ secrets.LANDSHOP_E2E_STAFF_EMAIL }}
+      LANDSHOP_E2E_STAFF_PASSWORD: ${{ secrets.LANDSHOP_E2E_STAFF_PASSWORD }}
     steps:
       - name: Checkout current test suite
         uses: actions/checkout@v4
         with:
-          ref: \${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
+          ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -44,5 +44,5 @@ jobs:
         run: npx playwright install chromium --with-deps
       - name: Run production browser E2E with read-only anonymous checks
         env:
-          LANDSHOP_E2E_RELEASE_SHA: \${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || '' }}
+          LANDSHOP_E2E_RELEASE_SHA: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || '' }}
         run: node scripts/check-landshop-live-e2e.mjs
