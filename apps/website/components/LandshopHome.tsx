@@ -8,10 +8,11 @@ import {useRouter} from 'next/navigation';
 import {editorialImages} from '../lib/editorial-imagery';
 import SiteIcon from './SiteIcon';
 import {useCarouselPlayback} from './useCarouselPlayback';
+import HeroTypingTitle from './HeroTypingTitle';
 export type FeaturedProperty={id:string,href:string,title:string,location:string,propertyType:string,price:string,collection?:'Prime'|'Luxury',image?:string};
 const slides=[
  {name:'LANDSHOP',subtitle:'AFFORDABLE OWNERSHIP',title:'Your Dream Home Starts Here.',copy:'Discover beautiful homes and affordable property options designed for your lifestyle, budget, and future.',image:'/estates/green-island/residential-concept.webp',primary:'Explore Properties',href:'/properties',secondary:'Get Started',secondaryHref:'https://portal.landshopnigeria.com'},
- {name:'FAMOUS GARDENS',subtitle:'FAMOUS GARDENS',title:'Your Next Chapter Starts Here.',copy:'Discover Famous Gardens in Ibeju-Lekki. Find a home you love and take the next step toward owning it.',image:'/owner/2026/slider-02.webp',primary:'Explore Famous Gardens',href:'/projects/famous-gardens',secondary:'Book Inspection',secondaryHref:'/visit?project=famous-gardens'},
+ {name:'FAMOUS GARDENS',subtitle:'FAMOUS GARDENS',title:'Your Next Chapter Starts Here.',copy:'Discover Famous Gardens in Ibeju-Lekki. Find a home you love and take the next step toward owning it.',image:'/owner/2026/famous-gardens-homepage-2026-11.jpg',primary:'Explore Famous Gardens',href:'/projects/famous-gardens',secondary:'Book Inspection',secondaryHref:'/visit?project=famous-gardens'},
  {name:'FUTURE LOCATIONS',subtitle:'FLEXIBLE OWNERSHIP',title:'Own More. Worry Less.',copy:'From property investment to home financing, discover smarter ways to build wealth and own with confidence.',image:'/estates/maiyegun-beach-estate/coastal-site.webp',primary:'Explore Our Products',href:'/products',secondary:'Speak With a Consultant',secondaryHref:'/visit?topic=consultation'}
 ] as const;
 const titleParts=[['Your Dream Home','Starts Here.'],['Your Next Chapter','Starts Here.'],['Own More.','Worry Less.']] as const;
@@ -29,6 +30,12 @@ export default function Homepage({featured,featuredSlot}:{featured:FeaturedPrope
  const router=useRouter();
  const touchStartX=useRef<number|null>(null);
  const goToSlide=(next:number)=>{setSlide((next+slides.length)%slides.length);};
+ const selectSlideFromControl=(event:React.MouseEvent<HTMLButtonElement>,next:number)=>{
+  goToSlide(next);
+  // Pointer taps must not leave a carousel control focused and the autoplay permanently paused.
+  // Preserve keyboard focus so keyboard visitors can read the slide without auto-advance.
+  if(!event.currentTarget.matches(':focus-visible'))event.currentTarget.blur();
+ };
  const playback=useCarouselPlayback({
   count:slides.length,delay:6800,onAdvance:()=>setSlide(i=>(i+1)%slides.length)
  });
@@ -81,14 +88,13 @@ export default function Homepage({featured,featuredSlot}:{featured:FeaturedPrope
    onKeyDown={event=>{if(event.key==='ArrowLeft'){event.preventDefault();goToSlide(slide-1)}if(event.key==='ArrowRight'){event.preventDefault();goToSlide(slide+1)}}}>
    <div className="hero-v16-media ls-v23-hero-media" aria-hidden="true">{slides.map((item,i)=>
      <div key={item.name} className={'hero-v16-image '+(slide===i?'is-visible':'')}
-       style={{backgroundImage:readyBackgrounds.includes(i)||slide===i?'url("'+item.image+'")':undefined}}/>)}</div>
+       style={{backgroundImage:readyBackgrounds.includes(i)||slide===i?'url("'+item.image+'")':undefined,
+        backgroundPosition:i===1?'center 25%':undefined}}/>)}</div>
    <div className="hero-v16-wash ls-v23-hero-wash" aria-hidden="true"/>
    <div className="hero-v16-inner ls-v23-hero-inner">
     <div className="hero-v16-content ls-v23-hero-content" key={current.name}>
      <span className="eyebrow hero-v16-eyebrow">{current.subtitle}</span>
-     <h1 className="hero-v16-title ls-v23-hero-title" aria-label={current.title}>
-      <span>{titleParts[slide][0]}</span>{' '}<strong>{titleParts[slide][1]}</strong>
-     </h1>
+     <HeroTypingTitle key={current.name} title={current.title} first={titleParts[slide][0]} second={titleParts[slide][1]} paused={playback.paused}/>
      <p className="hero-v16-copy ls-v23-hero-description">{current.copy}</p>
      <div className="hero-v16-actions ls-v23-hero-actions">
       <Link className="primary" href={current.href}>{current.primary} <span aria-hidden="true"><ApprovedArrow /></span></Link>
@@ -99,9 +105,9 @@ export default function Homepage({featured,featuredSlot}:{featured:FeaturedPrope
      <div className="hero-v16-indicators">{slides.map((item,i)=>
       <button key={item.name} type="button" aria-label={'Show '+item.name+' slide'}
        aria-current={slide===i?'true':undefined} className={slide===i?'selected':''}
-       onClick={()=>goToSlide(i)}><span className="ls-v23-control-dot" aria-hidden="true"/></button>)}</div>
-     <div className="hero-v16-arrows"><button type="button" aria-label="Previous slide" onClick={()=>goToSlide(slide-1)}><ApprovedArrow direction="left" /></button>
-      <button type="button" aria-label="Next slide" onClick={()=>goToSlide(slide+1)}><ApprovedArrow /></button></div>
+       onClick={event=>selectSlideFromControl(event,i)}><span className="ls-v23-control-dot" aria-hidden="true"/></button>)}</div>
+     <div className="hero-v16-arrows"><button type="button" aria-label="Previous slide" onClick={event=>selectSlideFromControl(event,slide-1)}><ApprovedArrow direction="left" /></button>
+      <button type="button" aria-label="Next slide" onClick={event=>selectSlideFromControl(event,slide+1)}><ApprovedArrow /></button></div>
     </div>
    </div>
   </section>

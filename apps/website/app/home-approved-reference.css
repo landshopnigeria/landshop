@@ -147,3 +147,14 @@
 @media(max-width:900px){.lsap-home .lsap-product-grid .lsap-product{width:calc((100cqw - 18px)/2);flex-basis:calc((100cqw - 18px)/2)}}
 @media(max-width:650px){.lsap-home .lsap-product-grid .lsap-product{width:calc(100cqw - 12px);flex-basis:calc(100cqw - 12px)}.lsap-home .lsap-product-grid .lsap-product-image{height:175px}}
 @media(prefers-reduced-motion:reduce){.lsap-home .lsap-product-grid{overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:thin}.lsap-home .lsap-product-track{animation:none;will-change:auto}.lsap-home .lsap-product-grid .lsap-product{scroll-snap-align:start}}
+
+/* Homepage hero headline: lightweight type / hold / erase loop. */
+.ls-v23-hero-title.ls-v23-typewriter-title:not(.ls-v23-typewriter-paused)::after{
+ content:"";display:inline-block;width:2px;height:.76em;margin-inline-start:.08em;
+ background:currentColor;vertical-align:-.04em;
+ animation:ls-v23-typewriter-caret .78s steps(1,end) infinite;
+}
+@keyframes ls-v23-typewriter-caret{50%{opacity:0}}
+@media (prefers-reduced-motion:reduce){
+ .ls-v23-hero-title.ls-v23-typewriter-title::after{display:none!important;animation:none!important}
+}
