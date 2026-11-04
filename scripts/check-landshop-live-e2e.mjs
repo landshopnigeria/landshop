@@ -58,6 +58,17 @@ try{
  await step('Identical live logo across all four domains',async()=>{
   assert.equal(new Set(Object.values(logos)).size,1,'Brand artwork differs across domains');
  });
+ await step('Public client navigation completes across main pages',async()=>{
+  await navigate(origins.website+'/');
+  await waitForHydration('.ls-primary-nav a[href="/properties"]');
+  for(const [name,path] of [['Properties','/properties'],['Insights','/insights'],['Contact','/contact']]){
+   const started=Date.now();
+   await page.getByRole('link',{name,exact:true}).click();
+   await page.waitForURL(origins.website+path,{timeout:15000});
+   await page.locator('main h1').waitFor({state:'visible',timeout:10000});
+   console.log('E2E NAVIGATION',path,Date.now()-started+'ms');
+  }
+ });
  await step('Customer portal sign-in and home-link rendering',async()=>{
   await navigate(origins.portal+'/');
   await page.getByRole('tab',{name:'Sign In'}).waitFor({state:'visible'});

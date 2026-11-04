@@ -1,3 +1,5 @@
+import {Suspense} from 'react';
+import NavigationFeedback from '../../../packages/shared/NavigationFeedback';
 import WebsiteContent from '../components/WebsiteContent';
 import ReleaseVersionNotice from '../../../packages/shared/ReleaseVersionNotice';
 import '../../../packages/shared/EnterpriseReadability.css';
@@ -67,4 +69,4 @@ const structuredData={
  ]
 };
 
-export default function Layout({children}:{children:React.ReactNode}){return <html lang="en"><head><script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify(structuredData).replace(/</g,'\\u003c')}}/><meta name="landshop-release" content={process.env.NEXT_PUBLIC_LANDSHOP_RELEASE_SHA||'unversioned'}/></head><body><WebsiteContent/><ReleaseVersionNotice/><SiteHeader/>{children}<GlobalArticleCarousel/><SiteFooter/><InvestmentPopup/></body></html>}
+export default function Layout({children}:{children:React.ReactNode}){return <html lang="en"><head><script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify(structuredData).replace(/</g,'\\u003c')}}/><meta name="landshop-release" content={process.env.NEXT_PUBLIC_LANDSHOP_RELEASE_SHA||'unversioned'}/></head><body><WebsiteContent/><ReleaseVersionNotice/><Suspense fallback={null}><NavigationFeedback/></Suspense><SiteHeader/>{children}<GlobalArticleCarousel/><SiteFooter/><InvestmentPopup/></body></html>}
