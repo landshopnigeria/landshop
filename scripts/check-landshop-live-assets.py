@@ -218,6 +218,22 @@ def check_transparent_brand_logo(host, app):
         raise AssertionError(f"{host}: missing valid RGBA logo content")
     print(f"BRAND_OK {host}{name}: exact logo digest {sha256(blob).hexdigest()[:12]}",flush=True)
 
+def check_famous_gardens_hero_photo(host):
+    """Verify the exact owner-approved Famous Gardens slider JPEG is live."""
+    name="/owner/2026/famous-gardens-homepage-2026-11.jpg"
+    local=Path("apps/website/public") / name.lstrip("/")
+    if not local.is_file():
+        raise AssertionError("Committed Famous Gardens homepage photo is missing")
+    url=f"https://{host}{name}?release={EXPECTED[:12]}"
+    status,headers,live_bytes,_=request_static(url)
+    if status != 200 or not live_bytes.startswith(bytes.fromhex("ffd8ff")):
+        raise AssertionError(f"{host}: Famous Gardens slider image missing or not JPEG")
+    if "image/jpeg" not in get_header(headers,"Content-Type").lower():
+        raise AssertionError(f"{host}: Famous Gardens photo served with wrong Content-Type")
+    if sha256(live_bytes).digest() != sha256(local.read_bytes()).digest():
+        raise AssertionError(f"{host}: Famous Gardens live photo differs from approved source")
+    print(f"FAMOUS_GARDENS_IMAGE_OK {host}{name}: exact owner-photo SHA256",flush=True)
+
 def main():
     if not re.fullmatch("[0-9a-f]{40}",EXPECTED):
         raise RuntimeError("LANDSHOP_EXPECTED_SHA must be the exact Git commit")
@@ -249,6 +265,12 @@ def main():
         except (AssertionError,URLError,HTTPError,OSError,TimeoutError,ValueError) as exc:
             failures.append((host,"/media/logo-transparent.png",str(exc)))
             print(f"FAILED live brand logo {host}: {exc}",file=sys.stderr,flush=True)
+    for host in HOSTS:
+        try:
+            check_famous_gardens_hero_photo(host)
+        except (AssertionError,URLError,HTTPError,OSError,TimeoutError,ValueError) as exc:
+            failures.append((host,"/owner/2026/famous-gardens-homepage-2026-11.jpg",str(exc)))
+            print(f"FAILED live Famous Gardens slider image on {host}: {exc}",file=sys.stderr,flush=True)
     for host,path,error in failures:
         print(f"FAILURE SUMMARY {host}{path}: {error}",file=sys.stderr)
     if failures:
