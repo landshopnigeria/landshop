@@ -119,18 +119,30 @@ export default function CommunicationCenter({runs,evidenceAvailable,operations,i
   <header className="comm-top"><div className="comm-top-inner">
    <Link href="/admin" className="comm-back">← Command Center</Link>
    <div className="comm-identity"><a href="https://www.landshopnigeria.com/" aria-label="Landshop homepage"><img src="/media/logo-transparent.png" alt="Official transparent Landshop logo" width={105} height={52}/></a><div><strong>Enterprise Communications</strong><span>Internal management workspace · six product journeys</span></div></div>
-   <div className="comm-top-actions"><span className="comm-lock">Management only · Sending disabled</span><Link href="/admin/automation" className="comm-builder">Open NEXUS Builder ↗</Link></div>
+   <div className="comm-top-actions"><span className="comm-lock">Management only · Sending disabled</span><Link href="/admin/automation" className="comm-builder">Open Automation Studio ↗</Link></div>
   </div></header>
   <div className="comm-container">
+   <section className="comm-studio-bridge" aria-label="Open the interactive automation studio">
+    <div className="comm-studio-intro">
+     <span className="comm-studio-kicker">LANDSHOP AUTOMATION OPERATING SYSTEM</span>
+     <h2>One canvas. Every connected workflow.</h2>
+     <p>Build automations with the drag-and-drop node editor, single-open action categories and mobile-friendly steps. Your customer journeys, templates, contacts and communication approvals stay here.</p>
+    </div>
+    <div className="comm-studio-actions">
+     <Link href="/admin/automation" className="comm-studio-primary">Open visual workflow builder <span aria-hidden="true">→</span></Link>
+     <span className="comm-studio-note">The canvas opens in Automation Studio. Provider sends follow existing consent and activation controls.</span>
+    </div>
+   </section>
    <section className="comm-hero"><div><small>LANDSHOP · COMMUNICATION OPERATIONS</small><h1>Every customer moment, connected.</h1>
     <p>One unified experience for mortgage, investment, onboarding and property development. Review 70 event-based messages, follow decision branches and inspect authorized workflow run records.</p>
     <p className="comm-warning">Draft review and real workflow run visibility only. Provider sends, legal notices and unverified financial events remain disabled.</p></div>
     <div className="comm-stats"><div><strong>6</strong><span>Product journeys</span></div><div><strong>70</strong><span>Message scenarios</span></div><div><strong>{runs.length}</strong><span>Recorded run entries</span></div><div><strong>{reviewed.length}</strong><span>Templates reviewed locally</span></div></div></section>
    <nav className="comm-tabs" aria-label="Communication workspace sections">
-    {([['journeys','Workflow canvas'],['templates','Email & message studio'],['operations','Customer activity & contacts'],['reporting','Management reporting'],['exports','Exports & manual automation'],['safeguards','Approval gates']] as [Tab,string][]).map(([id,label])=><button type="button" key={id} className={tab===id?'active':''} onClick={()=>setTab(id)} aria-current={tab===id?'page':undefined}>{label}</button>)}
+    <Link href="/admin/automation" className="comm-tabs-builder">Visual workflow canvas <span aria-hidden="true">↗</span></Link>
+    {([['journeys','Customer journey map'],['templates','Email & message studio'],['operations','Customer activity & contacts'],['reporting','Management reporting'],['exports','Exports & manual automation'],['safeguards','Approval gates']] as [Tab,string][]).map(([id,label])=><button type="button" key={id} className={tab===id?'active':''} onClick={()=>setTab(id)} aria-current={tab===id?'page':undefined}>{label}</button>)}
    </nav>
    {tab==='journeys'&&<div className="comm-panel">
-    <div className="comm-titleline"><div><h2>Six connected customer journeys</h2><p>Select a product and click any stage to review the conditions and outgoing messages.</p></div><span className="comm-label">{countForJourney} matching messages</span></div>
+    <div className="comm-titleline"><div><h2>Six connected customer journeys</h2><p>These are customer-journey reference maps. To drag, connect, configure and test workflow nodes, open the Visual workflow canvas above.</p></div><span className="comm-label">{countForJourney} matching messages</span></div>
     <div className="comm-journey-tabs">{journeyNames.map(j=><button key={j} className={journey===j?'active':''} onClick={()=>pickJourney(j)}>{labels[j]}</button>)}</div>
     <div className="comm-two"><div className="comm-phase-list">{[...new Set(stages.map(s=>s.phase))].map(phase=><div key={phase} className="comm-phase"><h3>{phase}</h3><div className="comm-stage-grid">{stages.filter(s=>s.phase===phase).map(s=><button key={s.id} onClick={()=>setStageId(s.id)} className={'comm-stage '+(stage.id===s.id?'active ':'')+(s.type==='bad'?'danger':'')}><b>{s.name}</b><small>{s.templates.length} linked messages</small></button>)}</div></div>)}</div>
      <aside className="comm-stage-detail"><small>SELECTED WORKFLOW STAGE</small><h2>{stage.name}</h2><p>{stage.note}</p><h4>Next action</h4><p>{stage.next}</p><h4>Connected templates</h4>{stage.templates.length?stage.templates.map(id=>{const t=catalog.templates.find(v=>v.id===id);return t?<button className="comm-linked" key={id} onClick={()=>openTemplate(id)}>{t.title}<span>View →</span></button>:null}):<p>This is a process stage. No outbound message is scheduled at this step.</p>}</aside>
