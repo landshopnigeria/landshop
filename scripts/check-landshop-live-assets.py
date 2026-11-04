@@ -245,12 +245,12 @@ def check_mobile_app_local_media():
     """Verify the actual mobile PWA loads its owner assets from the portal origin."""
     host="portal.landshopnigeria.com"
     paths=(
-        "/owner/2026/famous-gardens-homepage-2026-11-mobile.jpg",
-        "/owner/2026/site-client-inspection.webp",
-        "/owner/2026/famous-completed-homes.webp",
-        "/owner/2026/product-grow.webp",
-        "/estates/green-island/site-progress-1.webp",
-        "/estates/blue-diamonds/entrance-concept.webp",
+        "/media/mobile/famous-gardens-homepage-2026-11-mobile.jpg",
+        "/media/mobile/site-client-inspection.webp",
+        "/media/mobile/famous-completed-homes.webp",
+        "/media/mobile/product-grow.webp",
+        "/media/mobile/green-island-site-progress-1.webp",
+        "/media/mobile/blue-diamonds-entrance-concept.webp",
         "/media/maiyegun0.webp",
     )
     for path in paths:
