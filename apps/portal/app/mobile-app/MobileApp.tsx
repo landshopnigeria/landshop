@@ -1,8 +1,8 @@
 'use client';
 import {useEffect,useMemo,useRef,useState,type FormEvent,type ReactNode} from 'react';
 import {browserSupabase} from '../../lib/supabase-browser';
-import {accountHome} from '../../../../../packages/shared/account-home';
-import {assertLandshopPasswordSafe} from '../../../../../packages/shared/landshop-password-screen';
+import {accountHome} from '../../../../packages/shared/account-home';
+import {assertLandshopPasswordSafe} from '../../../../packages/shared/landshop-password-screen';
 
 type Screen='splash'|'onboarding'|'signup'|'signin'|'verify'|'reset'|'home'|'explore'|'property'|'inspection'|'mortgage'|'saved'|'referrals'|'notices'|'profile';
 type Property={slug:string;title:string;location:string;image:string;summary:string;type:'land'|'homes'|'coastal';label:string;status:string;href:string;};
