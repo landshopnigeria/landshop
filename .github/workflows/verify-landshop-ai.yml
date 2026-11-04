@@ -33,7 +33,7 @@ jobs:
           def report(**data): print('LANDSHOP_AI_STATUS '+json.dumps(data),flush=True)
           command=shutil.which('cloudlinux-selector') or '/usr/bin/cloudlinux-selector'
           try:
-              result=subprocess.run([command,'get','--json','--interpreter','nodejs'],capture_output=True,text=True,timeout=25)
+              result=subprocess.run([command,'get','--json','--interpreter','nodejs','--user',os.environ.get('USER','')],capture_output=True,text=True,timeout=25)
               data=json.loads(result.stdout)
           except Exception:
               data={}
@@ -86,9 +86,24 @@ jobs:
           if status!=200:report(provider_error=models.get('code'));raise SystemExit(1)
           if not model:
               ids={entry.get('id') for entry in models.get('data',[])}
-              report(model_required=True,suggested_model=next((m for m in ['gpt-5-mini','gpt-4.1-mini','gpt-4o-mini'] if m in ids),None));raise SystemExit(1)
+              model=next((m for m in ['gpt-5-mini','gpt-4.1-mini','gpt-4o-mini'] if m in ids),None)
+              report(model_required=True,suggested_model=model)
+              if not model:raise SystemExit(1)
           if not re.fullmatch(r'[a-zA-Z0-9._:-]{1,100}',model):raise SystemExit(1)
           status,response=api('responses',{'model':model,'store':False,'max_output_tokens':1000,'input':'Return exactly the word READY.'})
           report(generation_status=status,generation_ready=status==200 and response.get('status')=='completed',provider_error=response.get('code'))
           if status!=200 or response.get('status')!='completed':raise SystemExit(1)
+          if not env.get('LANDSHOP_WORKFLOW_AI_MODEL'):
+              if matches[0].get('domain')!='app.landshopnigeria.com':
+                  report(model_installation='requires_control_panel');raise SystemExit(1)
+              updated=dict(env);updated['LANDSHOP_WORKFLOW_AI_MODEL']=model
+              try:
+                  changed=subprocess.run([command,'set','--json','--interpreter','nodejs','--user',os.environ.get('USER',''),'--app-root','landshop-app','--env-vars',json.dumps(updated)],capture_output=True,text=True,timeout=45)
+                  result=json.loads(changed.stdout)
+                  if changed.returncode or result.get('result')!='success':raise ValueError()
+                  restarted=subprocess.run([command,'restart','--json','--interpreter','nodejs','--user',os.environ.get('USER',''),'--app-root','landshop-app'],capture_output=True,text=True,timeout=45)
+                  if restarted.returncode:raise ValueError()
+                  report(model_installed=True,model=model,application_restart=True)
+              except Exception:
+                  report(model_installation='requires_control_panel');raise SystemExit(1)
           PY
