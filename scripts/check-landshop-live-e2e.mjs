@@ -96,7 +96,7 @@ try{
   assert.equal(new URL(await home.getAttribute('href')).origin,origins.website);
   await page.locator('#su-role').selectOption('owner');
   assert.equal(await page.locator('#su-role').inputValue(),'owner');
-  assert.match(await page.locator('h1').first().innerText(),/Landshop Owner/);
+  await page.waitForFunction(()=>document.querySelector('h1')?.textContent?.includes('Landshop Owner'),undefined,{timeout:7000});
  });
  await step('Staff owner deep-link preselection never bypasses sign-up',async()=>{
   await navigate(origins.app+'/staff/sign-up?role=owner');
