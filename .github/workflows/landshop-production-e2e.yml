@@ -4,14 +4,26 @@ on:
     branches:
       - main
       - test/live-e2e-auth-and-routing-20261104
+      - test/authenticated-customer-staff-command-e2e-20261104
     paths:
       - 'scripts/check-landshop-live-e2e.mjs'
+      - 'scripts/check-landshop-authenticated-e2e.mjs'
       - '.github/workflows/landshop-production-e2e.yml'
   workflow_run:
     workflows:
       - Release Landshop Enterprise Applications to Namecheap
     types: [completed]
   workflow_dispatch:
+    inputs:
+      suite:
+        description: 'Authenticated suites to run; requires dedicated test accounts'
+        required: true
+        default: all
+        type: choice
+        options:
+          - all
+          - customer
+          - staff-command
 permissions:
   contents: read
 concurrency:
@@ -44,7 +56,76 @@ jobs:
         run: npm install --no-save --no-package-lock playwright@1.56.1
       - name: Install Chromium and OS browser dependencies
         run: npx playwright install chromium --with-deps
-      - name: Run production browser E2E with read-only anonymous checks
+      - name: Run public browser E2E (authenticated suites run separately)
         env:
           LANDSHOP_E2E_RELEASE_SHA: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || '' }}
         run: node scripts/check-landshop-live-e2e.mjs
+
+
+  authenticated-customer:
+    name: Authenticated customer dashboard and permissions
+    if: >-
+      (github.event_name == 'workflow_dispatch' && (inputs.suite == 'all' || inputs.suite == 'customer'))
+      || (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success'
+      && github.event.workflow_run.head_branch == 'main' && vars.LANDSHOP_ENABLE_AUTH_E2E == 'true')
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      CI: 'true'
+      LANDSHOP_E2E_CUSTOMER_EMAIL: ${{ secrets.LANDSHOP_E2E_CUSTOMER_EMAIL }}
+      LANDSHOP_E2E_CUSTOMER_PASSWORD: ${{ secrets.LANDSHOP_E2E_CUSTOMER_PASSWORD }}
+    steps:
+      - name: Check out exact production test suite
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Fail closed if the dedicated customer login is missing
+        run: |
+          node -e "const keys=['LANDSHOP_E2E_CUSTOMER_EMAIL','LANDSHOP_E2E_CUSTOMER_PASSWORD'];const missing=keys.filter(k=>!process.env[k]);if(missing.length){console.error('AUTH E2E BLOCKED: configure '+missing.join(', '));process.exit(2)}"
+      - name: Validate authenticated browser test syntax
+        run: node --check scripts/check-landshop-authenticated-e2e.mjs
+      - name: Install pinned browser dependencies
+        run: |
+          npm install --no-audit --no-fund --no-package-lock
+          npm install --no-save --no-package-lock playwright@1.56.1
+          npx playwright install chromium --with-deps
+      - name: Test logged-in customer account and isolation
+        run: node scripts/check-landshop-authenticated-e2e.mjs --suite=customer
+
+  authenticated-staff-command:
+    name: Authenticated staff, management and Automation Studio
+    if: >-
+      (github.event_name == 'workflow_dispatch' && (inputs.suite == 'all' || inputs.suite == 'staff-command'))
+      || (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success'
+      && github.event.workflow_run.head_branch == 'main' && vars.LANDSHOP_ENABLE_AUTH_E2E == 'true')
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      CI: 'true'
+      LANDSHOP_E2E_STAFF_EMAIL: ${{ secrets.LANDSHOP_E2E_STAFF_EMAIL }}
+      LANDSHOP_E2E_STAFF_PASSWORD: ${{ secrets.LANDSHOP_E2E_STAFF_PASSWORD }}
+      LANDSHOP_E2E_MANAGEMENT_EMAIL: ${{ secrets.LANDSHOP_E2E_MANAGEMENT_EMAIL }}
+      LANDSHOP_E2E_MANAGEMENT_PASSWORD: ${{ secrets.LANDSHOP_E2E_MANAGEMENT_PASSWORD }}
+    steps:
+      - name: Check out exact production test suite
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Fail closed if staff and management test logins are missing
+        run: |
+          node -e "const keys=['LANDSHOP_E2E_STAFF_EMAIL','LANDSHOP_E2E_STAFF_PASSWORD','LANDSHOP_E2E_MANAGEMENT_EMAIL','LANDSHOP_E2E_MANAGEMENT_PASSWORD'];const missing=keys.filter(k=>!process.env[k]);if(missing.length){console.error('AUTH E2E BLOCKED: configure '+missing.join(', '));process.exit(2)}"
+      - name: Validate authenticated browser test syntax
+        run: node --check scripts/check-landshop-authenticated-e2e.mjs
+      - name: Install pinned browser dependencies
+        run: |
+          npm install --no-audit --no-fund --no-package-lock
+          npm install --no-save --no-package-lock playwright@1.56.1
+          npx playwright install chromium --with-deps
+      - name: Test logged-in staff and Command Center read-only workflows
+        run: node scripts/check-landshop-authenticated-e2e.mjs --suite=staff-command
