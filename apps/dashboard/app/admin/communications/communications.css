@@ -228,3 +228,90 @@
 .comm-tabs button{white-space:nowrap}
 @media(max-width:800px){.comm-studio-bridge{flex-direction:column;align-items:stretch;padding:18px;gap:14px}.comm-studio-actions{flex:0 0 auto;width:100%}.comm-studio-primary{min-height:46px}.comm-hero{grid-template-columns:1fr}.comm-tabs{flex-wrap:nowrap;scrollbar-width:thin}}
 @media(max-width:480px){.comm-studio-bridge{padding:15px}.comm-studio-intro h2{font-size:20px}.comm-studio-intro p{font-size:11px}.comm-tabs-builder{min-height:43px;padding:10px 12px}}
+
+
+/* Responsive, composited communication workspace controls. No external-send changes. */
+.comm-center{width:100%;max-width:100%;min-width:0;overflow-x:clip}
+.comm-container,.comm-panel,.comm-hero,.comm-preview,.comm-two > *, .comm-library > *{min-width:0}
+.comm-mobile-nav{display:none}
+.comm-inline-loading{display:grid;place-items:center;min-height:110px;padding:18px;border:1px dashed #cce4d4;border-radius:12px;background:#f7faf8;color:#2a664c;font-size:12px;font-weight:700}
+.comm-center button,.comm-center a,.comm-center select,.comm-center input,.comm-center textarea{-webkit-tap-highlight-color:transparent}
+.comm-center button:focus-visible,.comm-center a:focus-visible,.comm-center select:focus-visible,.comm-center input:focus-visible,.comm-center textarea:focus-visible{outline:2px solid #f26b10;outline-offset:2px}
+.comm-tabs{scrollbar-width:thin;overscroll-behavior-inline:contain}
+.comm-tabs button,.comm-tabs-builder{transition:color .14s ease,background-color .14s ease,border-color .14s ease}
+.comm-hero{gap:clamp(14px,2vw,24px);padding:clamp(15px,2vw,25px)}
+.comm-hero h1{font-size:clamp(23px,2.8vw,34px);line-height:1.14}
+.comm-stats>div{padding:clamp(11px,1.3vw,18px)}
+.comm-stats strong{font-size:clamp(23px,2.2vw,30px)}
+.comm-stage-detail,.comm-email,.comm-premium-mail{max-width:100%}
+@media(max-width:1024px){
+ .comm-top-inner{min-height:70px;padding:10px clamp(12px,2vw,20px)}
+ .comm-studio-bridge{gap:15px}
+ .comm-studio-actions{flex-basis:225px}
+ .comm-hero{grid-template-columns:minmax(0,1fr)}
+ .comm-stats{grid-template-columns:repeat(4,minmax(0,1fr))}
+ .comm-stats>div{padding:12px}
+ .comm-library{grid-template-columns:minmax(185px,.75fr) minmax(0,1.6fr)}
+}
+@media(max-width:720px){
+ .comm-center{font-size:13px}
+ .comm-top{position:relative}
+ .comm-top-inner{min-height:0;gap:10px;padding:10px 12px}
+ .comm-identity{gap:8px;min-width:0}
+ .comm-identity img{width:72px;height:auto;max-height:44px}
+ .comm-identity strong{font-size:15px}
+ .comm-identity span{font-size:10px}
+ .comm-lock{font-size:10px;padding:7px 9px}
+ .comm-top-actions{justify-content:space-between;gap:7px}
+ .comm-builder{font-size:11px;padding:10px 12px}
+ .comm-container{padding:12px 12px 38px}
+ .comm-hero{padding:16px;border-radius:16px;gap:13px}
+ .comm-hero h1{font-size:clamp(22px,5.3vw,28px);letter-spacing:-.04em}
+ .comm-hero p{font-size:12px;line-height:1.55;margin-block:8px}
+ .comm-warning{font-size:11px;padding:10px 12px!important}
+ .comm-stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ .comm-stats>div{padding:12px 10px;border-radius:11px}
+ .comm-stats strong{font-size:24px}
+ .comm-stats span{font-size:10px;line-height:1.35}
+ .comm-mobile-nav{display:grid;grid-template-columns:1fr;gap:7px;margin:14px 0 8px}
+ .comm-mobile-nav label{font-size:11px;font-weight:800;color:#2d6850}
+ .comm-mobile-nav select{width:100%;min-height:46px;border:1px solid #bfdccb;border-radius:11px;padding:10px 13px;background:#fff;color:#174c38;font-size:13px;font-weight:750;appearance:auto}
+ .comm-tabs{margin:8px 0 13px;overflow:visible;flex-wrap:nowrap}
+ .comm-tabs button{display:none}
+ .comm-tabs-builder{width:100%;min-height:44px;justify-content:space-between}
+ .comm-panel{padding:14px 12px;border-radius:14px}
+ .comm-titleline{gap:8px;margin-bottom:12px}
+ .comm-titleline h2{font-size:19px}
+ .comm-titleline p{font-size:12px;line-height:1.5}
+ .comm-journey-tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+ .comm-journey-tabs button{min-height:44px;padding:10px 7px;font-size:11px}
+ .comm-phase h3{font-size:10px}
+ .comm-stage-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ .comm-stage{min-width:0;max-width:none;width:100%;min-height:67px}
+ .comm-stage b{font-size:12px}
+ .comm-two{display:grid;grid-template-columns:minmax(0,1fr);gap:13px}
+ .comm-stage-detail{padding:16px}
+ .comm-library{grid-template-columns:minmax(0,1fr);gap:11px}
+ .comm-list{max-height:none;overflow:visible;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;border:none}
+ .comm-list button{min-width:0;border:1px solid #dfebe2;border-radius:10px;padding:10px}
+ .comm-list button strong{font-size:12px;line-height:1.35;overflow-wrap:anywhere}
+ .comm-preview{padding:11px}
+ .comm-controls label{min-width:0;flex:1 1 100%}
+ .comm-email-body{padding:18px}
+ .comm-email-footer{padding:17px}
+ .comm-approval{grid-template-columns:1fr}
+ .comm-message-meta{grid-template-columns:1fr}
+ .comm-stats.small{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:390px){
+ .comm-list{grid-template-columns:1fr}
+ .comm-journey-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .comm-top-inner{padding:9px}
+ .comm-container{padding-inline:9px}
+ .comm-studio-bridge{padding:12px}
+ .comm-studio-intro h2{font-size:19px}
+ .comm-top-actions .comm-lock{max-width:100%}
+}
+@media(prefers-reduced-motion:reduce){
+ .comm-tabs button,.comm-tabs-builder,.comm-studio-primary{transition:none}
+}
