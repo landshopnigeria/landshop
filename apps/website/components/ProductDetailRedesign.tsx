@@ -118,6 +118,7 @@ export default function ProductDetailRedesign({page}:{page:PageId}){
  const d=pages[page];
  const eligibleApplications=page==='products'?[]:(secureApplications[page]||[]);
  const [modal,setModal]=useState<string|null>(null);
+ const [detailTab,setDetailTab]=useState<'overview'|'process'|'options'>('overview');
  const [busy,setBusy]=useState(false);
  const [feedback,setFeedback]=useState<{ok:boolean;message:string;reference?:string}|null>(null);
  const dialogRef=useRef<HTMLDivElement>(null);
@@ -176,14 +177,25 @@ export default function ProductDetailRedesign({page}:{page:PageId}){
     <figure className="lsp-hero-photo"><img src={d.photo} alt={d.photoAlt}/><figcaption>{d.photoLabel}</figcaption></figure>
    </section>
    <div className="lsp-stats">{d.highlights.map(([title,desc])=><div className="lsp-stat" key={title}><strong>{title}</strong><span>{desc}</span></div>)}</div>
-   <section className="lsp-section" id="lsp-options"><div className="lsp-heading"><span className="lsp-kicker">WHAT YOU SHOULD KNOW</span><h2>{d.heading}</h2><p>{d.intro}</p></div>
-    {page==='products'?<div className="lsp-products-grid">{(['develop','incubate','grow','devpro','estatepro'] as ProductId[]).map(productCard)}</div>:
-    <div className="lsp-features">{d.features.map(([title,desc],i)=><article key={title} className="lsp-feature"><span className="lsp-index">0{i+1}</span><h3>{title}</h3><p>{desc}</p></article>)}</div>}
+
+   <section className="lsp-compact-panel" id="lsp-options" aria-labelledby="lsp-panel-heading">
+    <div className="lsp-compact-heading"><div><span className="lsp-kicker">EXPLORE {d.name.toUpperCase()}</span><h2 id="lsp-panel-heading">Everything you need, in one place.</h2><p>{d.intro}</p></div></div>
+    <div className="lsp-compact-tabs" role="tablist" aria-label={d.name+' product details'}>
+     <button type="button" id="lsp-tab-overview" role="tab" aria-selected={detailTab==='overview'} aria-controls="lsp-detail-panel" tabIndex={detailTab==='overview'?0:-1} onClick={()=>setDetailTab('overview')}>01 <span>Overview</span></button>
+     <button type="button" id="lsp-tab-process" role="tab" aria-selected={detailTab==='process'} aria-controls="lsp-detail-panel" tabIndex={detailTab==='process'?0:-1} onClick={()=>setDetailTab('process')}>02 <span>How it works</span></button>
+     {page!=='products'&&<button type="button" id="lsp-tab-options" role="tab" aria-selected={detailTab==='options'} aria-controls="lsp-detail-panel" tabIndex={detailTab==='options'?0:-1} onClick={()=>setDetailTab('options')}>03 <span>Next steps</span></button>}
+    </div>
+    <div className="lsp-compact-content" role="tabpanel" id="lsp-detail-panel" aria-labelledby={'lsp-tab-'+detailTab} key={detailTab}>
+     {detailTab==='overview'&&(page==='products'?
+      <div className="lsp-products-grid">{(['develop','incubate','grow','devpro','estatepro'] as ProductId[]).map(productCard)}</div>:
+      <div className="lsp-compact-features">{d.features.map(([title,description],index)=><article key={title} className="lsp-compact-feature"><span className="lsp-index">0{index+1}</span><h3>{title}</h3><p>{description}</p></article>)}</div>)}
+     {detailTab==='process'&&<div className="lsp-compact-process">{d.steps.map(([title,description],index)=><article key={title}><span className="lsp-index">0{index+1}</span><h3>{title}</h3><p>{description}</p></article>)}</div>}
+     {detailTab==='options'&&page!=='products'&&<div className="lsp-compact-options">
+      <div className="lsp-compact-pathways">{d.links.map(item=><article key={item.title}><div><h3>{item.title}</h3><p>{item.description}</p></div>{item.href?<Link href={item.href}>Explore <ApprovedArrow/></Link>:<button type="button" onClick={()=>openModal(item.intent||item.title)}>Enquire <ApprovedArrow/></button>}</article>)}</div>
+      {eligibleApplications.length>0&&<div className="lsp-compact-secure"><div><span className="lsp-kicker">SECURE APPLICATIONS</span><h3>Ready for a formal review?</h3><p>Applications are subject to current eligibility, verified terms and approval.</p></div><div>{eligibleApplications.map(item=><a key={item.slug} href={'https://portal.landshopnigeria.com/applications/'+item.slug}><strong>{item.name}</strong><ApprovedArrow/></a>)}</div></div>}
+     </div>}
+    </div>
    </section>
-   <section className="lsp-section lsp-process"><div className="lsp-heading"><span className="lsp-kicker">HOW IT WORKS</span></div><div className="lsp-steps">{d.steps.map(([title,desc],i)=><article key={title}><strong>0{i+1}</strong><h3>{title}</h3><p>{desc}</p></article>)}</div></section>
-   {page!=='products'&&<section className="lsp-section lsp-pathways"><div className="lsp-heading"><span className="lsp-kicker">PRODUCT PATHWAYS</span><h2>Choose your next step.</h2><p>Follow the relevant link or open a secure enquiry popup to ask for further guidance.</p></div><div className="lsp-pathway-grid">{d.links.map((item,i)=><article className="lsp-pathway" key={item.title}><span className="lsp-index">0{i+1}</span><h3>{item.title}</h3><p>{item.description}</p>{item.href?<Link href={item.href}>Explore pathway <ApprovedArrow /></Link>:<button type="button" onClick={()=>openModal(item.intent||item.title)}>Open enquiry form <ApprovedArrow /></button>}</article>)}</div>
-    {eligibleApplications.length>0&&<div className="lsp-secure-panel"><div><h3>Apply through a verified, secure process.</h3><p>These formal applications are separate from quick enquiries. Only apply after Landshop has confirmed current eligibility, availability and the relevant written offer. Submitting does not guarantee an allocation, loan or investment.</p></div><div className="lsp-secure-links">{eligibleApplications.map(item=><a key={item.slug} href={'https://portal.landshopnigeria.com/applications/'+item.slug} rel="noopener noreferrer"><span><strong>{item.name}</strong><small>{item.description}</small></span><ApprovedArrow /></a>)}</div></div>}
-   </section>}
    {(page==='devpro'||page==='estatepro')&&<section className="lsp-section lsp-calculator"><div className="lsp-heading"><span className="lsp-kicker">FINANCE PLANNER</span><h2>Explore a possible repayment scenario.</h2><p>Adjust your own amount, rate and term assumptions. This is not an offer or approval.</p></div><LoanIllustrator kind={page}/></section>}
    <section className="lsp-section lsp-faq"><div className="lsp-heading"><span className="lsp-kicker">FREQUENTLY ASKED QUESTIONS</span><h2>Questions worth asking.</h2></div><div className="lsp-faq-list">{d.faqs.map(([question,answer])=><details key={question}><summary>{question}<span aria-hidden="true">+</span></summary><p>{answer}</p></details>)}</div></section>
    <section className="lsp-conversion"><div><span className="lsp-kicker">LANDSHOP IS HERE TO HELP</span><h2>Ready to take a more informed step?</h2><p>Ask the right questions and request the information you need before proceeding.</p></div><button type="button" className="lsp-primary" onClick={()=>openModal(d.name+' next-step consultation')}>Speak with Landshop <ApprovedArrow /></button></section>
