@@ -7,6 +7,28 @@ const errors=[];
 try{
  const context=await browser.newContext({locale:'en-NG',reducedMotion:'reduce',deviceScaleFactor:1});
  const page=await context.newPage();
+ const navPage=await context.newPage();
+ await navPage.setViewportSize({width:1440,height:900});
+ await navPage.goto(root+'/about',{waitUntil:'domcontentloaded'});
+ for(const group of ['Products','Projects','Company','Services']){
+  await navPage.getByRole('button',{name:group,exact:true}).hover();
+  await navPage.locator('#ls-site-mega').waitFor({state:'visible'});
+  const menu=await navPage.locator('#ls-site-mega').evaluate(panel=>{
+   const links=[...panel.querySelectorAll('.ls-mega-list a')];
+   const rect=panel.getBoundingClientRect();
+   return {columns:new Set(links.map(link=>Math.round(link.getBoundingClientRect().left))).size,
+    scroll:panel.scrollHeight>panel.clientHeight+2,bottom:rect.bottom,viewport:innerHeight,
+    iconSizes:links.map(link=>parseFloat(getComputedStyle(link.querySelector('svg')).width)),
+    arrowSizes:links.map(link=>parseFloat(getComputedStyle(link.querySelector('svg:last-child')).width)),
+    hasPreviewCopy:/Clear choices\. More room to explore\.|No internal scrolling/.test(panel.textContent)};
+  });
+  if(menu.columns!==2||menu.scroll||menu.bottom>menu.viewport||menu.hasPreviewCopy||menu.iconSizes.some(n=>Math.abs(n-19)>.1)||menu.arrowSizes.some(n=>Math.abs(n-18.5)>.1))errors.push('COMPACT MENU '+group+': '+JSON.stringify(menu));
+  await navPage.locator('.ls-mega-list a').first().hover();
+  const stroke=await navPage.locator('.ls-mega-list a svg').first().evaluate(icon=>getComputedStyle(icon).stroke);
+  if(stroke!=='rgb(0, 136, 108)')errors.push('COMPACT MENU '+group+': hover icon is not primary teal '+stroke);
+ }
+ await navPage.close();
+
  for(const path of routes){
   for(const width of widths){
    const height=width<600?760:width<1100?1000:1100;
@@ -64,7 +86,7 @@ try{
      // The mobile nav is collapsed by default. Inspect its computed caret
      // dimensions even before a customer opens the menu.
      const navChevrons=allIcons.filter(icon=>icon.matches('.ls-site-chrome .ls-primary-nav .ls-nav-toggle .ls-icon-chevron'));
-     // Approved: general 27px, compact search 22px, short arrows 22px and nav chevrons 17px.
+     // Approved: 19px icons and search, 18.5px short arrows and V carets.
      const actionIcons=icons.filter(icon=>!navChevrons.includes(icon));
      // Classify search separately so its intentional compact sizing is validated.
      const directionalIcons=actionIcons.filter(icon=>icon.classList.contains('ls-icon-directional'));
@@ -72,13 +94,13 @@ try{
      const compactSearch=actionIcons.filter(icon=>icon.closest('.ls-global-search')&&icon.querySelector('path')?.getAttribute('d')===searchPath);
      const generalIcons=actionIcons.filter(icon=>!directionalIcons.includes(icon)&&!compactSearch.includes(icon));
      const wrongIconSizes=generalIcons.map(icon=>({className:icon.getAttribute('class'),...dimensions(icon)}))
-      .filter(icon=>Math.abs(icon.width-27)>.1||Math.abs(icon.height-27)>.1).slice(0,8);
+      .filter(icon=>Math.abs(icon.width-19)>.1||Math.abs(icon.height-19)>.1).slice(0,8);
      const wrongCompactSearchSizes=compactSearch.map(icon=>({className:icon.getAttribute('class'),...dimensions(icon)}))
-      .filter(icon=>Math.abs(icon.width-22)>.1||Math.abs(icon.height-22)>.1).slice(0,8);
+      .filter(icon=>Math.abs(icon.width-19)>.1||Math.abs(icon.height-19)>.1).slice(0,8);
      const wrongDirectionalSizes=directionalIcons.map(icon=>({className:icon.getAttribute('class'),...dimensions(icon)}))
-      .filter(icon=>Math.abs(icon.width-22)>.1||Math.abs(icon.height-22)>.1).slice(0,8);
+      .filter(icon=>Math.abs(icon.width-18.5)>.1||Math.abs(icon.height-18.5)>.1).slice(0,8);
      const wrongChevrons=navChevrons.map(icon=>({...dimensions(icon),path:icon.querySelector('path')?.getAttribute('d')}))
-      .filter(icon=>Math.abs(icon.width-17)>.1||Math.abs(icon.height-17)>.1||icon.path!=='M5.5 9l6.5 6.5L18.5 9').slice(0,8);
+      .filter(icon=>Math.abs(icon.width-18.5)>.1||Math.abs(icon.height-18.5)>.1||icon.path!=='M5.5 9l6.5 6.5L18.5 9').slice(0,8);
      const approvedPath='M2.5 12h19 M14.5 5l7 7-7 7';
      const wrongArrows=[...document.querySelectorAll('svg.ls-approved-arrow')].filter(visible)
       .filter(icon=>icon.querySelector('path')?.getAttribute('d')!==approvedPath).slice(0,8)
