@@ -10,15 +10,16 @@ import re
 root=Path("apps/portal/public")
 mobile=Path("apps/portal/app/mobile-app/MobileApp.tsx").read_text(encoding="utf-8")
 gate=Path("scripts/check-landshop-live-assets.py").read_text(encoding="utf-8")
-paths={
- "/owner/2026/famous-gardens-homepage-2026-11-mobile.jpg",
- "/owner/2026/site-client-inspection.webp",
- "/owner/2026/famous-completed-homes.webp",
- "/owner/2026/product-grow.webp",
- "/estates/green-island/site-progress-1.webp",
- "/estates/blue-diamonds/entrance-concept.webp",
- "/media/maiyegun0.webp",
+source_map={
+ "/media/landshop-mobile-famous-gardens.jpg": "/owner/2026/famous-gardens-homepage-2026-11-mobile.jpg",
+ "/media/landshop-mobile-site-client-inspection.webp": "/owner/2026/site-client-inspection.webp",
+ "/media/landshop-mobile-famous-completed-homes.webp": "/owner/2026/famous-completed-homes.webp",
+ "/media/landshop-mobile-product-grow.webp": "/owner/2026/product-grow.webp",
+ "/media/landshop-mobile-green-island-site-progress.webp": "/estates/green-island/site-progress-1.webp",
+ "/media/landshop-mobile-blue-diamonds-concept.webp": "/estates/blue-diamonds/entrance-concept.webp",
+ "/media/maiyegun0.webp": "/media/maiyegun0.webp",
 }
+paths=set(source_map)
 assert "/media/mobile/" not in mobile and "/media/mobile/" not in gate, "Outdated non-existent portal photo folder detected"
 seen=set(re.findall(r"""['"](/(?:owner|estates|media)/[^'"]+\.(?:jpg|webp))['"]""",mobile))
 assert paths.issubset(seen), "Mobile PWA references changed without updating approved photo inventory: "+str(paths-seen)
@@ -27,6 +28,9 @@ for item in sorted(paths):
  assert path.is_file(), "Missing portal mobile photograph: "+item
  assert 30_000 <= path.stat().st_size <= 500_000, "Missing, empty or oversized original photograph: "+item
  raw=path.read_bytes()
+ assert raw == (root / source_map[item].lstrip("/")).read_bytes(), (
+  "Mobile media must be byte-identical to original Landshop-owned image: "+item
+ )
  expected=raw.startswith(bytes.fromhex("ffd8ff")) if item.endswith(".jpg") else raw[:4]==b"RIFF" and raw[8:12]==b"WEBP"
  assert expected, "Invalid original photo format: "+item
  assert f'"{item}"' in gate, "The live byte-for-byte photo verifier does not cover: "+item
