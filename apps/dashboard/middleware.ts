@@ -13,13 +13,32 @@ export async function middleware(request: NextRequest) {
  if(['/', '/staff/sign-in', '/staff/sign-up', '/staff/terms', '/staff/privacy',
      '/auth/callback', '/account-unavailable', '/api/release-health'].includes(request.nextUrl.pathname))
   return NextResponse.next({request});
+ // Reject anonymous browser requests before any RSC rendering or Auth RPC.
+ // A cookie name only decides whether to perform deeper Auth validation; it
+ // never authorizes access. Valid sessions still require getUser() and role checks.
+ const protectedPath=request.nextUrl.pathname;
+ const privateStaff=protectedPath==='/staff'||protectedPath.startsWith('/staff/');
+ const privateCustomer=protectedPath==='/dashboard'||protectedPath.startsWith('/dashboard/');
+ const privateManagement=protectedPath==='/admin'||protectedPath.startsWith('/admin/');
+ const potentialSession=request.cookies.getAll().some(({name})=>
+  /^sb-[a-z0-9-]+-auth-token(?:\\.[0-9]+)?$/i.test(name));
+ if((privateStaff||privateCustomer||privateManagement)&&!potentialSession){
+  if(privateCustomer)return privateRedirect(request,'https://portal.landshopnigeria.com/');
+  if(privateManagement)return privateRedirect(request,'/staff/sign-in?next='+encodeURIComponent(protectedPath+request.nextUrl.search));
+  return privateRedirect(request,'/staff/sign-in');
+ }
  // Provider callbacks authenticate at their own handlers (Basic/HMAC). Do not
  // depend on an unrelated browser session or Supabase Auth network lookup.
  if(request.nextUrl.pathname.startsWith('/api/communications/webhooks/'))return NextResponse.next();
  let response = NextResponse.next({request});
  const url=process.env.NEXT_PUBLIC_SUPABASE_URL;
  const key=process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
- if(!url||!key)return response;
+ if(!url||!key){
+  if(privateCustomer)return privateRedirect(request,'https://portal.landshopnigeria.com/');
+  if(privateManagement)return privateRedirect(request,'/staff/sign-in?next='+encodeURIComponent(protectedPath+request.nextUrl.search));
+  if(privateStaff)return privateRedirect(request,'/staff/sign-in');
+  return response;
+ }
 
  const supabase=createServerClient(url,key,{
   cookieOptions:{domain:'.landshopnigeria.com',path:'/',sameSite:'lax',secure:true},
