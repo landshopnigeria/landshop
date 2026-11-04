@@ -275,7 +275,7 @@ def check_famous_gardens_hero_photo(host):
     """Check both optimized owner-approved hero photos on actual production."""
     variants=(
         ("/owner/2026/famous-gardens-homepage-2026-11-desktop.jpg", 300_000),
-        ("/media/landshop-mobile-famous-gardens.jpg", 140_000),
+        ("/owner/2026/famous-gardens-homepage-2026-11-mobile.jpg", 140_000),
     )
     for name,max_size in variants:
         local=Path("apps/website/public") / name.lstrip("/")
