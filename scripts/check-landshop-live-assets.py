@@ -245,12 +245,12 @@ def check_mobile_app_local_media():
     """Verify the actual mobile PWA loads its owner assets from the portal origin."""
     host="portal.landshopnigeria.com"
     paths=(
-        "/owner/2026/famous-gardens-homepage-2026-11-mobile.jpg",
-        "/owner/2026/site-client-inspection.webp",
-        "/owner/2026/famous-completed-homes.webp",
-        "/owner/2026/product-grow.webp",
-        "/estates/green-island/site-progress-1.webp",
-        "/estates/blue-diamonds/entrance-concept.webp",
+        "/media/landshop-mobile-famous-gardens.jpg",
+        "/media/landshop-mobile-site-client-inspection.webp",
+        "/media/landshop-mobile-famous-completed-homes.webp",
+        "/media/landshop-mobile-product-grow.webp",
+        "/media/landshop-mobile-green-island-site-progress.webp",
+        "/media/landshop-mobile-blue-diamonds-concept.webp",
         "/media/maiyegun0.webp",
     )
     for path in paths:
@@ -272,7 +272,7 @@ def check_famous_gardens_hero_photo(host):
     """Check both optimized owner-approved hero photos on actual production."""
     variants=(
         ("/owner/2026/famous-gardens-homepage-2026-11-desktop.jpg", 300_000),
-        ("/owner/2026/famous-gardens-homepage-2026-11-mobile.jpg", 140_000),
+        ("/media/landshop-mobile-famous-gardens.jpg", 140_000),
     )
     for name,max_size in variants:
         local=Path("apps/website/public") / name.lstrip("/")
