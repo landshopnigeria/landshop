@@ -27,6 +27,12 @@ try{
   const stroke=await navPage.locator('.ls-mega-list a svg').first().evaluate(icon=>getComputedStyle(icon).stroke);
   if(stroke!=='rgb(0, 136, 108)')errors.push('COMPACT MENU '+group+': hover icon is not primary teal '+stroke);
  }
+ // Verify actual client transitions, not just direct HTTP page loads.
+ for(const [label,path] of [['Properties','/properties'],['Insights','/insights'],['Contact','/contact']]){
+  await navPage.getByRole('navigation',{name:'Site navigation'}).getByRole('link',{name:label,exact:true}).click();
+  try{await navPage.waitForURL(root+path,{timeout:15000});await navPage.locator('h1').waitFor({state:'visible',timeout:5000});}
+  catch(error){errors.push('CLIENT NAVIGATION '+path+': '+String(error));}
+ }
  await navPage.close();
 
  for(const path of routes){
@@ -114,8 +120,8 @@ try{
      return {iconCount:actionIcons.length,directionalCount:directionalIcons.length,dropdownCount:navChevrons.length,wrongIconSizes,wrongCompactSearchSizes,wrongDirectionalSizes,wrongChevrons,wrongArrows,legacyArrowActions,mobileMenu};
     });
     if(!iconAudit.iconCount||!iconAudit.directionalCount||!iconAudit.dropdownCount||iconAudit.wrongIconSizes.length||iconAudit.wrongCompactSearchSizes.length||iconAudit.wrongDirectionalSizes.length||iconAudit.wrongChevrons.length||iconAudit.wrongArrows.length||iconAudit.legacyArrowActions.length||
-       !iconAudit.mobileMenu||Math.abs(iconAudit.mobileMenu.width-27)>.1||Math.abs(iconAudit.mobileMenu.height-27)>.1)
-     errors.push(path+' @375px: 27px icons / 22px approved arrows / 22px search / V caret runtime audit failed '+JSON.stringify(iconAudit));
+       !iconAudit.mobileMenu||Math.abs(iconAudit.mobileMenu.width-19)>.1||Math.abs(iconAudit.mobileMenu.height-19)>.1)
+     errors.push(path+' @375px: 19px icons / 18.5px arrows and V carets runtime audit failed '+JSON.stringify(iconAudit));
     console.log('APPROVED ICON RUNTIME',path,JSON.stringify(iconAudit));
    }
    console.log('CHECK',path,width,JSON.stringify(result));

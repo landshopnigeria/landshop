@@ -1,7 +1,7 @@
 'use client';
 import ApprovedArrow from './ApprovedArrow';
 
-import {useEffect,useState,useRef} from 'react';
+import {useEffect,useState,useRef,type ReactNode} from 'react';
 import Link from 'next/link';
 import ApprovedHomepageContent from './ApprovedHomepageContent';
 import {useRouter} from 'next/navigation';
@@ -21,7 +21,7 @@ const products=[
  {title:'Grow',sub:'Make home ownership possible',description:'Understand Beta Mortgage and Mortgage Xtra financing pathways.',img:editorialImages.grow.src,href:'/grow'}
 ];
 
-export default function Homepage({featured}:{featured:FeaturedProperty[]}){
+export default function Homepage({featured,featuredSlot}:{featured:FeaturedProperty[];featuredSlot?:ReactNode}){
  const [slide,setSlide]=useState(0),[purpose,setPurpose]=useState('Buy');
  // Only the first visible 630 KB hero photograph is requested during initial HTML parsing.
  // Future slides are warmed after the initial paint and remain cached for smooth fades.
@@ -140,7 +140,7 @@ export default function Homepage({featured}:{featured:FeaturedProperty[]}){
     </>}
    </form>
   </div>
-  <ApprovedHomepageContent featured={featured}/>
+  <ApprovedHomepageContent featured={featured} featuredSlot={featuredSlot}/>
 
  </main>;
 }

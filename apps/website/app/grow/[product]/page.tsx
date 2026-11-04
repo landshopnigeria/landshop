@@ -10,7 +10,10 @@ const plans={
 } as const;
 type Product=keyof typeof plans;
 export function generateStaticParams(){return Object.keys(plans).map(product=>({product}))}
-export async function generateMetadata({params}:{params:Promise<{product:string}>}){const {product}=await params;return {title:product in plans?plans[product as Product].name+' | Landshop':'Product Not Found | Landshop'}}
+export async function generateMetadata({params}:{params:Promise<{product:string}>}){
+ const {product}=await params;const plan=plans[product as Product];
+ return plan?{title:plan.name+' | Landshop',description:plan.intro,alternates:{canonical:'/grow/'+product}}:{title:'Product Not Found | Landshop',robots:{index:false}};
+}
 export default async function MortgageProduct({params}:{params:Promise<{product:string}>}){
  const {product}=await params;if(!(product in plans))notFound();
  const p=plans[product as Product];

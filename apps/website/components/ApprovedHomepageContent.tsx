@@ -1,8 +1,8 @@
 'use client';
 import Link from 'next/link';
-import {useRef,useState} from 'react';
+import {useRef,useState,type ReactNode} from 'react';
 import ApprovedArrow from './ApprovedArrow';
-import {estatePortfolio} from '../lib/estate-portfolio';
+import FeaturedPropertyCards from './FeaturedPropertyCards';
 import SiteIcon from './SiteIcon';
 import LandshopVideo from './LandshopVideo';
 import {useCarouselPlayback} from './useCarouselPlayback';
@@ -12,7 +12,6 @@ import type {FeaturedProperty} from './LandshopHome';
 
 /** Approved reference homepage body. The existing global header, hero slider,
  * property filter, newsletter and global footer are rendered elsewhere untouched. */
-const archiveHomes=estatePortfolio.map(e=>({title:e.name,kind:'ESTATE PORTFOLIO',note:e.summary,image:e.images[0].src,url:'/properties/'+e.slug}));
 const projects=[
  {name:'Famous Gardens',status:'CURRENT PROJECT',sub:'Iberekodo, Ibeju-Lekki',image:'/owner/2026/famous-exterior.webp',slug:'famous-gardens',verified:true},
  {name:'Merit Park',status:'ARCHIVED PROJECT',sub:'Past Landshop project',image:'/owner/2026/merit-park-archival-signage.jpg',slug:'merit-park',verified:true},
@@ -53,7 +52,7 @@ const articleFeed=guides.slice(0,12);
 function SectionHead({kicker,title,accent,href,linkLabel}:{kicker:string;title:string;accent?:string;href?:string;linkLabel?:string}){
  return <div className="lsap-head"><div><p className="lsap-kicker">{kicker}</p><h2>{title}<span>{accent||'.'}</span></h2></div>{href&&<Link className="lsap-view" href={href}>{linkLabel||'Explore More'} <ApprovedArrow/></Link>}</div>;
 }
-export default function ApprovedHomepageContent({featured}:{featured:FeaturedProperty[]}){
+export default function ApprovedHomepageContent({featured,featuredSlot}:{featured:FeaturedProperty[];featuredSlot?:ReactNode}){
  const [guideStart,setGuideStart]=useState(0),[reviewIndex,setReviewIndex]=useState(0),[locationIndex,setLocationIndex]=useState(0);
  const locTrack=useRef<HTMLDivElement>(null);
  const changeLocation=(index:number)=>{
@@ -97,11 +96,7 @@ export default function ApprovedHomepageContent({featured}:{featured:FeaturedPro
 
   <section className="lsap-section lsap-estates" id="featured-properties"><div className="lsap-container">
    <SectionHead kicker="OUR SELECTED" title="Estates / Properties" href="/properties" linkLabel="View published listings"/>
-   <div className="lsap-estate-grid">{featured.length?featured.slice(0,3).map((p,i)=><Link className="lsap-estate-card" href={p.href} key={p.id}>
-    <div className="lsap-estate-photo">{p.image?<img src={p.image} alt={'Approved photo of '+p.title} loading="lazy"/>:<div className="lsap-estate-photo-pending">Original unit photo pending approval</div>}<small>PUBLISHED / {String(i+1).padStart(2,'0')}</small></div><div className="lsap-estate-body"><p>{p.propertyType} / {p.location}</p><h3>{p.title}</h3><p>{p.price}</p><strong>View Property <ApprovedArrow/></strong></div>
-   </Link>):archiveHomes.map((item,i)=><Link className="lsap-estate-card" href={item.url} key={item.title}>
-    <div className="lsap-estate-photo"><img src={item.image} alt={item.note} loading="lazy"/><small>{item.kind}</small></div><div className="lsap-estate-body"><p>FAMOUS GARDENS / IBEJU-LEKKI</p><h3>{item.title}</h3><p>{item.note}</p><strong>Explore Estate Archive <ApprovedArrow/></strong></div>
-   </Link>)}</div>
+   {featuredSlot??<FeaturedPropertyCards featured={featured}/>}
   </div></section>
 
   <section className="lsap-section lsap-collections" id="collections"><div className="lsap-container">

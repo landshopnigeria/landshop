@@ -1,12 +1,13 @@
+import {boundedReadFetch} from '../../../packages/shared/bounded-read-fetch';
 import {cache} from 'react';
 import {createServerClient} from '@supabase/ssr';
 import {cookies} from 'next/headers';
 import {redirect} from 'next/navigation';
-async function requireStaff(roles:string[]){
+const staffContext=cache(async()=>{
  const url=process.env.NEXT_PUBLIC_SUPABASE_URL,key=process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
  if(!url||!key)throw Error('Supabase configuration missing');
  const store=await cookies();
- const db=createServerClient(url,key,{cookieOptions:{domain:'.landshopnigeria.com',path:'/',sameSite:'lax',secure:true},
+ const db=createServerClient(url,key,{global:{fetch:boundedReadFetch},cookieOptions:{domain:'.landshopnigeria.com',path:'/',sameSite:'lax',secure:true},
   cookies:{getAll(){return store.getAll()},setAll(changes){try{changes.forEach(({name,value,options})=>store.set(name,value,options))}catch{}}}});
  const {data:{user},error}=await db.auth.getUser();
  if(error||!user)redirect('/staff/sign-in');
@@ -14,6 +15,15 @@ async function requireStaff(roles:string[]){
   .select('organization_id,role').eq('user_id',user.id).eq('status','active');
   return {data: q.data,membershipError:q.error}})();
  if(membershipError||!members?.length)redirect('/staff');
+ const {data:verifiedManager,error:verificationError}=await db.rpc('landshop_is_management',{p_user:user.id}).abortSignal(AbortSignal.timeout(8000));
+ if(verificationError||verifiedManager!==true)redirect('/staff');
+ const {data:organizations,error:orgError}=await db.from('organizations').select('id').eq('kind','landshop')
+   .in('id',members.map(member=>member.organization_id));
+ if(orgError||!organizations?.length)redirect('/staff');
+ return {db,user,members,organizations};
+});
+async function requireStaff(roles:string[]){
+ const {db,user,members,organizations}=await staffContext();
  const managementRoles=['owner','ceo','founder','admin','technology_officer','technology_consultant'];
  const ownerOnly=roles.length===1&&roles[0]==='owner';
  // Explicit page roles and a live database verification are both required.
@@ -23,12 +33,9 @@ async function requireStaff(roles:string[]){
  const eligible=members.filter(member=>managementRoles.includes(member.role)&&
   (member.role==='owner'||(!ownerOnly&&roles.includes(member.role))));
  if(!eligible.length)redirect('/staff');
- const {data:verifiedManager,error:verificationError}=await db.rpc('landshop_is_management',{p_user:user.id});
- if(verificationError||verifiedManager!==true)redirect('/staff');
- const {data:organizations,error:orgError}=await db.from('organizations').select('id').eq('kind','landshop')
-   .in('id',eligible.map(member=>member.organization_id));
- if(orgError||!organizations?.length)redirect('/staff');
- return {db,user,organizationIds:organizations.map(x=>x.id)};
+ const organizationIds=organizations.filter(org=>eligible.some(member=>member.organization_id===org.id)).map(org=>org.id);
+ if(!organizationIds.length)redirect('/staff');
+ return {db,user,organizationIds};
 }
 const cachedStaff=cache((roles:string)=>requireStaff(roles.split(',')));
 export const requireLandshopStaff=(roles:string[])=>cachedStaff([...roles].sort().join(','));

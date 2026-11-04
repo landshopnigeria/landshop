@@ -60,14 +60,14 @@ const required=[
  'data-v23-design="cinematic-property-video-preview"',
  'data-landshop-hero="v16-separated-product-slides"',
  'className="glass-search ls-v23-property-filter"',
- '<ApprovedHomepageContent featured={featured}/>',
+ '<ApprovedHomepageContent featured={featured} featuredSlot={featuredSlot}/>',
  "['Buy','Sell','Rent','Shortlet']",
- 'Everyone deserves affordable property.',
- 'Plot Your Future. Save ₦5 million.',
- 'Where would you own next?',
+ 'Your Dream Home Starts Here.',
+ 'Your Next Chapter Starts Here.',
+ 'Own More. Worry Less.',
  'Explore Famous Gardens',
  'Book Inspection',
- 'Speak With Consultant',
+ 'Speak With a Consultant',
  ...['query','state','city','area','type','min','max','bedrooms','bathrooms','minsize','availability','collection'].map(x=>'name="'+x+'"')
 ];
 for(const marker of required){if(!home.includes(marker)){console.error('V23 preview element missing: '+marker);failures++;}}
@@ -95,7 +95,7 @@ const footerCss=readFileSync('apps/website/app/v24-global-footer.css','utf8');
 // Approved copy changes are intentionally not byte-equal to the V23 hero.
 // Filter names, carousel hooks, hero layout and the V22 sections remain protected above.
 if((home.match(/subtitle:/g)||[]).length!==3){console.error('Homepage must retain exactly three approved slides.');failures++;}
-if(!home.includes('<ApprovedHomepageContent featured={featured}/>')){console.error('Homepage content sections missing.');failures++;}
+if(!home.includes('<ApprovedHomepageContent featured={featured} featuredSlot={featuredSlot}/>')){console.error('Homepage content sections missing.');failures++;}
 const chromeLayout=/<SiteHeader\/>\{children\}(?:<GlobalArticleCarousel\/>)?<SiteFooter\/>/;
 if(!chromeLayout.test(layout)){console.error('Global SiteHeader/SiteFooter order missing or modified.');failures++}
 if(layout.includes('<GlobalArticleCarousel/>')&&!layout.includes("import GlobalArticleCarousel from '../components/GlobalArticleCarousel';")){console.error('Global article carousel import missing.');failures++}

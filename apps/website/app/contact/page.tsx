@@ -4,7 +4,7 @@ import {MarketFooter} from '../../components/MarketChrome';
 import '../properties/property-market.css';
 import './contact-premium.css';
 
-export const metadata = {
+export const metadata = {alternates:{canonical:'/contact'},
   title: 'Contact Us | Landshop Nigeria',
   description: 'Contact Landshop in Lekki, Lagos for property, investment, mortgage and customer-care enquiries.'
 };

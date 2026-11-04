@@ -3,7 +3,7 @@ import ContentShell from '../../components/ContentShell';
 import Link from 'next/link';
 import {editorialImages} from '../../lib/editorial-imagery';
 import {IconChip} from '../../components/SiteIcon';
-export const metadata={title:'Landshop Services | Property Advisory, Acquisition & Financing',description:'Explore the approved Landshop property acquisition, advisory, financing and inspection service pathways.'};
+export const metadata={alternates:{canonical:'/services'},title:'Landshop Services | Property Advisory, Acquisition & Financing',description:'Explore the approved Landshop property acquisition, advisory, financing and inspection service pathways.'};
 const offerings=[
  {title:'Property Acquisition',slug:'property-acquisition',image:editorialImages.develop.src,alt:editorialImages.develop.alt,icon:'home' as const,description:'Navigate land and home purchase decisions with clearer information about availability, documentation and inspection.'},
  {title:'Property Advisory',slug:'advisory',image:editorialImages.team.src,alt:editorialImages.team.alt,icon:'compass' as const,description:'Speak with a team about property goals, due diligence and the information to review before committing.'},

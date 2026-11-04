@@ -1,3 +1,5 @@
+import {Suspense} from 'react';
+import FeaturedPropertyCards from '../components/FeaturedPropertyCards';
 import Homepage,{type FeaturedProperty} from '../components/LandshopHome';
 import './home-approved-reference.css';
 import {cleanFilters,listPublished,propertyPrice,propertyHref} from '../lib/marketplace';
@@ -10,8 +12,8 @@ export const metadata={
  openGraph:{title:'Landshop Nigeria | Everyone Deserves Affordable Property',url:'https://www.landshopnigeria.com/',
  description:'Explore Nigeria property estates, projects and homeownership solutions with Landshop.'}
 };
-export default async function Page(){
- const {rows}=await listPublished(cleanFilters({purpose:'Buy'}));
+async function InventoryCards(){
+ const {rows}=await listPublished(cleanFilters({purpose:'Buy'}),{pageSize:3,withCount:false});
  const selected=rows.slice(0,3);
  const gallery=await loadPropertyMedia(selected.map(p=>p.id));
  const featured:FeaturedProperty[]=selected.map(p=>({
@@ -20,5 +22,9 @@ export default async function Page(){
   price:propertyPrice(p),collection:p.collection_verified_at?p.collection_type||undefined:undefined,
   image:gallery[p.id]?.find(m=>m.kind==='photo')?.src
  }));
- return <Homepage featured={featured}/>;
+ return <FeaturedPropertyCards featured={featured}/>;
+}
+
+export default function Page(){
+ return <Homepage featured={[]} featuredSlot={<Suspense fallback={<FeaturedPropertyCards featured={[]}/>}><InventoryCards/></Suspense>}/>;
 }

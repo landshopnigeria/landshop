@@ -4,7 +4,7 @@ import Link from 'next/link';
 import {editorialImages} from '../../lib/editorial-imagery';
 import {guides} from '../../lib/guides';
 import V22InsightsList from '../../components/V22InsightsList';
-export const metadata={title:'Landshop Insights | Property, Finance, Lifestyle & Marketing',description:'Twenty Landshop articles covering property ownership, mortgage planning, investment risk, location research, lifestyle and property marketing.'};
+export const metadata={alternates:{canonical:'/insights'},title:'Landshop Insights | Property, Finance, Lifestyle & Marketing',description:'Twenty Landshop articles covering property ownership, mortgage planning, investment risk, location research, lifestyle and property marketing.'};
 export default async function Insights({searchParams}:{searchParams:Promise<{category?:string}>}){const {category}=await searchParams;
  return <ContentShell eyebrow="THE LANDSHOP JOURNAL" title="Insights for better property decisions." intro="Explore property ownership, investment, finance, Nigeria locations, lifestyle and honest marketing through practical guides." image={editorialImages.skyline.src} imageAlt={editorialImages.skyline.alt}>
   <V22InsightsList articles={guides.map(g=>({slug:g.slug,title:g.title,category:g.category,summary:g.summary,image:g.image,imageAlt:g.imageAlt,readingMinutes:g.readingMinutes,tags:g.tags}))} initialCategory={category||'All'}/>
