@@ -1,0 +1,48 @@
+name: Landshop Production End-to-End Readiness
+on:
+  push:
+    branches:
+      - main
+      - test/live-e2e-auth-and-routing-20261104
+    paths:
+      - 'scripts/check-landshop-live-e2e.mjs'
+      - '.github/workflows/landshop-production-e2e.yml'
+  workflow_run:
+    workflows:
+      - Release Landshop Enterprise Applications to Namecheap
+    types: [completed]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: landshop-production-e2e-\${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  production-e2e:
+    if: github.event_name != 'workflow_run' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main')
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      CI: 'true'
+      LANDSHOP_E2E_CUSTOMER_EMAIL: \${{ secrets.LANDSHOP_E2E_CUSTOMER_EMAIL }}
+      LANDSHOP_E2E_CUSTOMER_PASSWORD: \${{ secrets.LANDSHOP_E2E_CUSTOMER_PASSWORD }}
+      LANDSHOP_E2E_STAFF_EMAIL: \${{ secrets.LANDSHOP_E2E_STAFF_EMAIL }}
+      LANDSHOP_E2E_STAFF_PASSWORD: \${{ secrets.LANDSHOP_E2E_STAFF_PASSWORD }}
+    steps:
+      - name: Checkout current test suite
+        uses: actions/checkout@v4
+        with:
+          ref: \${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Node application dependencies
+        run: npm install --no-audit --no-fund --no-package-lock
+      - name: Install pinned Playwright
+        run: npm install --no-save --no-package-lock playwright@1.56.1
+      - name: Install Chromium and OS browser dependencies
+        run: npx playwright install chromium --with-deps
+      - name: Run production browser E2E with read-only anonymous checks
+        env:
+          LANDSHOP_E2E_RELEASE_SHA: \${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || '' }}
+        run: node scripts/check-landshop-live-e2e.mjs
