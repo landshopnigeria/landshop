@@ -258,7 +258,10 @@ def check_mobile_app_local_media():
         if not local.is_file() or local.stat().st_size>500_000:
             raise AssertionError(f"Missing or oversized portal mobile image: {path}")
         url=f"https://{host}{path}?release={EXPECTED[:12]}"
-        status,headers,blob,_=request_static(url)
+        try:
+            status,headers,blob,_=request_static(url)
+        except HTTPError as exc:
+            raise AssertionError(f"Portal mobile photo returned HTTP {exc.code}: {path}") from exc
         content_type=get_header(headers,"Content-Type").lower()
         is_jpeg=path.endswith(".jpg")
         valid=blob.startswith(bytes.fromhex("ffd8ff")) if is_jpeg else blob[:4]==b"RIFF" and blob[8:12]==b"WEBP"
