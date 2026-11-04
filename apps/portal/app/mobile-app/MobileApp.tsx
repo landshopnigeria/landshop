@@ -5,7 +5,7 @@ import {accountHome} from '../../../../packages/shared/account-home';
 import {assertLandshopPasswordSafe} from '../../../../packages/shared/landshop-password-screen';
 import {MobileReferralPanel,MobileActivityPanel} from './MobileMemberPanels';
 
-type Screen='splash'|'onboarding'|'signup'|'signin'|'verify'|'reset'|'home'|'explore'|'property'|'inspection'|'mortgage'|'saved'|'referrals'|'notices'|'profile';
+export type Screen='splash'|'onboarding'|'signup'|'signin'|'verify'|'reset'|'home'|'explore'|'property'|'inspection'|'mortgage'|'saved'|'referrals'|'notices'|'profile';
 type Property={slug:string;title:string;location:string;image:string;summary:string;type:'land'|'homes'|'coastal';label:string;status:string;href:string;};
 const SITE='https://www.landshopnigeria.com';
 const DASH='https://app.landshopnigeria.com';
@@ -55,8 +55,8 @@ function CTA({children,onClick,secondary=false,disabled=false}:{children:ReactNo
 }
 function Field({label,children}:{label:string;children:ReactNode}){return <label className="lm-field"><span>{label}</span>{children}</label>}
 
-export default function MobileApp(){
- const [screen,setScreen]=useState<Screen>('onboarding'),[slide,setSlide]=useState(0),[filter,setFilter]=useState<'all'|'land'|'homes'|'coastal'>('all');
+export default function MobileApp({initialScreen='onboarding'}:{initialScreen?:Screen}){
+ const [screen,setScreen]=useState<Screen>(initialScreen),[slide,setSlide]=useState(0),[filter,setFilter]=useState<'all'|'land'|'homes'|'coastal'>('all');
  const [searchTerm,setSearchTerm]=useState('');
  const [selected,setSelected]=useState('famous-gardens'),[saved,setSaved]=useState<string[]>([]);
  const [name,setName]=useState(''),[userEmail,setUserEmail]=useState(''),[signedIn,setSignedIn]=useState(false);
@@ -176,7 +176,7 @@ export default function MobileApp(){
       <div className="lm-splash-wave"/><img src="/media/logo-transparent.png" alt="Landshop Nigeria" className="lm-splash-logo"/><p>Property ownership, made clearer.</p><div className="lm-loader" aria-label="Opening Landshop"><i/><i/><i/></div><img src={photos('/media/landshop-mobile-famous-gardens.jpg')} alt="Famous Gardens residential estate, owner-supplied photograph" className="lm-splash-picture" decoding="async" fetchPriority="high"/>
      </div>}
     {screen==='onboarding'&&<div className="lm-onboarding">
-      <div className="lm-onboard-photo">{photo(photos(slide===0?'/media/landshop-mobile-famous-gardens.jpg':'/media/landshop-mobile-site-client-inspection.webp'),'Landshop owner-supplied property and inspection photography','lm-photo') }<img className="lm-onboard-logo" src="/media/logo-transparent.png" alt="Landshop Nigeria"/></div>
+      <div className="lm-onboard-photo">{photo(photos(slide===0?'/media/landshop-mobile-famous-gardens.jpg':'/media/landshop-mobile-site-client-inspection.webp'),'Landshop owner-supplied property and inspection photography','lm-photo',true) }<img className="lm-onboard-logo" src="/media/logo-transparent.png" alt="Landshop Nigeria"/></div>
       <div className="lm-onboard-content"><span className="lm-eyebrow"><Icon name="shield" size={17}/> {slide===0?'Property discovery':'Finance and investment'}</span>
       <h1>{slide===0?<>Own property <em>with clarity.</em></>:<>Finance smarter. <em>Grow with purpose.</em></>}</h1>
       <p>{slide===0?'Discover Landshop estate portfolios, access published listings and speak to property consultants.':'Explore mortgage planning, property acquisition and referrals in a guided mobile experience.'}</p>
