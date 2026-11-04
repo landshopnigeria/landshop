@@ -64,9 +64,9 @@ export default function About(){
      <Link className="v22-btn ls-about-primary-cta" href="/plans/develop">Build with Landshop <ApprovedArrow /></Link>
     </div>
     <div className="ls-about-photo-collage" aria-label="Three owner-selected images for the Landshop About page">
-     <img className="ls-about-collage-main" src="/about/landshop-landmark-building.webp" alt="Landshop-branded landmark building image selected for the About page" loading="eager" fetchPriority="high"/>
-     <img src="/about/landshop-site-team-huddle.webp" alt="Three Landshop-branded construction team members on site" loading="eager"/>
-     <img src="/about/landshop-white-estate-gate.webp" alt="White estate entrance gate and residential buildings" loading="eager"/>
+     <img className="ls-about-collage-main" src="/about/landshop-landmark-building.webp" alt="Landshop-branded landmark building image selected for the About page" loading="eager" fetchPriority="high" decoding="async"/>
+     <img src="/about/landshop-site-team-huddle.webp" alt="Three Landshop-branded construction team members on site" loading="lazy" decoding="async" fetchPriority="low"/>
+     <img src="/about/landshop-white-estate-gate.webp" alt="White estate entrance gate and residential buildings" loading="lazy" decoding="async" fetchPriority="low"/>
     </div>
    </div>
   </section>
@@ -154,7 +154,7 @@ export default function About(){
        <Link href="/contact" className="ls-about-cta-outline">Contact Landshop <ApprovedArrow /></Link>
       </div>
      </div>
-     <img src="/owner/2026/famous-completed-homes.webp" alt="Completed Nigerian estate homes from the Landshop owner photo archive" loading="lazy"/>
+     <img src="/owner/2026/famous-completed-homes.webp" alt="Completed Nigerian estate homes from the Landshop owner photo archive" loading="lazy" decoding="async"/>
     </div>
    </div>
   </section>

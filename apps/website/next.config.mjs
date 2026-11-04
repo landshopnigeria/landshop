@@ -20,6 +20,10 @@ export default {
   {source:'/estates/:path*',headers:[{key:'Cache-Control',value:'public, max-age=86400, stale-while-revalidate=604800'}]},
   {source:'/media/:path*',headers:[{key:'Cache-Control',value:'public, max-age=3600, stale-while-revalidate=86400'}]},
   {source:'/brand/:path*',headers:[{key:'Cache-Control',value:'public, max-age=86400, stale-while-revalidate=604800'}]},
+  // Exact owner-supplied About photographs; never match the /about HTML route.
+  {source:'/about/landshop-landmark-building.webp',headers:[{key:'Cache-Control',value:'public, max-age=86400, stale-while-revalidate=604800'}]},
+  {source:'/about/landshop-site-team-huddle.webp',headers:[{key:'Cache-Control',value:'public, max-age=86400, stale-while-revalidate=604800'}]},
+  {source:'/about/landshop-white-estate-gate.webp',headers:[{key:'Cache-Control',value:'public, max-age=86400, stale-while-revalidate=604800'}]},
   {source:'/api/:path*',headers:[{key:'Cache-Control',value:'private, no-store, max-age=0'},{key:'X-Robots-Tag',value:'noindex, nofollow, noarchive'}]},
   {source:'/search',headers:[{key:'X-Robots-Tag',value:'noindex, follow'}]},
   {source:'/newsletter/:path*',headers:[{key:'X-Robots-Tag',value:'noindex, nofollow, noarchive'}]}
