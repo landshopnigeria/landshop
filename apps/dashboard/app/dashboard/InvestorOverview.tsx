@@ -4,7 +4,7 @@ import MortgageCalculator from './MortgageCalculator';
 type Application={id:string;kind:string;status:string;created_at:string;answers?:unknown};
 type Payment={id:string;amount_kobo:number;currency:string;purpose:string;purpose_reference:string|null;status:string;verified_at:string|null;created_at:string};
 type Document={id:string;document_type:string;created_at:string;application_id:string};
-type Props={firstname:string;kyc:string;applications:Application[];payments:Payment[];documents:Document[];applicationCount:number|null;supportCount:number|null};
+type Props={firstname:string;kyc:string;applications:Application[];payments:Payment[];documents:Document[];applicationCount:number|null;supportCount:number|null;referralCount:number|null;availableEarningsKobo:number|null};
 const money=(kobo:number)=>new Intl.NumberFormat('en-NG',{style:'currency',currency:'NGN',maximumFractionDigits:0}).format(kobo/100);
 const date=(iso:string)=>new Date(iso).toLocaleDateString('en-NG',{timeZone:'Africa/Lagos',day:'numeric',month:'short',year:'numeric'});
 const readable=(value:string)=>value.replaceAll('_',' ').replace(/\b\w/g,s=>s.toUpperCase());
@@ -19,7 +19,7 @@ function answerValue(answers:unknown,fields:string[]){
  for(const field of fields){const v=a[field];if((typeof v==='string'&&v.trim().length>0)||(typeof v==='number'&&Number.isFinite(v)))return String(v).slice(0,120)}
  return null;
 }
-export default function InvestorOverview({firstname,kyc,applications,payments,documents,applicationCount,supportCount}:Props){
+export default function InvestorOverview({firstname,kyc,applications,payments,documents,applicationCount,supportCount,referralCount,availableEarningsKobo}:Props){
  const verifiedPayments=payments.filter(p=>p.currency==='NGN'&&Boolean(p.verified_at)&&['successful','success','paid','completed','confirmed'].includes(p.status.toLowerCase()));
  const paid=verifiedPayments.reduce((sum,p)=>sum+Number(p.amount_kobo||0),0);
  const latest=applications[0];
@@ -32,7 +32,19 @@ export default function InvestorOverview({firstname,kyc,applications,payments,do
  const tenor=latest?answerValue(latest.answers,['tenor','duration','investment_duration','duration_months','loan_tenor']):null;
  const location=latest?answerValue(latest.answers,['location','state','preferred_location']):null;
  return <div className="ls26-investor">
-  <section className="ls26-welcome ls26-investor-welcome"><div><small>MY LANDSHOP INVESTMENT DASHBOARD</small><h1>Good day, {firstname}</h1><p>Track submitted investment decisions, verified payments, documents and property opportunities in one place.</p></div></section>
+  <section className="ls26-welcome ls26-investor-welcome"><div><small>MY LANDSHOP PROPERTY DASHBOARD</small><h1>Good day, {firstname}</h1><p>Your properties, investment activity, referrals, and verified account records in one place.</p></div></section>
+  <section className="cd-customer-summary" aria-label="Your customer account at a glance">
+   <Link href="/dashboard#investor-portfolio" className="cd-customer-tile"><small>My Properties</small><strong>—</strong><span>Verified ownership records appear when confirmed</span></Link>
+   <Link href="/dashboard#payment-timeline" className="cd-customer-tile"><small>My Investments</small><strong>{paid>0?money(paid):'—'}</strong><span>Recent verified payments, not portfolio valuation</span></Link>
+   <Link href="/dashboard#referrals" className="cd-customer-tile"><small>My Referrals</small><strong>{referralCount===null?'—':referralCount}</strong><span>Recorded referral registrations</span></Link>
+   <Link href="/dashboard#referrals" className="cd-customer-tile"><small>My Earnings</small><strong>{availableEarningsKobo===null?'—':money(availableEarningsKobo)}</strong><span>Available referral wallet balance</span></Link>
+  </section>
+  <nav className="cd-customer-quicklinks" aria-label="Quick customer actions">
+    <Link href="/dashboard/applications">My Applications</Link>
+    <Link href="https://www.landshopnigeria.com/properties">Explore Properties</Link>
+    <Link href="/dashboard#referrals">Refer &amp; Grow</Link>
+    <Link href="/dashboard/kyc">My Verification</Link>
+  </nav>
   <div className="ls26-investor-upper">
    <section id="roi-forecast" className="ls26-panel ls26-invest-scores" aria-label="Investment progress rings"><div className="ls26-score-grid">
     {ring('Paid',percent,percent===null?'Not yet calculated':'Of requested amount')}

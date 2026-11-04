@@ -23,7 +23,7 @@ function Icon({name}:{name:string}){
  default:return <svg {...common}><circle cx="11" cy="11" r="7"/><path d="m16 16 5 5"/></svg>
  }
 }
-const links=[['Overview','/dashboard','home'],['Applications','/dashboard/applications','file'],['KYC','/dashboard/kyc','check'],['Properties','https://www.landshopnigeria.com/properties','search'],['Wallet','#referrals','wallet'],['Profile','/dashboard/account','users']];
+const links=[['Home','/dashboard','home'],['Properties','/dashboard#investor-portfolio','search'],['Investments','/dashboard#payment-timeline','chart'],['Referrals','/dashboard#referrals','users'],['Profile','/dashboard/account','users']];
 export default async function Dashboard(){
  const url=process.env.NEXT_PUBLIC_SUPABASE_URL,key=process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
  if(!url||!key)return <main><h1>Landshop</h1><p>Customer account configuration is incomplete.</p></main>;
@@ -69,11 +69,13 @@ export default async function Dashboard(){
      documents={(documentsRes.data||[]) as {id:string;document_type:string;created_at:string;application_id:string}[]}
      applicationCount={appsRes.error?null:appsRes.count||0}
      supportCount={ticketsRes.error?null:ticketsRes.count||0}
+     referralCount={summaryRes.error?null:Number(summary?.total_referrals??0)}
+     availableEarningsKobo={walletRes.error?null:Number(wallet?.available_kobo??0)}
     />
     <section id="referrals" className="ls26-investor-referrals"><ReferralToolkit code={code} summary={summary} activity={referralActivityRes.data||[]} rewards={rewardHistoryRes.data||[]}/></section>
     <footer className="cd-footer"><span>© {new Date().getFullYear()} Landshop Nigeria</span><a href="https://www.landshopnigeria.com/contact">Contact</a></footer>
    </main>
-   <nav className="cd-mobile-dock" aria-label="Mobile customer navigation">{links.filter(x=>['Overview','Properties','Applications','Wallet','Profile'].includes(x[0])).map(([label,to,icon])=><Link href={to} key={label} className={label==='Overview'?'current':''}><Icon name={icon}/><small>{label==='Overview'?'Home':label}</small></Link>)}</nav>
+   <nav className="cd-mobile-dock" aria-label="Mobile customer navigation">{links.map(([label,to,icon])=><Link href={to} key={label} className={label==='Home'?'current':''}><Icon name={icon}/><small>{label}</small></Link>)}</nav>
   </div>
  </div>;
 }

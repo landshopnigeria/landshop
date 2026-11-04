@@ -112,3 +112,17 @@
 .cd-v25 .cd-ref-empty{color:#667f71;font-size:12px;line-height:1.6;margin:0 0 16px}
 @media(max-width:760px){.cd-v25 .cd-ref-tracking{grid-template-columns:1fr;gap:10px}.cd-v25 .cd-ref-tracking>section{padding:15px}}
 @media(max-width:360px){.cd-v25 .cd-ref-activity-list li{align-items:flex-start;flex-direction:column}.cd-v25 .cd-ref-activity-list time{margin-left:31px}}
+
+/* Customer dashboard overview: property/account-first before detailed analytics. */
+.cd-v25 .cd-customer-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:18px 0 12px}
+.cd-v25 .cd-customer-tile{display:flex;flex-direction:column;gap:9px;min-width:0;min-height:150px;padding:20px 18px;border:1px solid #e0eee5;border-radius:16px;background:#fff;color:#123f32;text-decoration:none;box-shadow:0 4px 18px #154a3010;transition:border-color .12s ease}
+.cd-v25 .cd-customer-tile:hover,.cd-v25 .cd-customer-tile:focus-visible{border-color:#0e8666;outline-offset:2px}
+.cd-v25 .cd-customer-tile small{font-size:12px;font-weight:800;color:#0b745a}
+.cd-v25 .cd-customer-tile strong{font-size:clamp(23px,2.4vw,34px);letter-spacing:-.035em;line-height:1.2;overflow-wrap:anywhere;color:#142f26}
+.cd-v25 .cd-customer-tile span{font-size:11px;color:#697f73;line-height:1.5;margin-top:auto}
+.cd-v25 .cd-customer-quicklinks{display:flex;flex-wrap:wrap;gap:9px;margin:0 0 20px}
+.cd-v25 .cd-customer-quicklinks a{display:inline-flex;align-items:center;justify-content:center;border-radius:10px;min-height:43px;padding:10px 14px;border:1px solid #c8e7d6;background:#ecf8f0;color:#0b7458;font-size:12px;font-weight:800;text-decoration:none}
+.cd-v25 .cd-customer-quicklinks a:hover{background:#f26b10;border-color:#f26b10;color:white}
+@media(max-width:1100px){.cd-v25 .cd-customer-summary{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:570px){.cd-v25 .cd-customer-summary{gap:9px;margin:12px 0}.cd-v25 .cd-customer-tile{min-height:125px;padding:14px 11px;border-radius:13px;gap:7px}.cd-v25 .cd-customer-tile small{font-size:11px}.cd-v25 .cd-customer-tile strong{font-size:clamp(17px,5vw,24px)}.cd-v25 .cd-customer-tile span{font-size:10px}.cd-v25 .cd-customer-quicklinks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.cd-v25 .cd-customer-quicklinks a{padding:8px;font-size:11px;line-height:1.3;text-align:center}.cd-v25 .cd-mobile-dock a{min-width:0}.cd-v25 .cd-mobile-dock small{font-size:9px}}
+@media(prefers-reduced-motion:reduce){.cd-v25 .cd-customer-tile{transition:none}}
