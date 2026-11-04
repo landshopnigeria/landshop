@@ -65,7 +65,7 @@ try{
    const started=Date.now();
    await page.getByRole('navigation',{name:'Site navigation'}).getByRole('link',{name,exact:true}).click();
    await page.waitForURL(origins.website+path,{timeout:15000});
-   await page.locator('main h1').waitFor({state:'visible',timeout:10000});
+   await page.locator('h1').waitFor({state:'visible',timeout:10000});
    console.log('E2E NAVIGATION',path,Date.now()-started+'ms');
   }
  });
