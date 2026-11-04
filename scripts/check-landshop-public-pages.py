@@ -360,8 +360,8 @@ def verify_source() -> None:
         raise AssertionError("Public dropdown navigation V chevrons are missing")
     if "chevron:'M5.5 9l6.5 6.5L18.5 9'" not in icons:
         raise AssertionError("Navbar V icon has been replaced with a long directional arrow")
-    if 'body .ls-site-chrome .ls-primary-nav .ls-nav-toggle .ls-icon-chevron' not in nav_css:
-        raise AssertionError("Compact V chevron scaling is missing from responsive navbar")
+    if '.ls-nav-toggle[aria-expanded=true] .ls-icon' not in nav_css:
+        raise AssertionError("Compact V chevron expand-state rotation is missing from responsive navbar")
 
     required = (
         "secondaryHref:'/projects/famous-gardens'",
