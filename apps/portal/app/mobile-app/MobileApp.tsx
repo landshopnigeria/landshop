@@ -85,6 +85,11 @@ export default function MobileApp(){
  },[]);
  const toggleSaved=(slug:string)=>setSaved(v=>{const next=v.includes(slug)?v.filter(x=>x!==slug):[...v,slug];try{window.localStorage.setItem('landshop.mobile.saved.v1',JSON.stringify(next))}catch{}return next});
  const openProperty=(slug:string)=>{setSelected(slug);go('property')};
+ const openSecureCustomer=(route:'applications'|'kyc'|'account')=>{
+  if(!signedIn){go('signin');setFeedback('Please sign in to access your secure Landshop records.');return}
+  const destinations={applications:'/dashboard/applications',kyc:'/dashboard/kyc',account:'/dashboard/account'};
+  window.location.assign(DASH+destinations[route]);
+ };
  const validEmail=(value:string)=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
  const signIn=async(e:FormEvent<HTMLFormElement>)=>{
   e.preventDefault();if(busy)return;setBusy(true);setFeedback('');
@@ -202,6 +207,10 @@ export default function MobileApp(){
         <div><small>LANDSHOP PORTFOLIO</small><h3>Famous Gardens</h3><p>Ibeju-Lekki, Lagos</p><span>Explore estate <Icon name="arrow" size={15}/></span></div>
        </button>
        <div className="lm-summary-row"><button onClick={()=>go('saved')}><Icon name="heart"/> <span><small>Saved on device</small><strong>{saved.length}</strong></span></button><button onClick={()=>go('inspection')}><Icon name="calendar"/><span><small>Plan a visit</small><strong>Book</strong></span></button><button onClick={()=>go('referrals')}><Icon name="users"/><span><small>Refer & Grow</small><strong>Share</strong></span></button></div>
+       <div className="lm-member-shortcuts" aria-label="Customer account services">
+        <button onClick={()=>openSecureCustomer('applications')}><span><Icon name="bookmark" size={19}/></span><strong>My Applications</strong><Icon name="arrow" size={17}/></button>
+        <button onClick={()=>openSecureCustomer('kyc')}><span><Icon name="shield" size={19}/></span><strong>Identity Verification</strong><Icon name="arrow" size={17}/></button>
+       </div>
        <div className="lm-section-title"><h2>Estate portfolio</h2><button onClick={()=>go('explore')}>See All <Icon name="arrow" size={15}/></button></div>
        <div className="lm-location-row">{properties.slice(1).map(p=><button key={p.slug} onClick={()=>openProperty(p.slug)}>{photo(p.image,p.title,'lm-photo')}<span>{p.title}</span></button>)}</div>
        <div className="lm-promo"><div><small>LANDSHOP GROW</small><h3>Mortgage Planner</h3><p>Estimate repayment scenarios and explore your affordability.</p><button onClick={()=>go('mortgage')}>Plan Your Mortgage <Icon name="arrow" size={16}/></button></div>{photo(photos('/owner/2026/product-grow.webp'),'Landshop-owned product photography','lm-photo')}</div>
@@ -252,7 +261,9 @@ export default function MobileApp(){
      {screen==='referrals'&&<div className="lm-app-page"><div className="lm-heading"><small>REFER & GROW</small><h1>Share the <em>opportunity.</em></h1><p>Invite friends and access your own referral code through your secure customer dashboard.</p></div><div className="lm-referral-hero">{photo(photos('/owner/2026/site-client-inspection.webp'),'Landshop team with a client at a property inspection','lm-photo')}<div><span>LANDSHOP REFERRALS</span><h2>Grow together.</h2></div></div><div className="lm-info-block"><h2>Your referral toolkit</h2><div className="lm-checkrows"><p><Icon name="check"/> Personal referral code and invitation link</p><p><Icon name="check"/> Shareable QR code and social links</p><p><Icon name="check"/> Verified activity and performance</p></div></div>{signedIn?<CTA onClick={()=>window.location.assign(DASH+'/dashboard#referrals')}>Open My Referral Centre</CTA>:<CTA onClick={()=>go('signin')}>Sign In to Access Referrals</CTA>}</div>}
      {screen==='notices'&&<div className="lm-app-page"><div className="lm-heading"><h1>Your <em>notifications.</em></h1><p>Keep track of verified updates and important Landshop activity.</p></div><div className="lm-empty"><Icon name="bell" size={42}/><h2>Stay in the know.</h2><p>{signedIn?'Visit your secure dashboard for account-specific messages and inspection updates.':'Sign in to access your personal account notifications.'}</p><CTA onClick={()=>signedIn?window.location.assign(DASH+'/dashboard'):go('signin')}>{signedIn?'Open Customer Dashboard':'Sign In'}</CTA></div></div>}
      {screen==='profile'&&<div className="lm-app-page"><div className="lm-heading"><h1>My <em>profile.</em></h1><p>Manage your account and personalise your Landshop experience.</p></div><div className="lm-profile-card"><div className="lm-avatar"><Icon name="user" size={29}/></div><div><strong>{signedIn?(name||'Landshop customer'):'Guest visitor'}</strong><small>{signedIn?userEmail:'Sign in to manage your profile'}</small></div></div><div className="lm-profile-links">
-      <button onClick={()=>signedIn?window.location.assign(DASH+'/dashboard/account'):go('signin')}><Icon name="user"/> Account & settings <Icon name="arrow"/></button>
+      <button onClick={()=>openSecureCustomer('account')}><Icon name="user"/> Account & settings <Icon name="arrow"/></button>
+      <button onClick={()=>openSecureCustomer('applications')}><Icon name="bookmark"/> My applications <Icon name="arrow"/></button>
+      <button onClick={()=>openSecureCustomer('kyc')}><Icon name="shield"/> Identity verification <Icon name="arrow"/></button>
       <button onClick={()=>go('saved')}><Icon name="heart"/> Saved estates <Icon name="arrow"/></button>
       <button onClick={()=>go('referrals')}><Icon name="users"/> Referral centre <Icon name="arrow"/></button>
       <button onClick={installApp}><Icon name="download"/> {installed?'Added to Home Screen':'Install mobile app'} <Icon name="arrow"/></button>
