@@ -1,6 +1,6 @@
 import {accountHome} from '../../../../packages/shared/account-home';
 import InvestorOverview from './InvestorOverview';
-import CustomerNavigation from './CustomerNavigation';
+import CustomerNavigation,{CustomerAccountMenu} from './CustomerNavigation';
 import {redirect} from 'next/navigation';
 import {createServerClient} from '@supabase/ssr';
 import {cookies} from 'next/headers';
@@ -60,7 +60,7 @@ export default async function Dashboard(){
  return <div className="dc-shell cd-v25">
   <CustomerNavigation/>
   <div className="dc-main">
-   <header className="cd-topbar"><a href="https://www.landshopnigeria.com" className="cd-mobile-logo" aria-label="Landshop homepage"><img src="/media/logo-transparent.png" alt="Landshop" width={98} height={43} decoding="async"/></a><span>My Landshop</span><div><Link href="/dashboard/account" aria-label="Account and profile" className="cd-avatar">{firstname.slice(0,1).toUpperCase()}</Link></div></header>
+   <header className="cd-topbar"><a href="https://www.landshopnigeria.com" className="cd-mobile-logo" aria-label="Landshop homepage"><img src="/media/logo-transparent.png" alt="Landshop" width={98} height={43} decoding="async"/></a><span>My Landshop</span><div><CustomerAccountMenu initial={firstname.slice(0,1).toUpperCase()}/></div></header>
    <main className="cd-main">
     <InvestorOverview
      firstname={firstname} kyc={kyc}
