@@ -251,8 +251,12 @@ def check(kind: str, route: str, expected: str | None):
         for marker in ('class="lsp-product"', 'class="lsp-hero"', 'class="lsp-stats"', 'lsp-faq'):
             if marker not in html:
                 raise AssertionError("approved premium product layout is missing: "+marker)
-        if route != "/products" and 'class="lsp-pathway-grid"' not in html:
-            raise AssertionError("approved product-specific pathways missing")
+        if 'class="lsp-compact-tabs"' not in html or 'id="lsp-tab-overview"' not in html or 'id="lsp-tab-process"' not in html:
+            raise AssertionError("new interactive product detail tabs missing")
+        if route != "/products" and 'class="lsp-compact-pathways"' not in html:
+            raise AssertionError("compact product-specific pathways missing from server-rendered document")
+        if route != "/products" and 'id="lsp-tab-options"' not in html:
+            raise AssertionError("Next steps tab and its secure enquiry handoff are missing")
         if route in ("/develop","/incubate","/grow","/plans/develop","/plans/incubate","/plans/grow"):
             if "portal.landshopnigeria.com/applications/" not in html:
                 raise AssertionError("secure guided product application links are missing")
