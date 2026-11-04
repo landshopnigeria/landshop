@@ -15,8 +15,8 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: landshop-production-e2e-${{ github.ref }}
-  cancel-in-progress: true
+  group: landshop-production-e2e-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'push' }}
 jobs:
   production-e2e:
     if: github.event_name != 'workflow_run' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main')
