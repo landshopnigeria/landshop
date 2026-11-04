@@ -372,6 +372,7 @@ def verify_source() -> None:
         "title:'Your Next Chapter Starts Here.'",
         "copy:'Discover Famous Gardens in Ibeju-Lekki. Find a home you love and take the next step toward owning it.'",
         "primary:'Explore Famous Gardens',href:'/projects/famous-gardens',secondary:'Book Inspection',secondaryHref:'/visit?project=famous-gardens'",
+        "image:'/owner/2026/famous-gardens-homepage-2026-11-desktop.jpg',mobileImage:'/owner/2026/famous-gardens-homepage-2026-11-mobile.jpg'",
         "subtitle:'FLEXIBLE OWNERSHIP'",
         "title:'Own More. Worry Less.'",
         "copy:'From property investment to home financing, discover smarter ways to build wealth and own with confidence.'",
@@ -381,6 +382,11 @@ def verify_source() -> None:
     for marker in required:
         if marker not in homepage:
             raise AssertionError("Approved homepage source marker missing: " + marker)
+    responsive=Path("apps/website/app/responsive-repairs.css").read_text(encoding="utf-8")
+    if "grid-template-columns:repeat(2,minmax(0,1fr))" not in responsive or "flex-wrap:nowrap!important" not in responsive:
+        raise AssertionError("Mobile hero CTAs must stay in one row")
+    if "--ls-hero-mobile" not in homepage or "window.matchMedia('(max-width: 700px)')" not in homepage:
+        raise AssertionError("Hero media must select the optimized mobile variant")
     for slug in ("develop-land","develop-house","develop-inspection",
                  "incubate-investment","beta-mortgage","mortgage-xtra",
                  "mortgage-xtra-inspection"):

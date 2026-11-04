@@ -44,3 +44,11 @@
   align-items:center;
  }
 }
+
+/* Responsive static hero media: the browser fetches only the right asset for the
+   viewport. Do not request inactive slide backgrounds until warmed/activated. */
+.ls-v23-hero .hero-v16-image{background-image:var(--ls-hero-desktop,none)!important}
+.ls-v23-hero .hero-v16-image:nth-child(2){background-position:center 25%!important}
+@media(max-width:700px){
+ .ls-v23-hero .hero-v16-image{background-image:var(--ls-hero-mobile,none)!important}
+}

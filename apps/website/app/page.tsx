@@ -1,4 +1,5 @@
 import {Suspense} from 'react';
+import {preload} from 'react-dom';
 import FeaturedPropertyCards from '../components/FeaturedPropertyCards';
 import Homepage,{type FeaturedProperty} from '../components/LandshopHome';
 import './home-approved-reference.css';
@@ -26,5 +27,7 @@ async function InventoryCards(){
 }
 
 export default function Page(){
+ // Discover the real first-slide image before loading the interactive carousel.
+ preload('/estates/green-island/residential-concept.webp',{as:'image',fetchPriority:'high'});
  return <Homepage featured={[]} featuredSlot={<Suspense fallback={<FeaturedPropertyCards featured={[]}/>}><InventoryCards/></Suspense>}/>;
 }

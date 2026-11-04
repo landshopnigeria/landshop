@@ -13,6 +13,13 @@ export default {
    {key:'Cross-Origin-Opener-Policy',value:'same-origin-allow-popups'},
    {key:'Content-Security-Policy',value:"frame-ancestors 'self'; object-src 'none'; base-uri 'self'; upgrade-insecure-requests"}
   ]},
+
+  // Versioned property/editorial media are browser-cacheable, but HTML and
+  // release-health endpoints must remain fresh. New photos use new filenames.
+  {source:'/owner/:path*',headers:[{key:'Cache-Control',value:'public, max-age=86400, stale-while-revalidate=604800'}]},
+  {source:'/estates/:path*',headers:[{key:'Cache-Control',value:'public, max-age=86400, stale-while-revalidate=604800'}]},
+  {source:'/media/:path*',headers:[{key:'Cache-Control',value:'public, max-age=3600, stale-while-revalidate=86400'}]},
+  {source:'/brand/:path*',headers:[{key:'Cache-Control',value:'public, max-age=86400, stale-while-revalidate=604800'}]},
   {source:'/api/:path*',headers:[{key:'Cache-Control',value:'private, no-store, max-age=0'},{key:'X-Robots-Tag',value:'noindex, nofollow, noarchive'}]},
   {source:'/search',headers:[{key:'X-Robots-Tag',value:'noindex, follow'}]},
   {source:'/newsletter/:path*',headers:[{key:'X-Robots-Tag',value:'noindex, nofollow, noarchive'}]}

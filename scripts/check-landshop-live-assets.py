@@ -219,20 +219,24 @@ def check_transparent_brand_logo(host, app):
     print(f"BRAND_OK {host}{name}: exact logo digest {sha256(blob).hexdigest()[:12]}",flush=True)
 
 def check_famous_gardens_hero_photo(host):
-    """Verify the exact owner-approved Famous Gardens slider JPEG is live."""
-    name="/owner/2026/famous-gardens-homepage-2026-11.jpg"
-    local=Path("apps/website/public") / name.lstrip("/")
-    if not local.is_file():
-        raise AssertionError("Committed Famous Gardens homepage photo is missing")
-    url=f"https://{host}{name}?release={EXPECTED[:12]}"
-    status,headers,live_bytes,_=request_static(url)
-    if status != 200 or not live_bytes.startswith(bytes.fromhex("ffd8ff")):
-        raise AssertionError(f"{host}: Famous Gardens slider image missing or not JPEG")
-    if "image/jpeg" not in get_header(headers,"Content-Type").lower():
-        raise AssertionError(f"{host}: Famous Gardens photo served with wrong Content-Type")
-    if sha256(live_bytes).digest() != sha256(local.read_bytes()).digest():
-        raise AssertionError(f"{host}: Famous Gardens live photo differs from approved source")
-    print(f"FAMOUS_GARDENS_IMAGE_OK {host}{name}: exact owner-photo SHA256",flush=True)
+    """Check both optimized owner-approved hero photos on actual production."""
+    variants=(
+        ("/owner/2026/famous-gardens-homepage-2026-11-desktop.jpg", 300_000),
+        ("/owner/2026/famous-gardens-homepage-2026-11-mobile.jpg", 140_000),
+    )
+    for name,max_size in variants:
+        local=Path("apps/website/public") / name.lstrip("/")
+        if not local.is_file() or local.stat().st_size>max_size:
+            raise AssertionError(f"Missing or oversized Famous Gardens photo: {name}")
+        url=f"https://{host}{name}?release={EXPECTED[:12]}"
+        status,headers,live_bytes,_=request_static(url)
+        if status!=200 or not live_bytes.startswith(bytes.fromhex("ffd8ff")):
+            raise AssertionError(f"{host}: Famous Gardens slider image missing or not JPEG: {name}")
+        if "image/jpeg" not in get_header(headers,"Content-Type").lower():
+            raise AssertionError(f"{host}: Famous Gardens photo served with wrong Content-Type: {name}")
+        if sha256(live_bytes).digest()!=sha256(local.read_bytes()).digest():
+            raise AssertionError(f"{host}: Famous Gardens photo differs from approved source: {name}")
+        print(f"FAMOUS_GARDENS_IMAGE_OK {host}{name}: exact owner-photo digest",flush=True)
 
 def main():
     if not re.fullmatch("[0-9a-f]{40}",EXPECTED):
@@ -269,7 +273,7 @@ def main():
         try:
             check_famous_gardens_hero_photo(host)
         except (AssertionError,URLError,HTTPError,OSError,TimeoutError,ValueError) as exc:
-            failures.append((host,"/owner/2026/famous-gardens-homepage-2026-11.jpg",str(exc)))
+            failures.append((host,"/owner/2026/famous-gardens-homepage-2026-11-{desktop,mobile}.jpg",str(exc)))
             print(f"FAILED live Famous Gardens slider image on {host}: {exc}",file=sys.stderr,flush=True)
     for host,path,error in failures:
         print(f"FAILURE SUMMARY {host}{path}: {error}",file=sys.stderr)

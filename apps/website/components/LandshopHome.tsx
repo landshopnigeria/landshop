@@ -1,7 +1,7 @@
 'use client';
 import ApprovedArrow from './ApprovedArrow';
 
-import {useEffect,useState,useRef,type ReactNode} from 'react';
+import {useEffect,useState,useRef,type ReactNode,type CSSProperties} from 'react';
 import Link from 'next/link';
 import ApprovedHomepageContent from './ApprovedHomepageContent';
 import {useRouter} from 'next/navigation';
@@ -11,9 +11,9 @@ import {useCarouselPlayback} from './useCarouselPlayback';
 import HeroTypingTitle from './HeroTypingTitle';
 export type FeaturedProperty={id:string,href:string,title:string,location:string,propertyType:string,price:string,collection?:'Prime'|'Luxury',image?:string};
 const slides=[
- {name:'LANDSHOP',subtitle:'AFFORDABLE OWNERSHIP',title:'Your Dream Home Starts Here.',copy:'Discover beautiful homes and affordable property options designed for your lifestyle, budget, and future.',image:'/estates/green-island/residential-concept.webp',primary:'Explore Properties',href:'/properties',secondary:'Get Started',secondaryHref:'https://portal.landshopnigeria.com'},
- {name:'FAMOUS GARDENS',subtitle:'FAMOUS GARDENS',title:'Your Next Chapter Starts Here.',copy:'Discover Famous Gardens in Ibeju-Lekki. Find a home you love and take the next step toward owning it.',image:'/owner/2026/famous-gardens-homepage-2026-11.jpg',primary:'Explore Famous Gardens',href:'/projects/famous-gardens',secondary:'Book Inspection',secondaryHref:'/visit?project=famous-gardens'},
- {name:'FUTURE LOCATIONS',subtitle:'FLEXIBLE OWNERSHIP',title:'Own More. Worry Less.',copy:'From property investment to home financing, discover smarter ways to build wealth and own with confidence.',image:'/estates/maiyegun-beach-estate/coastal-site.webp',primary:'Explore Our Products',href:'/products',secondary:'Speak With a Consultant',secondaryHref:'/visit?topic=consultation'}
+ {name:'LANDSHOP',subtitle:'AFFORDABLE OWNERSHIP',title:'Your Dream Home Starts Here.',copy:'Discover beautiful homes and affordable property options designed for your lifestyle, budget, and future.',image:'/estates/green-island/residential-concept.webp',mobileImage:'/estates/green-island/residential-concept.webp',primary:'Explore Properties',href:'/properties',secondary:'Get Started',secondaryHref:'https://portal.landshopnigeria.com'},
+ {name:'FAMOUS GARDENS',subtitle:'FAMOUS GARDENS',title:'Your Next Chapter Starts Here.',copy:'Discover Famous Gardens in Ibeju-Lekki. Find a home you love and take the next step toward owning it.',image:'/owner/2026/famous-gardens-homepage-2026-11-desktop.jpg',mobileImage:'/owner/2026/famous-gardens-homepage-2026-11-mobile.jpg',primary:'Explore Famous Gardens',href:'/projects/famous-gardens',secondary:'Book Inspection',secondaryHref:'/visit?project=famous-gardens'},
+ {name:'FUTURE LOCATIONS',subtitle:'FLEXIBLE OWNERSHIP',title:'Own More. Worry Less.',copy:'From property investment to home financing, discover smarter ways to build wealth and own with confidence.',image:'/estates/maiyegun-beach-estate/coastal-site.webp',mobileImage:'/estates/maiyegun-beach-estate/coastal-site.webp',primary:'Explore Our Products',href:'/products',secondary:'Speak With a Consultant',secondaryHref:'/visit?topic=consultation'}
 ] as const;
 const titleParts=[['Your Dream Home','Starts Here.'],['Your Next Chapter','Starts Here.'],['Own More.','Worry Less.']] as const;
 const products=[
@@ -61,7 +61,7 @@ export default function Homepage({featured,featuredSlot}:{featured:FeaturedPrope
    const image=new window.Image();
    image.decoding='async';
    image.onload=()=>{if(active)setReadyBackgrounds(previous=>previous.includes(next)?previous:[...previous,next])};
-   image.src=slides[next].image;
+   image.src=window.matchMedia('(max-width: 700px)').matches?slides[next].mobileImage:slides[next].image;
   },1700);
   return()=>{active=false;window.clearTimeout(timer)};
  },[slide,readyBackgrounds]);
@@ -88,8 +88,10 @@ export default function Homepage({featured,featuredSlot}:{featured:FeaturedPrope
    onKeyDown={event=>{if(event.key==='ArrowLeft'){event.preventDefault();goToSlide(slide-1)}if(event.key==='ArrowRight'){event.preventDefault();goToSlide(slide+1)}}}>
    <div className="hero-v16-media ls-v23-hero-media" aria-hidden="true">{slides.map((item,i)=>
      <div key={item.name} className={'hero-v16-image '+(slide===i?'is-visible':'')}
-       style={{backgroundImage:readyBackgrounds.includes(i)||slide===i?'url("'+item.image+'")':undefined,
-        backgroundPosition:i===1?'center 25%':undefined}}/>)}</div>
+       style={{
+        '--ls-hero-desktop':readyBackgrounds.includes(i)||slide===i?'url("'+item.image+'")':'none',
+        '--ls-hero-mobile':readyBackgrounds.includes(i)||slide===i?'url("'+item.mobileImage+'")':'none'
+       } as CSSProperties}/>)}</div>
    <div className="hero-v16-wash ls-v23-hero-wash" aria-hidden="true"/>
    <div className="hero-v16-inner ls-v23-hero-inner">
     <div className="hero-v16-content ls-v23-hero-content" key={current.name}>
