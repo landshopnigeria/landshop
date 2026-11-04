@@ -74,7 +74,7 @@ const pages:Record<PageId,PageConfig>={
  grow:{
   name:'Grow',eyebrow:'HOME FINANCING · GROW',title:'A clearer path from home goals to financing.',
   description:'Compare mortgage pathways, understand your affordability and prepare for lender assessment with guidance from Landshop.',
-  photo:'/owner/2026/product-grow.webp',photoAlt:'Owner-supplied residential property and homeownership photograph',photoLabel:'Original Nigerian residential photography',
+  photo:'/owner/2026/product-grow.webp',photoAlt:'Owner-supplied residential property and homeownership photograph',photoLabel:'',
   highlights:[['Beta Mortgage','Explore eligible off-plan pathways'],['Mortgage Xtra','Understand eligible completed-home options'],['Lender review','Final financing terms require approval']],
   heading:'Understand affordability before you apply.',intro:'Home finance decisions become clearer when the property stage, deposit, monthly obligations and lender requirements are explained upfront.',
   features:[['Compare mortgage options','Understand how Beta Mortgage differs from Mortgage Xtra.'],['Plan the total cost','Review equity, lender charges, instalments and other obligations.'],['Prepare documents','Organise income and property records for eligibility review.']],
@@ -82,8 +82,6 @@ const pages:Record<PageId,PageConfig>={
   faqs:[['Does a calculator guarantee approval?','No. Calculations are illustrative and do not constitute an offer from a lender.'],['Who sets the repayment terms?','An authorised finance provider determines current rates, fees, eligibility and final repayment obligations.']],
   links:[{title:'Beta Mortgage',description:'Understand the eligible off-plan property financing pathway.',href:'/grow/beta-mortgage'},{title:'Mortgage Xtra',description:'Review the eligible completed-home financing pathway.',href:'/grow/mortgage-xtra'},{title:'Mortgage calculator',description:'Estimate payments using your own assumptions.',href:'/mortgage-calculator'}],
   primary:{label:'Explore mortgage options',href:'#lsp-options'},secondary:{label:'Speak with an advisor',intent:'Grow mortgage advisory consultation'},
-  status:'Mortgage approval and finance terms depend on lender assessment.',
-  note:'Equity levels, interest rates, charges, eligibility and repayment figures are subject to the lender current written offer.'
  },
  devpro:{
   name:'DevPro',eyebrow:'ESTATE INFRASTRUCTURE CREDIT',title:'Plan essential infrastructure with confidence.',
@@ -215,7 +213,7 @@ export default function ProductDetailRedesign({page}:{page:PageId}){
     </div>
     <figure className="lsp-hero-photo">
      <img src={d.photo} alt={d.photoAlt} decoding="async" fetchPriority="high"/>
-     <figcaption>{d.photoLabel}</figcaption>
+     {d.photoLabel&&<figcaption>{d.photoLabel}</figcaption>}
     </figure>
    </section>
    <div className="lsp-stats" aria-label={d.name+' key considerations'}>{d.highlights.map(([title,desc])=><div className="lsp-stat" key={title}><span className="lsp-stat-mark" aria-hidden="true"/><div><strong>{title}</strong><span>{desc}</span></div></div>)}</div>
