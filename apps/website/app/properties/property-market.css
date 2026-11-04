@@ -107,3 +107,23 @@
 .mk-layout .mk-entered-note{font-size:11px;color:#687e70;line-height:1.6;margin:17px 0}
 @media(max-width:800px){.mk-layout .mk-entered-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:560px){.mk-layout .mk-entered-grid{grid-template-columns:1fr}.mk-layout .mk-entered-body{padding:18px}.mk-layout .ls-v23-search-tabs{gap:17px}}
+
+/* Property marketplace hierarchy: controls above estate cards, actions on one row.
+   Scoped to /properties only; header, footer and filtering behavior unchanged. */
+.mk-layout .mk-title-row{margin:24px 0 26px;align-items:center}
+.mk-layout .mk-title-row h2{margin:0;font-size:clamp(24px,2.7vw,36px)}
+.mk-layout .mk-title-row p:empty{display:none}
+.mk-layout .mk-entered-body .mk-entered-links{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:nowrap;border-top:1px solid #e2eee5;padding-top:14px;margin-top:16px}
+.mk-layout .mk-entered-links a{display:inline-flex;align-items:center;gap:6px;min-width:0;white-space:nowrap;color:#0c7859;font-size:12px;font-weight:750}
+.mk-layout .mk-entered-links a:hover{color:#f26b10}
+.mk-layout .mk-entered-links a:focus-visible{outline:2px solid #f26b10;outline-offset:3px;border-radius:3px}
+@media(max-width:720px){
+ .mk-layout .mk-title-row{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;align-items:start}
+ .mk-layout .mk-tools{justify-content:flex-start;max-width:100%}
+ .mk-layout .mk-tools form{max-width:100%}
+}
+@media(max-width:380px){
+ .mk-layout .mk-entered-links{gap:8px}
+ .mk-layout .mk-entered-links a{font-size:11px;gap:3px}
+ .mk-layout .mk-entered-links svg{width:16px;height:16px}
+}
