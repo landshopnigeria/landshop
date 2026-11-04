@@ -135,7 +135,7 @@ export default function SiteHeader(){
      <SiteIcon name={item.icon} size={24}/><span>{item.title}</span><SiteIcon name="arrow" size={19}/>
     </Link>)}</div>:
     <div className="ls-mega-layout"><div className="ls-mega-list">{activeGroup.items.map(item=><Link key={item.title} className={(selected?.title===item.title?'ls-selected':'')} href={item.href} onMouseEnter={()=>setFocused(item.title)} onFocus={()=>setFocused(item.title)}><IconChip name={item.icon}/><span>{item.title}</span><SiteIcon name="arrow" size={19}/></Link>)}</div>
-     <div className="ls-mega-detail"><span className="ls-mega-eyebrow">{activeGroup.label.toUpperCase()} / EXPLORE</span><h2>{selected?.title}</h2><p>{selected?.description}. {activeGroup.description}</p><div className="ls-mega-quicklinks">{activeGroup.items.filter(item=>item.title!==selected?.title).map(item=><Link key={item.title} href={item.href}>{item.title}<SiteIcon name="arrow" size={16}/></Link>)}</div><Link className="ls-mega-featured" href={selected?.href||'/applications'}>Explore {selected?.title}<SiteIcon name="arrow" size={18}/></Link></div>
+     <div className="ls-mega-detail"><span className="ls-mega-eyebrow">{activeGroup.label.toUpperCase()} / EXPLORE</span><h2>{selected?.title}</h2><p>{selected?.description}</p><Link className="ls-mega-featured" href={selected?.href||'/applications'}>Explore {selected?.title}<SiteIcon name="arrow" size={18}/></Link></div>
     </div>}
 
   </section>}
