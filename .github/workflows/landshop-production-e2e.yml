@@ -36,6 +36,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Check browser test syntax before installing dependencies
+        run: node --check scripts/check-landshop-live-e2e.mjs
       - name: Install Node application dependencies
         run: npm install --no-audit --no-fund --no-package-lock
       - name: Install pinned Playwright
