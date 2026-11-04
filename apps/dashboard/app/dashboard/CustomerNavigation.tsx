@@ -3,6 +3,7 @@ import {useState} from 'react';
 import Link from 'next/link';
 import {usePathname} from 'next/navigation';
 import './customer-navigation.css';
+import SecureSignOut from './account/SecureSignOut';
 type Item={label:string;href:string;icon:string};
 const groups:{title:string;items:Item[]}[]=[
  {title:'My Properties',items:[{label:'My Investments',href:'/dashboard#investor-portfolio',icon:'chart'},{label:'My Properties',href:'/dashboard#investor-portfolio',icon:'house'},{label:'My Applications',href:'/dashboard/applications',icon:'file'},{label:'Payment History',href:'/dashboard#payment-timeline',icon:'wallet'}]},
@@ -35,5 +36,5 @@ export default function CustomerNavigation(){
 export function CustomerAccountMenu({initial}:{initial:string}){
  const [open,setOpen]=useState(false);
  return <div className="cd-account-menu"><button type="button" className="cd-avatar" aria-expanded={open} aria-label="Open customer profile menu" onClick={()=>setOpen(v=>!v)}>{initial}</button>
- {open&&<div className="cd-account-dropdown" role="menu"><Link href="/dashboard/account" onClick={()=>setOpen(false)} role="menuitem">My Profile</Link><Link href="/dashboard/kyc" onClick={()=>setOpen(false)} role="menuitem">Verification & Settings</Link><form action="/auth/signout" method="post"><button type="submit" role="menuitem">Log Out</button></form></div>}</div>;
+ {open&&<div className="cd-account-dropdown" role="menu"><Link href="/dashboard/account" onClick={()=>setOpen(false)} role="menuitem">My Profile</Link><Link href="/dashboard/kyc" onClick={()=>setOpen(false)} role="menuitem">Verification & Settings</Link><SecureSignOut/></div>}</div>;
 }
