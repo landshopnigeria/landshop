@@ -31,7 +31,10 @@ try{
  const waitForHydration=async(selector)=>{
   await page.waitForFunction(sel=>{
    const element=document.querySelector(sel);
-   return !!element&&Object.keys(element).some(k=>k.startsWith('__reactProps
+   return !!element&&Object.keys(element).some(k=>k.startsWith('__reactProps'));
+  },selector,{timeout:18000});
+ };
+ const logos={};
  for(const [site,origin] of Object.entries(origins)){
   await step('Live '+site+' health and published release',async()=>{
    const response=await network.get(origin+'/api/release-health');
