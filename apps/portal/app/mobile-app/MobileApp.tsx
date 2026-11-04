@@ -12,10 +12,10 @@ const DASH='https://app.landshopnigeria.com';
 // Mobile estate images are bundled under the portal's own origin to remove cross-domain delays.
 const photos=(path:string)=>path;
 const properties:Property[]=[
- {slug:'famous-gardens',title:'Famous Gardens',location:'Ibeju-Lekki, Lagos',image:photos('/owner/2026/famous-gardens-homepage-2026-11-mobile.jpg'),summary:'Explore the owner-supplied residential estate archive and enquire about property options.',type:'homes',label:'Owner photo archive',status:'Current units and pricing require confirmation',href:SITE+'/projects/famous-gardens'},
- {slug:'green-island',title:'Green Island Estate',location:'Iba-Oloja, Ibeju-Lekki',image:photos('/estates/green-island/site-progress-1.webp'),summary:'An emerging residential community in the Lekki growth corridor, documented through Landshop site archives.',type:'land',label:'Historical site photograph',status:'Current plot availability unconfirmed',href:SITE+'/properties/green-island'},
+ {slug:'famous-gardens',title:'Famous Gardens',location:'Ibeju-Lekki, Lagos',image:photos('/media/mobile/famous-gardens-homepage-2026-11-mobile.jpg'),summary:'Explore the owner-supplied residential estate archive and enquire about property options.',type:'homes',label:'Owner photo archive',status:'Current units and pricing require confirmation',href:SITE+'/projects/famous-gardens'},
+ {slug:'green-island',title:'Green Island Estate',location:'Iba-Oloja, Ibeju-Lekki',image:photos('/media/mobile/green-island-site-progress-1.webp'),summary:'An emerging residential community in the Lekki growth corridor, documented through Landshop site archives.',type:'land',label:'Historical site photograph',status:'Current plot availability unconfirmed',href:SITE+'/properties/green-island'},
  {slug:'maiyegun-beach-estate',title:'Maiyegun Beach Estate',location:'Jakande, Lekki, Lagos',image:photos('/media/maiyegun0.webp'),summary:'A coastal estate marketed by Landshop. Review actual site archives and request current developer information.',type:'coastal',label:'Original project photograph',status:'Partner development; current offers subject to verification',href:SITE+'/properties/maiyegun-beach-estate'},
- {slug:'blue-diamonds',title:'Blue Diamonds Estate',location:'Ibeju-Lekki, Lagos',image:photos('/estates/blue-diamonds/entrance-concept.webp'),summary:'Landshop development concepts and estate planning materials. These illustrations are not completed buildings.',type:'land',label:'Owner-provided architectural concept',status:'Design concept; official availability on enquiry',href:SITE+'/properties/blue-diamonds'}
+ {slug:'blue-diamonds',title:'Blue Diamonds Estate',location:'Ibeju-Lekki, Lagos',image:photos('/media/mobile/blue-diamonds-entrance-concept.webp'),summary:'Landshop development concepts and estate planning materials. These illustrations are not completed buildings.',type:'land',label:'Owner-provided architectural concept',status:'Design concept; official availability on enquiry',href:SITE+'/properties/blue-diamonds'}
 ];
 type IconName='home'|'search'|'coins'|'bell'|'user'|'arrow'|'back'|'heart'|'filter'|'calendar'|'clock'|'check'|'lock'|'mail'|'phone'|'eye'|'share'|'map'|'menu'|'shield'|'chart'|'users'|'bookmark'|'chevron'|'close'|'globe'|'download';
 function Icon({name,size=19}: {name:IconName;size?:number}){
@@ -172,10 +172,10 @@ export default function MobileApp(){
    <div className="lm-island" aria-hidden="true"/><div className="lm-system" aria-hidden="true"><span>9:41</span><span>▰▰▰ ᴡɪꜰɪ ▰</span></div>
    <div className="lm-scroll" ref={mainScroll}>
     {screen==='splash'&&<div className="lm-splash">
-      <div className="lm-splash-wave"/><img src="/media/logo-transparent.png" alt="Landshop Nigeria" className="lm-splash-logo"/><p>Property ownership, made clearer.</p><div className="lm-loader" aria-label="Opening Landshop"><i/><i/><i/></div><img src={photos('/owner/2026/famous-gardens-homepage-2026-11-mobile.jpg')} alt="Famous Gardens residential estate, owner-supplied photograph" className="lm-splash-picture" decoding="async" fetchPriority="high"/>
+      <div className="lm-splash-wave"/><img src="/media/logo-transparent.png" alt="Landshop Nigeria" className="lm-splash-logo"/><p>Property ownership, made clearer.</p><div className="lm-loader" aria-label="Opening Landshop"><i/><i/><i/></div><img src={photos('/media/mobile/famous-gardens-homepage-2026-11-mobile.jpg')} alt="Famous Gardens residential estate, owner-supplied photograph" className="lm-splash-picture" decoding="async" fetchPriority="high"/>
      </div>}
     {screen==='onboarding'&&<div className="lm-onboarding">
-      <div className="lm-onboard-photo">{photo(photos(slide===0?'/owner/2026/famous-gardens-homepage-2026-11-mobile.jpg':'/owner/2026/site-client-inspection.webp'),'Landshop owner-supplied property and inspection photography','lm-photo') }<img className="lm-onboard-logo" src="/media/logo-transparent.png" alt="Landshop Nigeria"/></div>
+      <div className="lm-onboard-photo">{photo(photos(slide===0?'/media/mobile/famous-gardens-homepage-2026-11-mobile.jpg':'/media/mobile/site-client-inspection.webp'),'Landshop owner-supplied property and inspection photography','lm-photo') }<img className="lm-onboard-logo" src="/media/logo-transparent.png" alt="Landshop Nigeria"/></div>
       <div className="lm-onboard-content"><span className="lm-eyebrow"><Icon name="shield" size={17}/> {slide===0?'Property discovery':'Finance and investment'}</span>
       <h1>{slide===0?<>Own property <em>with clarity.</em></>:<>Finance smarter. <em>Grow with purpose.</em></>}</h1>
       <p>{slide===0?'Discover Landshop estate portfolios, access published listings and speak to property consultants.':'Explore mortgage planning, property acquisition and referrals in a guided mobile experience.'}</p>
@@ -185,7 +185,7 @@ export default function MobileApp(){
      </div>}
     {['signin','signup','verify','reset'].includes(screen)&&<div className="lm-auth">
       <div className="lm-auth-top"><img src="/media/logo-transparent.png" alt="Landshop Nigeria"/><button onClick={()=>go('home')} aria-label="Explore as guest"><Icon name="close"/></button></div>
-      {screen==='signin'&&<><div className="lm-auth-hero"><h1>Welcome <em>back.</em></h1><p>Sign in to continue your Landshop property journey.</p>{photo(photos('/owner/2026/famous-completed-homes.webp'),'Owner-supplied estate photograph','lm-photo',true)}</div>
+      {screen==='signin'&&<><div className="lm-auth-hero"><h1>Welcome <em>back.</em></h1><p>Sign in to continue your Landshop property journey.</p>{photo(photos('/media/mobile/famous-completed-homes.webp'),'Owner-supplied estate photograph','lm-photo',true)}</div>
         <form className="lm-auth-form" onSubmit={signIn}>
          <Field label="Email address"><span className="lm-input-icon"><Icon name="mail"/><input required type="email" autoComplete="email" placeholder="you@example.com" value={email} onChange={e=>setEmail(e.target.value)}/></span></Field>
          <Field label="Password"><span className="lm-input-icon"><Icon name="lock"/><input required type={showPass?'text':'password'} autoComplete="current-password" placeholder="Enter password" value={password} onChange={e=>setPassword(e.target.value)}/><button type="button" onClick={()=>setShowPass(x=>!x)} aria-label="Toggle password visibility"><Icon name="eye"/></button></span></Field>
@@ -230,7 +230,7 @@ export default function MobileApp(){
        </div>
        <div className="lm-section-title"><h2>Estate portfolio</h2><button onClick={()=>go('explore')}>See All <Icon name="arrow" size={15}/></button></div>
        <div className="lm-location-row">{properties.slice(1).map(p=><button key={p.slug} onClick={()=>openProperty(p.slug)}>{photo(p.image,p.title,'lm-photo')}<span>{p.title}</span></button>)}</div>
-       <div className="lm-promo"><div><small>LANDSHOP GROW</small><h3>Mortgage Planner</h3><p>Estimate repayment scenarios and explore your affordability.</p><button onClick={()=>go('mortgage')}>Plan Your Mortgage <Icon name="arrow" size={16}/></button></div>{photo(photos('/owner/2026/product-grow.webp'),'Landshop-owned product photography','lm-photo')}</div>
+       <div className="lm-promo"><div><small>LANDSHOP GROW</small><h3>Mortgage Planner</h3><p>Estimate repayment scenarios and explore your affordability.</p><button onClick={()=>go('mortgage')}>Plan Your Mortgage <Icon name="arrow" size={16}/></button></div>{photo(photos('/media/mobile/product-grow.webp'),'Landshop-owned product photography','lm-photo')}</div>
      </div>}
      {screen==='explore'&&<div className="lm-app-page">
        <div className="lm-heading"><small>DISCOVER LANDSHOP</small><h1>Explore <em>properties.</em></h1><p>Owner-supplied estate portfolios. Published availability and prices are confirmed separately.</p></div>
@@ -264,7 +264,7 @@ export default function MobileApp(){
      </div>}
      {screen==='mortgage'&&<div className="lm-app-page">
        <div className="lm-heading"><small>FINANCE / GROW</small><h1>Mortgage <em>planner.</em></h1><p>Estimate repayments using your own assumptions. This is not a lender quotation.</p></div>
-       <div className="lm-finance-hero">{photo(photos('/owner/2026/product-grow.webp'),'Original Landshop product photograph','lm-photo')}<div>Own more with <em>clarity.</em></div></div>
+       <div className="lm-finance-hero">{photo(photos('/media/mobile/product-grow.webp'),'Original Landshop product photograph','lm-photo')}<div>Own more with <em>clarity.</em></div></div>
        <div className="lm-finance-fields">
         <Field label="Property price (₦)"><input type="number" min={0} max={100000000000} step={100000} value={price} onChange={e=>setPrice(Number(e.target.value)||0)}/></Field>
         <Field label="Deposit (%)"><input type="number" min={0} max={99} step={1} value={deposit} onChange={e=>setDeposit(Number(e.target.value)||0)}/></Field>
@@ -277,7 +277,7 @@ export default function MobileApp(){
      </div>}
      {screen==='saved'&&<div className="lm-app-page"><div className="lm-heading"><h1>Saved <em>estates.</em></h1><p>Your favourites are saved on this device, not to your online account.</p></div>{saved.length?<div className="lm-property-list">{properties.filter(p=>saved.includes(p.slug)).map(p=>feature(p))}</div>:<div className="lm-empty"><Icon name="heart" size={40}/><h2>Nothing saved yet.</h2><p>Explore the portfolio and tap the heart on an estate.</p><CTA onClick={()=>go('explore')}>Explore Estates</CTA></div>}</div>}
      {screen==='referrals'&&<div className="lm-app-page"><div className="lm-heading"><small>REFER &amp; GROW</small><h1>Share the <em>opportunity.</em></h1><p>Use your personal invitation code, shareable link and secure referral dashboard.</p></div>
-      <div className="lm-referral-hero">{photo(photos('/owner/2026/site-client-inspection.webp'),'Landshop team with a client at a property inspection','lm-photo')}<div><span>LANDSHOP REFERRALS</span><h2>Grow together.</h2></div></div>
+      <div className="lm-referral-hero">{photo(photos('/media/mobile/site-client-inspection.webp'),'Landshop team with a client at a property inspection','lm-photo')}<div><span>LANDSHOP REFERRALS</span><h2>Grow together.</h2></div></div>
       <MobileReferralPanel signedIn={signedIn} onSignIn={()=>go('signin')}/>
      </div>}
      {screen==='notices'&&<div className="lm-app-page"><div className="lm-heading"><h1>Account <em>updates.</em></h1><p>See the latest recorded status of your property applications.</p></div>
