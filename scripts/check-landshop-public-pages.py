@@ -364,12 +364,18 @@ def verify_source() -> None:
         raise AssertionError("Compact V chevron expand-state rotation is missing from responsive navbar")
 
     required = (
-        "secondaryHref:'/projects/famous-gardens'",
-        "secondaryHref:'/visit?project=famous-gardens'",
-        "secondaryHref:'/visit?topic=consultation'",
-        "Everyone deserves affordable property.",
-        "Plot Your Future. Save ₦5 million.",
-        "Where would you own next?",
+        "subtitle:'AFFORDABLE OWNERSHIP'",
+        "title:'Your Dream Home Starts Here.'",
+        "copy:'Discover beautiful homes and affordable property options designed for your lifestyle, budget, and future.'",
+        "primary:'Explore Properties',href:'/properties',secondary:'Get Started',secondaryHref:'https://portal.landshopnigeria.com'",
+        "subtitle:'FAMOUS GARDENS'",
+        "title:'Your Next Chapter Starts Here.'",
+        "copy:'Discover Famous Gardens in Ibeju-Lekki. Find a home you love and take the next step toward owning it.'",
+        "primary:'Explore Famous Gardens',href:'/projects/famous-gardens',secondary:'Book Inspection',secondaryHref:'/visit?project=famous-gardens'",
+        "subtitle:'FLEXIBLE OWNERSHIP'",
+        "title:'Own More. Worry Less.'",
+        "copy:'From property investment to home financing, discover smarter ways to build wealth and own with confidence.'",
+        "primary:'Explore Our Products',href:'/products',secondary:'Speak With a Consultant',secondaryHref:'/visit?topic=consultation'",
         "['Buy','Sell','Rent','Shortlet']",
     )
     for marker in required:
