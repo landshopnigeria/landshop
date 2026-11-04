@@ -3,6 +3,9 @@ on:
   schedule:
     - cron: '17 */6 * * *'
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/landshop-live-health.yml']
 permissions:
   contents: read
 concurrency:
@@ -88,6 +91,30 @@ jobs:
               print("PASS",host+path,"HTML and release parity")
             except (URLError,HTTPError,AssertionError,TimeoutError) as exc:
               errors.append(f"{host}{path}: {type(exc).__name__}: {exc}")
+          # A private Command Center must redirect unauthenticated users to
+          # staff sign-in. A 404 is a broken deployment, not access control.
+          try:
+            from urllib.parse import urlsplit
+            class NoRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self,req,fp,code,msg,headers,newurl):
+                return None
+            opener=urllib.request.build_opener(NoRedirect())
+            req=urllib.request.Request(hosts["dashboard"]+"/admin",headers={
+              "User-Agent":"Landshop-Live-Health/1.0","Cache-Control":"no-store"})
+            try:
+              response=opener.open(req,timeout=18)
+              status=response.status
+              location=response.headers.get("Location","")
+              response.close()
+            except HTTPError as exc:
+              status=exc.code
+              location=exc.headers.get("Location","")
+            destination=urlsplit(location)
+            if status not in (302,303,307,308) or destination.path!="/staff/sign-in" or destination.netloc not in ("","app.landshopnigeria.com"):
+              raise AssertionError(f"Command Center guest route returned {status}, redirect={location!r}")
+            print("PASS dashboard/admin protected route redirects to staff sign-in")
+          except (URLError,HTTPError,AssertionError,TimeoutError) as exc:
+            errors.append(f"dashboard/admin route: {type(exc).__name__}: {exc}")
           if errors:
             for error in errors: print("::error::"+error)
             raise SystemExit(f"Production health failure ({len(errors)} checks). Investigate DNS, Passenger, routing and live commit.")
