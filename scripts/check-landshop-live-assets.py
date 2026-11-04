@@ -241,6 +241,33 @@ def check_installable_mobile_app():
             raise AssertionError(f"Wrong mobile app icon content type: {size}")
     print("MOBILE_APP_OK: production screen, manifest and both official brand icons verified",flush=True)
 
+def check_mobile_app_local_media():
+    """Verify the actual mobile PWA loads its owner assets from the portal origin."""
+    host="portal.landshopnigeria.com"
+    paths=(
+        "/owner/2026/famous-gardens-homepage-2026-11-mobile.jpg",
+        "/owner/2026/site-client-inspection.webp",
+        "/owner/2026/famous-completed-homes.webp",
+        "/owner/2026/product-grow.webp",
+        "/estates/green-island/site-progress-1.webp",
+        "/estates/blue-diamonds/entrance-concept.webp",
+        "/media/maiyegun0.webp",
+    )
+    for path in paths:
+        local=Path("apps/portal/public") / path.lstrip("/")
+        if not local.is_file() or local.stat().st_size>500_000:
+            raise AssertionError(f"Missing or oversized portal mobile image: {path}")
+        url=f"https://{host}{path}?release={EXPECTED[:12]}"
+        status,headers,blob,_=request_static(url)
+        content_type=get_header(headers,"Content-Type").lower()
+        is_jpeg=path.endswith(".jpg")
+        valid=blob.startswith(bytes.fromhex("ffd8ff")) if is_jpeg else blob[:4]==b"RIFF" and blob[8:12]==b"WEBP"
+        if status!=200 or not valid or ("image/jpeg" if is_jpeg else "image/webp") not in content_type:
+            raise AssertionError(f"Mobile PWA local photograph not served: {path}")
+        if sha256(blob).digest()!=sha256(local.read_bytes()).digest():
+            raise AssertionError(f"Mobile PWA image differs from approved asset: {path}")
+        print(f"MOBILE_MEDIA_OK {path}: exact asset digest",flush=True)
+
 def check_famous_gardens_hero_photo(host):
     """Check both optimized owner-approved hero photos on actual production."""
     variants=(
@@ -285,6 +312,11 @@ def main():
     except (AssertionError,URLError,HTTPError,OSError,TimeoutError,ValueError) as exc:
         failures.append(("portal.landshopnigeria.com","/mobile-app",str(exc)))
         print(f"FAILED installable mobile app: {exc}",file=sys.stderr,flush=True)
+    try:
+        check_mobile_app_local_media()
+    except (AssertionError,URLError,HTTPError,OSError,TimeoutError,ValueError) as exc:
+        failures.append(("portal.landshopnigeria.com","/mobile-app/owner-media",str(exc)))
+        print(f"FAILED local mobile app owner media: {exc}",file=sys.stderr,flush=True)
     # Website, portal and dashboard have independent public/media folders.
     for host,app in (
         ("landshopnigeria.com","website"),

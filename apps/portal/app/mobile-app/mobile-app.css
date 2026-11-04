@@ -258,3 +258,40 @@
 .lm-member-shortcuts button>strong{font-size:10.5px;line-height:1.4;font-weight:800;min-width:0;flex:1}
 .lm-member-shortcuts button>svg:last-child{width:15px;height:15px;flex:0 0 15px;color:#f26b10}
 @media(max-width:350px){.lm-member-shortcuts button{padding:7px;gap:5px}.lm-member-shortcuts button>span{width:29px;height:29px;flex-basis:29px}.lm-member-shortcuts button>strong{font-size:9.5px}}
+
+
+/* Mobile release: usable search, secure referral cards and real account activity. */
+.lm-search-input{cursor:text}
+.lm-search-input input{width:100%;min-width:0;flex:1;padding:0;border:0;background:transparent;color:#173d30;font-size:13px;line-height:1.5;outline:0;appearance:none}
+.lm-search-input input::placeholder{color:#80988b}
+.lm-search-input:focus-within{border-color:#2ba47a;box-shadow:0 0 0 3px #2ba47a22}
+.lm-restore-search{padding:11px 17px;min-height:44px;background:#e7f5ed;color:#0d6a50;border:1px solid #b6dfc8;border-radius:10px;font-size:12px;font-weight:750}
+.lm-member-panel{display:grid;gap:14px;margin:15px 0 22px}
+.lm-member-state{display:grid;justify-items:start;gap:13px;padding:22px 19px;background:linear-gradient(130deg,#ecf9f2,#fff);border:1px solid #d8ebe0;border-radius:14px;margin-top:16px}
+.lm-member-state p,.lm-member-disclaimer,.lm-member-feedback,.lm-member-loading{font-size:12px;line-height:1.65;color:#597667;margin:0}
+.lm-member-state button,.lm-member-state a,.lm-member-actions button,.lm-member-actions a,.lm-member-full-link{min-height:44px;display:inline-flex;align-items:center;justify-content:center;padding:11px 15px;border:1px solid #1e946e;border-radius:10px;background:#138b64;color:#fff!important;text-decoration:none;font-size:11px;font-weight:800;text-align:center}
+.lm-member-loading{padding:22px 17px;background:#f4faf5;border-radius:13px}
+.lm-referral-code-card{padding:20px 17px;background:linear-gradient(135deg,#07513f,#138a68);color:#fff;border-radius:15px;box-shadow:0 10px 27px #063f3326;display:grid;gap:14px}
+.lm-referral-code-card>small{font-size:10px;letter-spacing:.13em;font-weight:800;color:#c2ecdc}
+.lm-referral-code-card>div:first-of-type{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.lm-referral-code-card strong{font-size:clamp(19px,5.5vw,27px);line-height:1.2;letter-spacing:.01em;min-width:0;overflow-wrap:anywhere;flex:1}
+.lm-referral-code-card>div:first-of-type button{border:1px solid #b8f1d3;border-radius:9px;padding:10px;background:#ffffff1d;color:#fff;font-size:11px;font-weight:800;min-height:42px}
+.lm-referral-code-card label{font-size:11px;display:grid;gap:8px;color:#d5f2e4}
+.lm-referral-code-card input{width:100%;min-width:0;max-width:100%;border:1px solid #ffffff73;border-radius:9px;background:#ffffffef;padding:12px;color:#164b3c;font-size:10px;text-overflow:ellipsis;min-height:42px}
+.lm-member-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.lm-referral-code-card .lm-member-actions button{background:#fff;color:#07543f!important;border-color:#fff;min-width:0}
+.lm-referral-code-card .lm-member-actions button:nth-child(2){background:#f26b10;color:#fff!important;border-color:#f26b10}
+.lm-member-actions>a{background:#eff7f0;color:#0d6850!important;border-color:#d3e9d9}
+.lm-member-disclaimer{padding:8px 3px 0;color:#64786d}
+.lm-member-feedback{background:#f2f8ed;border-radius:9px;padding:10px;color:#245b42}
+.lm-member-heading{font-size:17px;color:#103e30;margin:8px 0}
+.lm-activity-list{display:grid;gap:0;list-style:none;margin:0;padding:0;background:#fff;border:1px solid #dfeae3;border-radius:14px;overflow:hidden}
+.lm-activity-list li{display:flex;gap:12px;padding:16px 14px;border-bottom:1px solid #ebf2ed;min-width:0}
+.lm-activity-list li:last-child{border-bottom:0}
+.lm-activity-dot{display:block;width:10px;height:10px;flex:0 0 10px;margin-top:4px;border-radius:50%;background:#2ba47a;box-shadow:0 0 0 4px #e5f5ea}
+.lm-activity-list li>div{display:grid;gap:5px;min-width:0}
+.lm-activity-list strong{font-size:13px;color:#163e31;text-transform:capitalize}
+.lm-activity-list li span:not(.lm-activity-dot){font-size:11px;color:#647d70;text-transform:capitalize}
+.lm-activity-list small{font-size:10px;color:#7b9387}
+.lm-member-full-link{background:#e9f6ee;color:#11694f!important;border-color:#c7e4d3}
+@media(max-width:350px){.lm-member-actions{gap:6px}.lm-member-actions button,.lm-member-actions a{padding:10px 7px;font-size:10px}}

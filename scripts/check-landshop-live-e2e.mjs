@@ -172,8 +172,41 @@ try{
   assert.equal(await home.getAttribute('href'),'/');
   assert.ok((await home.locator('img').getAttribute('src')).includes('logo-transparent.png'));
  });
+ await step('Mobile PWA guest discovery, search, and complete inspection handoff',async()=>{
+  await page.setViewportSize({width:390,height:844});
+  await navigate(origins.portal+'/mobile-app?screen=home');
+  await page.locator('.lm-welcome').waitFor({state:'visible',timeout:16000});
+  assert.ok((await page.locator('.lm-stage').count())===1,'Mobile shell missing');
+  await page.locator('.lm-tabbar').getByRole('button',{name:'Explore'}).click();
+  await page.locator('.lm-search-input input').waitFor({state:'visible'});
+  await page.locator('.lm-search-input input').fill('Famous');
+  assert.equal(await page.locator('.lm-property-card').count(),1,'Mobile estate search must filter results');
+  await page.locator('.lm-card-image').first().click();
+  await page.getByRole('button',{name:'Book Inspection'}).click();
+  await page.getByRole('button',{name:'Continue to Secure Booking'}).click();
+  await page.locator('.lm-feedback').getByText(/valid future inspection date/i).waitFor({state:'visible'});
+  const future=new Date(Date.now()+7*24*60*60*1000).toISOString().slice(0,10);
+  await page.locator('.lm-form-box input[type="date"]').fill(future);
+  await page.locator('.lm-form-box select').nth(0).selectOption('virtual');
+  await page.locator('.lm-form-box select').nth(1).selectOption('13:00');
+  await page.locator('.lm-form-box input[type="number"]').fill('3');
+  await page.getByRole('button',{name:'Continue to Secure Booking'}).click();
+  await page.waitForURL(url=>url.origin===origins.website&&url.pathname==='/visit',{timeout:22000});
+  assert.equal(await page.locator('input[name="date"]').inputValue(),future,'Visit date lost at handoff');
+  assert.equal(await page.locator('input[name="time"]').inputValue(),'13:00','Visit time lost at handoff');
+  assert.equal(await page.locator('select[name="mode"]').inputValue(),'virtual','Tour mode lost at handoff');
+  assert.equal(await page.locator('input[name="attendees"]').inputValue(),'3','Visitor count lost at handoff');
+ });
+ await step('Mobile PWA guest referral and account access are not falsely unlocked',async()=>{
+  await page.setViewportSize({width:390,height:844});
+  await navigate(origins.portal+'/mobile-app?screen=referrals');
+  await page.locator('.lm-member-state').waitFor({state:'visible',timeout:16000});
+  assert.match(await page.locator('.lm-member-state').innerText(),/sign.in/i);
+  await page.locator('.lm-member-state button').click();
+  await page.locator('.lm-auth-form input[type="password"]').waitFor({state:'visible'});
+ });
  await step('Critical pages do not overflow on phone, tablet and desktop',async()=>{
-  for(const [site,path] of [['website','/about'],['portal','/'],['app','/staff/sign-in']]){
+  for(const [site,path] of [['website','/about'],['portal','/'],['portal','/mobile-app'],['app','/staff/sign-in']]){
    for(const width of [375,768,1440]){
     await page.setViewportSize({width,height:900});
     await navigate(origins[site]+path);
