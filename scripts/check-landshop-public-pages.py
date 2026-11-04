@@ -356,7 +356,7 @@ def verify_source() -> None:
         raise AssertionError("Continuous motion or hover/focus pause is missing")
     if "calc((100cqw - 36px)/3)" not in approved_css:
         raise AssertionError("Product carousel must show three wider columns on desktop")
-    if '<SiteIcon name="chevron" size={19}/>' not in nav:
+    if '<SiteIcon name="chevron" size={18.5}/>' not in nav:
         raise AssertionError("Public dropdown navigation V chevrons are missing")
     if "chevron:'M5.5 9l6.5 6.5L18.5 9'" not in icons:
         raise AssertionError("Navbar V icon has been replaced with a long directional arrow")
