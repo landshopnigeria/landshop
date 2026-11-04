@@ -25,13 +25,21 @@ for(const p of [
   'ls-utility-inner','ls-global-search','ls-glass-header','ls-brand','ls-primary-nav',
   'ls-header-group','ls-mega','ls-mobile-subnav','ls-start','ls-mobile-bottom'
  ];
+ // Owner-approved compact navigation shortens these labels only; destinations stay protected.
+ const compactLabels=value=>value?.replace("title:'Our Teams'","title:'Our Team'")
+  .replace("title:'Contact Landshop'","title:'Contact Us'")
+  .replace("title:'Maiyegun Beach Estate'","title:'Maiyegun Beach'")
+  .replace("title:'Property Acquisition'","title:'Acquisition'")
+  .replace("title:'Cooperatives & Thrift'","title:'Cooperatives'");
+ const compactStyle=readFileSync('apps/website/app/compact-public-ui.css','utf8');
  const approvedV30=expectedV30Header&&
-  groupsOnly(prior)===groupsOnly(current)&&groupsOnly(current)?.length>1000&&
+  (groupsOnly(prior)===groupsOnly(current)||compactLabels(groupsOnly(prior))===groupsOnly(current))&&groupsOnly(current)?.length>1000&&
   (topLinksOnly(prior)===topLinksOnly(current)||
    topLinksOnly(prior)?.replace(",{text:'Command Center',url:'https://app.landshopnigeria.com/admin',icon:'grid' as const}",'')===topLinksOnly(current))&&
   topLinksOnly(current)?.length>70&&!topLinksOnly(current)?.includes('Command Center')&&
   headerStructure.every(marker=>current.includes(marker))&&
-  ['ls30-services-grid','ls30-hamburger','openHover','onMouseEnter','ls30-mega-folding'].every(marker=>current.includes(marker))&&
+  ['ls30-hamburger','openHover','onMouseEnter','ls30-mega-folding'].every(marker=>current.includes(marker))&&
+  (current.includes('ls30-services-grid')||(current.includes('ls-mega-layout')&&compactStyle.includes('grid-template-columns:repeat(2,minmax(0,1fr))')))&&
   (current.includes('ls-utility-collapsed')||
    ['ls31-over-hero','ls31-nav-visible','ls31-nav-hidden','setNavVisible'].every(marker=>current.includes(marker)));
  const matches=expectedV30Header?(approvedHeader(prior)===approvedHeader(current)||approvedV30):prior===current;

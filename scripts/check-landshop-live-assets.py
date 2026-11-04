@@ -131,7 +131,7 @@ def check(host,path,marker,css_class):
             found=True
         if "--ls-public-icon-size:19px" in css_text:
             correct_icon_css_found=True
-        if "ls-icon-directional" in css_text and "width:19px!important" in css_text:
+        if "ls-icon-directional" in css_text and "width:18.5px!important" in css_text:
             correct_arrow_css_found=True
         if ".mk-tools form>.ls-branded-select" in css_text and "148px" in css_text:
             marketplace_toolbar_found=True
@@ -147,7 +147,7 @@ def check(host,path,marker,css_class):
     if path=="/" and not correct_icon_css_found:
         raise AssertionError("Current 19px public icon stylesheet absent from fresh HTML asset links")
     if path=="/" and not correct_arrow_css_found:
-        raise AssertionError("Current 19px directional arrow CSS absent from fresh HTML asset links")
+        raise AssertionError("Current 18.5px directional arrow CSS absent from fresh HTML asset links")
     if path=="/properties" and not marketplace_toolbar_found:
         raise AssertionError("Current compact marketplace toolbar CSS absent from live build")
     if not footer_css_found:
