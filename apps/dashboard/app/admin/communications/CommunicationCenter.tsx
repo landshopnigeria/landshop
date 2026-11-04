@@ -1,12 +1,13 @@
 'use client';
 import {useMemo,useState} from 'react';
+import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import {excelWorkbook,wordDocument} from '../reports/export-openxml';
 import {createBrowserClient} from '@supabase/ssr';
 import catalog from './catalog.json';
-import PremiumMessagePreview, {type PremiumOverride} from './PremiumMessagePreview';
-import TemplateEditor from './TemplateEditor';
-import OperationsCenter from './OperationsCenter';
+import type {PremiumOverride} from './PremiumMessagePreview';
+const PremiumMessagePreview=dynamic(()=>import('./PremiumMessagePreview'),{loading:()=> <p className="comm-inline-loading" role="status">Opening message preview…</p>});
+const TemplateEditor=dynamic(()=>import('./TemplateEditor'),{loading:()=> <p className="comm-inline-loading" role="status">Opening editor…</p>});
+const OperationsCenter=dynamic(()=>import('./OperationsCenter'),{loading:()=> <p className="comm-inline-loading" role="status">Opening contact workspace…</p>});
 import type {Contact,Event,Task,Audit} from './OperationsCenter';
 import './communications.css';
 
@@ -94,7 +95,7 @@ export default function CommunicationCenter({runs,evidenceAvailable,operations,i
   }catch(e){setNotice(e instanceof Error?e.message:'Draft could not be saved.');}
   finally{setSavingDraft(false);}
  }
- function exportReport(){
+ async function exportReport(){
   const selected=chosenRows();if(!selected.length){setNotice('No authorized records available for this export.');return}
   const date=new Date().toISOString().slice(0,10),base='landshop-communication-runs-'+date;
   const headers=Object.keys(selected[0]) as Array<keyof typeof selected[number]>;
@@ -102,8 +103,12 @@ export default function CommunicationCenter({runs,evidenceAvailable,operations,i
    const csv=[headers.map(safeCsv).join(','),...selected.map(row=>headers.map(h=>safeCsv(row[h])).join(','))].join('\r\n');
    downloadBlob(base+'.csv',new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}));
   }else if(exportFormat==='xlsx'){
+   setNotice('Preparing Excel export…');
+   const {excelWorkbook}=await import('../reports/export-openxml');
    downloadBlob(base+'.xlsx',new Blob([new Uint8Array(excelWorkbook(selected))],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));
   }else if(exportFormat==='docx'){
+   setNotice('Preparing Word export…');
+   const {wordDocument}=await import('../reports/export-openxml');
    downloadBlob(base+'.docx',new Blob([new Uint8Array(wordDocument(selected,'Landshop Communication Run Records'))],{type:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'}));
   }else{
    const body='<html><head><meta charset="utf-8"><title>Landshop Communications Report</title><style>body{font:14px Arial;color:#073f34;padding:25px}th,td{border:1px solid #ccc;padding:8px;text-align:left}table{border-collapse:collapse;width:100%}h1{font-size:22px}</style></head><body><h1>Landshop Communication Run Records</h1><p>Verified workflow run metadata. Channel, geography and customer intent are not available in this source.</p><table><thead><tr>'+
@@ -137,6 +142,17 @@ export default function CommunicationCenter({runs,evidenceAvailable,operations,i
     <p>One unified experience for mortgage, investment, onboarding and property development. Review 70 event-based messages, follow decision branches and inspect authorized workflow run records.</p>
     <p className="comm-warning">Draft review and real workflow run visibility only. Provider sends, legal notices and unverified financial events remain disabled.</p></div>
     <div className="comm-stats"><div><strong>6</strong><span>Product journeys</span></div><div><strong>70</strong><span>Message scenarios</span></div><div><strong>{runs.length}</strong><span>Recorded run entries</span></div><div><strong>{reviewed.length}</strong><span>Templates reviewed locally</span></div></div></section>
+   <div className="comm-mobile-nav">
+    <label htmlFor="comm-mobile-section">Communication workspace</label>
+    <select id="comm-mobile-section" value={tab} onChange={event=>setTab(event.target.value as Tab)} aria-label="Select communication workspace section">
+     <option value="journeys">Customer journey map</option>
+     <option value="templates">Email & message studio</option>
+     <option value="operations">Customer activity & contacts</option>
+     <option value="reporting">Management reporting</option>
+     <option value="exports">Exports & manual automation</option>
+     <option value="safeguards">Approval gates</option>
+    </select>
+   </div>
    <nav className="comm-tabs" aria-label="Communication workspace sections">
     <Link href="/admin/automation" className="comm-tabs-builder">Visual workflow canvas <span aria-hidden="true">↗</span></Link>
     {([['journeys','Customer journey map'],['templates','Email & message studio'],['operations','Customer activity & contacts'],['reporting','Management reporting'],['exports','Exports & manual automation'],['safeguards','Approval gates']] as [Tab,string][]).map(([id,label])=><button type="button" key={id} className={tab===id?'active':''} onClick={()=>setTab(id)} aria-current={tab===id?'page':undefined}>{label}</button>)}
