@@ -52,7 +52,10 @@ export async function GET(request:NextRequest) {
   const landing=await accountHome(supabase,user);
   // Preserve mobile-app context only for ordinary customer accounts.
   // Privileged staff and management routes always use their verified landing.
-  const mobileRequested=request.nextUrl.searchParams.get('mobile')==='1';
+  const mobileRequested=request.nextUrl.searchParams.get('mobile')==='1' ||
+   request.cookies.get('landshop_mobile_flow')?.value==='1';
+  // This cookie carries a UI return preference only, never authorization.
+  response.cookies.set('landshop_mobile_flow','',{path:'/auth/callback',maxAge:0,sameSite:'lax',secure:true});
   response.headers.set('Location',mobileRequested&&landing==='/dashboard'
    ?origin+'/mobile-app?screen=home'
    :'https://app.landshopnigeria.com'+landing);
