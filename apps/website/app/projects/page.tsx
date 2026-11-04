@@ -1,7 +1,7 @@
 import ApprovedArrow from '../../components/ApprovedArrow';
 import {estatePortfolio,additionalOwnerVideoLinks} from '../../lib/estate-portfolio';
 import Link from 'next/link';
-export const metadata={title:'Landshop Projects | Famous Gardens and Project Portfolio',description:'Explore the owner-provided photographic archives of Famous Gardens in Iberekodo, Ibeju-Lekki, and see Landshop past projects.'};
+export const metadata={alternates:{canonical:'/projects'},title:'Landshop Projects | Famous Gardens and Project Portfolio',description:'Explore the owner-provided photographic archives of Famous Gardens in Iberekodo, Ibeju-Lekki, and see Landshop past projects.'};
 type Project={name:string;slug:string;kind:string;place:string;description:string;photo?:string;photoAlt?:string;photoNotice?:string};
 const projects:Project[]=[
  {name:'Famous Gardens',slug:'famous-gardens',kind:'CURRENT SALES FOCUS',place:'Iberekodo, Ibeju-Lekki',description:'Explore actual photographs from the Famous Gardens development and request verified home specifications.',photo:'/owner/2026/famous-exterior.webp',photoAlt:'Finished estate buildings in the owner-provided Famous Gardens image archive'},

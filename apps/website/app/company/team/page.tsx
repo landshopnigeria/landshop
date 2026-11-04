@@ -3,7 +3,7 @@ import ApprovedArrow from '../../../components/ApprovedArrow';
 import ContentShell from '../../../components/ContentShell';
 import Link from 'next/link';
 import {editorialImages} from '../../../lib/editorial-imagery';
-export const metadata={title:'Our Teams & Responsibilities | Landshop',description:'Understand how Landshop customer experience, property, legal, operations and finance teams support property decisions.'};
+export const metadata={alternates:{canonical:'/company/team'},title:'Our Teams & Responsibilities | Landshop',description:'Understand how Landshop customer experience, property, legal, operations and finance teams support property decisions.'};
 const groups=[
  ['Customer Experience','Guides enquiries, records application questions and coordinates communication.'],
  ['Property & Development','Coordinates estate information, inspections and project documentation with authorized property teams.'],

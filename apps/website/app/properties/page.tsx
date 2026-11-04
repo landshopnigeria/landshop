@@ -11,7 +11,7 @@ import './property-market.css';
 import {getApprovedPublicPropertyImages} from '../../lib/public-property-media';
 import {loadPropertyMedia} from '../../lib/property-showcase';
 export const dynamic='force-dynamic';
-export const metadata={title:'Estates & Properties | Landshop Nigeria',description:'Explore authentic, management-published Landshop property listings with location, type and price filters.'};
+export const metadata={alternates:{canonical:'/properties'},title:'Estates & Properties | Landshop Nigeria',description:'Explore authentic, management-published Landshop property listings with location, type and price filters.'};
 export default async function Properties({searchParams}:{searchParams:Promise<Params>}){
  const filters=cleanFilters(await searchParams),{rows,count,error}=await listPublished(filters);
  const galleries=await loadPropertyMedia(rows.map(r=>r.id));
