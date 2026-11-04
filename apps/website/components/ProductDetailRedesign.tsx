@@ -181,15 +181,15 @@ export default function ProductDetailRedesign({page}:{page:PageId}){
    <section className="lsp-compact-panel" id="lsp-options" aria-labelledby="lsp-panel-heading">
     <div className="lsp-compact-heading"><div><span className="lsp-kicker">EXPLORE {d.name.toUpperCase()}</span><h2 id="lsp-panel-heading">Everything you need, in one place.</h2><p>{d.intro}</p></div></div>
     <div className="lsp-compact-tabs" role="tablist" aria-label={d.name+' product details'}>
-     <button type="button" id="lsp-tab-overview" role="tab" aria-selected={detailTab==='overview'} aria-controls="lsp-detail-panel" tabIndex={detailTab==='overview'?0:-1} onClick={()=>setDetailTab('overview')}>01 <span>Overview</span></button>
-     <button type="button" id="lsp-tab-process" role="tab" aria-selected={detailTab==='process'} aria-controls="lsp-detail-panel" tabIndex={detailTab==='process'?0:-1} onClick={()=>setDetailTab('process')}>02 <span>How it works</span></button>
-     {page!=='products'&&<button type="button" id="lsp-tab-options" role="tab" aria-selected={detailTab==='options'} aria-controls="lsp-detail-panel" tabIndex={detailTab==='options'?0:-1} onClick={()=>setDetailTab('options')}>03 <span>Next steps</span></button>}
+     <button type="button" id="lsp-tab-overview" role="tab" aria-selected={detailTab==='overview'} aria-controls="lsp-detail-panel" tabIndex={detailTab==='overview'?0:-1} onClick={()=>setDetailTab('overview')}><span>Overview</span></button>
+     <button type="button" id="lsp-tab-process" role="tab" aria-selected={detailTab==='process'} aria-controls="lsp-detail-panel" tabIndex={detailTab==='process'?0:-1} onClick={()=>setDetailTab('process')}><span>How it works</span></button>
+     {page!=='products'&&<button type="button" id="lsp-tab-options" role="tab" aria-selected={detailTab==='options'} aria-controls="lsp-detail-panel" tabIndex={detailTab==='options'?0:-1} onClick={()=>setDetailTab('options')}><span>Next steps</span></button>}
     </div>
     <div className="lsp-compact-content" role="tabpanel" id="lsp-detail-panel" aria-labelledby={'lsp-tab-'+detailTab} key={detailTab}>
      {detailTab==='overview'&&(page==='products'?
       <div className="lsp-products-grid">{(['develop','incubate','grow','devpro','estatepro'] as ProductId[]).map(productCard)}</div>:
-      <div className="lsp-compact-features">{d.features.map(([title,description],index)=><article key={title} className="lsp-compact-feature"><span className="lsp-index">0{index+1}</span><h3>{title}</h3><p>{description}</p></article>)}</div>)}
-     {detailTab==='process'&&<div className="lsp-compact-process">{d.steps.map(([title,description],index)=><article key={title}><span className="lsp-index">0{index+1}</span><h3>{title}</h3><p>{description}</p></article>)}</div>}
+      <div className="lsp-compact-features">{d.features.map(([title,description])=><article key={title} className="lsp-compact-feature"><h3>{title}</h3><p>{description}</p></article>)}</div>)}
+     {detailTab==='process'&&<div className="lsp-compact-process">{d.steps.map(([title,description])=><article key={title}><h3>{title}</h3><p>{description}</p></article>)}</div>}
      {detailTab==='options'&&page!=='products'&&<div className="lsp-compact-options">
       <div className="lsp-compact-pathways">{d.links.map(item=><article key={item.title}><div><h3>{item.title}</h3><p>{item.description}</p></div>{item.href?<Link href={item.href}>Explore <ApprovedArrow/></Link>:<button type="button" onClick={()=>openModal(item.intent||item.title)}>Enquire <ApprovedArrow/></button>}</article>)}</div>
       {eligibleApplications.length>0&&<div className="lsp-compact-secure"><div><span className="lsp-kicker">SECURE APPLICATIONS</span><h3>Ready for a formal review?</h3><p>Applications are subject to current eligibility, verified terms and approval.</p></div><div>{eligibleApplications.map(item=><a key={item.slug} href={'https://portal.landshopnigeria.com/applications/'+item.slug}><strong>{item.name}</strong><ApprovedArrow/></a>)}</div></div>}
