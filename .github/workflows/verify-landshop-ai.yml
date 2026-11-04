@@ -1,0 +1,75 @@
+name: Verify Landshop production AI connection
+on:
+  push:
+    branches: ['ops/verify-landshop-ai']
+    paths: ['.github/workflows/verify-landshop-ai.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    environment: landshop-production
+    timeout-minutes: 6
+    steps:
+      - name: Verify configured production AI without revealing credentials
+        shell: bash
+        env:
+          SSH_HOST: ${{ secrets.LANDSHOP_SSH_HOST || secrets.NAMECHEAP_SSH_HOST || vars.LANDSHOP_SSH_HOST }}
+          SSH_USER: ${{ secrets.LANDSHOP_SSH_USER || secrets.NAMECHEAP_SSH_USER || vars.LANDSHOP_SSH_USER }}
+          SSH_PORT: ${{ vars.LANDSHOP_SSH_PORT || secrets.LANDSHOP_SSH_PORT || secrets.NAMECHEAP_SSH_PORT || '21098' }}
+          SSH_KEY: ${{ secrets.LANDSHOP_SSH_KEY || secrets.NAMECHEAP_SSH_PRIVATE_KEY }}
+          KNOWN_HOSTS: ${{ secrets.LANDSHOP_SSH_KNOWN_HOSTS || secrets.NAMECHEAP_SSH_KNOWN_HOSTS || vars.LANDSHOP_SSH_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          for name in SSH_HOST SSH_USER SSH_KEY KNOWN_HOSTS; do test -n "${!name:-}" || exit 1; done
+          [[ "$SSH_PORT" =~ ^[0-9]{1,5}$ ]] || exit 1
+          install -d -m 700 "$HOME/.ssh"
+          printf '%s\n' "$SSH_KEY" > "$HOME/.ssh/id_ed25519"
+          printf '%s\n' "$KNOWN_HOSTS" > "$HOME/.ssh/known_hosts"
+          chmod 600 "$HOME/.ssh/id_ed25519" "$HOME/.ssh/known_hosts"
+          ssh -p "$SSH_PORT" -o BatchMode=yes -o StrictHostKeyChecking=yes "$SSH_USER@$SSH_HOST" python3 - <<'PY'
+          import json,subprocess,shutil,os,re,urllib.request,urllib.error
+          def report(**data): print('LANDSHOP_AI_STATUS '+json.dumps(data),flush=True)
+          command=shutil.which('cloudlinux-selector') or '/usr/bin/cloudlinux-selector'
+          try:
+              result=subprocess.run([command,'get','--json','--interpreter','nodejs'],capture_output=True,text=True,timeout=25)
+              data=json.loads(result.stdout)
+          except Exception:
+              report(configuration_readable=False);raise SystemExit(1)
+          matches=[]
+          def walk(value):
+              if isinstance(value,dict):
+                  if value.get('domain')=='app.landshopnigeria.com' and isinstance(value.get('env_vars'),dict): matches.append(value)
+                  for child in value.values(): walk(child)
+              elif isinstance(value,list):
+                  for child in value:walk(child)
+          walk(data)
+          if len(matches)!=1:
+              report(application_matches=len(matches));raise SystemExit(1)
+          env=matches[0]['env_vars']; key=env.get('LANDSHOP_OPENAI_API_KEY') or env.get('OPENAI_API_KEY') or ''
+          model=env.get('LANDSHOP_WORKFLOW_AI_MODEL') or ''
+          report(application_found=True,key_present=bool(key),model_configured=bool(re.fullmatch(r'[a-zA-Z0-9._:-]{1,100}',model)))
+          if not key: raise SystemExit(1)
+          def api(path,body=None):
+              request=urllib.request.Request('https://api.openai.com/v1/'+path,data=json.dumps(body).encode() if body else None,headers={'Authorization':'Bearer '+key,'Content-Type':'application/json'})
+              try:
+                  with urllib.request.urlopen(request,timeout=50) as response:return response.status,json.load(response)
+              except urllib.error.HTTPError as error:
+                  code='provider_error'
+                  try:
+                      candidate=json.load(error).get('error',{}).get('code','')
+                      if isinstance(candidate,str) and re.fullmatch(r'[a-z_]+',candidate):code=candidate
+                  except Exception:pass
+                  return error.code,{'code':code}
+              except Exception:return 0,{'code':'connection_unavailable'}
+          status,models=api('models');report(authentication_status=status)
+          if status!=200:report(provider_error=models.get('code'));raise SystemExit(1)
+          if not model:
+              ids={entry.get('id') for entry in models.get('data',[])}
+              report(model_required=True,suggested_model=next((m for m in ['gpt-5-mini','gpt-4.1-mini','gpt-4o-mini'] if m in ids),None));raise SystemExit(1)
+          if not re.fullmatch(r'[a-zA-Z0-9._:-]{1,100}',model):raise SystemExit(1)
+          status,response=api('responses',{'model':model,'store':False,'max_output_tokens':1000,'input':'Return exactly the word READY.'})
+          report(generation_status=status,generation_ready=status==200 and response.get('status')=='completed',provider_error=response.get('code'))
+          if status!=200 or response.get('status')!='completed':raise SystemExit(1)
+          PY
