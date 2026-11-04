@@ -23,6 +23,7 @@ import './v32-editorial-and-hero.css';
 import './owner-photo-refresh.css';
 import './public-icon-27.css';
 import '../../../packages/shared/EnterpriseMotion.css';
+import './compact-public-ui.css';
 import SiteHeader from '../components/SiteHeader';
 import SiteFooter from '../components/SiteFooter';
 import GlobalArticleCarousel from '../components/GlobalArticleCarousel';
