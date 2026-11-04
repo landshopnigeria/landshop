@@ -66,9 +66,10 @@ export default function MobileApp({initialScreen='onboarding'}:{initialScreen?:S
  const [price,setPrice]=useState(180000000),[deposit,setDeposit]=useState(20),[rate,setRate]=useState(18.5),[years,setYears]=useState(20);
  const [visitDate,setVisitDate]=useState(''),[visitTime,setVisitTime]=useState('10:00'),[visitCount,setVisitCount]=useState(1),[visitMode,setVisitMode]=useState<'physical'|'virtual'>('physical');
  const [installed,setInstalled]=useState(false),[installPrompt,setInstallPrompt]=useState<Event|null>(null);
+ const [menuOpen,setMenuOpen]=useState(false),[expandedMenu,setExpandedMenu]=useState<'property'|'account'|'services'|null>(null);
  const mainScroll=useRef<HTMLDivElement|null>(null);
  const current=properties.find(p=>p.slug===selected)||properties[0];
- const go=(next:Screen)=>{setFeedback('');if(typeof window!=='undefined')window.history.pushState({screen:next},'',window.location.pathname+'?screen='+next);setScreen(next);};
+ const go=(next:Screen)=>{setMenuOpen(false);setFeedback('');if(typeof window!=='undefined')window.history.pushState({screen:next},'',window.location.pathname+'?screen='+next);setScreen(next);};
  useEffect(()=>{mainScroll.current?.scrollTo({top:0,behavior:'instant'});},[screen,selected,slide]);
  useEffect(()=>{
   let active=true;
@@ -170,7 +171,7 @@ export default function MobileApp({initialScreen='onboarding'}:{initialScreen?:S
   </article>;
  return <main className="lm-stage">
   <div className="lm-shell">
-   <div className="lm-island" aria-hidden="true"/><div className="lm-system" aria-hidden="true"><span>9:41</span><span>▰▰▰ ᴡɪꜰɪ ▰</span></div>
+
    <div className="lm-scroll" ref={mainScroll}>
     {screen==='splash'&&<div className="lm-splash">
       <div className="lm-splash-wave"/><img src="/media/logo-transparent.png" alt="Landshop Nigeria" className="lm-splash-logo"/><p>Property ownership, made clearer.</p><div className="lm-loader" aria-label="Opening Landshop"><i/><i/><i/></div><img src={photos('/media/landshop-mobile-famous-gardens.jpg')} alt="Famous Gardens residential estate, owner-supplied photograph" className="lm-splash-picture" decoding="async" fetchPriority="high"/>
@@ -212,7 +213,7 @@ export default function MobileApp({initialScreen='onboarding'}:{initialScreen?:S
       {screen==='reset'&&<div className="lm-auth-state"><div className="lm-circle-icon"><Icon name="lock" size={34}/></div><h1>Reset your password.</h1><p>Enter the email associated with your account. We will send secure recovery instructions.</p><Field label="Email address"><input type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="you@example.com"/></Field><CTA disabled={busy} onClick={()=>void emailAction('recovery')}>{busy?'Sending…':'Send Recovery Link'}</CTA><button className="lm-muted-link" onClick={()=>go('signin')}>Back to Sign In</button></div>}
      </div>}
     {!['splash','onboarding','signin','signup','verify','reset'].includes(screen)&&<>
-     <div className="lm-app-top"><img src="/media/logo-transparent.png" alt="Landshop Nigeria"/><div><button className="lm-icon-btn" aria-label="Saved properties" onClick={()=>go('saved')}><Icon name="heart"/></button><button className="lm-icon-btn lm-bell" aria-label="Notifications" onClick={()=>go('notices')}><Icon name="bell"/></button></div></div>
+     <div className="lm-app-top"><button className="lm-menu-trigger" onClick={()=>setMenuOpen(true)} aria-label="Open dashboard navigation" aria-expanded={menuOpen}><Icon name="menu"/></button><img src="/media/logo-transparent.png" alt="Landshop Nigeria"/><div><button className="lm-icon-btn lm-bell" aria-label="Notifications" onClick={()=>go('notices')}><Icon name="bell"/></button><button className="lm-icon-btn lm-user-trigger" aria-label="Open profile and account menu" onClick={()=>go('profile')}><Icon name="user"/></button></div></div>
      {screen==='home'&&<div className="lm-app-page">
        <div className="lm-welcome"><p>Good {new Date().getHours()<12?'morning':new Date().getHours()<17?'afternoon':'evening'}{signedIn&&name?', '+name:''} <span>✳</span></p><h1>Find your next <em>opportunity.</em></h1><p>Browse Landshop estates and plan your next property move.</p></div>
        <button className="lm-searchbar" onClick={()=>go('explore')}><Icon name="search"/><span>Search estates, locations, projects…</span><Icon name="filter"/></button>
@@ -296,8 +297,9 @@ export default function MobileApp({initialScreen='onboarding'}:{initialScreen?:S
      </>}
      {feedback&&<div className="lm-feedback" role="status" aria-live="polite">{feedback}<button aria-label="Dismiss message" onClick={()=>setFeedback('')}><Icon name="close" size={15}/></button></div>}
     </div>
+    {menuOpen&&<div className="lm-drawer-layer"><button className="lm-drawer-scrim" aria-label="Close navigation" onClick={()=>setMenuOpen(false)}/><aside className="lm-drawer" aria-label="Customer navigation"><div className="lm-drawer-head"><strong>My Landshop</strong><button onClick={()=>setMenuOpen(false)} aria-label="Close menu"><Icon name="close"/></button></div><div className="lm-drawer-identity"><Icon name="user"/><div><strong>{signedIn?(name||'Customer'):'Welcome, guest'}</strong><small>{signedIn?userEmail:'Sign in to access your dashboard'}</small></div></div><button onClick={()=>go('home')}><Icon name="home"/> Home</button><button onClick={()=>signedIn?openSecureCustomer('applications'):go('signin')}><Icon name="chart"/> My Dashboard</button>{([['property','Property & inspections'],['account','My account'],['services','Services & finance']] as const).map(([key,title])=><div key={key} className="lm-drawer-group"><button aria-expanded={expandedMenu===key} onClick={()=>setExpandedMenu(expandedMenu===key?null:key)}>{title}<Icon name="chevron"/></button>{expandedMenu===key&&<div className="lm-drawer-children">{key==='property'?<><button onClick={()=>go('explore')}>Explore estates</button><button onClick={()=>go('saved')}>Saved properties</button><button onClick={()=>go('inspection')}>Book inspection</button><button onClick={()=>openSecureCustomer('applications')}>Applications</button></>:key==='account'?<><button onClick={()=>go('profile')}>My profile</button><button onClick={()=>openSecureCustomer('account')}>Account settings</button><button onClick={()=>openSecureCustomer('kyc')}>Identity verification</button></>:<><button onClick={()=>go('mortgage')}>Mortgage planner</button><button onClick={()=>go('referrals')}>Referral centre</button><button onClick={()=>go('notices')}>Activity & updates</button></>}</div>}</div>)}<button onClick={()=>signedIn?void logout():go('signin')}><Icon name="user"/>{signedIn?'Log out':'Sign in / Sign up'}</button></aside></div>}
     {['home','explore','property','inspection','mortgage','saved','referrals','notices','profile'].includes(screen)&&<nav className="lm-tabbar" aria-label="Mobile app navigation">
-     {([['home','home','Home'],['explore','search','Explore'],['mortgage','coins','Finance'],['notices','bell','Alerts'],['profile','user','Profile']] as [Screen,IconName,string][]).map(([key,icon,label])=><button key={key} onClick={()=>go(key)} className={screen===key?'active':''} aria-current={screen===key?'page':undefined}><Icon name={icon} size={21}/><span>{label}</span></button>)}
+     {([['home','home','Home'],['explore','search','Explore'],['referrals','chart','Dashboard'],['notices','bell','Activity'],['profile','user','Profile']] as [Screen,IconName,string][]).map(([key,icon,label])=><button key={key} onClick={()=>key==='referrals'&&signedIn?openSecureCustomer('applications'):go(key)} className={screen===key?'active':''} aria-current={screen===key?'page':undefined}><Icon name={icon} size={21}/><span>{label}</span></button>)}
     </nav>}
     <div className="lm-home-indicator" aria-hidden="true"><i/></div>
    </div>
