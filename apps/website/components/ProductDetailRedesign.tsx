@@ -5,6 +5,7 @@ import LoanIllustrator from './LoanIllustrator';
 import ApprovedArrow from './ApprovedArrow';
 import {landshopProductCards} from '../lib/landshop-brand-media';
 import './product-detail-redesign.css';
+import './product-detail-luxury.css';
 
 type ProductId='develop'|'incubate'|'grow'|'devpro'|'estatepro';
 export type PageId=ProductId|'products';
@@ -171,34 +172,85 @@ export default function ProductDetailRedesign({page}:{page:PageId}){
    <div className="lsp-product-card-body"><span className="lsp-kicker">{pages[slug].eyebrow}</span><img className="lsp-product-logo" src={product.logo} alt={product.name+' logo'} loading="lazy"/><p>{product.description}</p><strong>Explore {product.name} <ApprovedArrow /></strong></div>
   </Link>
  };
- return <main className="lsp-product">
-  <div className="lsp-shell"><nav className="lsp-crumb" aria-label="Breadcrumb"><Link href="/">Home</Link><span>/</span>{page!=='products'&&<><Link href="/products">Products</Link><span>/</span></>}{d.name}</nav>
-   <section className="lsp-hero" aria-labelledby="lsp-title"><div className="lsp-hero-copy"><span className="lsp-kicker">{d.eyebrow}</span><h1 id="lsp-title">{d.title}</h1><p>{d.description}</p><div className="lsp-actions"><ActionButton action={d.primary} solid/><ActionButton action={d.secondary}/></div>{d.status&&<div className="lsp-status">{d.status}</div>}</div>
-    <figure className="lsp-hero-photo"><img src={d.photo} alt={d.photoAlt}/><figcaption>{d.photoLabel}</figcaption></figure>
+
+ const luxuryTitles:Record<PageId,[string,string]>={
+  products:['Find the right path','to property ownership.'],
+  develop:['Find a place','to call yours.'],
+  incubate:['Invest with','understanding.'],
+  grow:['Make room for','what comes next.'],
+  devpro:['Develop with','a clearer plan.'],
+  estatepro:['Build with','confidence.']
+ };
+ const heroButtonLabels:Record<PageId,string>={
+  products:'Explore Products',
+  develop:'Explore Properties',
+  incubate:'Register Interest',
+  grow:'Explore Mortgage',
+  devpro:'Check Eligibility',
+  estatepro:'Enquire Now'
+ };
+ const [luxuryTitle,luxuryAccent]=luxuryTitles[page];
+ const goToTab=(tab:'overview'|'process'|'options')=>{
+  setDetailTab(tab);
+  const panel=document.getElementById('lsp-options');
+  if(panel){
+   const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+   panel.scrollIntoView({behavior:reduced?'auto':'smooth',block:'start'});
+  }
+ };
+ return <main className="lsp-product lsp-luxury">
+  <div className="lsp-shell">
+   <nav className="lsp-crumb" aria-label="Breadcrumb"><Link href="/">Home</Link><span>/</span>{page!=='products'&&<><Link href="/products">Products</Link><span>/</span></>}{d.name}</nav>
+   <section className="lsp-hero" aria-labelledby="lsp-title">
+    <div className="lsp-hero-copy">
+     <span className="lsp-kicker">{d.eyebrow}</span>
+     <h1 id="lsp-title">{luxuryTitle} <em>{luxuryAccent}</em></h1>
+     <p>{d.description}</p>
+     <div className="lsp-actions">
+      {page==='grow'?<button type="button" className="lsp-primary" onClick={()=>goToTab('options')}><span>{heroButtonLabels[page]}</span><ApprovedArrow /></button>
+       :<ActionButton action={{...d.primary,label:heroButtonLabels[page]}} solid/>}
+      <button type="button" className="lsp-outline" onClick={()=>goToTab('process')}><span>How it works</span><ApprovedArrow /></button>
+     </div>
+     {d.status&&<p className="lsp-status">{d.status}</p>}
+    </div>
+    <figure className="lsp-hero-photo">
+     <img src={d.photo} alt={d.photoAlt} decoding="async" fetchPriority="high"/>
+     <figcaption>{d.photoLabel}</figcaption>
+    </figure>
    </section>
-   <div className="lsp-stats">{d.highlights.map(([title,desc])=><div className="lsp-stat" key={title}><strong>{title}</strong><span>{desc}</span></div>)}</div>
+   <div className="lsp-stats" aria-label={d.name+' key considerations'}>{d.highlights.map(([title,desc])=><div className="lsp-stat" key={title}><span className="lsp-stat-mark" aria-hidden="true"/><div><strong>{title}</strong><span>{desc}</span></div></div>)}</div>
 
    <section className="lsp-compact-panel" id="lsp-options" aria-labelledby="lsp-panel-heading">
-    <div className="lsp-compact-heading"><div><span className="lsp-kicker">EXPLORE {d.name.toUpperCase()}</span><h2 id="lsp-panel-heading">Everything you need, in one place.</h2><p>{d.intro}</p></div></div>
-    <div className="lsp-compact-tabs" role="tablist" aria-label={d.name+' product details'}>
-     <button type="button" id="lsp-tab-overview" role="tab" aria-selected={detailTab==='overview'} aria-controls="lsp-detail-panel" tabIndex={detailTab==='overview'?0:-1} onClick={()=>setDetailTab('overview')}><span>Overview</span></button>
-     <button type="button" id="lsp-tab-process" role="tab" aria-selected={detailTab==='process'} aria-controls="lsp-detail-panel" tabIndex={detailTab==='process'?0:-1} onClick={()=>setDetailTab('process')}><span>How it works</span></button>
-     {page!=='products'&&<button type="button" id="lsp-tab-options" role="tab" aria-selected={detailTab==='options'} aria-controls="lsp-detail-panel" tabIndex={detailTab==='options'?0:-1} onClick={()=>setDetailTab('options')}><span>Next steps</span></button>}
+    <div className="lsp-compact-heading">
+     <div><span className="lsp-kicker">DISCOVER YOUR PATHWAY</span><h2 id="lsp-panel-heading">Clarity before <em>commitment.</em></h2></div>
+     <div className="lsp-compact-tabs" role="tablist" aria-label={d.name+' product details'}>
+      <button type="button" id="lsp-tab-overview" role="tab" aria-selected={detailTab==='overview'} aria-controls="lsp-detail-panel" tabIndex={detailTab==='overview'?0:-1} onClick={()=>setDetailTab('overview')}>Overview</button>
+      <button type="button" id="lsp-tab-process" role="tab" aria-selected={detailTab==='process'} aria-controls="lsp-detail-panel" tabIndex={detailTab==='process'?0:-1} onClick={()=>setDetailTab('process')}>How It Works</button>
+      {page!=='products'&&<button type="button" id="lsp-tab-options" role="tab" aria-selected={detailTab==='options'} aria-controls="lsp-detail-panel" tabIndex={detailTab==='options'?0:-1} onClick={()=>setDetailTab('options')}>Next Steps</button>}
+     </div>
     </div>
     <div className="lsp-compact-content" role="tabpanel" id="lsp-detail-panel" aria-labelledby={'lsp-tab-'+detailTab}>
      <div className="lsp-tab-panel" hidden={detailTab!=='overview'}>{page==='products'?
       <div className="lsp-products-grid">{(['develop','incubate','grow','devpro','estatepro'] as ProductId[]).map(productCard)}</div>:
-      <div className="lsp-compact-features">{d.features.map(([title,description])=><article key={title} className="lsp-compact-feature"><h3>{title}</h3><p>{description}</p></article>)}</div>}</div>
-     <div className="lsp-tab-panel" hidden={detailTab!=='process'}><div className="lsp-compact-process">{d.steps.map(([title,description])=><article key={title}><h3>{title}</h3><p>{description}</p></article>)}</div></div>
+      <div className="lsp-luxury-overview">
+       <div className="lsp-luxury-statement"><span className="lsp-kicker">THE LANDSHOP APPROACH</span>
+        <h3>{page==='incubate'?<>Built around <em>clarity, not promises.</em></>:page==='develop'?<>Own with <em>greater confidence.</em></>:page==='grow'?<>Home finance with <em>a clearer direction.</em></>:page==='devpro'?<>Infrastructure with <em>a structured plan.</em></>:<>Build from <em>a stronger foundation.</em></>}</h3>
+        <p>{d.intro}</p>
+       </div>
+       <div className="lsp-compact-features">{d.features.map(([title,description])=><article key={title} className="lsp-compact-feature"><span className="lsp-benefit-line" aria-hidden="true"/><div><h3>{title}</h3><p>{description}</p></div></article>)}</div>
+      </div>}</div>
+     <div className="lsp-tab-panel" hidden={detailTab!=='process'}><div className="lsp-compact-process">{d.steps.map(([title,description])=><article key={title}><span className="lsp-process-dot" aria-hidden="true"/><div><h3>{title}</h3><p>{description}</p></div></article>)}</div></div>
      {page!=='products'&&<div className="lsp-tab-panel" hidden={detailTab!=='options'}><div className="lsp-compact-options">
       <div className="lsp-compact-pathways">{d.links.map(item=><article key={item.title}><div><h3>{item.title}</h3><p>{item.description}</p></div>{item.href?<Link href={item.href}>Explore <ApprovedArrow/></Link>:<button type="button" onClick={()=>openModal(item.intent||item.title)}>Enquire <ApprovedArrow/></button>}</article>)}</div>
-      {eligibleApplications.length>0&&<div className="lsp-compact-secure"><div><span className="lsp-kicker">SECURE APPLICATIONS</span><h3>Ready for a formal review?</h3><p>Applications are subject to current eligibility, verified terms and approval.</p></div><div>{eligibleApplications.map(item=><a key={item.slug} href={'https://portal.landshopnigeria.com/applications/'+item.slug}><strong>{item.name}</strong><ApprovedArrow/></a>)}</div></div>}
+      {eligibleApplications.length>0&&<div className="lsp-compact-secure"><div><span className="lsp-kicker">SECURE APPLICATIONS</span><h3>Ready for a formal review?</h3><p>Formal applications require current eligibility, documentation and approval.</p></div><div>{eligibleApplications.map(item=><a key={item.slug} href={'https://portal.landshopnigeria.com/applications/'+item.slug} rel="noopener noreferrer"><strong>{item.name}</strong><ApprovedArrow/></a>)}</div></div>}
      </div></div>}
     </div>
    </section>
    {(page==='devpro'||page==='estatepro')&&<section className="lsp-section lsp-calculator"><div className="lsp-heading"><span className="lsp-kicker">FINANCE PLANNER</span><h2>Explore a possible repayment scenario.</h2><p>Adjust your own amount, rate and term assumptions. This is not an offer or approval.</p></div><LoanIllustrator kind={page}/></section>}
-   <section className="lsp-section lsp-faq"><div className="lsp-heading"><span className="lsp-kicker">FREQUENTLY ASKED QUESTIONS</span><h2>Questions worth asking.</h2></div><div className="lsp-faq-list">{d.faqs.map(([question,answer])=><details key={question}><summary>{question}<span aria-hidden="true">+</span></summary><p>{answer}</p></details>)}</div></section>
-   <section className="lsp-conversion"><div><span className="lsp-kicker">LANDSHOP IS HERE TO HELP</span><h2>Ready to take a more informed step?</h2><p>Ask the right questions and request the information you need before proceeding.</p></div><button type="button" className="lsp-primary" onClick={()=>openModal(d.name+' next-step consultation')}>Speak with Landshop <ApprovedArrow /></button></section>
+   <div className="lsp-luxury-bottom">
+    <section className="lsp-section lsp-faq"><div className="lsp-heading"><h2>Good questions. Clear answers.</h2></div><div className="lsp-faq-list">{d.faqs.map(([question,answer])=><details key={question}><summary>{question}<span aria-hidden="true">+</span></summary><p>{answer}</p></details>)}</div></section>
+    <section className="lsp-conversion"><div><span className="lsp-kicker">PERSONAL PROPERTY GUIDANCE</span><h2>Your next move deserves a clear plan.</h2><p>Our team is here to help you understand the options before making a decision.</p></div><button type="button" className="lsp-primary" onClick={()=>openModal(d.name+' next-step consultation')}>Speak with Landshop <ApprovedArrow /></button></section>
+   </div>
    {d.note&&<p className="lsp-disclosure">{d.note}</p>}
   </div>
   {modal&&<div className="lsp-backdrop" role="presentation" onMouseDown={e=>{if(e.target===e.currentTarget)setModal(null)}}>
