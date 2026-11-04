@@ -31,3 +31,9 @@ export default function CustomerNavigation(){
   </aside>
  </>;
 }
+
+export function CustomerAccountMenu({initial}:{initial:string}){
+ const [open,setOpen]=useState(false);
+ return <div className="cd-account-menu"><button type="button" className="cd-avatar" aria-expanded={open} aria-label="Open customer profile menu" onClick={()=>setOpen(v=>!v)}>{initial}</button>
+ {open&&<div className="cd-account-dropdown" role="menu"><Link href="/dashboard/account" onClick={()=>setOpen(false)} role="menuitem">My Profile</Link><Link href="/dashboard/kyc" onClick={()=>setOpen(false)} role="menuitem">Verification & Settings</Link><form action="/auth/signout" method="post"><button type="submit" role="menuitem">Log Out</button></form></div>}</div>;
+}
