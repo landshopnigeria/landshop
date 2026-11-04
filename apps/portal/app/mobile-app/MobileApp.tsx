@@ -56,7 +56,7 @@ function CTA({children,onClick,secondary=false,disabled=false}:{children:ReactNo
 function Field({label,children}:{label:string;children:ReactNode}){return <label className="lm-field"><span>{label}</span>{children}</label>}
 
 export default function MobileApp(){
- const [screen,setScreen]=useState<Screen>('splash'),[slide,setSlide]=useState(0),[filter,setFilter]=useState<'all'|'land'|'homes'|'coastal'>('all');
+ const [screen,setScreen]=useState<Screen>('onboarding'),[slide,setSlide]=useState(0),[filter,setFilter]=useState<'all'|'land'|'homes'|'coastal'>('all');
  const [searchTerm,setSearchTerm]=useState('');
  const [selected,setSelected]=useState('famous-gardens'),[saved,setSaved]=useState<string[]>([]);
  const [name,setName]=useState(''),[userEmail,setUserEmail]=useState(''),[signedIn,setSignedIn]=useState(false);
@@ -74,7 +74,8 @@ export default function MobileApp(){
   let active=true;
   const query=new URLSearchParams(window.location.search),target=query.get('screen');
   const screens=['onboarding','signup','signin','verify','reset','home','explore','property','inspection','mortgage','saved','referrals','notices','profile'];
-  const t=window.setTimeout(()=>{if(active)setScreen(screens.includes(target||'')?target as Screen:'onboarding')},420);
+  // Render the target immediately after hydration; do not hold navigation behind a cosmetic splash timer.
+  setScreen(screens.includes(target||'')?target as Screen:'onboarding');
   const pop=()=>{const p=new URLSearchParams(window.location.search).get('screen');if(p&&screens.includes(p))setScreen(p as Screen);else setScreen('onboarding')};
   window.addEventListener('popstate',pop);
   try{const value:unknown=JSON.parse(window.localStorage.getItem('landshop.mobile.saved.v1')||'[]');setSaved(Array.isArray(value)?value.filter((v):v is string=>typeof v==='string'&&properties.some(p=>p.slug===v)).slice(0,30):[])}catch{setSaved([])}
@@ -86,7 +87,7 @@ export default function MobileApp(){
   const auth=browserSupabase();
   auth.auth.getUser().then(({data})=>{const u=data.user;if(active&&u?.email_confirmed_at){setSignedIn(true);setName(String(u.user_metadata?.full_name||'').split(' ')[0]||'');setUserEmail(u.email||'')}}).catch(()=>{});
   const {data:{subscription}}=auth.auth.onAuthStateChange((_event,session)=>{if(!active)return;const u=session?.user;if(u?.email_confirmed_at){setSignedIn(true);setName(String(u.user_metadata?.full_name||'').split(' ')[0]||'');setUserEmail(u.email||'')}else{setSignedIn(false);setName('');setUserEmail('')}});
-  return()=>{active=false;window.clearTimeout(t);window.removeEventListener('popstate',pop);window.removeEventListener('beforeinstallprompt',install);window.removeEventListener('appinstalled',installedEvent);subscription.unsubscribe()};
+  return()=>{active=false;window.removeEventListener('popstate',pop);window.removeEventListener('beforeinstallprompt',install);window.removeEventListener('appinstalled',installedEvent);subscription.unsubscribe()};
  },[]);
  const toggleSaved=(slug:string)=>setSaved(v=>{const next=v.includes(slug)?v.filter(x=>x!==slug):[...v,slug];try{window.localStorage.setItem('landshop.mobile.saved.v1',JSON.stringify(next))}catch{}return next});
  const openProperty=(slug:string)=>{setSelected(slug);go('property')};
