@@ -20,6 +20,7 @@ try{
     heading:!!document.querySelector('h1'),title:!!document.title.trim(),
     description:!!document.querySelector('meta[name="description"]')?.getAttribute('content')?.trim(),
     canonical:document.querySelector('link[rel="canonical"]')?.getAttribute('href'),
+    overflowElements:[...document.querySelectorAll('body *')].filter(el=>{const r=el.getBoundingClientRect();return r.right>innerWidth+3&&r.left<innerWidth&&r.width>0}).slice(0,10).map(el=>({tag:el.tagName,class:typeof el.className==='string'?el.className:'',width:Math.round(el.getBoundingClientRect().width),scroll:el.scrollWidth})),
     noindex:document.querySelector('meta[name="robots"]')?.getAttribute('content')?.includes('noindex')
    }));
    if(result.overflow||!result.heading||!result.title||!result.description||!result.canonical||result.noindex)failures.push(path+' @'+width+': '+JSON.stringify(result));

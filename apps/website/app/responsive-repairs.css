@@ -1,0 +1,11 @@
+/* Preserve the approved templates while allowing nested grids to shrink. */
+.ld-page :is(.ld-main-grid,.ld-main-content,.ld-panel,.ld-sidebars,.ld-sidebar,.ld-bottom-section,.ld-table-scroll,.ld-related,.ld-related a){min-width:0;max-width:100%}
+.ld-page .ld-main-content{grid-template-columns:minmax(0,1fr)}
+.ld-page .ld-panel :is(p,h2,h3,a),.ld-page .ld-sidebar :is(p,h2,a){overflow-wrap:anywhere}
+@media(max-width:840px){.ld-page .ld-main-grid{grid-template-columns:minmax(0,1fr)}}
+/* Contact content keeps its columns without forcing the tablet viewport wider. */
+.lc-v24 :is(.lc-v24-hero>*,.lc-v24-info-inner,.lc-v24-details,.lc-v24-detail-copy,.lc-v24-form-heading,.contact-enquiry-form,.contact-enquiry-fields>*,.ls26-grid-three>*,.lc-map-intro>*){min-width:0}
+.lc-v24 :is(p,h1,h2,h3,address,a){overflow-wrap:anywhere}
+.lc-v24 .contact-enquiry-fields .ls-branded-select{display:flex;width:100%;min-width:0}
+.lc-v24 .contact-enquiry-fields .ls-branded-select-trigger{min-width:0;max-width:100%}
+@media(max-width:1050px){.lc-v24 .lc-v24-hero{grid-template-columns:minmax(0,1fr) minmax(0,1.2fr)}}
