@@ -40,6 +40,8 @@ jobs:
         run: npm install --no-audit --no-fund
       - name: Verify Command Center navigation, content safety and export integrity
         run: node scripts/verify-command-center.mjs
+      - name: Verify live operational readiness and safe internal notification reconciliation
+        run: node scripts/verify-landshop-operations-readiness.mjs
       - name: Validate premium automation studio syntax, responsive controls and preserved runtime
         run: node scripts/verify-landshop-automation-ux.mjs
       - name: Verify full authenticated E2E suite syntax, role isolation and safe execution
