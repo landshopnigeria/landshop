@@ -228,9 +228,11 @@ export default function NexusHost({initial,html}:{initial:Flow[];html:string}){
  },[db]);
  useEffect(()=>{
   if(!runtimeOpen)return;
-  void refreshRuntime();
-  const timer=window.setInterval(()=>void refreshRuntime(),4500);
-  return()=>window.clearInterval(timer);
+  const refreshIfVisible=()=>{if(document.visibilityState==='visible')void refreshRuntime();};
+  refreshIfVisible();
+  const timer=window.setInterval(refreshIfVisible,10000);
+  document.addEventListener('visibilitychange',refreshIfVisible);
+  return()=>{window.clearInterval(timer);document.removeEventListener('visibilitychange',refreshIfVisible);};
  },[runtimeOpen,refreshRuntime]);
  const queueRuntimePreview=async()=>{
   const id=activeRef.current;const draft=flowsRef.current.find(f=>f.id===id);
