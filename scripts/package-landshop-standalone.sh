@@ -14,7 +14,15 @@ for app in website portal dashboard; do
   mkdir -p "$target/apps/$app/.next"
   cp -a "$root/." "$target/"
   cp -a "$source/.next/static" "$target/apps/$app/.next/static"
-  cp -a "$source/public" "$target/apps/$app/public"
+  # Copy the *contents* of public, not the directory itself. The standalone
+  # trace can already contain apps/$app/public; copying the directory into an
+  # existing destination would silently produce public/public and 404s.
+  mkdir -p "$target/apps/$app/public"
+  cp -a "$source/public/." "$target/apps/$app/public/"
+  if [ -d "$target/apps/$app/public/public" ]; then
+    echo "::error::Nested public/public directory in $app release"
+    exit 1
+  fi
   if [ "$app" = portal ]; then
     # Public /media is the proven Passenger/LiteSpeed asset namespace.
     # Verify original Landshop mobile photographs are inside the *actual*
