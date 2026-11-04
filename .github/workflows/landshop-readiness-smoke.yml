@@ -6,6 +6,7 @@ on:
       - 'apps/portal/next.config.mjs'
       - 'apps/dashboard/next.config.mjs'
       - 'scripts/check-landshop-responsive.mjs'
+      - 'scripts/check-landshop-sitemap-layouts.mjs'
       - '.github/workflows/landshop-readiness-smoke.yml'
   workflow_dispatch:
 permissions:
@@ -42,6 +43,8 @@ jobs:
         env:
           LANDSHOP_TEST_URL: http://127.0.0.1:3000
         run: node scripts/check-landshop-responsive.mjs
+      - name: Check every sitemap page at phone, tablet and desktop widths
+        run: node scripts/check-landshop-sitemap-layouts.mjs
       - name: Show app logs on failure
         if: failure()
         run: cat /tmp/landshop-readiness-server.log || true

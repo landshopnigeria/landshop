@@ -69,7 +69,7 @@ jobs:
       - name: Verify Supabase index migration and 12-character signup guardrails
         run: python3 scripts/verify-landshop-supabase-security-baseline.py
       - name: Verify account destination separation
-        run: node --experimental-strip-types --test packages/shared/account-home.test.mjs
+        run: node --experimental-strip-types --test packages/shared/account-home.test.mjs packages/shared/bounded-read-fetch.test.mjs
       - name: Enforce explicit grants for newly introduced privileged Supabase functions
         run: python3 scripts/verify-landshop-privileged-rpc-migrations.py
       - name: Verify no-cost compromised-password screening in customer and staff auth

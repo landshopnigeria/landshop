@@ -1,3 +1,4 @@
+import {boundedReadFetch} from '../../../packages/shared/bounded-read-fetch';
 import {createClient} from '@supabase/supabase-js';
 export type Listing={
  id:string;title:string;slug:string|null;property_type:string;collection_type?:'Prime'|'Luxury'|null;collection_verified_at?:string|null;amount_kobo:number|null;price_is_starting_at:boolean;status:string;estate_id:string|null;
@@ -10,7 +11,7 @@ export const PAGE_SIZE=12;
 export function propertyHref(property:{id:string;slug?:string|null}){return '/properties/'+encodeURIComponent(property.slug||property.id)}
 export function propertyPrice(p:{amount_kobo:number|null|undefined;price_is_starting_at?:boolean|null}){return (p.price_is_starting_at&&p.amount_kobo!=null?'From ':'')+money(p.amount_kobo)}
 export function money(kobo:number|null|undefined){return typeof kobo==='number'&&Number.isFinite(kobo)?new Intl.NumberFormat('en-NG',{style:'currency',currency:'NGN',maximumFractionDigits:0}).format(kobo/100):'Price on request'}
-export function publicDb(){const url=process.env.NEXT_PUBLIC_SUPABASE_URL,key=process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;return url&&key?createClient(url,key,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}}):null}
+export function publicDb(){const url=process.env.NEXT_PUBLIC_SUPABASE_URL,key=process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;return url&&key?createClient(url,key,{global:{fetch:boundedReadFetch},auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}}):null}
 export function cleanFilters(p:Params){
  const clean=(value?:string,max=90)=>(typeof value==='string'?value:'').trim().slice(0,max);
  const state=clean(p.state,45),city=clean(p.city,60),lga=clean(p.lga,60),area=clean(p.area,70),type=clean(p.type,40),query=clean(p.query,80);
@@ -28,7 +29,8 @@ export function cleanFilters(p:Params){
 export type Filters=ReturnType<typeof cleanFilters>;
 export function marketHref(filters:Filters,changes:Record<string,string|number|null>={}){const q=new URLSearchParams();for(const [key,value] of Object.entries({...filters,...changes})){if(value!==null&&value!==''&&value!==0&&!(key==='page'&&value===1)&&!(key==='purpose'&&value==='Buy')&&!(key==='sort'&&value==='newest')&&!(key==='view'&&value==='grid'))q.set(key,String(value))}return '/properties'+(q.size?'?'+q.toString():'')}
 function safeLike(value:string){return value.replace(/[%_,\\]/g,'').trim()}
-export async function listPublished(filters:Filters){
+export async function listPublished(filters:Filters,options:{pageSize?:number;withCount?:boolean}={}){
+ const pageSize=Math.min(PAGE_SIZE,Math.max(1,Math.floor(options.pageSize||PAGE_SIZE)));
  const db=publicDb();if(!db)return {rows:[] as Listing[],count:0,error:'Property service is not configured'};
  // A Prime/Luxury collection is recorded in the historical deck but not yet
  // verified against the current estate/property database schema. Do not
@@ -48,7 +50,7 @@ export async function listPublished(filters:Filters){
   if(!estateIds.length)return {rows:[] as Listing[],count:0,error:null};
  }
  let propertyQuery=db.from('properties')
-  .select('id,title,slug,estate_id,property_type,collection_type,collection_verified_at,amount_kobo,price_is_starting_at,status,sale_mode,bedrooms,bathrooms,floor_area_sqm,land_area_sqm,availability,estates(name,state,city,lga,area)',{count:'exact'})
+  .select('id,title,slug,estate_id,property_type,collection_type,collection_verified_at,amount_kobo,price_is_starting_at,status,sale_mode,bedrooms,bathrooms,floor_area_sqm,land_area_sqm,availability,estates(name,state,city,lga,area)',{count:options.withCount===false?undefined:'exact'})
   .eq('status','published');
  if(estateIds)propertyQuery=propertyQuery.in('estate_id',estateIds);
  if(filters.purpose==='Buy')propertyQuery=propertyQuery.or('sale_mode.eq.Buy,sale_mode.is.null').neq('property_type','shortlet');
@@ -65,6 +67,6 @@ export async function listPublished(filters:Filters){
  if(filters.sort==='price_asc')propertyQuery=propertyQuery.order('amount_kobo',{ascending:true,nullsFirst:false}).order('id',{ascending:true});
  else if(filters.sort==='price_desc')propertyQuery=propertyQuery.order('amount_kobo',{ascending:false,nullsFirst:false}).order('id',{ascending:true});
  else propertyQuery=propertyQuery.order('created_at',{ascending:false}).order('id',{ascending:false});
- const {data,error,count}=await propertyQuery.range((filters.page-1)*PAGE_SIZE,filters.page*PAGE_SIZE-1);
+ const {data,error,count}=await propertyQuery.range((filters.page-1)*pageSize,filters.page*pageSize-1);
  return {rows:(data||[]) as unknown as Listing[],count:count||0,error:error?'Published inventory cannot be retrieved at this time':null};
 }

@@ -16,21 +16,20 @@ export default function AboutContinuousProducts(){
  const [active,setActive]=useState(0);
  useEffect(()=>{
   const el=ref.current;if(!el)return;
-  let raf=0,prev=0,lastLabel=0,visible=true,reduce=false;
+  let raf=0,prev=0,lastLabel=0,visible=false,cycle=0,step=0;
   const mq=window.matchMedia('(prefers-reduced-motion: reduce)');
-  const motion=()=>{reduce=mq.matches};
-  motion();mq.addEventListener('change',motion);
-  const observer=new IntersectionObserver(([entry])=>{visible=entry.isIntersecting},{threshold:.03});
-  observer.observe(el);
-  const frame=(now:number)=>{
-   if(!prev)prev=now;
-   const dt=Math.min(now-prev,70);prev=now;
+  // Measure only when geometry changes, never on every animation frame.
+  const measure=()=>{
    const first=el.children[0] as HTMLElement|undefined;
    const twin=el.children[cards.length] as HTMLElement|undefined;
    const second=el.children[1] as HTMLElement|undefined;
-   const cycle=twin&&first?twin.offsetLeft-first.offsetLeft:0;
-   const step=second&&first?second.offsetLeft-first.offsetLeft:0;
-   if(visible&&!document.hidden&&!reduce&&!Object.values(paused.current).some(Boolean)&&cycle>0){
+   cycle=twin&&first?twin.offsetLeft-first.offsetLeft:0;
+   step=second&&first?second.offsetLeft-first.offsetLeft:0;
+  };
+  const frame=(now:number)=>{
+   if(!prev)prev=now;
+   const dt=Math.min(now-prev,70);prev=now;
+   if(!Object.values(paused.current).some(Boolean)&&cycle>0){
     el.scrollLeft+=dt*.025;
     if(el.scrollLeft>=cycle)el.scrollLeft-=cycle;
    }
@@ -41,8 +40,17 @@ export default function AboutContinuousProducts(){
    }
    raf=requestAnimationFrame(frame);
   };
-  raf=requestAnimationFrame(frame);
-  return()=>{cancelAnimationFrame(raf);observer.disconnect();mq.removeEventListener('change',motion)};
+  const sync=()=>{
+   cancelAnimationFrame(raf);prev=0;
+   if(visible&&!document.hidden&&!mq.matches)raf=requestAnimationFrame(frame);
+  };
+  const observer=new IntersectionObserver(([entry])=>{visible=entry.isIntersecting;sync()},{threshold:.03});
+  const resize=new ResizeObserver(measure);
+  resize.observe(el);
+  if(el.children[0])resize.observe(el.children[0]);
+  measure();observer.observe(el);
+  mq.addEventListener('change',sync);document.addEventListener('visibilitychange',sync);
+  return()=>{cancelAnimationFrame(raf);observer.disconnect();resize.disconnect();mq.removeEventListener('change',sync);document.removeEventListener('visibilitychange',sync)};
  },[]);
  const go=(index:number)=>{
   const el=ref.current,first=el?.children[0] as HTMLElement|undefined,second=el?.children[1] as HTMLElement|undefined;
