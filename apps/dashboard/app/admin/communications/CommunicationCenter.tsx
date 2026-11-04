@@ -5,11 +5,12 @@ import Link from 'next/link';
 import {createBrowserClient} from '@supabase/ssr';
 import catalog from './catalog.json';
 import type {PremiumOverride} from './PremiumMessagePreview';
+import type {Contact,Event,Task,Audit} from './OperationsCenter';
+import './communications.css';
+
 const PremiumMessagePreview=dynamic(()=>import('./PremiumMessagePreview'),{loading:()=> <p className="comm-inline-loading" role="status">Opening message preview…</p>});
 const TemplateEditor=dynamic(()=>import('./TemplateEditor'),{loading:()=> <p className="comm-inline-loading" role="status">Opening editor…</p>});
 const OperationsCenter=dynamic(()=>import('./OperationsCenter'),{loading:()=> <p className="comm-inline-loading" role="status">Opening contact workspace…</p>});
-import type {Contact,Event,Task,Audit} from './OperationsCenter';
-import './communications.css';
 
 type Journey=keyof typeof catalog.flows;
 type Scenario=(typeof catalog.templates)[number];
