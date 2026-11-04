@@ -8,4 +8,5 @@
 .lc-v24 :is(p,h1,h2,h3,address,a){overflow-wrap:anywhere}
 .lc-v24 .contact-enquiry-fields .ls-branded-select{display:flex;width:100%;min-width:0}
 .lc-v24 .contact-enquiry-fields .ls-branded-select-trigger{min-width:0;max-width:100%}
-@media(max-width:1050px){.lc-v24 .lc-v24-hero{grid-template-columns:minmax(0,1fr) minmax(0,1.2fr)}}
+/* A minimum map height must not expand its aspect-ratio width beyond tablets. */
+.lc-v24 .lc-map-landscape{width:100%;max-width:100%;min-width:0}
