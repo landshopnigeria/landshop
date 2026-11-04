@@ -125,5 +125,4 @@
 @media(max-width:380px){
  .mk-layout .mk-entered-links{gap:8px}
  .mk-layout .mk-entered-links a{font-size:11px;gap:3px}
- .mk-layout .mk-entered-links svg{width:16px;height:16px}
 }
