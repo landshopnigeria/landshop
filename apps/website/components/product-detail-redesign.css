@@ -112,3 +112,8 @@
  .lsp-product .lsp-compact-pathways article{align-items:flex-start;flex-direction:column}
 }
 @media(prefers-reduced-motion:reduce){.lsp-product .lsp-compact-content{animation:none}.lsp-product .lsp-compact-feature{transition:none}}
+
+/* Inactive tab views remain in server-rendered HTML for verified links and SEO, but never create visible extra sections. */
+.lsp-product .lsp-tab-panel[hidden]{display:none!important}
+.lsp-product .lsp-tab-panel:not([hidden]){animation:lsp-compact-enter .2s ease-out both}
+@media(prefers-reduced-motion:reduce){.lsp-product .lsp-tab-panel:not([hidden]){animation:none}}
