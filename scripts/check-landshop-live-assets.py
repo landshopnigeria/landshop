@@ -11,6 +11,7 @@ import os
 import time
 from functools import lru_cache
 import re
+import json
 import socket
 import sys
 from html.parser import HTMLParser
@@ -20,7 +21,7 @@ from urllib.request import Request, urlopen
 
 EXPECTED=os.environ.get("LANDSHOP_EXPECTED_SHA", "").strip()
 HOSTS=("landshopnigeria.com","www.landshopnigeria.com")
-APPLICATIONS=(("portal.landshopnigeria.com","/",'class="authGlass"'),("app.landshopnigeria.com","/staff/sign-in",'class="lsa-card signin"'),("app.landshopnigeria.com","/staff/sign-up",'class="lsa-card signup"'))
+APPLICATIONS=(("portal.landshopnigeria.com","/",'class="authGlass"'),("portal.landshopnigeria.com","/mobile-app",'class="lm-stage"'),("app.landshopnigeria.com","/staff/sign-in",'class="lsa-card signin"'),("app.landshopnigeria.com","/staff/sign-up",'class="lsa-card signup"'))
 PAGES=(
     ("/","cinematic-property-video-preview",".ls-v23-hero"),
     ("/develop","lsp-luxury",".lsp-luxury .lsp-actions"),
@@ -218,6 +219,28 @@ def check_transparent_brand_logo(host, app):
         raise AssertionError(f"{host}: missing valid RGBA logo content")
     print(f"BRAND_OK {host}{name}: exact logo digest {sha256(blob).hexdigest()[:12]}",flush=True)
 
+def check_installable_mobile_app():
+    """A green release must actually serve the approved installable mobile UI, never a 404."""
+    host="portal.landshopnigeria.com"
+    prefix=f"https://{host}"
+    url=prefix+"/mobile-app/manifest.webmanifest"
+    status,headers,data,_=request(url)
+    if status != 200 or "json" not in get_header(headers,"Content-Type").lower():
+        raise AssertionError("Mobile manifest is not publicly served as JSON")
+    manifest=json.loads(data.decode("utf-8"))
+    if manifest.get("start_url")!="/mobile-app?screen=home" or manifest.get("display")!="standalone":
+        raise AssertionError("Landshop mobile install manifest is invalid")
+    for size in ("192","512"):
+        path=f"/mobile-app/icons/{size}"
+        if not any(x.get("src")==path for x in manifest.get("icons",[])):
+            raise AssertionError(f"Missing approved Landshop {size}px app icon reference")
+        code,icon_headers,icon_data,_=request_static(prefix+path)
+        if code != 200 or not icon_data.startswith(bytes((137,80,78,71,13,10,26,10))):
+            raise AssertionError(f"Landshop mobile {size}px app icon is not a served PNG")
+        if "image/png" not in get_header(icon_headers,"Content-Type").lower():
+            raise AssertionError(f"Wrong mobile app icon content type: {size}")
+    print("MOBILE_APP_OK: production screen, manifest and both official brand icons verified",flush=True)
+
 def check_famous_gardens_hero_photo(host):
     """Check both optimized owner-approved hero photos on actual production."""
     variants=(
@@ -257,6 +280,11 @@ def main():
         except (AssertionError,URLError,HTTPError,OSError,TimeoutError,ValueError) as exc:
             failures.append((host,path,str(exc)))
             print(f"FAILED {host}{path}: {exc}",file=sys.stderr,flush=True)
+    try:
+        check_installable_mobile_app()
+    except (AssertionError,URLError,HTTPError,OSError,TimeoutError,ValueError) as exc:
+        failures.append(("portal.landshopnigeria.com","/mobile-app",str(exc)))
+        print(f"FAILED installable mobile app: {exc}",file=sys.stderr,flush=True)
     # Website, portal and dashboard have independent public/media folders.
     for host,app in (
         ("landshopnigeria.com","website"),
