@@ -5,6 +5,7 @@ on:
     paths:
       - 'apps/**'
       - 'services/**'
+      - 'supabase/migrations/**'
       - 'scripts/**'
       - 'packages/**'
       - 'package.json'
