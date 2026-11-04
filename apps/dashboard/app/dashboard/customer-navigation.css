@@ -19,3 +19,16 @@
  .dc-sidebar nav a{min-height:48px;font-size:15px}
 }
 @media(prefers-reduced-motion:reduce){.dc-sidebar{transition:none}}
+
+/* Customer-only accordion navigation. All internal tools remain outside this UI. */
+.cd-nav-group{min-width:0;display:grid;gap:3px}
+.cd-nav-group-trigger{width:100%;border:0;background:transparent;color:#245646;display:flex;justify-content:space-between;align-items:center;gap:7px;padding:13px 12px;border-radius:10px;font-size:12px;font-weight:800;cursor:pointer;min-height:44px}
+.cd-nav-group-trigger:hover,.cd-nav-group-trigger[aria-expanded=true]{background:#eaf6ee;color:#08694e}
+.cd-nav-group-items{display:grid;gap:3px;padding-left:10px;border-left:2px solid #dcefe2;margin-left:10px}
+.cd-v25 .dc-sidebar nav .cd-nav-group-items a{font-size:12px;padding:11px 9px;min-height:43px}
+.cd-v25 .dc-sidebar nav .cd-nav-group-items a svg{width:18px;height:18px}
+.cd-sidebar.cd-nav-compact .cd-nav-group-trigger{padding:11px 4px;font-size:9px;overflow-wrap:anywhere}
+.cd-sidebar.cd-nav-compact .cd-nav-group-trigger span:last-child{display:none}
+.cd-sidebar.cd-nav-compact .cd-nav-group-items{margin-left:0;padding-left:0}
+.cd-v25 .cd-main,.cd-v25 .dc-main{min-width:0}
+@media(max-width:850px){.cd-v25 .dc-sidebar nav{display:grid;flex-direction:column;overflow:visible}.cd-sidebar{overflow-y:auto}.cd-nav-group-trigger{font-size:13px}.cd-v25 .dc-sidebar nav .cd-nav-group-items a{font-size:13px}}
