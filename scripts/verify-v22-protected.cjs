@@ -62,12 +62,12 @@ const required=[
  'className="glass-search ls-v23-property-filter"',
  '<ApprovedHomepageContent featured={featured} featuredSlot={featuredSlot}/>',
  "['Buy','Sell','Rent','Shortlet']",
- 'Everyone deserves affordable property.',
- 'Plot Your Future. Save ₦5 million.',
- 'Where would you own next?',
+ 'Your Dream Home Starts Here.',
+ 'Your Next Chapter Starts Here.',
+ 'Own More. Worry Less.',
  'Explore Famous Gardens',
  'Book Inspection',
- 'Speak With Consultant',
+ 'Speak With a Consultant',
  ...['query','state','city','area','type','min','max','bedrooms','bathrooms','minsize','availability','collection'].map(x=>'name="'+x+'"')
 ];
 for(const marker of required){if(!home.includes(marker)){console.error('V23 preview element missing: '+marker);failures++;}}
